@@ -5,6 +5,11 @@
 chmod +x grant_permissions.sh
 ./grant_permissions.sh
 ```
+
+## Setup DEV enveriment
+```shell script
+./setup_enviroment.sh
+```
 ______________________________________________________________________________________________________________________________
 
 ## MAC
