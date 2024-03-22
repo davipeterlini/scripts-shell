@@ -1,5 +1,16 @@
 #!/bin/zsh
 
+# Check if Homebrew is installed, install if not
+if ! command -v brew >/dev/null 2>&1; then
+    echo "Homebrew not found. Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+else
+    echo "Homebrew is already installed."
+fi
+
+# TODO - Check if iTerm2 is installed, install if not
+#brew install --cask iterm2
+
 # Config Oh My Zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
