@@ -35,6 +35,10 @@ install_if_not_installed "rancher-desktop"  # May need to install via other mean
 install_if_not_installed "google-drive-ocamlfuse"  # May need to configure after installation
 install_if_not_installed "virtualbox"
 install_if_not_installed "code"  
+install_if_not_installed "vlc"
+install_if_not_installed "zoom"              # For Zoom, you may need to download and install manually if not available via APT
+install_if_not_installed "flameshot"
+install_if_not_installed "wireshark"         # You may be asked to configure user permissions during installation
 
 # Cleaning up unnecessary packages after installation
 echo "Cleaning up unnecessary packages..."
