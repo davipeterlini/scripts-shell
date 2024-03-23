@@ -4,16 +4,18 @@
 install_apps_mac() {
     echo "Starting installation of apps for macOS..."
     ./mac/install_apps.sh
-    ./mac/setup_iterm
-    ./vscode/install_plugins
+    ./mac/setup_iterm.sh
+    ./mac/setup_docker.sh
+    ./vscode/install_plugins.sh
 }
 
 # Function to install apps on Linux (Debian-based)
 install_apps_linux() {
     echo "Starting installation of apps for Linux..."
     ./linux/install_apps.sh
-    ./linux/setup_iterm
-    ./vscode/install_plugins
+    ./mac/setup_terminal.sh
+    ./linux/setup_docker.sh
+    ./vscode/install_plugins.sh
 }
 
 # Detect the operating system and execute the corresponding script
