@@ -13,7 +13,7 @@ install_apps_mac() {
 install_apps_linux() {
     echo "Starting installation of apps for Linux..."
     ./linux/install_apps.sh
-    ./mac/setup_terminal.sh
+    ./linux/setup_terminal.sh
     ./linux/setup_docker.sh
     ./vscode/install_plugins.sh
 }
