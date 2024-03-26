@@ -32,6 +32,8 @@ sudo apt install -y docker-ce
 echo "Adding current user to the Docker group..."
 sudo usermod -aG docker ${USER}
 
+# TODO - permissao
+
 # Prompt the user that they need to log out and back in for this to take effect
 echo "Docker installation is now complete. Please log out and then log back in so that your group membership is re-evaluated."
 
