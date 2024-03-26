@@ -126,7 +126,7 @@ install_basic_apps() {
     )
 
     for APP_NAME in "${install_apt_get[@]}"; do
-        download_install_cleanup "$DESCRIPTION" "$APP_NAME"
+        download_install_cleanup "$DESCRIPTION $APP_NAME" "$APP_NAME"
     done
 }
 
