@@ -54,6 +54,7 @@ install_if_not_installed "Zoom" "zoom"
 install_if_not_installed "Flameshot" "flameshot"
 install_if_not_installed "Wireshark" "wireshark"
 install_if_not_installed "Xcode" "xcode"
+install_if_not_installed "node" "node"
 
 # Clean up Homebrew caches, etc, after installation
 brew cleanup

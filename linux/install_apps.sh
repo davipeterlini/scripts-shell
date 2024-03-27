@@ -11,7 +11,7 @@ extract() {
     local name="$1"
     echo "Extracting $name to /opt..."
     sudo tar -xzf "$name" -C /opt
-    sudo ln -sf /opt/Postman/Postman /usr/local/bin/postman
+    
 }
 
 cleanup() {
@@ -24,6 +24,18 @@ extract_cleanup() {
     local name="$1"
     extract "$name"
     cleanup "$name"
+}
+
+create_simbolic_link() { 
+    local name="$1"
+    sudo ln -sf /opt/Postman/Postman /usr/local/bin/postman
+    # TODO - find para achar a pasta
+    # TODO find para achamar o binário dentro da pasta 
+}
+
+create_icon() { 
+    local name="$1"
+    # TODO - colocar lógica de criar ícone 
 }
 
 download_apps() {
@@ -41,24 +53,6 @@ export_path_profile() {
 
 }
 
-install_cleanup() {
-    local name="$1"
-
-    if [[ "$name" == *.tar.gz ]]; then
-        echo "Detected tar.gz file. Extracting and cleaning up."
-        #TODO - Fazer o simbólic link corretamente e criar o icone
-        extract_cleanup "$name"
-    elif [[ "$name" == *.deb ]]; then
-        echo "Detected deb file. Installing and cleaning up."
-        sudo dpkg -i "$name"
-        sudo apt-get install -f  # Fix any broken dependencies
-        cleanup "$name"
-    else
-        echo "No file to process, attempting to install $name using apt-get..."
-        sudo apt-get install -y "$name"
-    fi
-}
-
 check_install() {
     local name="$1"
     if dpkg -l | grep -qw "$name"; then
@@ -70,6 +64,25 @@ check_install() {
         return 0
     fi
     return 1
+}
+
+install_cleanup() {
+    local name="$1"
+
+    if [[ "$name" == *.tar.gz ]]; then
+        echo "Detected tar.gz file. Extracting and cleaning up."
+        extract_cleanup "$name"
+        create_simbolic_link "$name"
+        create_icon "$name"
+    elif [[ "$name" == *.deb ]]; then
+        echo "Detected deb file. Installing and cleaning up."
+        sudo dpkg -i "$name"
+        sudo apt-get install -f  # Fix any broken dependencies
+        cleanup "$name"
+    else
+        echo "No file to process, attempting to install $name using apt-get..."
+        sudo apt-get install -y "$name"
+    fi
 }
 
 download_install_cleanup() {
@@ -148,6 +161,23 @@ install_rambox() {
     download_install_cleanup "$DESCRIPTION" "$URL"
 }
 
+# TODO - possivel pegar última versão 
+    # wget -O dbeaver.deb $(wget -qO- https://dbeaver.io/download/ | grep -oP 'https://dbeaver.io/files/\d+\.\d+\.\d+/dbeaver-ce_\d+\.\d+\.\d+_amd64.deb' | head -1)
+install_dbeaver() {
+    DESCRIPTION="Installing DBeaver... - Check de Last Release - https://dbeaver.io/download/"
+    URL="https://download.dbeaver.com/community/24.0.1/dbeaver-ce_24.0.1_amd64.deb"
+    download_install_cleanup "$DESCRIPTION" "$URL"
+}
+
+# TODO - possivel pegar última versão 
+    # wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/packages.microsoft.gpg >/dev/null
+    # echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+install_vscode() {
+    DESCRIPTION="Installing Visual Studio Code... - Check de Last Release - https://code.visualstudio.com/docs/?dv=linux64_deb"
+    URL="https://vscode.download.prss.microsoft.com/dbazure/download/stable/863d2581ecda6849923a2118d93a088b0745d9d6/code_1.87.2-1709912201_amd64.deb"
+    download_install_cleanup "$DESCRIPTION" "$URL"
+}
+
 install_intellij() {
     DESCRIPTION="Installing IntelliJ IDEA Community Edition... - Check de Last Release - https://www.jetbrains.com/idea/download/download-thanks.html?platform=linux"
     URL="https://download-cdn.jetbrains.com/idea/ideaIU-2023.3.6.tar.gz"
@@ -161,25 +191,9 @@ install_android_studio() {
 }
 
 # TODO - possivel pegar última versão 
-    # wget -O dbeaver.deb $(wget -qO- https://dbeaver.io/download/ | grep -oP 'https://dbeaver.io/files/\d+\.\d+\.\d+/dbeaver-ce_\d+\.\d+\.\d+_amd64.deb' | head -1)
-install_dbeaver() {
-    DESCRIPTION="Installing DBeaver... - Check de Last Release - https://dbeaver.io/download/"
-    URL="https://download.dbeaver.com/community/24.0.1/dbeaver-ce_24.0.1_amd64.deb"
-    download_install_cleanup "$DESCRIPTION" "$URL"
-}
-
-# TODO - possivel pegar última versão 
 install_postman() {
     DESCRIPTION="Installing Postman...... - Check de Last Release - https://www.postman.com/downloads/"
     URL="https://dl.pstmn.io/download/latest/linux64"
-    download_install_cleanup "$DESCRIPTION" "$URL"
-}
-# TODO - possivel pegar última versão 
-    # wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/packages.microsoft.gpg >/dev/null
-    # echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
-install_vscode() {
-    DESCRIPTION="Installing Visual Studio Code... - Check de Last Release - https://code.visualstudio.com/docs/?dv=linux64_deb"
-    URL="https://vscode.download.prss.microsoft.com/dbazure/download/stable/863d2581ecda6849923a2118d93a088b0745d9d6/code_1.87.2-1709912201_amd64.deb"
     download_install_cleanup "$DESCRIPTION" "$URL"
 }
 
@@ -199,6 +213,9 @@ install_go() {
     download_install_cleanup "$DESCRIPTION" "$URL"
     export_path_profile "usr/local/go/bin"
 }
+
+
+
 
 # TODO - ver instalação antiga 
     # echo "Check de Last Release - https://www.spotify.com/br-pt/download/linux/"
