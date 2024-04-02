@@ -69,22 +69,26 @@ fi
 
 cd "$HOME/project/examples"
 
-# Clone the repository using SSH
 git clone git@github.com:$github_username/$repo_name.git
 
-# Navigate into the repository directory
 cd $repo_name
 
-# Create and switch to the develop branch
 git checkout -b develop
 
-# Create README.md
-echo "# $repo_name" > README.md
+touch README.md
+touch .gitignore
+touch Dockerfile
+touch docker-compose.yml
+touch .env
+touch scripts/setup.sh
 
-# Add, commit, and push README.md
-git add README.md
-git add .gitignore
-git add .env
+mkdir scripts
+mkdir src 
+
+cp ../README_TEMPLATE.md README.md
+sed -i "s/{{REPO_NAME}}/$repo_name/g" README.md
+
+git add .
 git commit -m "Initial commit with README.md and .gitignore .env"
 git push -u origin develop
 
