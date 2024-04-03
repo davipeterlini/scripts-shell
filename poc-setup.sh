@@ -27,7 +27,7 @@ echo "Enter the name for your new GitHub repository (no underscores, max 20 char
 read repo_name
 
 # Validate repository name
-if [[ "${#repo_name}" -gt 20 ]] || [[ "$repo_name" == *_* ]]; then
+if [[ "${#repo_name}" -gt 30 ]] || [[ "$repo_name" == *_* ]]; then
     echo "Invalid repository name. Exiting."
     exit 1
 fi
