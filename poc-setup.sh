@@ -75,18 +75,25 @@ cd $repo_name
 
 git checkout -b develop
 
-touch README.md
 touch .gitignore
 touch Dockerfile
 touch docker-compose.yml
 touch .env
-touch scripts/setup.sh
 
 mkdir scripts
+touch scripts/setup.sh
 mkdir src 
+mkdir src/entities
+mkdir src/controllers
+mkdir src/services
+mkdir src/modules
 
-cp ../README_TEMPLATE.md README.md
+
+cp template/README.md README.md
 sed -i "s/{{REPO_NAME}}/$repo_name/g" README.md
+
+cp template/Dockerfile Dockerfile
+cp template/docker-compose.yml docker-compose.yml
 
 git add .
 git commit -m "Initial commit with README.md and .gitignore .env"
