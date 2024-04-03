@@ -1,9 +1,7 @@
-
-
 # {{REPO_NAME}}
 
 ## Organization Project
-backend-python-example/
+{{REPO_NAME}}/
 │
 ├── other_struture/     # Contains struture of code
 │   ├── files
