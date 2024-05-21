@@ -34,3 +34,9 @@ for extension in "${extensions[@]}"; do
 done
 
 echo "VSCode extensions installation completed."
+
+
+#- [x]  ext install esbenp.prettier-vscode
+#- [x]  npm install -g eslint
+#- [x]  .eslintrc
+#- [x]  `[npx eslint --init](http://eslint.org/docs/user-guide/command-line-interface)`.
