@@ -320,3 +320,15 @@ curl -d '{"chave":"valor"}' -H "Content-Type: application/json" -X POST http://l
 # Docker compose to build 
 docker-compose up --build
 
+
+
+# Utils
+Clean All Images 
+```shell
+docker rmi -f $(docker images -a -q)
+```
+
+Change Lib
+```shell
+sed -i '' '/"@ci-t-hyperx\/flow-user":/d' package.json && yarn add /Users/davi.peterlini/projects-cit/flow/core/flow-core-lib-commons/packages/flow-user && yarn install && yarn de
+```

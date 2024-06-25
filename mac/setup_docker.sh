@@ -1,83 +1,198 @@
 #!/bin/bash
 
-# Update and install Homebrew if it is not installed
-if ! command -v brew >/dev/null; then
-    echo "Homebrew not found. Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-else
-    echo "Updating Homebrew..."
-    brew update
-fi
-
-install_colima() {
-    echo "Installing Colima..."
-    brew install colima
-    colima start
-    initialize_items
+# Função para verificar se um comando existe
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
 }
 
-initialize_items() {
-    SCRIPT_PATH="$HOME/start_colima.sh"
-    echo "Creating script to start Colima..."
-    echo "#!/bin/bash" > $SCRIPT_PATH
-    echo "colima start" >> $SCRIPT_PATH
-    chmod +x $SCRIPT_PATH
-    
-    LINE="~/start_colima.sh &"
-    FILE=~/.zshrc
-    if ! grep -qF "$LINE" "$FILE"; then
-        echo "$LINE" >> "$FILE"
+# Função para desinstalar pacotes usando brew ou remover manualmente
+remove_docker_components() {
+    echo "Removendo componentes Docker..."
+
+    # Remover Rancher Desktop
+    if brew list --cask rancher > /dev/null 2>&1; then
+        brew uninstall --cask rancher
+    else
+        echo "Rancher Desktop não instalado via brew."
     fi
-    source ~/.zshrc
-    tail -n 1 ~/.zshrc
-    echo "Colima is installed and running correctly."
+
+    # Remover Docker Desktop
+    if brew list --cask docker > /dev/null 2>&1; then
+        brew uninstall --cask docker
+    else
+        echo "Docker Desktop não instalado via brew."
+    fi
+
+    # Remover Docker CLI e Docker Compose
+    brew uninstall docker docker-compose
+
+    # Remover manualmente se brew não estiver disponível
+    sudo rm -rf /Applications/Docker.app
+    sudo rm -rf ~/.docker
+    sudo rm -rf /usr/local/bin/docker
+    sudo rm -rf /usr/local/bin/docker-compose
+    sudo rm -rf /usr/local/bin/docker-credential-osxkeychain
+    sudo rm -rf /usr/local/bin/com.docker.cli
 }
 
-install_docker_desktop() {
-    echo "Installing Docker..."
-    brew install --cask docker
-}
+install_or_reinstall_colima() {
+    echo "Instalando ou reinstalando Colima e dependências..."
 
-install_rancher_desktop() {
-    echo "Installing Rancher Desktop..."
-    brew install --cask rancher-cli
+    # Atualizar brew
+    brew update
 
-    echo "Starting Rancher Desktop..."
-    open -g -a Rancher\ Desktop
+    # Reinstalar Colima se já estiver instalado
+    if brew list colima > /dev/null 2>&1; then
+        brew reinstall colima
+    else
+        brew install colima
+    fi
+
+    # Reinstalar Docker CLI e Docker Compose se já estiverem instalados
+    if brew list docker > /dev/null 2>&1; then
+        brew reinstall docker
+    else
+        brew install docker
+    fi
+
+    if brew list docker-compose > /dev/null 2>&1; then
+        brew reinstall docker-compose
+    else
+        brew install docker-compose
+    fi
     
-    echo "Waiting for Rancher Desktop to initialize..."
-    sleep 60
-    echo "Rancher Desktop should now be running."
+    if brew list docker-credential-helper > /dev/null 2>&1; then
+        brew reinstall docker-credential-helper
+    else
+        brew install docker-credential-helper
+    fi
+    docker-credential-osxkeychain version
 }
 
-if ! command -v docker >/dev/null; then
-    echo "Docker is not installed."
-    #install_docker_desktop
-else
-    echo "Docker is already installed."
-    open -g -a Docker
-fi
+# # Função para configurar Colima para iniciar na inicialização
+# configure_colima_autostart_old() {
+#     echo "Configurando Colima para iniciar na inicialização..."
 
-if ! command -v rancher-desktop >/dev/null; then
-    echo "Rancher Desktop is not installed."
-    #install_rancher_desktop
-else
-    echo "Rancher Desktop is already installed."
-    open -g -a Rancher\ Desktop
-fi
+#     # Criar script de inicialização
+#     cat <<EOF > ~/start_colima.sh
+# #!/bin/bash
+# colima start
+# EOF
 
-if ! command -v colima >/dev/null; then
-    echo "Colima is not installed."
-    install_colima
-else
-    echo "COLIMA is already installed."
-    #colima start
-    initialize_items
-fi
+#     chmod +x ~/start_colima.sh
 
-docker --version
-if docker run hello-world; then
-    echo "Docker is installed and running correctly. The 'hello-world' container has been run successfully."
-else
-    echo "There was an issue verifying the Docker installation."
-fi
+#     # Adicionar script ao .zshrc para iniciar Colima automaticamente
+#     if ! grep -Fxq "~/start_colima.sh &" ~/.zshrc; then
+#         echo "~/start_colima.sh &" >> ~/.zshrc
+#     fi
+
+#     # Configurar variável de ambiente DOCKER_HOST
+#     if ! grep -Fxq "export DOCKER_HOST=unix:///Users/davi.peterlini/.colima/default/docker.sock" ~/.zshrc; then
+#         echo 'export DOCKER_HOST=unix:///Users/davi.peterlini/.colima/default/docker.sock' >> ~/.zshrc
+#     fi
+
+#     # Recarregar o arquivo de configuração do shell
+#     source ~/.zshrc
+# }
+
+# Função para configurar Colima para iniciar na inicialização do sistema
+configure_colima_autostart() {
+    echo "Configurando Colima para iniciar na inicialização do sistema..."
+
+    # Criar script de inicialização
+    cat <<EOF > ~/start_colima.sh
+#!/bin/bash
+colima start
+EOF
+
+    chmod +x ~/start_colima.sh
+
+    # Criar arquivo plist para LaunchAgents
+    cat <<EOF > ~/Library/LaunchAgents/com.user.startcolima.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.user.startcolima</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/$USER/start_colima.sh</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>
+EOF
+
+    # Carregar o LaunchAgent
+    launchctl load ~/Library/LaunchAgents/com.user.startcolima.plist
+
+    # Configurar variável de ambiente DOCKER_HOST
+    if ! grep -Fxq "export DOCKER_HOST=unix:///Users/davi.peterlini/.colima/default/docker.sock" ~/.zshrc; then
+        echo 'export DOCKER_HOST=unix:///Users/davi.peterlini/.colima/default/docker.sock' >> ~/.zshrc
+    fi
+
+    # Recarregar o arquivo de configuração do shell
+    source ~/.zshrc
+
+    # Remover script do .zshrc se estiver presente
+    #sed -i '' '/start_colima.sh/d' ~/.zshrc
+}
+
+# Função para verificar se Docker e Docker Compose estão funcionando
+check_docker_installation() {
+    echo "Verificando instalação do Docker e Docker Compose..."
+
+    colima start
+
+    if docker --version && docker-compose --version; then
+        echo "Docker e Docker Compose foram instalados com sucesso."
+    else
+        echo "Houve um problema na instalação do Docker ou Docker Compose."
+        exit 1
+    fi
+
+    # Verificar conexão com o Docker daemon
+    if docker info; then
+        echo "Conexão com o Docker daemon bem-sucedida."
+    else
+        echo "Erro ao conectar ao Docker daemon."
+        exit 1
+    fi
+}
+
+# Função para instalar ou reinstalar o Docker Desktop via Homebrew
+install_or_reinstall_docker_desktop() {
+    echo "Instalando ou reinstalando Docker Desktop via Homebrew..."
+    if brew list --cask docker > /dev/null 2>&1; then
+        brew reinstall --cask docker
+    else
+        brew install --cask docker
+    fi
+}
+
+# Função para instalar ou reinstalar o Rancher Desktop via Homebrew
+install_or_reinstall_rancher_desktop() {
+    echo "Instalando ou reinstalando Rancher Desktop via Homebrew..."
+    if brew list --cask rancher > /dev/null 2>&1; then
+        brew reinstall --cask rancher
+    else
+        brew install --cask rancher
+    fi
+}
+
+# Executar funções
+remove_docker_components
+install_or_reinstall_colima
+configure_colima_autostart
+check_docker_installation
+
+# Instalações opcionais
+#install_or_reinstall_docker_desktop
+#install_or_reinstall_rancher_desktop
+
+echo "Configuração concluída com sucesso."
+
+# Reiniciar o iTerm2
+osascript -e 'tell application "iTerm" to quit' && open -a iTerm
