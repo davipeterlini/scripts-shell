@@ -1,0 +1,62 @@
+Sim, é possível gerar um token de acesso pessoal (PAT) para o GitHub usando o GitHub CLI (`gh`). Aqui está um guia passo a passo para gerar um token de acesso pessoal usando o `gh`:
+
+### Passo 1: Autenticar no GitHub CLI
+
+Primeiro, certifique-se de que você está autenticado no GitHub CLI. Se ainda não estiver autenticado, use o comando abaixo:
+
+```sh
+gh auth login
+```
+
+Siga as instruções na tela para autenticar-se. Você pode escolher autenticar-se via navegador ou fornecer um token de acesso pessoal existente.
+
+### Passo 2: Gerar um Token de Acesso Pessoal
+
+Use o comando `gh auth refresh` para gerar um novo token de acesso pessoal. Este comando permite que você atualize suas credenciais e gere um novo token com permissões específicas.
+
+```sh
+gh auth refresh -h github.com -s repo,workflow
+```
+
+Neste exemplo, o token será gerado com permissões para acessar repositórios (`repo`) e workflows (`workflow`). Você pode ajustar as permissões conforme necessário.
+
+### Passo 3: Armazenar o Token de Acesso Pessoal
+
+O GitHub CLI armazena automaticamente o token gerado em um local seguro no seu sistema. No entanto, se você precisar do token para outros usos, como configurar segredos no GitHub Actions, você pode copiá-lo do terminal.
+
+### Passo 4: Usar o Token de Acesso Pessoal
+
+Se você precisar usar o token de acesso pessoal em scripts ou configurar segredos no GitHub Actions, você pode fazer isso manualmente ou usando o GitHub CLI.
+
+#### Adicionar o Token como um Segredo no GitHub Actions
+
+Você pode adicionar o token de acesso pessoal como um segredo no GitHub Actions usando o comando `gh secret set`.
+
+```sh
+gh secret set GITHUB_TOKEN --body "your_generated_token"
+```
+
+Substitua `"your_generated_token"` pelo token que você gerou.
+
+### Exemplo Completo
+
+Aqui está um exemplo completo de como gerar um token de acesso pessoal e adicioná-lo como um segredo no GitHub Actions:
+
+```sh
+# Autenticar no GitHub CLI
+gh auth login
+
+# Gerar um novo token de acesso pessoal com permissões específicas
+gh auth refresh -h github.com -s repo,workflow
+
+# Adicionar o token gerado como um segredo no GitHub Actions
+gh secret set GITHUB_TOKEN --body "your_generated_token"
+```
+
+### Resumo dos Passos
+
+1. Autentique-se no GitHub CLI usando `gh auth login`.
+2. Gere um novo token de acesso pessoal usando `gh auth refresh -h github.com -s repo,workflow`.
+3. Adicione o token gerado como um segredo no GitHub Actions usando `gh secret set GITHUB_TOKEN --body "your_generated_token"`.
+
+Seguindo esses passos, você poderá gerar um token de acesso pessoal usando o GitHub CLI e configurá-lo como um segredo no GitHub Actions. Se precisar de mais alguma coisa, estou à disposição!

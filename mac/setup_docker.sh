@@ -39,32 +39,36 @@ install_rancher() {
     echo "Rancher Desktop should now be running."
 }
 
-# Check if Docker is installed
-if ! command -v docker >/dev/null; then
-    echo "Docker is not installed."
-    install_docker
-else
-    echo "Docker is already installed."
-    # Start Docker if it's not running
-    #open -g -a Docker
-fi
+main() {
+    # Check if Docker is installed
+    if ! command -v docker >/dev/null; then
+        echo "Docker is not installed."
+        install_docker
+    else
+        echo "Docker is already installed."
+        # Start Docker if it's not running
+        #open -g -a Docker
+    fi
 
-# Check if Rancher Desktop is installed
-if ! command -v rancher-desktop >/dev/null; then
-    echo "Rancher Desktop is not installed."
-    install_rancher
-else
-    echo "Rancher Desktop is already installed."
-    # Start Rancher Desktop if it's not running
-    open -g -a Rancher\ Desktop
-fi
+    # Check if Rancher Desktop is installed
+    if ! command -v rancher-desktop >/dev/null; then
+        echo "Rancher Desktop is not installed."
+        install_rancher
+    else
+        echo "Rancher Desktop is already installed."
+        # Start Rancher Desktop if it's not running
+        open -g -a Rancher\ Desktop
+    fi
 
-# Display Docker version and test Docker installation
-docker --version
-if docker run hello-world; then
-    echo "Docker is installed and running correctly. The 'hello-world' container has been run successfully."
-else
-    echo "There was an issue verifying the Docker installation."
-fi
+    # Display Docker version and test Docker installation
+    docker --version
+    if docker run hello-world; then
+        echo "Docker is installed and running correctly. The 'hello-world' container has been run successfully."
+    else
+        echo "There was an issue verifying the Docker installation."
+    fi
 
-# Additional commands for Rancher Desktop setup or checks can be added below as necessary
+    # Additional commands for Rancher Desktop setup or checks can be added below as necessary
+}
+
+main
