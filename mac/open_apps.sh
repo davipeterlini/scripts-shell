@@ -1,33 +1,41 @@
 #!/bin/bash
 
-# Load environment variables from .env file
+# Load the function to load environment variables
 source "$(dirname "$0")/../utils/load_env.sh"
 source "$(dirname "$0")/../utils/list_projects.sh"
 
-# Check if Homebrew is installed, install if not
-if ! command -v brew >/dev/null 2>&1; then
-    echo "Homebrew not found. Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-else
-    echo "Homebrew is already installed."
-fi
-
-# Update Homebrew
-brew update --auto-update
-brew update
-
-# Function to install software if it's not already installed
-install_if_not_installed() {
-    local name="$1"
-    local brew_name="${2:-$1}"
-
-    # Check if the software is already installed
-    if brew list --formula | grep -q "^${brew_name}\$"; then
-        echo "$name is already installed."
+# Function to check if an application is running
+is_app_running() {
+    local app_name="$1"
+    if pgrep -x "$app_name" > /dev/null; then
+        return 0
     else
-        echo "Installing $name..."
-        brew install $brew_name
+        return 1
     fi
+}
+
+# Function to open an application
+open_app() {
+    local app_name="$1"
+
+    if is_app_running "$app_name"; then
+        echo "$app_name is already running."
+    else
+        echo "Opening $app_name..."
+        open -a "$app_name"
+    fi
+}
+
+# Function to start Colima if it's in the list of apps to open
+start_colima_if_needed() {
+    local apps_array=("$@")
+    for app in "${apps_array[@]}"; do
+        if [[ "$app" == "colima" ]]; then
+            echo "Colima is in the list of apps to open. Starting Colima..."
+            colima start
+            break
+        fi
+    done
 }
 
 main() {
@@ -56,21 +64,21 @@ main() {
     fi
 
     # Extract applications from the project-specific variable
-    local apps_var="APPS_TO_INSTALL_${project_dir}"
+    local apps_var="APPS_TO_OPEN_${project_dir}"
     local apps=$(eval echo \${$apps_var})
 
     IFS="," read -r -a apps_array <<< "$apps"
+
+    # Start Colima if it's in the list of apps to open
+    start_colima_if_needed "${apps_array[@]}"
 
     for app in "${apps_array[@]}"; do
         # Remove leading and trailing spaces
         app=$(echo "$app" | xargs)
         if [ -n "$app" ]; then
-            install_if_not_installed "$app"
+            open_app "$app"
         fi
     done
-
-    # Clean up Homebrew caches, etc, after installation
-    brew cleanup
 }
 
 # Execute the main function with the provided argument

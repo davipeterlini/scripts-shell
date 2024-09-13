@@ -1,0 +1,6 @@
+# Ignore .env.local file
+.env.local
+
+# Coder Framework
+.coder 
+.coderignore
