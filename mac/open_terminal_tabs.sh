@@ -62,20 +62,30 @@ open_iterm_tabs() {
         fi
     done
 
-    for tab in "${tabs[@]}"; do
-        # Remove leading and trailing spaces
-        tab=$(echo "$tab" | xargs)
-        if [ -n "$tab" ]; then
-            echo "Opening iTerm2 tab for directory: $tab"
-            osascript <<EOD
-                tell application "iTerm2"
-                    create window with default profile
-                    tell current session of current window
+    # Open the first tab in a new window
+    first_tab="${tabs[0]}"
+    osascript <<EOD
+        tell application "iTerm2"
+            create window with default profile
+            tell current session of current window
+                write text "cd $first_tab"
+            end tell
+        end tell
+EOD
+
+    # Open the remaining tabs in the same window
+    for ((i=1; i<${#tabs[@]}; i++)); do
+        tab="${tabs[i]}"
+        osascript <<EOD
+            tell application "iTerm2"
+                tell current window
+                    create tab with default profile
+                    tell current session of current tab
                         write text "cd $tab"
                     end tell
                 end tell
+            end tell
 EOD
-        fi
     done
 }
 
