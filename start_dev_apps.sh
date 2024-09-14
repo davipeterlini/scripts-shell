@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Load the function to choose the operating system
+source "$(dirname "$0")/utils/choose_os.sh"
+
 # Function to print and execute a script
 execute_script() {
     local script_path="$1"
@@ -9,30 +12,27 @@ execute_script() {
 
 # Function to start development applications on macOS
 start_apps_mac() {
-    execute_script "./github/connect_git_ssh_account.sh"
     execute_script "./mac/close_apps.sh"
+    execute_script "./github/connect_git_ssh_account.sh"
     execute_script "./mac/open_apps.sh"
 }
 
 # Function to start development applications on Linux
 start_apps_linux() {
-    execute_script "./github/connect_git_ssh_account.sh"
     execute_script "./linux/close_apps.sh"
+    execute_script "./github/connect_git_ssh_account.sh"
     execute_script "./linux/open_apps.sh"
 }
 
 # Function to start development applications on Windows
 start_apps_windows() {
-    execute_script "./github/connect_git_ssh_account.sh"
     execute_script "./windows/close_apps.sh"
-    execute_script "./windows/start_dev_apps.bat"
+    execute_script "./github/connect_git_ssh_account.sh"
     execute_script "./windows/open_apps.bat"
 }
 
 # Main function to start development applications
 main() {
-    # Load the function to choose the operating system
-    source "$(dirname "$0")/utils/choose_os.sh"
     os_choice=$(choose_os)
 
     case "$os_choice" in
