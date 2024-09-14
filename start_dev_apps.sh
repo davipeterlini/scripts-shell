@@ -2,26 +2,33 @@
 
 # Function to start development applications on macOS
 start_apps_mac() {
+    echo "Executing: ./github/connect_git_ssh_account.sh"
     ./github/connect_git_ssh_account.sh
-    echo "Starting development applications for macOS..."
+    echo "Executing: ./mac/close_apps.sh"
     ./mac/close_apps.sh
+    echo "Executing: ./mac/open_apps.sh"
     ./mac/open_apps.sh
 }
 
 # Function to start development applications on Linux
 start_apps_linux() {
-    echo "Starting development applications for Linux..."
+    echo "Executing: ./github/connect_git_ssh_account.sh"
     ./github/connect_git_ssh_account.sh
+    echo "Executing: ./linux/close_apps.sh"
     ./linux/close_apps.sh
+    echo "Executing: ./linux/open_apps.sh"
     ./linux/open_apps.sh
 }
 
 # Function to start development applications on Windows
 start_apps_windows() {
-    echo "Starting development applications for Windows..."
+    echo "Executing: ./github/connect_git_ssh_account.sh"
     ./github/connect_git_ssh_account.sh
+    echo "Executing: ./windows/close_apps.sh"
     ./windows/close_apps.sh
+    echo "Executing: ./windows/start_dev_apps.bat"
     ./windows/start_dev_apps.bat
+    echo "Executing: ./windows/open_apps.bat"
     ./windows/open_apps.bat
 }
 
