@@ -1,5 +1,8 @@
 @echo off
 
+:: Load environment variables from .env file
+for /f "tokens=1,* delims==" %%a in ('type .env') do set %%a=%%b
+
 :: Function to close an application gracefully
 :close_app
 set app_name=%1
@@ -9,17 +12,10 @@ taskkill /IM "%app_name%.exe" /F
 exit /b
 
 :: List of applications to close
-set apps=(
-    "Code"
-    "Robo3T"
-    "Postman"
-    "Meld"
-    "Rambox"
-    "chrome"
-    "Spotify"
-    "Docker Desktop"
-)
+setlocal enabledelayedexpansion
+set apps=%APPS_TO_CLOSE_WORK%
 
-for %%a in %apps% do (
+for %%a in (!apps!) do (
     call :close_app "%%a"
 )
+endlocal
