@@ -62,13 +62,17 @@ open_iterm_tabs() {
         fi
     done
 
-    # Open the first tab in a new window
+    # Open the first tab in a new window and maximize the window
+    # TODO: não está fazendo o fullscreen corretamente
     first_tab="${tabs[0]}"
     osascript <<EOD
         tell application "iTerm2"
             create window with default profile
             tell current session of current window
                 write text "cd $first_tab"
+            end tell
+            tell current window
+                set fullscreen of current window to true
             end tell
         end tell
 EOD
