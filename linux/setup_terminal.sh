@@ -4,7 +4,6 @@
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo "Oh My Zsh is not installed. Installing..."
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-    # TODO - nao est[a instalando
 else
     echo "Oh My Zsh is already installed."
 fi
@@ -16,7 +15,7 @@ cd fonts
 ./install.sh
 cd ..
 rm -rf fonts
-echo "Powerline Fonts installed.
+echo "Powerline Fonts installed."
 
 # Altera o tema do Oh My Zsh para Agnoster
 echo "Changing Oh My Zsh theme to Agnoster..."
