@@ -33,7 +33,6 @@ start_apps_windows() {
 
 # Main function to start development applications
 main() {
-    echo "Calling choose_os function..."
     os_choice=$(choose_os)
     echo "Operating system chosen: $os_choice"
 
