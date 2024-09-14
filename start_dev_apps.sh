@@ -1,35 +1,32 @@
 #!/bin/bash
 
+# Function to print and execute a script
+execute_script() {
+    local script_path="$1"
+    echo "Executing: $script_path"
+    $script_path
+}
+
 # Function to start development applications on macOS
 start_apps_mac() {
-    echo "Executing: ./github/connect_git_ssh_account.sh"
-    ./github/connect_git_ssh_account.sh
-    echo "Executing: ./mac/close_apps.sh"
-    ./mac/close_apps.sh
-    echo "Executing: ./mac/open_apps.sh"
-    ./mac/open_apps.sh
+    execute_script "./github/connect_git_ssh_account.sh"
+    execute_script "./mac/close_apps.sh"
+    execute_script "./mac/open_apps.sh"
 }
 
 # Function to start development applications on Linux
 start_apps_linux() {
-    echo "Executing: ./github/connect_git_ssh_account.sh"
-    ./github/connect_git_ssh_account.sh
-    echo "Executing: ./linux/close_apps.sh"
-    ./linux/close_apps.sh
-    echo "Executing: ./linux/open_apps.sh"
-    ./linux/open_apps.sh
+    execute_script "./github/connect_git_ssh_account.sh"
+    execute_script "./linux/close_apps.sh"
+    execute_script "./linux/open_apps.sh"
 }
 
 # Function to start development applications on Windows
 start_apps_windows() {
-    echo "Executing: ./github/connect_git_ssh_account.sh"
-    ./github/connect_git_ssh_account.sh
-    echo "Executing: ./windows/close_apps.sh"
-    ./windows/close_apps.sh
-    echo "Executing: ./windows/start_dev_apps.bat"
-    ./windows/start_dev_apps.bat
-    echo "Executing: ./windows/open_apps.bat"
-    ./windows/open_apps.bat
+    execute_script "./github/connect_git_ssh_account.sh"
+    execute_script "./windows/close_apps.sh"
+    execute_script "./windows/start_dev_apps.bat"
+    execute_script "./windows/open_apps.bat"
 }
 
 # Function to detect the operating system and execute the corresponding script
