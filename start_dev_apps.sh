@@ -15,6 +15,7 @@ start_apps_mac() {
     execute_script "./mac/close_apps.sh"
     execute_script "./github/connect_git_ssh_account.sh"
     execute_script "./mac/open_apps.sh"
+    execute_script "./mac/open_terminal_tabs.sh"
 }
 
 # Function to start development applications on Linux
@@ -22,6 +23,7 @@ start_apps_linux() {
     execute_script "./linux/close_apps.sh"
     execute_script "./github/connect_git_ssh_account.sh"
     execute_script "./linux/open_apps.sh"
+    execute_script "./linux/open_terminal_tabs.sh"
 }
 
 # Function to start development applications on Windows
@@ -29,6 +31,7 @@ start_apps_windows() {
     execute_script "./windows/close_apps.sh"
     execute_script "./github/connect_git_ssh_account.sh"
     execute_script "./windows/open_apps.bat"
+    execute_script "./windows/open_terminal_tabs.bat"
 }
 
 # Main function to start development applications
