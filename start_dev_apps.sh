@@ -5,7 +5,6 @@ start_apps_mac() {
     ./github/connect_git_ssh_account.sh
     echo "Starting development applications for macOS..."
     ./mac/close_apps.sh
-    ./mac/start_dev_apps.sh
     ./mac/open_apps.sh
 }
 
@@ -14,7 +13,6 @@ start_apps_linux() {
     echo "Starting development applications for Linux..."
     ./github/connect_git_ssh_account.sh
     ./linux/close_apps.sh
-    ./linux/start_dev_apps.sh
     ./linux/open_apps.sh
 }
 
