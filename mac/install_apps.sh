@@ -27,6 +27,36 @@ install_if_not_installed() {
     else
         echo "Installing $name..."
         brew install $brew_name
+        # Call the corresponding setup script if it exists
+        if [ -f "$(dirname "$0")/setup_${name}.sh" ]; then
+            read -p "Do you want to run the setup script for $name? (y/n): " choice
+            if [[ "$choice" =~ ^[Yy]$ ]]; then
+                echo "Running setup script for $name..."
+                "$(dirname "$0")/setup_${name}.sh"
+            fi
+        fi
+    fi
+}
+
+# Function to install cask software if it's not already installed
+install_cask_if_not_installed() {
+    local name="$1"
+    local cask_name="${2:-$1}"
+
+    # Check if the software is already installed
+    if brew list --cask | grep -q "^${cask_name}\$"; then
+        echo "$name is already installed."
+    else
+        echo "Installing $name..."
+        brew install --cask $cask_name
+        # Call the corresponding setup script if it exists
+        if [ -f "$(dirname "$0")/setup_${name}.sh" ]; then
+            read -p "Do you want to run the setup script for $name? (y/n): " choice
+            if [[ "$choice" =~ ^[Yy]$ ]]; then
+                echo "Running setup script for $name..."
+                "$(dirname "$0")/setup_${name}.sh"
+            fi
+        fi
     fi
 }
 
@@ -68,6 +98,11 @@ main() {
             install_if_not_installed "$app"
         fi
     done
+
+    # Install additional applications
+    install_cask_if_not_installed "Trello" "trello"
+    install_cask_if_not_installed "WhatsApp" "whatsapp"
+    install_if_not_installed "Python" "python"
 
     # Clean up Homebrew caches, etc, after installation
     brew cleanup
