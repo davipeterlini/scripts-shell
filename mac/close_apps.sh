@@ -47,7 +47,7 @@ main() {
     if [ -z "$project_dir" ]; then
         # Load environment variables and list projects
         load_env
-        list_identities
+        list_projects
         echo
         read -p "Please choose a project by number: " PROJECT_NUMBER
 

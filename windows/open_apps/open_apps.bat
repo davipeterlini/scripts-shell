@@ -16,15 +16,9 @@ set apps=%APPS_TO_OPEN_WORK%
 
 for %%a in (!apps!) do (
     if "%%a"=="Google Chrome" (
-        :: Check for Chrome profile
-        set profile_var=CHROME_PROFILE_WORK
-        set profile=!%profile_var%!
-        call open_chrome_profile.bat !profile!
+        call open_chrome_profile.bat %PROJECT_DIR_WORK%
     ) else if "%%a"=="Postman" (
-        :: Check for Postman profile
-        set profile_var=POSTMAN_PROFILE_WORK
-        set profile=!%profile_var%!
-        call open_postman_profile.bat !profile!
+        call open_postman_profile.bat %PROJECT_DIR_WORK%
     ) else (
         call :open_app "%%a"
     )
