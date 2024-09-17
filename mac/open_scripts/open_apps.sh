@@ -81,6 +81,11 @@ main() {
                 local profile_var="CHROME_PROFILE_${project_dir}"
                 local profile=$(eval echo \${$profile_var})
                 "$(dirname "$0")/open_chrome_profile.sh" "$profile"
+            elif [ "$app" == "Postman" ]; then
+                # Check for Postman profile
+                local profile_var="POSTMAN_PROFILE_${project_dir}"
+                local profile=$(eval echo \${$profile_var})
+                "$(dirname "$0")/open_postman_profile.sh" "$profile"
             else
                 open_app "$app"
             fi
