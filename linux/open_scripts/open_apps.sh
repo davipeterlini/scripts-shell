@@ -76,7 +76,14 @@ main() {
         # Remove leading and trailing spaces
         app=$(echo "$app" | xargs)
         if [ -n "$app" ]; then
-            open_app "$app"
+            if [ "$app" == "Google Chrome" ]; then
+                # Check for Chrome profile
+                local profile_var="CHROME_PROFILE_${project_dir}"
+                local profile=$(eval echo \${$profile_var})
+                "$(dirname "$0")/open_chrome_profile.sh" "$profile"
+            else
+                open_app "$app"
+            fi
         fi
     done
 
