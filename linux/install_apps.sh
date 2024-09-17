@@ -57,6 +57,15 @@ install_cleanup() {
         echo "No file to process, attempting to install $name using apt-get..."
         sudo apt-get install -y "$name"
     fi
+
+    # Call the corresponding setup script if it exists
+    if [ -f "$(dirname "$0")/setup_${name}.sh" ]; then
+        read -p "Do you want to run the setup script for $name? (y/n): " choice
+        if [[ "$choice" =~ ^[Yy]$ ]]; then
+            echo "Running setup script for $name..."
+            "$(dirname "$0")/setup_${name}.sh"
+        fi
+    fi
 }
 
 check_install() {
@@ -200,19 +209,15 @@ install_go() {
     export_path_profile "usr/local/go/bin"
 }
 
-# TODO - ver instalação antiga 
-    # echo "Check de Last Release - https://www.spotify.com/br-pt/download/linux/"
-    # curl -sS https://download.spotify.com/debian/pubkey_6224F9941A8AA6D1.gpg
-    # sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
-    # echo "deb http://repository.spotify.com stable non-free"
-    # sudo tee /etc/apt/sources.list.d/spotify.list
-    # curl -sS https://download.spotify.com/debian/pubkey_0D811D58.gpg
-    # sudo apt-key add - echo "deb http://repository.spotify.com stable non-free"
-    # sudo tee /etc/apt/sources.list.d/spotify.list
-    # sudo apt-get update && sudo apt-get install spotify-client
-install_spotify() {
-    DESCRIPTION="Installing Spotify... - Check de Last Release - https://www.spotify.com/br-pt/download/android/"
-    URL=""
+install_trello() {
+    DESCRIPTION="Installing Trello..."
+    URL="https://downloads.trello.com/desktop/linux/deb"
+    download_install_cleanup "$DESCRIPTION" "$URL"
+}
+
+install_whatsapp() {
+    DESCRIPTION="Installing WhatsApp..."
+    URL="https://web.whatsapp.com/desktop/linux/release/x64"
     download_install_cleanup "$DESCRIPTION" "$URL"
 }
 
@@ -228,6 +233,8 @@ main() {
     install_vscode
     install_flutter
     install_go
+    install_trello
+    install_whatsapp
     #install_spotify
 }
 

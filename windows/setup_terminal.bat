@@ -25,3 +25,12 @@ set tabs=(
 for %%a in %tabs% do (
     call :open_terminal_tab "%%a"
 )
+
+:: Call the corresponding setup script if it exists
+if exist "%~dp0setup_terminal.bat" (
+    set /p choice="Do you want to run the setup script for terminal? (y/n): "
+    if /i "%choice%"=="y" (
+        echo Running setup script for terminal...
+        call "%~dp0setup_terminal.bat"
+    )
+)
