@@ -27,14 +27,16 @@ for %%a in (!apps!) do (
 :: Open terminal tabs
 call open_terminal_tabs.bat %PROJECT_DIR_WORK%
 
-:: Execute all other open scripts in the open_apps directory
+:: Execute all other open scripts in the open_apps directory if their respective apps are in the list
 for %%f in ("%~dp0*.bat") do (
     if not "%%~nxf"=="%~nx0" (
-        echo Executing %%~nxf
-        call "%%~dpnx0" %PROJECT_DIR_WORK%
+        set script_name=%%~nf
+        set app_name=!script_name:open_=!
+        set app_name=!app_name:_= !
+        if "!apps!"=="!app_name!" (
+            echo Executing %%~nxf
+            call "%%~dpnx0" %PROJECT_DIR_WORK%
+        )
     )
 )
-
-:: Call open_meld_comparison.bat separately
-call open_meld_comparison.bat
 endlocal
