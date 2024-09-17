@@ -7,8 +7,7 @@ source "$(dirname "$0")/utils/choose_os.sh"
 execute_script() {
     local script_path="$1"
     local message="$2"
-    echo "$message"
-    echo "Executing: $script_path"
+    echo "$message -> $script_path"
     $script_path
 }
 
@@ -17,7 +16,6 @@ start_apps_mac() {
     execute_script "./mac/close_apps.sh" "Close apps"
     execute_script "./github/connect_git_ssh_account.sh" "Connect Git SSH account"
     execute_script "./mac/open_scripts/open_apps.sh" "Open apps"
-    execute_script "./mac/open_scripts/open_terminal_tabs.sh" "Open terminal tabs"
 }
 
 # Function to start development applications on Linux
