@@ -2,6 +2,7 @@
 
 # Load the function to load environment variables
 source "$(dirname "$0")/../../utils/load_env.sh"
+source "$(dirname "$0")/../../utils/list_projects.sh"
 
 # Function to check if an application is running
 is_app_running() {
@@ -30,12 +31,26 @@ main() {
     local project_dir="$1"
 
     if [ -z "$project_dir" ]; then
-        echo "No project directory specified. Exiting..."
-        exit 1
-    fi
+        # Load environment variables and list projects
+        load_env
+        list_projects
+        echo
+        read -p "Please choose a project by number: " PROJECT_NUMBER
 
-    # Load environment variables
-    load_env
+        local index=1
+        for identity in $(env | grep '^PROJECT_DIR_' | sed 's/^PROJECT_DIR_//' | sed 's/=.*//'); do
+            if [ "$index" -eq "$PROJECT_NUMBER" ]; then
+                project_dir=$(echo $identity | tr '[:lower:]' '[:upper:]')
+                break
+            fi
+            index=$((index + 1))
+        done
+
+        if [ -z "$project_dir" ]; then
+            echo "Invalid choice. Exiting..."
+            exit 1
+        fi
+    fi
 
     # Extract the Postman profile from the project-specific variable
     local profile_var="POSTMAN_PROFILE_${project_dir}"
