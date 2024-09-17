@@ -91,11 +91,14 @@ main() {
 
     # Execute all other open scripts in the open_apps directory
     for script in "$(dirname "$0")"/*.sh; do
-        if [ "$script" != "$(realpath "$0")" ]; then
+        if [ "$script" != "$(realpath "$0")" ] && [ "$script" != "$(dirname "$0")/open_meld_comparison.sh" ]; then
             echo "Executing $script"
             "$script" "$project_dir"
         fi
     done
+
+    # Call open_meld_comparison.sh separately
+    "$(dirname "$0")/open_meld_comparison.sh"
 }
 
 # Execute the main function with the provided argument
