@@ -15,7 +15,14 @@ setlocal enabledelayedexpansion
 set apps=%APPS_TO_OPEN_WORK%
 
 for %%a in (!apps!) do (
-    call :open_app "%%a"
+    if "%%a"=="Google Chrome" (
+        :: Check for Chrome profile
+        set profile_var=CHROME_PROFILE_WORK
+        set profile=!%profile_var%!
+        call open_chrome_profile.bat !profile!
+    ) else (
+        call :open_app "%%a"
+    )
 )
 
 :: Open terminal tabs
