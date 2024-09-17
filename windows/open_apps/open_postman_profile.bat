@@ -44,3 +44,8 @@ if "%profile%"=="" (
 )
 
 call :open_postman_with_profile "%profile%"
+
+:: Execute the main function if the script is run directly
+if "%~0"=="%~f0" (
+    call :main %*
+)
