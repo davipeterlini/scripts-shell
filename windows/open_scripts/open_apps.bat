@@ -17,4 +17,7 @@ set apps=%APPS_TO_OPEN_WORK%
 for %%a in (!apps!) do (
     call :open_app "%%a"
 )
+
+:: Open terminal tabs
+call open_terminal_tabs.bat %PROJECT_DIR_WORK%
 endlocal
