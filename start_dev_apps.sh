@@ -15,21 +15,21 @@ execute_script() {
 start_apps_mac() {
     execute_script "./mac/close_apps.sh" "Close apps"
     execute_script "./github/connect_git_ssh_account.sh" "Connect Git SSH account"
-    execute_script "./mac/open_scripts/open_apps.sh" "Open apps"
+    execute_script "./mac/open_apps/open_apps.sh" "Open apps"
 }
 
 # Function to start development applications on Linux
 start_apps_linux() {
     execute_script "./linux/close_apps.sh" "Close apps"
     execute_script "./github/connect_git_ssh_account.sh" "Connect Git SSH account"
-    execute_script "./linux/open_scripts/open_apps.sh" "Open apps"
+    execute_script "./linux/open_apps/open_apps.sh" "Open apps"
 }
 
 # Function to start development applications on Windows
 start_apps_windows() {
     execute_script "./windows/close_apps.sh" "Close apps"
     execute_script "./github/connect_git_ssh_account.sh" "Connect Git SSH account"
-    execute_script "./windows/open_scripts/open_apps.bat" "Open apps"
+    execute_script "./windows/open_apps/open_apps.bat" "Open apps"
 }
 
 # Function to detect the operating system and execute the corresponding script
