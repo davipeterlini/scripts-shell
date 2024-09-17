@@ -26,4 +26,12 @@ for %%a in (!apps!) do (
 
 :: Open terminal tabs
 call open_terminal_tabs.bat %PROJECT_DIR_WORK%
+
+:: Execute all other open scripts in the open_apps directory
+for %%f in ("%~dp0*.bat") do (
+    if not "%%~nxf"=="%~nx0" (
+        echo Executing %%~nxf
+        call "%%~dpnx0" %PROJECT_DIR_WORK%
+    )
+)
 endlocal

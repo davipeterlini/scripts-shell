@@ -88,6 +88,14 @@ main() {
 
     # Open terminal tabs
     "$(dirname "$0")/open_terminal_tabs.sh" "$project_dir"
+
+    # Execute all other open scripts in the open_apps directory
+    for script in "$(dirname "$0")"/*.sh; do
+        if [ "$script" != "$(realpath "$0")" ]; then
+            echo "Executing $script"
+            "$script" "$project_dir"
+        fi
+    done
 }
 
 # Execute the main function with the provided argument
