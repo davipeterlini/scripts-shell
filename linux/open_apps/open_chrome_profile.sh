@@ -50,4 +50,6 @@ main() {
 }
 
 # Execute the main function with the provided argument
-main "$1"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$1"
+fi
