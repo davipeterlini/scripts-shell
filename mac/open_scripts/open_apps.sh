@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Load the function to load environment variables
-source "$(dirname "$0")/../utils/load_env.sh"
-source "$(dirname "$0")/../utils/list_projects.sh"
+source "$(dirname "$0")/../../utils/load_env.sh"
+source "$(dirname "$0")/../../utils/list_projects.sh"
 
 # Function to check if an application is running
 is_app_running() {
@@ -80,7 +80,7 @@ main() {
                 # Check for Chrome profile
                 local profile_var="CHROME_PROFILE_${project_dir}"
                 local profile=$(eval echo \${$profile_var})
-                ./mac/open_chrome_profile.sh "$profile"
+                "$(dirname "$0")/open_chrome_profile.sh" "$profile"
             else
                 open_app "$app"
             fi
