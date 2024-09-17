@@ -44,7 +44,7 @@ main() {
     if [ -z "$project_dir" ]; then
         # Load environment variables and list projects
         load_env
-        list_identities
+        list_projects
         echo
         read -p "Please choose a project by number: " PROJECT_NUMBER
 
@@ -77,15 +77,9 @@ main() {
         app=$(echo "$app" | xargs)
         if [ -n "$app" ]; then
             if [ "$app" == "Google Chrome" ]; then
-                # Check for Chrome profile
-                local profile_var="CHROME_PROFILE_${project_dir}"
-                local profile=$(eval echo \${$profile_var})
-                "$(dirname "$0")/open_chrome_profile.sh" "$profile"
+                "$(dirname "$0")/open_chrome_profile.sh" "$project_dir"
             elif [ "$app" == "Postman" ]; then
-                # Check for Postman profile
-                local profile_var="POSTMAN_PROFILE_${project_dir}"
-                local profile=$(eval echo \${$profile_var})
-                "$(dirname "$0")/open_postman_profile.sh" "$profile"
+                "$(dirname "$0")/open_postman_profile.sh" "$project_dir"
             else
                 open_app "$app"
             fi

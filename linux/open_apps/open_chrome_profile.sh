@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Load the function to load environment variables
+source "$(dirname "$0")/../../utils/load_env.sh"
+
 # Function to check if an application is running
 is_app_running() {
     local app_name="$1"
@@ -24,10 +27,22 @@ open_chrome_with_profile() {
 
 # Main function to open Google Chrome with the specified profile
 main() {
-    local profile="$1"
+    local project_dir="$1"
+
+    if [ -z "$project_dir" ]; then
+        echo "No project directory specified. Exiting..."
+        exit 1
+    fi
+
+    # Load environment variables
+    load_env
+
+    # Extract the Chrome profile from the project-specific variable
+    local profile_var="CHROME_PROFILE_${project_dir}"
+    local profile=$(eval echo \${$profile_var})
 
     if [ -z "$profile" ]; then
-        echo "No profile specified. Exiting..."
+        echo "No profile found for project $project_dir. Exiting..."
         exit 1
     fi
 

@@ -1,5 +1,8 @@
 @echo off
 
+:: Load environment variables from .env file
+for /f "tokens=1,* delims==" %%a in ('type .env') do set %%a=%%b
+
 :: Function to check if an application is running
 :is_app_running
 set app_name=%1
@@ -24,10 +27,19 @@ if "%ERRORLEVEL%"=="0" (
 exit /b
 
 :: Main function to open Postman with the specified profile
-set profile=%1
+set project_dir=%1
+
+if "%project_dir%"=="" (
+    echo No project directory specified. Exiting...
+    exit /b 1
+)
+
+:: Extract the Postman profile from the project-specific variable
+set profile_var=POSTMAN_PROFILE_%project_dir%
+set profile=!%profile_var%!
 
 if "%profile%"=="" (
-    echo No profile specified. Exiting...
+    echo No profile found for project %project_dir%. Exiting...
     exit /b 1
 )
 

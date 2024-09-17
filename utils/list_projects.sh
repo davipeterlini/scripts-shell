@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Function to display available identities
-list_identities() {
+# Function to display available projects
+list_projects() {
   echo "Available Projects:"
   local index=1
   for identity in $(env | grep '^PROJECT_DIR_' | sed 's/^PROJECT_DIR_//' | sed 's/=.*//'); do

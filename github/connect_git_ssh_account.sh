@@ -8,12 +8,12 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 source "$SCRIPT_DIR/../utils/load_env.sh"
 load_env
 
-# Load the list_identities function from the new script
+# Load the list_projects function from the new script
 source "$SCRIPT_DIR/../utils/list_projects.sh"
 
 # Function to prompt user to choose an identity
 choose_identity() {
-  list_identities
+  list_projects
   echo
   read -p "Please choose an identity by number: " IDENTITY_NUMBER
 
