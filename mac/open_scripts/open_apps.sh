@@ -86,6 +86,9 @@ main() {
             fi
         fi
     done
+
+    # Open terminal tabs
+    "$(dirname "$0")/open_terminal_tabs.sh" "$project_dir"
 }
 
 # Execute the main function with the provided argument
