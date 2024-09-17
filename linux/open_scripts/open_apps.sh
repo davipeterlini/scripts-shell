@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Load the function to load environment variables
-source "$(dirname "$0")/../utils/load_env.sh"
-source "$(dirname "$0")/../utils/list_projects.sh"
+source "$(dirname "$0")/../../utils/load_env.sh"
+source "$(dirname "$0")/../../utils/list_projects.sh"
 
 # Function to check if an application is running
 is_app_running() {
@@ -72,13 +72,16 @@ main() {
     # Start Docker if it's in the list of apps to open
     start_docker_if_needed "${apps_array[@]}"
 
-    for app in "${apps_array[@]}"; do
+    for app in "${apps_array[@]}"]; do
         # Remove leading and trailing spaces
         app=$(echo "$app" | xargs)
         if [ -n "$app" ]; then
             open_app "$app"
         fi
     done
+
+    # Open terminal tabs
+    "$(dirname "$0")/open_terminal_tabs.sh" "$project_dir"
 }
 
 # Execute the main function with the provided argument

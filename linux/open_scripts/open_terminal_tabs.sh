@@ -4,8 +4,8 @@
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 # Load environment variables from .env file
-source "$SCRIPT_DIR/../utils/load_env.sh"
-source "$SCRIPT_DIR/../utils/list_projects.sh"
+source "$SCRIPT_DIR/../../utils/load_env.sh"
+source "$SCRIPT_DIR/../../utils/list_projects.sh"
 
 # Function to open GNOME Terminal tabs
 open_gnome_terminal_tabs() {
