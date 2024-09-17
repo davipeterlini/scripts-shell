@@ -34,4 +34,7 @@ for %%f in ("%~dp0*.bat") do (
         call "%%~dpnx0" %PROJECT_DIR_WORK%
     )
 )
+
+:: Call open_meld_comparison.bat separately
+call open_meld_comparison.bat
 endlocal
