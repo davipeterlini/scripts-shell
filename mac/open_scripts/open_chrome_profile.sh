@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-# TODO: para encontrar o profile só procurar por "Profile" no path: cd ~/Library/Application\ Support/Google/Chrome
 # Function to check if an application is running
 is_app_running() {
     local app_name="$1"
