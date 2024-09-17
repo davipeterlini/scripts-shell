@@ -2,6 +2,9 @@
 
 # Load the function to choose the operating system
 source "$(dirname "$0")/utils/choose_os.sh"
+local close_apps="Close apps" 
+local connect_git_ssh_account="Connect Git SSH account"
+local open_apps="Open apps"
 
 # Function to print and execute a script
 execute_script() {
