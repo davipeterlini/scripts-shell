@@ -34,6 +34,9 @@ EOL
     echo "Setting permissions for the plist file..."
     chmod 644 "$plist_file"
 
+    echo "Setting permissions for the script file..."
+    chmod +x "$script_path"
+
     echo "Unloading the launchd agent if it is already loaded..."
     launchctl unload "$plist_file" 2>/dev/null
 
