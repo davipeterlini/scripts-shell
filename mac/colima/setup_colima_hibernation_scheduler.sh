@@ -34,9 +34,6 @@ EOL
     echo "Setting permissions for the plist file..."
     chmod 644 "$plist_file"
 
-    echo "Setting permissions for the script file..."
-    chmod +x "$script_path"
-
     echo "Unloading the launchd agent if it is already loaded..."
     launchctl unload "$plist_file" 2>/dev/null
 
@@ -47,6 +44,12 @@ EOL
 # Main function to setup the launchd scheduler
 main() {
     create_launchd_config
+
+    # Copy the colima_hibernation.sh script to the user's home directory
+    cp "$(dirname "$0")/colima_hibernation.sh" "/Users/$(whoami)/colima_hibernation.sh"
+
+    # Set execute permissions for the colima_hibernation.sh script
+    chmod +x "/Users/$(whoami)/colima_hibernation.sh"
 }
 
 # Execute the main function
