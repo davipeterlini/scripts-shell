@@ -4,11 +4,11 @@
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 # Load environment variables from .env file
-source "$SCRIPT_DIR/../../utils/load_env.sh"
+source "$SCRIPT_DIR/../utils/load_env.sh"
 load_env
 
 # Load the list_projects function from the new script
-source "$SCRIPT_DIR/../../utils/list_projects.sh"
+source "$SCRIPT_DIR/../utils/list_projects.sh"
 
 # Function to prompt user to choose an identity
 choose_identity() {
@@ -87,7 +87,7 @@ add_identity() {
 load_env
 
 # Check if an identity is provided as an argument
-if [ "$#" -eq 1 ]; then
+if [ "$#" -eq 1]; then
   IDENTITY=$1
 else
   choose_identity
