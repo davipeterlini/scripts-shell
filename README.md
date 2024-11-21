@@ -36,3 +36,14 @@ ________________________________________________________________________________
 ```shell script
 ./linux/install_apps.sh
 ```
+
+______________________________________________________________________________________________________________________________
+
+## Bitbucket
+
+### generate_ssh_key_bitbucket.sh
+```shell script
+chmod +x grant_permissions.sh
+./grant_permissions.sh
+./bitbucket/outros/generate_ssh_key_bitbucket.sh
+```
