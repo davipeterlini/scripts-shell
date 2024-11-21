@@ -87,7 +87,7 @@ add_identity() {
 load_env
 
 # Check if an identity is provided as an argument
-if [ "$#" -eq 1]; then
+if [ "$#" -eq 1 ]; then
   IDENTITY=$1
 else
   choose_identity
