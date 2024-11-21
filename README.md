@@ -47,3 +47,24 @@ chmod +x grant_permissions.sh
 ./grant_permissions.sh
 ./bitbucket/outros/generate_ssh_key_bitbucket.sh
 ```
+
+### connect_bitbucket_ssh_account.sh
+```shell script
+chmod +x grant_permissions.sh
+./grant_permissions.sh
+./bitbucket/connect_bitbucket_ssh_account.sh
+```
+
+### setup_multiple_bitbucket_accounts.sh
+```shell script
+chmod +x grant_permissions.sh
+./grant_permissions.sh
+./bitbucket/setup_multiple_bitbucket_accounts.sh
+```
+
+### ssh_multiple_bitbucket_accounts.sh
+```shell script
+chmod +x grant_permissions.sh
+./grant_permissions.sh
+./bitbucket/ssh_multiple_bitbucket_accounts.sh
+```
