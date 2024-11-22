@@ -1,10 +1,13 @@
 #!/bin/bash
 
+# Declare the repository manager
+REPO_MANAGER="bitbucket"
+
 # Function to generate SSH key for a given email and label
 generate_ssh_key() {
     local email="$1"
     local label="$2"
-    local key_path="$HOME/.ssh/id_rsa_$label"
+    local key_path="$HOME/.ssh/id_rsa_${REPO_MANAGER}_$label"
 
     if [[ -f "$key_path" ]]; then
         echo "SSH key for $label already exists."
@@ -21,14 +24,14 @@ generate_ssh_key() {
 # Function to configure SSH config file
 configure_ssh_config() {
     local label="$1"
-    local key_path="$HOME/.ssh/id_rsa_$label"
+    local key_path="$HOME/.ssh/id_rsa_${REPO_MANAGER}_$label"
 
-    if ! grep -q "Host bitbucket.org-$label" ~/.ssh/config; then
+    if ! grep -q "Host ${REPO_MANAGER}.org-$label" ~/.ssh/config; then
         echo "Configuring SSH for $label..."
         cat >> ~/.ssh/config <<EOL
 
-Host bitbucket.org-$label
-    HostName bitbucket.org
+Host ${REPO_MANAGER}.org-$label
+    HostName ${REPO_MANAGER}.org
     User git
     IdentityFile $key_path
 EOL
@@ -53,11 +56,11 @@ generate_add_identity_script() {
     local label="$1"
     local email="$2"
     local token_var="BITBUCKET_TOKEN_${label^^}"  # Convert label to uppercase for the token variable
-    local ssh_key="$HOME/.ssh/id_rsa_$label"
+    local ssh_key="$HOME/.ssh/id_rsa_${REPO_MANAGER}_$label"
 
     cat > "add_identity_${label}.sh" <<EOL
 #!/bin/bash
-./add_identity.sh $label $ssh_key $token_var
+./add_identity.sh $label $ssh_key \$$token_var
 EOL
 
     chmod +x "add_identity_${label}.sh"
