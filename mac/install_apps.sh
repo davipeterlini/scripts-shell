@@ -95,14 +95,14 @@ main() {
         # Remove leading and trailing spaces
         app=$(echo "$app" | xargs)
         if [ -n "$app" ]; then
-            install_if_not_installed "$app"
+            if [[ "$app" == *"cask:"* ]]; then
+                app_name=$(echo "$app" | sed 's/cask://')
+                install_cask_if_not_installed "$app_name"
+            else
+                install_if_not_installed "$app"
+            fi
         fi
     done
-
-    # Install additional applications
-    install_cask_if_not_installed "Trello" "trello"
-    install_cask_if_not_installed "WhatsApp" "whatsapp"
-    install_if_not_installed "Python" "python"
 
     # Clean up Homebrew caches, etc, after installation
     brew cleanup
