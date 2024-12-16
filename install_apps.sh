@@ -9,13 +9,40 @@ display_menu() {
     echo "$choices"
 }
 
+# Function to load environment variables from .env file
+load_env() {
+    if [ -f .env ]; then
+        export $(grep -v '^#' .env | xargs)
+    else
+        echo ".env file not found. Exiting..."
+        exit 1
+    fi
+}
+
+# Function to install apps on Linux
+install_apps_linux() {
+    local apps=("$@")
+    for app in "${apps[@]}"; do
+        sudo apt-get install -y "$app"
+    done
+}
+
+# Function to install apps on macOS
+install_apps_mac() {
+    local apps=("$@")
+    for app in "${apps[@]}"; do
+        brew install "$app"
+    done
+}
+
 # Function to install basic apps
 install_basic_apps() {
     echo "Installing basic apps..."
+    IFS=',' read -r -a basic_apps <<< "$INSTALL_APPS_BASIC"
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        ./linux/install_apps.sh
+        install_apps_linux "${basic_apps[@]}"
     elif [[ "$OSTYPE" == "darwin"* ]]; then
-        ./mac/install_apps.sh
+        install_apps_mac "${basic_apps[@]}"
     else
         echo "Unsupported OS."
         exit 1
@@ -25,10 +52,11 @@ install_basic_apps() {
 # Function to install development apps
 install_dev_apps() {
     echo "Installing development apps..."
+    IFS=',' read -r -a dev_apps <<< "$INSTALL_APPS_DEV"
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        ./linux/install_apps.sh dev
+        install_apps_linux "${dev_apps[@]}"
     elif [[ "$OSTYPE" == "darwin"* ]]; then
-        ./mac/install_apps.sh dev
+        install_apps_mac "${dev_apps[@]}"
     else
         echo "Unsupported OS."
         exit 1
@@ -36,6 +64,9 @@ install_dev_apps() {
 }
 
 main() {
+    # Load environment variables
+    load_env
+
     # Check if dialog is installed
     if ! command -v dialog &> /dev/null; then
         echo "dialog is not installed. Installing dialog..."
