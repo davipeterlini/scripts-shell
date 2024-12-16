@@ -3,16 +3,19 @@
 # Function to install apps on macOS
 install_apps_mac() {
     echo "Starting installation of apps for macOS..."
-    ./mac/install_apps.sh
     ./mac/setup_iterm.sh
-    ./mac/setup_docker.sh
-    ./vscode/install_plugins.sh
+    ./mac/install_apps.sh
+    ./mac/update_apps.sh
+    ./mac/setup_terminal.sh
+    #./mac/setup_docker.sh
+    #./vscode/install_plugins.sh
 }
 
 # Function to install apps on Linux (Debian-based)
 install_apps_linux() {
     echo "Starting installation of apps for Linux..."
     ./linux/install_apps.sh
+    ./linux/update_apps.sh
     ./linux/setup_terminal.sh
     ./linux/setup_docker.sh
     ./vscode/install_plugins.sh
