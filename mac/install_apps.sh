@@ -4,17 +4,20 @@
 source "$(dirname "$0")/../utils/load_env.sh"
 source "$(dirname "$0")/../utils/list_projects.sh"
 
-# Check if Homebrew is installed, install if not
-if ! command -v brew >/dev/null 2>&1; then
-    echo "Homebrew not found. Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-else
-    echo "Homebrew is already installed."
-fi
+# Function to install Homebrew if not installed and update it
+install_and_update_homebrew() {
+    # Check if Homebrew is installed, install if not
+    if ! command -v brew >/dev/null 2>&1; then
+        echo "Homebrew not found. Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    else
+        echo "Homebrew is already installed."
+    fi
 
-# Update Homebrew
-brew update --auto-update
-brew update
+    # Update Homebrew
+    brew update --auto-update
+    brew update
+}
 
 # Function to install software if it's not already installed
 install_if_not_installed() {
@@ -84,6 +87,9 @@ main() {
             exit 1
         fi
     fi
+
+    # Install and update Homebrew
+    install_and_update_homebrew
 
     # Extract applications from the project-specific variable
     local apps_var="APPS_TO_INSTALL_${project_dir}"
