@@ -16,11 +16,11 @@ brew install --cask iterm2
 #osascript iterm/create_profile.scpt
 echo "Note: Create profile and set as default of this iTerm2 must be done manually."
 
-# Download Themas
+# Download Themes
 curl -o ~/Downloads/material-design-colors.itermcolors https://raw.githubusercontent.com/MartinSeeler/iterm2-material-design/master/material-design-colors.itermcolors
 #curl -o ~/Downloads/solarized.itermcolors https://raw.githubusercontent.com/altercation/solarized/master/iterm2-colors-solarized/Solarized%20Dark.itermcolors
 echo "Note: The import of this iTerm2 theme must be done manually."
 
-# Clona e instala as fontes Powerline
+# Clone and install Powerline fonts
 git clone https://github.com/powerline/fonts.git && cd fonts && ./install.sh
 echo "Note: After installation, you need to manually set the font in iTerm2 to 'Meslo LG L for Powerline'."
