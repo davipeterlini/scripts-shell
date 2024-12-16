@@ -21,15 +21,15 @@ fi
 #git clone https://github.com/powerline/fonts.git && cd fonts && ./install.sh
 #echo "Note: After installation, you need to manually set the font in iTerm2 to 'Meslo LG L for Powerline'."
 
-# Modifica o arquivo .zshrc para usar o tema 'agnoster'
+# Modify the .zshrc file to use the 'agnoster' theme
 sed -i '' 's/ZSH_THEME="robbyrussell"/# ZSH_THEME="robbyrussell"\nZSH_THEME="agnoster"/' ~/.zshrc
 
-# Adiciona o trecho de código abaixo da linha 'ZSH_THEME="agnoster"' do arquivo .zshrc
+# Add the code snippet below the line 'ZSH_THEME="agnoster"' in the .zshrc file
 cat << 'EOF' >> ~/.zshrc
 autoload -Uz vcs_info
 precmd() { vcs_info }
 
-# Função para obter o nome da pasta raiz do repositório Git
+# Function to get the root directory name of the Git repository
 function git_prompt_dir() {
     local dir
     dir=$(git rev-parse --show-toplevel 2> /dev/null)
@@ -37,40 +37,40 @@ function git_prompt_dir() {
         local repo_name=$(basename "$dir")
         local relative_path=${PWD#$dir/}
 
-        # Se estiver na raiz do repositório, não exibe o nome do repositório
+        # If in the root of the repository, do not display the repository name
         if [ -z "$relative_path" ]; then
             echo "→ "
         else
-            # Caso contrário, exibe a pasta da raiz e a parte relevante do caminho
+            # Otherwise, display the root folder and the relevant part of the path
             local current_dir=$(basename "$relative_path")
             echo "%F{blue}${repo_name}%f → %F{red}${current_dir}%f → "
         fi
     else
-        # Se não estiver em um repositório Git, exibe o caminho completo
+        # If not in a Git repository, display the full path
         echo "$PWD"
     fi
 }
 
-# Função para obter apenas o nome da branch
+# Function to get only the branch name
 function get_branch_name() {
     local branch_name
     branch_name=$(git symbolic-ref --short HEAD 2> /dev/null)
     echo "$branch_name"
 }
 
-# Definindo cores
-RESET_COLOR="%f"  # Reseta a cor
-BRANCH_COLOR_GREEN="%F{green}"  # Cor da branch se não houver alterações
-BRANCH_COLOR_YELLOW="%F{yellow}"  # Cor da branch se houver alterações
+# Define colors
+RESET_COLOR="%f"  # Reset color
+BRANCH_COLOR_GREEN="%F{green}"  # Branch color if no changes
+BRANCH_COLOR_YELLOW="%F{yellow}"  # Branch color if there are changes
 
-# Função para determinar a cor da branch
+# Function to determine the branch color
 function get_branch_color() {
     local git_status
     git_status=$(git status --porcelain 2> /dev/null)
     if [ -n "$git_status" ]; then
-        echo "${BRANCH_COLOR_YELLOW}"  # Se houver alterações, amarelo
+        echo "${BRANCH_COLOR_YELLOW}"  # If there are changes, yellow
     else
-        echo "${BRANCH_COLOR_GREEN}"  # Se não houver alterações, verde
+        echo "${BRANCH_COLOR_GREEN}"  # If no changes, green
     fi
 }
 
