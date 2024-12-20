@@ -25,6 +25,7 @@ fi
 sed -i '' 's/ZSH_THEME="robbyrussell"/# ZSH_THEME="robbyrussell"\nZSH_THEME="agnoster"/' ~/.zshrc
 
 # Add the code snippet below the line 'ZSH_THEME="agnoster"' in the .zshrc file
+echo "" >> ~/.zshrc
 cat << 'EOF' >> ~/.zshrc
 autoload -Uz vcs_info
 precmd() { vcs_info }
