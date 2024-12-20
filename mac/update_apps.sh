@@ -97,6 +97,7 @@ main() {
         fi
     done
 
+    # TODO - remover hadr code e colocar no .env
     # Update additional applications
     update_cask_if_newer_version_available "Trello" "trello"
     update_cask_if_newer_version_available "WhatsApp" "whatsapp"
