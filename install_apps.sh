@@ -2,9 +2,10 @@
 
 # Function to display a menu using dialog
 display_menu() {
-    local choices=$(dialog --stdout --checklist "Select the type of apps to install:" 15 50 2 \
+    local choices=$(dialog --stdout --checklist "Select the type of apps to install:" 15 50 3 \
         1 "Basic Apps" on \
-        2 "Development Apps" off)
+        2 "Development Apps" off \
+        3 "All macOS Apps" off)
 
     echo "$choices"
 }
@@ -63,6 +64,13 @@ install_dev_apps() {
     fi
 }
 
+# Function to install all macOS apps
+install_all_mac_apps() {
+    echo "Installing all macOS apps..."
+    IFS=',' read -r -a mac_apps <<< "$APPS_TO_INSTALL_MAC"
+    install_apps_mac "${mac_apps[@]}"
+}
+
 main() {
     # Load environment variables
     load_env
@@ -88,6 +96,10 @@ main() {
 
     if [[ "$choices" == *"2"* ]]; then
         install_dev_apps
+    fi
+
+    if [[ "$choices" == *"3"* ]]; then
+        install_all_mac_apps
     fi
 }
 
