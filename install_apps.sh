@@ -29,10 +29,11 @@ install_apps_mac() {
 # Function to install basic apps
 install_basic_apps() {
     echo "Installing basic apps..."
-    IFS=',' read -r -a basic_apps <<< "$INSTALL_APPS_BASIC"
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        IFS=',' read -r -a basic_apps <<< "$INSTALL_APPS_BASIC_LINUX_APT"
         install_apps_linux "${basic_apps[@]}"
     elif [[ "$OSTYPE" == "darwin"* ]]; then
+        IFS=',' read -r -a basic_apps <<< "$INSTALL_APPS_BASIC_MAC"
         install_apps_mac "${basic_apps[@]}"
     else
         echo "Unsupported OS."
@@ -43,10 +44,11 @@ install_basic_apps() {
 # Function to install development apps
 install_dev_apps() {
     echo "Installing development apps..."
-    IFS=',' read -r -a dev_apps <<< "$INSTALL_APPS_DEV"
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        IFS=',' read -r -a dev_apps <<< "$INSTALL_APPS_BASIC_LINUX_APT_DEV"
         install_apps_linux "${dev_apps[@]}"
     elif [[ "$OSTYPE" == "darwin"* ]]; then
+        IFS=',' read -r -a dev_apps <<< "$INSTALL_APPS_DEV_MAC"
         install_apps_mac "${dev_apps[@]}"
     else
         echo "Unsupported OS."
@@ -58,7 +60,7 @@ install_dev_apps() {
 install_all_mac_apps() {
     echo "Installing all macOS apps..."
     IFS=',' read -r -a mac_apps <<< "$APPS_TO_INSTALL_MAC"
-        install_apps_mac "${mac_apps[@]}"
+    install_apps_mac "${mac_apps[@]}"
 }
 
 main() {
