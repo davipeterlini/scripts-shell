@@ -1,5 +1,12 @@
 Geral
 
+
+- Alterar a pasta de scripts dentro de cada SO
+
+
+- Arrumar script de install_apps e update_apps do linux
+
+- Executar os scripts separadamente para ver o comportamento
 - Unir os scripts de install_apps.sh 
 - Corrigir os scripts de Update 
   - Para atualizar o SO e os pacotes de instalação (bre update e apt-get update && apt-get upgrade)
