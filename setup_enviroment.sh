@@ -17,8 +17,8 @@ install_apps_linux() {
     ./linux/install_apps.sh
     ./linux/update_apps.sh
     ./linux/setup_terminal.sh
-    ./linux/setup_docker.sh
-    ./vscode/install_plugins.sh
+    #./linux/setup_docker.sh
+    #./vscode/install_plugins.sh
 }
 
 # Detect the operating system and execute the corresponding script
