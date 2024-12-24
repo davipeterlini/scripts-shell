@@ -10,12 +10,6 @@ display_menu() {
     echo "$choices"
 }
 
-# Function to load environment variables from .env file
-load_env() {
-    read -p "Enter the USER for the environment: " user
-    source "$(dirname "$0")/../utils/load_env.sh"
-    load_env "$user"
-}
 
 # Function to install apps on Linux
 install_apps_linux() {
@@ -48,6 +42,7 @@ install_all_linux_apps() {
 
 main() {
     # Load environment variables
+    source "$(dirname "$0")/utils/load_env.sh"
     load_env
 
     # Check if dialog is installed

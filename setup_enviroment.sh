@@ -44,13 +44,7 @@ detect_and_install_apps() {
     esac
 }
 
-# Prompt to update USER in .env
-update_user_in_env() {
-    read -p "Enter the USER for the environment: " user
-    source "$(dirname "$0")/utils/load_env.sh"
-    load_env "$user"
-}
-
 # Execute the script
-update_user_in_env
+source "$(dirname "$0")/utils/load_env.sh"
+load_env
 detect_and_install_apps
