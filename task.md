@@ -1,11 +1,17 @@
 Geral
 
-
+- Arrumar variável de ambient HOME no .env
+- Arrumar pastas dos SOs para colocar o que é de SETUP em setup 
+- Arrumar scripts do MAC - install_apps.sh (.env)
+- Arrumar scripts do MAC - update_apps.sh (.env)
 - Alterar a pasta de scripts dentro de cada SO
 
 
-- Arrumar script de install_apps e update_apps do linux
 
+- Criar o script de Teste
+
+- Arrumar script de install_apps e update_apps do linux
+- Se o .env.local não existir crie ele
 - Executar os scripts separadamente para ver o comportamento
 - Unir os scripts de install_apps.sh 
 - Corrigir os scripts de Update 
