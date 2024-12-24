@@ -14,6 +14,7 @@ display_menu() {
 install_apps_linux_apt() {
     local apps=("$@")
     for app in "${apps[@]}"; do
+        echo "Installing apt-get install -y $app..."
         sudo apt-get install -y "$app"
     done
 }
