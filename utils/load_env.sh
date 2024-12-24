@@ -33,14 +33,30 @@ set_home_based_on_os() {
   esac
 }
 
-# Function to update the .env file with the new HOME variable
-update_env_file() {
+# Function to update the .env file with the new HOME variable for macOS
+update_env_file_mac() {
   local env_file=$(find_env_file)
   if [ -f "$env_file" ]; then
     # Remove existing HOME definition if it exists
     sed -i '' '/^HOME=/d' "$env_file"
     # Insert the new HOME definition at the beginning of the file
     sed -i '' "1i\\
+HOME=\"$HOME\"
+" "$env_file"
+  else
+    echo ".env file not found. Exiting..."
+    exit 1
+  fi
+}
+
+# Function to update the .env file with the new HOME variable for Linux
+update_env_file_linux() {
+  local env_file=$(find_env_file)
+  if [ -f "$env_file" ]; then
+    # Remove existing HOME definition if it exists
+    sed -i '/^HOME=/d' "$env_file"
+    # Insert the new HOME definition at the beginning of the file
+    sed -i "1i\\
 HOME=\"$HOME\"
 " "$env_file"
   else
@@ -93,7 +109,11 @@ load_env() {
     read -p "Enter the USER for the environment: " user
     set_home_based_on_os "$user"
     # Update the .env file with the new HOME variable
-    update_env_file
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+      update_env_file_mac
+    else
+      update_env_file_linux
+    fi
   fi
 }
 
@@ -122,7 +142,11 @@ load_env_var() {
     # Set the HOME variable based on the operating system
     set_home_based_on_os "$user"
     # Update the .env file with the new HOME variable
-    update_env_file
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+      update_env_file_mac
+    else
+      update_env_file_linux
+    fi
   fi
 }
 
