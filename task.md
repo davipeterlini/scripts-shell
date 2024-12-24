@@ -2,6 +2,9 @@
   - ./repository/setup_multiple_repo_accounts.sh: line 102: Setting up multiple ${REPO_MANAGER^} accounts...: bad substitutio
 
 
+no script load_env.sh eu preciso que a função check_existing_home seja executada antes de tudo para que não seja exibido no terminal, quando o usuário estiver executando qualquer script que chame o load_env.sh, a pergunta: 
+
+
 - Os scripts da pasta BitBucket precisam ser alterados para serem genéricos e terem o seletor de manager repos
 - Os scripts precisa mudar de pasta e serem adicionados na pasta repo 
 - Remover o README da pasta bitbucket e levar para o README oficioal da aplicação as informaões desse README
