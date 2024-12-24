@@ -49,6 +49,23 @@ HOME=\"$HOME\"
   fi
 }
 
+# Function to check if HOME is already set in the .env file
+check_existing_home() {
+  local env_file=$(find_env_file)
+  if [ -f "$env_file" ]; then
+    existing_home=$(grep '^HOME=' "$env_file" | cut -d '=' -f2-)
+    if [ -n "$existing_home" ]; then
+      echo "Existing HOME found in .env: $existing_home"
+      read -p "Do you want to use the existing HOME? (y/n): " choice
+      if [ "$choice" == "y" ]; then
+        export HOME="$existing_home"
+        return 0
+      fi
+    fi
+  fi
+  return 1
+}
+
 # Function to load environment variables from .env and .env.local files
 load_env() {
   local user="$1"
@@ -69,11 +86,15 @@ load_env() {
   else
     echo ".env.local file not found. Make sure to create it for sensitive information."
   fi
-
-  # Set the HOME variable based on the operating system
-  set_home_based_on_os "$user"
-  # Update the .env file with the new HOME variable
-  update_env_file
+#TODO - problemas para definir o ;HOME no linux
+# TODO- corrigir para a verificação vir antes da mensagem
+  # Check if HOME is already set and ask the user if they want to use it
+  if ! check_existing_home; then
+    # Set the HOME variable based on the operating system
+    set_home_based_on_os "$user"
+    # Update the .env file with the new HOME variable
+    update_env_file
+  fi
 }
 
 # Function to load a specific environment variable from .env and .env.local files
@@ -96,10 +117,13 @@ load_env_var() {
     echo ".env.local file not found. Make sure to create it for sensitive information."
   fi
 
-  # Set the HOME variable based on the operating system
-  set_home_based_on_os "$user"
-  # Update the .env file with the new HOME variable
-  update_env_file
+  # Check if HOME is already set and ask the user if they want to use it
+  if ! check_existing_home; then
+    # Set the HOME variable based on the operating system
+    set_home_based_on_os "$user"
+    # Update the .env file with the new HOME variable
+    update_env_file
+  fi
 }
 
 # Function to load .env and .env.local files and then load a specific environment variable
