@@ -2,7 +2,7 @@
 
 # Load environment variables
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
-source "$SCRIPT_DIR/../utils/load_env.sh"
+source "$SCRIPT_DIR/../../utils/load_env.sh"
 load_env
 
 # Function to update cask applications if a newer version is available
