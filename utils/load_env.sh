@@ -38,9 +38,9 @@ update_env_file() {
   local env_file=$(find_env_file)
   if [ -f "$env_file" ]; then
     # Remove existing HOME definition if it exists
-    sed -i.bak '/^HOME=/d' "$env_file"
+    sed -i '/^HOME=/d' "$env_file"
     # Insert the new HOME definition at the beginning of the file
-    sed -i.bak "1i\HOME=\"$HOME\"\n" "$env_file"
+    sed -i "1i\HOME=\"$HOME\"\n" "$env_file"
   else
     echo ".env file not found. Exiting..."
     exit 1
