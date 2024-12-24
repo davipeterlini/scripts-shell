@@ -16,8 +16,38 @@ find_env_file() {
   echo ""
 }
 
+# Function to determine the operating system and set the HOME variable accordingly
+set_home_based_on_os() {
+  local user="$1"
+  case "$(uname -s)" in
+    Darwin)
+      export HOME="/Users/$user"
+      ;;
+    Linux)
+      export HOME="/home/$user"
+      ;;
+    *)
+      echo "Unsupported operating system."
+      exit 1
+      ;;
+  esac
+}
+
+# Function to update the .env file with the new HOME variable
+update_env_file() {
+  local env_file=$(find_env_file)
+  if [ -f "$env_file" ]; then
+    sed -i.bak '/^HOME=/d' "$env_file"
+    echo "HOME=\"$HOME\"" >> "$env_file"
+  else
+    echo ".env file not found. Exiting..."
+    exit 1
+  fi
+}
+
 # Function to load environment variables from .env and .env.local files
 load_env() {
+  local user="$1"
   local env_file=$(find_env_file)
   if [ -f "$env_file" ]; then
     set -a
@@ -35,11 +65,17 @@ load_env() {
   else
     echo ".env.local file not found. Make sure to create it for sensitive information."
   fi
+
+  # Set the HOME variable based on the operating system
+  set_home_based_on_os "$user"
+  # Update the .env file with the new HOME variable
+  update_env_file
 }
 
 # Function to load a specific environment variable from .env and .env.local files
 load_env_var() {
   local var_name="$1"
+  local user="$2"
   local env_file=$(find_env_file)
   if [ -f "$env_file" ]; then
     local var_value=$(grep -v '^#' "$env_file" | grep -E "^${var_name}=" | cut -d '=' -f2-)
@@ -55,11 +91,17 @@ load_env_var() {
   else
     echo ".env.local file not found. Make sure to create it for sensitive information."
   fi
+
+  # Set the HOME variable based on the operating system
+  set_home_based_on_os "$user"
+  # Update the .env file with the new HOME variable
+  update_env_file
 }
 
 # Function to load .env and .env.local files and then load a specific environment variable
 load_env_and_var() {
   local var_name="$1"
-  load_env
-  load_env_var "$var_name"
+  local user="$2"
+  load_env "$user"
+  load_env_var "$var_name" "$user"
 }
