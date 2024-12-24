@@ -109,7 +109,7 @@ install_all_apps() {
 
 main() {
     # Load environment variables
-    source "$(dirname "$0")/utils/load_env.sh"
+    source "$(dirname "$0")/../utils/load_env.sh"
     load_env
 
     # Check if dialog is installed
