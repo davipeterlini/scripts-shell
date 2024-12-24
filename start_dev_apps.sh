@@ -58,6 +58,10 @@ detect_and_start_apps() {
 
 # Main function to start development applications
 main() {
+    read -p "Enter the USER for the environment: " user
+    source "$(dirname "$0")/utils/load_env.sh"
+    load_env "$user"
+
     echo "Choose the operating system to start development applications:"
     echo "1) macOS"
     echo "2) Linux"
