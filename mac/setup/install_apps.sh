@@ -21,14 +21,14 @@ install_apps_mac() {
 # Function to install basic apps
 install_basic_apps() {
     echo "Installing basic apps..."
-    IFS=',' read -r -a basic_apps <<< "$INSTALL_APPS_BASIC"
+    IFS=',' read -r -a basic_apps <<< "$INSTALL_APPS_BASIC_MAC"
     install_apps_mac "${basic_apps[@]}"
 }
 
 # Function to install development apps
 install_dev_apps() {
     echo "Installing development apps..."
-    IFS=',' read -r -a dev_apps <<< "$INSTALL_APPS_DEV"
+    IFS=',' read -r -a dev_apps <<< "$INSTALL_APPS_DEV_MAC"
     install_apps_mac "${dev_apps[@]}"
 }
 
