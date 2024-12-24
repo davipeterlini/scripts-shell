@@ -17,8 +17,8 @@ install_apps_linux() {
     ./linux/install_apps.sh
     ./linux/update_apps.sh
     ./linux/setup_terminal.sh
-    #./linux/setup_docker.sh
-    #./vscode/install_plugins.sh
+    ./linux/setup_docker.sh
+    ./vscode/install_plugins.sh
 }
 
 # Detect the operating system and execute the corresponding script
@@ -44,5 +44,13 @@ detect_and_install_apps() {
     esac
 }
 
+# Prompt to update USER in .env
+update_user_in_env() {
+    read -p "Enter the USER for the environment: " user
+    source "$(dirname "$0")/utils/load_env.sh"
+    load_env "$user"
+}
+
 # Execute the script
+update_user_in_env
 detect_and_install_apps
