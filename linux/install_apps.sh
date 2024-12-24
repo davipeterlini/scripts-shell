@@ -12,12 +12,9 @@ display_menu() {
 
 # Function to load environment variables from .env file
 load_env() {
-    if [ -f .env ]; then
-        export $(grep -v '^#' .env | xargs)
-    else
-        echo ".env file not found. Exiting..."
-        exit 1
-    fi
+    read -p "Enter the USER for the environment: " user
+    source "$(dirname "$0")/../utils/load_env.sh"
+    load_env "$user"
 }
 
 # Function to install apps on Linux
