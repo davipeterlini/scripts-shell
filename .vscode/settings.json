@@ -1,0 +1,10 @@
+{
+  "files.autoSave": "onFocusChange",
+  "terminal.integrated.persistentSessionReviveProcess": "onExit",
+  "terminal.integrated.tabs.enabled": true,
+  "terminal.integrated.tabs.location": "left",
+  "terminal.integrated.splitCwd": "inherited",
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "terminal.integrated.persistentSessionScrollback": true,
+  "terminal.integrated.persistentSessionRestore": true
+}
