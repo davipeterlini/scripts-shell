@@ -33,10 +33,12 @@ install_dev_apps() {
 }
 
 # Function to install all macOS apps
-install_all_mac_apps() {
+install_all_apps() {
     echo "Installing all macOS apps..."
-    IFS=',' read -r -a mac_apps <<< "$APPS_TO_INSTALL_MAC"
-    install_apps_mac "${mac_apps[@]}"
+    IFS=',' read -r -a basic_apps <<< "$INSTALL_APPS_BASIC_MAC"
+    IFS=',' read -r -a dev_apps <<< "$INSTALL_APPS_DEV_MAC"
+    all_apps=("${basic_apps[@]}" "${dev_apps[@]}")
+    install_apps_mac "${all_apps[@]}"
 }
 
 main() {
