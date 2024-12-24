@@ -58,7 +58,7 @@ install_dev_apps() {
 install_all_mac_apps() {
     echo "Installing all macOS apps..."
     IFS=',' read -r -a mac_apps <<< "$APPS_TO_INSTALL_MAC"
-    install_apps_mac "${mac_apps[@]}"
+        install_apps_mac "${mac_apps[@]}"
 }
 
 main() {
