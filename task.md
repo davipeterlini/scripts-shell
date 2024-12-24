@@ -1,3 +1,14 @@
+Geral
+
+- Unir os scripts de install_apps.sh 
+- Corrigir os scripts de Update 
+  - Para atualizar o SO e os pacotes de instalação (bre update e apt-get update && apt-get upgrade)
+  - Atualizar os aplicativos a partir do pacote
+- 
+
+
+
+
 - O Script setup_multiple_repo_accounts.sh da pasta repository precisa ser corrigido 
   - ./repository/setup_multiple_repo_accounts.sh: line 102: Setting up multiple ${REPO_MANAGER^} accounts...: bad substitutio
 
