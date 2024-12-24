@@ -68,7 +68,7 @@ check_existing_home() {
 
 # Function to load environment variables from .env and .env.local files
 load_env() {
-  local user="$1"
+  local user
   local env_file=$(find_env_file)
   if [ -f "$env_file" ]; then
     set -a
@@ -89,15 +89,12 @@ load_env() {
 
   # Check if HOME is already set and ask the user if they want to use it
   if ! check_existing_home; then
-    # Set the HOME variable based on the operating system
+    # Prompt for user and set the HOME variable based on the operating system
+    read -p "Enter the USER for the environment: " user
     set_home_based_on_os "$user"
     # Update the .env file with the new HOME variable
     update_env_file
   fi
-
-  # Prompt for user and reload environment variables
-  read -p "Enter the USER for the environment: " user
-  load_env "$user"
 }
 
 # Function to load a specific environment variable from .env and .env.local files
