@@ -134,5 +134,5 @@ load_env_and_var() {
   local var_name="$1"
   local user="$2"
   load_env "$user"
-  load_env_var("$var_name", "$user")
+  load_env_var "$var_name" "$user"
 }
