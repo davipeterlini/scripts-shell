@@ -15,10 +15,10 @@ install_apps_mac() {
 install_apps_linux() {
     echo "Starting installation of apps for Linux..."
     ./linux/setup/install_apps.sh
-    ./linux/setup/update_apps.sh
-    ./linux/setup/setup_terminal.sh
-    ./linux/setup/setup_docker.sh
-    ./vscode/install_plugins.sh
+    #./linux/setup/update_apps.sh
+    #./linux/setup/setup_terminal.sh
+    #./linux/setup/setup_docker.sh
+    #./vscode/install_plugins.sh
 }
 
 # Detect the operating system and execute the corresponding script
