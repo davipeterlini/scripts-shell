@@ -1,118 +1,74 @@
 #!/bin/bash
 
-# Load environment variables from .env file
-source "$(dirname "$0")/../utils/load_env.sh"
-source "$(dirname "$0")/../utils/list_projects.sh"
+# Function to display a menu using dialog
+display_menu() {
+    local choices=$(dialog --stdout --checklist "Select the type of apps to install:" 15 50 3 \
+        1 "Basic Apps" on \
+        2 "Development Apps" off \
+        3 "All macOS Apps" off)
 
-# Function to install Homebrew if not installed and update it
-install_and_update_homebrew() {
-    # Check if Homebrew is installed, install if not
-    if ! command -v brew >/dev/null 2>&1; then
-        echo "Homebrew not found. Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-    else
-        echo "Homebrew is already installed."
-    fi
-
-    # Update Homebrew
-    brew update --auto-update
-    brew update
+    echo "$choices"
 }
 
-# Function to install software if it's not already installed
-install_if_not_installed() {
-    local name="$1"
-    local brew_name="${2:-$1}"
-
-    # Check if the software is already installed
-    if brew list --formula | grep -q "^${brew_name}\$"; then
-        echo "$name is already installed."
-    else
-        echo "Installing $name..."
-        brew install $brew_name
-        # Call the corresponding setup script if it exists
-        if [ -f "$(dirname "$0")/setup_${name}.sh" ]; then
-            read -p "Do you want to run the setup script for $name? (y/n): " choice
-            if [[ "$choice" =~ ^[Yy]$ ]]; then
-                echo "Running setup script for $name..."
-                "$(dirname "$0")/setup_${name}.sh"
-            fi
-        fi
-    fi
+# Function to load environment variables from .env file
+load_env() {
+    read -p "Enter the USER for the environment: " user
+    source "$(dirname "$0")/../utils/load_env.sh"
+    load_env "$user"
 }
 
-# Function to install cask software if it's not already installed
-install_cask_if_not_installed() {
-    local name="$1"
-    local cask_name="${2:-$1}"
+# Function to install apps on macOS
+install_apps_mac() {
+    local apps=("$@")
+    for app in "${apps[@]}"; do
+        brew install "$app"
+    done
+}
 
-    # Check if the software is already installed
-    if brew list --cask | grep -q "^${cask_name}\$"; then
-        echo "$name is already installed."
-    else
-        echo "Installing $name..."
-        brew install --cask $cask_name
-        # Call the corresponding setup script if it exists
-        if [ -f "$(dirname "$0")/setup_${name}.sh" ]; then
-            read -p "Do you want to run the setup script for $name? (y/n): " choice
-            if [[ "$choice" =~ ^[Yy]$ ]]; then
-                echo "Running setup script for $name..."
-                "$(dirname "$0")/setup_${name}.sh"
-            fi
-        fi
-    fi
+# Function to install basic apps
+install_basic_apps() {
+    echo "Installing basic apps..."
+    IFS=',' read -r -a basic_apps <<< "$INSTALL_APPS_BASIC"
+    install_apps_mac "${basic_apps[@]}"
+}
+
+# Function to install development apps
+install_dev_apps() {
+    echo "Installing development apps..."
+    IFS=',' read -r -a dev_apps <<< "$INSTALL_APPS_DEV"
+    install_apps_mac "${dev_apps[@]}"
+}
+
+# Function to install all macOS apps
+install_all_mac_apps() {
+    echo "Installing all macOS apps..."
+    IFS=',' read -r -a mac_apps <<< "$APPS_TO_INSTALL_MAC"
+    install_apps_mac "${mac_apps[@]}"
 }
 
 main() {
-    local project_dir="$1"
+    # Load environment variables
+    load_env
 
-    if [ -z "$project_dir" ]; then
-        # Load environment variables and list projects
-        load_env
-        list_projects
-        echo
-        read -p "Please choose a project by number: " PROJECT_NUMBER
-
-        local index=1
-        for identity in $(env | grep '^PROJECT_DIR_' | sed 's/^PROJECT_DIR_//' | sed 's/=.*//'); do
-            if [ "$index" -eq "$PROJECT_NUMBER" ]; then
-                project_dir=$(echo $identity | tr '[:lower:]' '[:upper:]')
-                break
-            fi
-            index=$((index + 1))
-        done
-
-        if [ -z "$project_dir" ]; then
-            echo "Invalid choice. Exiting..."
-            exit 1
-        fi
+    # Check if dialog is installed
+    if ! command -v dialog &> /dev/null; then
+        echo "dialog is not installed. Installing dialog..."
+        brew install dialog
     fi
 
-    # Install and update Homebrew
-    install_and_update_homebrew
+    choices=$(display_menu)
 
-    # Extract applications from the project-specific variable
-    local apps_var="APPS_TO_INSTALL_${project_dir}"
-    local apps=$(eval echo \${$apps_var})
+    if [[ "$choices" == *"1"* ]]; then
+        install_basic_apps
+    fi
 
-    IFS="," read -r -a apps_array <<< "$apps"
+    if [[ "$choices" == *"2"* ]]; then
+        install_dev_apps
+    fi
 
-    for app in "${apps_array[@]}"; do
-        # Remove leading and trailing spaces
-        app=$(echo "$app" | xargs)
-        if [ -n "$app" ]; then
-            if [[ "$app" == *"cask:"* ]]; then
-                app_name=$(echo "$app" | sed 's/cask://')
-                install_cask_if_not_installed "$app_name"
-            else
-                install_if_not_installed "$app"
-            fi
-        fi
-    done
-
-    # Clean up Homebrew caches, etc, after installation
-    brew cleanup
+    if [[ "$choices" == *"3"* ]]; then
+        install_all_mac_apps
+    fi
 }
 
-# Execute the main function with the provided argument
-main "$1"
+main
