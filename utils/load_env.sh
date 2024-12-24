@@ -86,8 +86,7 @@ load_env() {
   else
     echo ".env.local file not found. Make sure to create it for sensitive information."
   fi
-#TODO - problemas para definir o ;HOME no linux
-# TODO- corrigir para a verificação vir antes da mensagem
+
   # Check if HOME is already set and ask the user if they want to use it
   if ! check_existing_home; then
     # Set the HOME variable based on the operating system
@@ -95,6 +94,10 @@ load_env() {
     # Update the .env file with the new HOME variable
     update_env_file
   fi
+
+  # Prompt for user and reload environment variables
+  read -p "Enter the USER for the environment: " user
+  load_env "$user"
 }
 
 # Function to load a specific environment variable from .env and .env.local files
@@ -131,5 +134,5 @@ load_env_and_var() {
   local var_name="$1"
   local user="$2"
   load_env "$user"
-  load_env_var "$var_name" "$user"
+  load_env_var("$var_name", "$user")
 }
