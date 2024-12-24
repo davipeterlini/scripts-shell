@@ -73,8 +73,10 @@ install_apps_linux_flat() {
 install_basic_apps() {
     echo "Installing basic apps..."
     IFS=',' read -r -a basic_apps_apt <<< "$INSTALL_APPS_BASIC_LINUX_APT"
+    echo "basic_apps_apt: $basic_apps_apt"
     install_apps_linux_apt "${basic_apps_apt[@]}"
     IFS=',' read -r -a basic_apps_flat <<< "$INSTALL_APPS_BASIC_LINUX_FLAT"
+    echo "basic_apps_flat: $basic_apps_flat"
     install_apps_linux_flat "${basic_apps_flat[@]}"
 }
 
