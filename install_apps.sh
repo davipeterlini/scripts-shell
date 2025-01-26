@@ -81,16 +81,18 @@ main() {
     # Display menu and get user choices
     choices=$(display_menu)
 
-    if [[ "$choices" == *"1"* ]]; then
-        install_basic_apps
-    fi
-
-    if [[ "$choices" == *"2"* ]]; then
-        install_dev_apps
-    fi
-
-    if [[ "$choices" == *"3"* ]]; then
-        install_all_mac_apps
+    # Install selected apps based on OS and user choices
+    if [[ "$os" == "macOS" ]]; then
+        [[ "$choices" == *"1"* ]] && install_apps_mac $(echo "$INSTALL_APPS_BASIC_MAC" | tr ',' ' ')
+        [[ "$choices" == *"2"* ]] && install_apps_mac $(echo "$INSTALL_APPS_DEV_MAC" | tr ',' ' ')
+        [[ "$choices" == *"3"* ]] && install_apps_mac $(echo "$APPS_TO_INSTALL_MAC" | tr ',' ' ')
+    elif [[ "$os" == "Linux" ]]; then
+        [[ "$choices" == *"1"* ]] && install_apps_linux $(echo "$INSTALL_APPS_BASIC_LINUX_APT" | tr ',' ' ')
+        [[ "$choices" == *"2"* ]] && install_apps_linux $(echo "$INSTALL_APPS_BASIC_LINUX_APT_DEV" | tr ',' ' ')
+        [[ "$choices" == *"3"* ]] && install_apps_linux $(echo "$INSTALL_APPS_BASIC_LINUX_APT,$INSTALL_APPS_BASIC_LINUX_APT_DEV" | tr ',' ' ')
+    else
+        echo "Unsupported OS."
+        exit 1
     fi
 }
 
