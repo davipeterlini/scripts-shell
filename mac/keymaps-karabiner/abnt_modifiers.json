@@ -1,0 +1,25 @@
+{
+    "description": "Adjust modifier keys for ABNT2 layout",
+    "manipulators": [
+        {
+            "from": { "key_code": "left_control" },
+            "to": [{ "key_code": "left_command" }],
+            "type": "basic"
+        },
+        {
+            "from": { "key_code": "left_command" },
+            "to": [{ "key_code": "left_control" }],
+            "type": "basic"
+        },
+        {
+            "from": { "key_code": "right_control" },
+            "to": [{ "key_code": "right_command" }],
+            "type": "basic"
+        },
+        {
+            "from": { "key_code": "right_command" },
+            "to": [{ "key_code": "right_control" }],
+            "type": "basic"
+        }
+    ]
+}
