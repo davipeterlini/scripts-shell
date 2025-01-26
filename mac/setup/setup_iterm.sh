@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+# TODO - tratar erros do Iterm quando o mesmo estiver instalado
+
 # Check if Homebrew is installed, install if not
 if ! command -v brew >/dev/null 2>&1; then
     echo "Homebrew not found. Installing Homebrew..."

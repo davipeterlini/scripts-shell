@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO - ao instalar o script está buscando o nome com espaço - Warning: No available formula with the name " flameshot".
+# TODO - feche todos os apps antes de executar a instalação, isso para o momento que for instalar o app, check se estiver aberto e feche
+
 # Function to display a menu using dialog
 display_menu() {
     local choices=$(dialog --stdout --checklist "Select the type of apps to install:" 15 50 3 \
@@ -42,6 +45,9 @@ install_all_apps() {
 }
 
 main() {
+    # Redefine HOME to ensure proper handling of paths
+    export HOME=$(eval echo ~)
+
     # Load environment variables
     source "$(dirname "$0")/../../utils/load_env.sh"
     load_env
@@ -49,11 +55,16 @@ main() {
     # Check if dialog is installed
     if ! command -v dialog &> /dev/null; then
         echo "dialog is not installed. Installing dialog..."
-        brew install dialog
+        if ! brew install dialog; then
+            echo "Failed to install dialog. Please check your Homebrew setup." >&2
+            exit 1
+        fi
     fi
 
+    # Display the menu and capture choices
     choices=$(display_menu)
 
+    # Install selected apps based on choices
     if [[ "$choices" == *"1"* ]]; then
         install_basic_apps
     fi
@@ -63,7 +74,7 @@ main() {
     fi
 
     if [[ "$choices" == *"3"* ]]; then
-        install_all_mac_apps
+        install_all_apps
     fi
 }
 
