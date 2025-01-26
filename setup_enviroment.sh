@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# TODO - esse script precisa criar o arquivo .env.local e colocar as variáveis necessárias dentro dele
-# TODO - não está setando corretamente a variável HOME sempre coloca "" a mais e não deve ser com aspas duplas 
+# Load environment variables and utility functions
+source "$(dirname "$0")/utils/load_env.sh"
+load_env
 
 # Function to install apps on macOS
 install_apps_mac() {
     echo "Starting installation of apps for macOS..."
-    ./mac/setup/install_apps.sh
+    ./install_apps.sh
     ./mac/setup/setup_iterm.sh
     ./mac/setup/update_apps.sh
     ./mac/setup/setup_terminal.sh
@@ -17,7 +18,7 @@ install_apps_mac() {
 # Function to install apps on Linux (Debian-based)
 install_apps_linux() {
     echo "Starting installation of apps for Linux..."
-    ./linux/setup/install_apps.sh
+    ./install_apps.sh
     #./linux/setup/update_apps.sh
     #./linux/setup/setup_terminal.sh
     #./linux/setup/setup_docker.sh
@@ -48,6 +49,4 @@ detect_and_install_apps() {
 }
 
 # Execute the script
-source "$(dirname "$0")/utils/load_env.sh"
-load_env
 detect_and_install_apps
