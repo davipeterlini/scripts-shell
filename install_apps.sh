@@ -6,17 +6,12 @@ if [ -z "$ENV_LOADED" ]; then
     load_env
     export ENV_LOADED=true
 fi
-
-source "$(dirname "$0")/utils/display_menu.sh"
 source "$(dirname "$0")/utils/detect_os.sh"
 
 main() {
     # Detect the operating system
     os=$(detect_os)
     echo "Detected OS: $os"
-
-    # Display menu and get user choices
-    choices=$(display_menu)
 
     # Install selected apps based on OS and user choices
     if [[ "$os" == "macOS" ]]; then

@@ -160,3 +160,11 @@ load_env_and_var() {
   load_env "$user"
   load_env_var "$var_name" "$user"
 }
+
+# Main script execution
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  if [ -z "$ENV_LOADED" ]; then
+    load_env
+    export ENV_LOADED=true
+  fi
+fi
