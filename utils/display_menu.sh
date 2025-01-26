@@ -9,3 +9,18 @@ display_menu() {
 
     echo "$choices"
 }
+
+# Function to check if the menu has already been displayed
+check_menu_displayed() {
+    if [ -z "$MENU_DISPLAYED" ]; then
+        display_menu
+        export MENU_DISPLAYED=true
+    else
+        echo "Menu has already been displayed."
+    fi
+}
+
+# Main script execution
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    check_menu_displayed
+fi
