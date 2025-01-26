@@ -4,20 +4,22 @@
 source "$(dirname "$0")/../utils/load_env.sh"
 load_env
 source "$(dirname "$0")/../utils/display_menu.sh"
-source "$(dirname "$0")/install_homebrew.sh"
+source "$(dirname "$0")/install_flatpak.sh"
 source "$(dirname "$0")/update_apps.sh"
 
-# Function to install apps on macOS
-install_apps_mac() {
+# Function to install apps on Linux
+install_apps_linux() {
+    # Install FlatPak if not installed
+    install_flatpak
     # Check if dialog is installed
     if ! command -v dialog &> /dev/null; then
         echo "dialog is not installed. Installing dialog..."
-        brew install dialog
+        sudo apt-get install -y dialog
     fi
 
     local apps=("$@")
     for app in "${apps[@]}"; do
-        brew install "$app"
+        sudo apt-get install -y "$app"
     done
 }
 
