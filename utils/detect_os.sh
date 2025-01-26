@@ -20,4 +20,8 @@ detect_os() {
 }
 
 # Main script execution
-detect_os
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    os=$(detect_os)
+    export OS_DETECTED=true
+    echo "$os"
+fi
