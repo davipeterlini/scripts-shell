@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO - esse script precisa criar o arquivo .env.local e colocar as variáveis necessárias dentro dele
+# TODO - não está setando corretamente a variável HOME sempre coloca "" a mais e não deve ser com aspas duplas 
+
 # Function to install apps on macOS
 install_apps_mac() {
     echo "Starting installation of apps for macOS..."
