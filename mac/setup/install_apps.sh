@@ -14,27 +14,7 @@ install_apps_mac() {
     done
 }
 
-# Function to install basic apps
-install_basic_apps() {
-    echo "Installing basic apps..."
-    IFS=',' read -r -a basic_apps <<< "$INSTALL_APPS_BASIC_MAC"
-    install_apps_mac "${basic_apps[@]}"
-}
-
-# Function to install development apps
-install_dev_apps() {
-    echo "Installing development apps..."
-    IFS=',' read -r -a dev_apps <<< "$INSTALL_APPS_DEV_MAC"
-    install_apps_mac "${dev_apps[@]}"
-}
-
-# Function to install all macOS apps
-install_all_mac_apps() {
-    echo "Installing all macOS apps..."
-    IFS=',' read -r -a mac_apps <<< "$APPS_TO_INSTALL_MAC"
-    install_apps_mac "${mac_apps[@]}"
-}
-
+# Main function to handle app installation based on user choice
 main() {
     # Install Homebrew if not installed
     install_homebrew
@@ -42,17 +22,10 @@ main() {
     # Display menu and get user choices
     choices=$(display_menu)
 
-    if [[ "$choices" == *"1"* ]]; then
-        install_basic_apps
-    fi
-
-    if [[ "$choices" == *"2"* ]]; then
-        install_dev_apps
-    fi
-
-    if [[ "$choices" == *"3"* ]]; then
-        install_all_mac_apps
-    fi
+    # Install selected apps
+    [[ "$choices" == *"1"* ]] && install_apps_mac $(echo "$INSTALL_APPS_BASIC_MAC" | tr ',' ' ')
+    [[ "$choices" == *"2"* ]] && install_apps_mac $(echo "$INSTALL_APPS_DEV_MAC" | tr ',' ' ')
+    [[ "$choices" == *"3"* ]] && install_apps_mac $(echo "$APPS_TO_INSTALL_MAC" | tr ',' ' ')
 }
 
 main
