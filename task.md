@@ -1,5 +1,35 @@
 Geral
 
+- 26/01/2025
+  - Criação do script para instalação do python e do coder framework da maneira correta na máquina 
+  - Atualização do script do python para ir para a versão oficial de scripts e pastas 
+  - Estrutura de scripts e pastas
+  
+  - Remover o arquivo .env do commit 
+
+
+- construa um plugin na pasta mac/vscode/install_plugins.sh
+  - esse script deve instalar as extenções básicas no vscode 
+  - dentre elas: 
+      keymap do explise
+      todos tree
+      docker 
+      python
+      flow copilot
+      
+- script para configurar o vscode 
+  - configurar o keymap do eclipse 
+  - deixar o autosave habilitado 
+- Precisa remover Apps se necessário para a instalação - brew reinstall --cask visual-studio-code
+- Arrumar criar script de configuração e instalação de extenções no vscode
+- Fechar os apps abertos para execução da instalação
+- Ver como configuirar o .env.local
+- Cria script para configurar via shell os detalhes das aplicações mais utilizadas (separar por script)
+  - Configuração de teclado abnt 
+  - Configuração do OBS Studio
+  - Configuração do Drive
+  - Configurações do mac
+
 - Arrumar variável de ambient HOME no .env
 - Arrumar pastas dos SOs para colocar o que é de SETUP em setup 
 - Arrumar scripts do MAC - install_apps.sh (.env)
