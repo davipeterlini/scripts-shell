@@ -5,19 +5,16 @@ source "$(dirname "$0")/utils/load_env.sh"
 load_env
 source "$(dirname "$0")/utils/detect_os.sh"
 
-# Function to install apps on macOS
-install_apps_mac() {
-    echo "Starting installation of apps for macOS..."
-    ./install_apps.sh
+# Function to install additional apps and configurations on macOS
+setup_mac() {
     ./mac/setup/setup_iterm.sh
     ./mac/setup/update_apps.sh
     ./mac/setup/setup_terminal.sh
 }
 
-# Function to install apps on Linux (Debian-based)
-install_apps_linux() {
-    echo "Starting installation of apps for Linux..."
-    ./install_apps.sh
+# Function to install additional apps and configurations on Linux (Debian-based)
+setup_linux() {
+
 }
 
 # Detect the operating system and execute the corresponding script
@@ -28,15 +25,18 @@ detect_and_install_apps() {
     os=$(detect_os)
     echo "Detected OS: $os"
 
+    # Install selected apps
+    ./install_apps.sh
+
     case "$os" in
         macOS)
             echo "macOS detected."
-            install_apps_mac
+            setup_mac
             ;;
 
         Linux)
             echo "Linux detected."
-            install_apps_linux
+            setup_linux
             ;;
 
         *)
