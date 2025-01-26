@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Load environment variables and utility functions
-source "$(dirname "$0")/utils/load_env.sh"
-load_env
+    source "$(dirname "$0")/utils/load_env.sh"
+    load_env
 
 source "$(dirname "$0")/utils/detect_os.sh"
 
