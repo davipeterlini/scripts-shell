@@ -3,6 +3,7 @@
 # Load environment variables and utility functions
 source "$(dirname "$0")/utils/load_env.sh"
 load_env
+
 source "$(dirname "$0")/utils/detect_os.sh"
 
 # Function to install additional apps and configurations on macOS
@@ -13,9 +14,9 @@ setup_mac() {
 }
 
 # Function to install additional apps and configurations on Linux (Debian-based)
-setup_linux() {
-    # Add Linux-specific setup steps here
-}
+# setup_linux() {
+#     # Add Linux-specific setup steps here
+# }
 
 # Detect the operating system and execute the corresponding script
 detect_and_install_apps() {
