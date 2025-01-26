@@ -115,6 +115,9 @@ load_env() {
       update_env_file_linux
     fi
   fi
+
+  # Mark environment as loaded
+  export ENV_LOADED=true
 }
 
 # Function to load a specific environment variable from .env and .env.local files
