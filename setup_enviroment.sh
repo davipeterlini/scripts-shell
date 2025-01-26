@@ -3,6 +3,7 @@
 # Load environment variables and utility functions
 source "$(dirname "$0")/utils/load_env.sh"
 load_env
+source "$(dirname "$0")/utils/detect_os.sh"
 
 # Function to install apps on macOS
 install_apps_mac() {
@@ -11,18 +12,12 @@ install_apps_mac() {
     ./mac/setup/setup_iterm.sh
     ./mac/setup/update_apps.sh
     ./mac/setup/setup_terminal.sh
-    #./mac/setup/setup_docker.sh
-    #./vscode/install_plugins.sh
 }
 
 # Function to install apps on Linux (Debian-based)
 install_apps_linux() {
     echo "Starting installation of apps for Linux..."
     ./install_apps.sh
-    #./linux/setup/update_apps.sh
-    #./linux/setup/setup_terminal.sh
-    #./linux/setup/setup_docker.sh
-    #./vscode/install_plugins.sh
 }
 
 # Detect the operating system and execute the corresponding script
@@ -30,8 +25,11 @@ detect_and_install_apps() {
     echo "Detecting the operating system..."
 
     # Detect the operating system
-    case "$(uname -s)" in
-        Darwin)
+    os=$(detect_os)
+    echo "Detected OS: $os"
+
+    case "$os" in
+        macOS)
             echo "macOS detected."
             install_apps_mac
             ;;
