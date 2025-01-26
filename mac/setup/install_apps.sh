@@ -5,6 +5,7 @@ source "$(dirname "$0")/../../utils/load_env.sh"
 load_env
 source "$(dirname "$0")/../../utils/display_menu.sh"
 source "$(dirname "$0")/install_homebrew.sh"
+source "$(dirname "$0")/update_apps.sh"
 
 # Function to install apps on macOS
 install_apps_mac() {
@@ -16,6 +17,9 @@ install_apps_mac() {
 
 # Main function to handle app installation based on user choice
 main() {
+    # Update all Homebrew packages before installation
+    update_all_apps_mac
+    
     # Install Homebrew if not installed
     install_homebrew
 
