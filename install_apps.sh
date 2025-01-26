@@ -4,7 +4,7 @@
 source "$(dirname "$0")/utils/load_env.sh"
 load_env
 source "$(dirname "$0")/utils/display_menu.sh"
-source "$(dirname "$0")/utils/install_homebrew.sh"
+source "$(dirname "$0")/mac/install_homebrew.sh"
 source "$(dirname "$0")/utils/detect_os.sh"
 
 # Function to install apps on Linux
@@ -17,47 +17,12 @@ install_apps_linux() {
 
 # Function to install apps on macOS
 install_apps_mac() {
+    # Install Homebrew if not installed
+    install_homebrew
     local apps=("$@")
     for app in "${apps[@]}"; do
         brew install "$app"
     done
-}
-
-# Function to install basic apps
-install_basic_apps() {
-    echo "Installing basic apps..."
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        IFS=',' read -r -a basic_apps <<< "$INSTALL_APPS_BASIC_LINUX_APT"
-        install_apps_linux "${basic_apps[@]}"
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        IFS=',' read -r -a basic_apps <<< "$INSTALL_APPS_BASIC_MAC"
-        install_apps_mac "${basic_apps[@]}"
-    else
-        echo "Unsupported OS."
-        exit 1
-    fi
-}
-
-# Function to install development apps
-install_dev_apps() {
-    echo "Installing development apps..."
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        IFS=',' read -r -a dev_apps <<< "$INSTALL_APPS_BASIC_LINUX_APT_DEV"
-        install_apps_linux "${dev_apps[@]}"
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        IFS=',' read -r -a dev_apps <<< "$INSTALL_APPS_DEV_MAC"
-        install_apps_mac "${dev_apps[@]}"
-    else
-        echo "Unsupported OS."
-        exit 1
-    fi
-}
-
-# Function to install all macOS apps
-install_all_mac_apps() {
-    echo "Installing all macOS apps..."
-    IFS=',' read -r -a mac_apps <<< "$APPS_TO_INSTALL_MAC"
-    install_apps_mac "${mac_apps[@]}"
 }
 
 main() {
