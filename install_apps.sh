@@ -1,14 +1,11 @@
 #!/bin/bash
 
-# Function to display a menu using dialog
-display_menu() {
-    local choices=$(dialog --stdout --checklist "Select the type of apps to install:" 15 50 3 \
-        1 "Basic Apps" on \
-        2 "Development Apps" off \
-        3 "All macOS Apps" off)
-
-    echo "$choices"
-}
+# Load environment variables and utility functions
+source "$(dirname "$0")/utils/load_env.sh"
+load_env
+source "$(dirname "$0")/utils/display_menu.sh"
+source "$(dirname "$0")/utils/install_homebrew.sh"
+source "$(dirname "$0")/utils/detect_os.sh"
 
 # Function to install apps on Linux
 install_apps_linux() {
@@ -64,10 +61,6 @@ install_all_mac_apps() {
 }
 
 main() {
-    # Load environment variables
-    source "$(dirname "$0")/../../utils/load_env.sh"
-    load_env
-
     # Check if dialog is installed
     if ! command -v dialog &> /dev/null; then
         echo "dialog is not installed. Installing dialog..."
@@ -81,6 +74,11 @@ main() {
         fi
     fi
 
+    # Detect the operating system
+    os=$(detect_os)
+    echo "Detected OS: $os"
+
+    # Display menu and get user choices
     choices=$(display_menu)
 
     if [[ "$choices" == *"1"* ]]; then
