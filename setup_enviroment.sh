@@ -6,8 +6,8 @@
 # Function to install apps on macOS
 install_apps_mac() {
     echo "Starting installation of apps for macOS..."
-    ./mac/setup/setup_iterm.sh
     ./mac/setup/install_apps.sh
+    ./mac/setup/setup_iterm.sh
     ./mac/setup/update_apps.sh
     ./mac/setup/setup_terminal.sh
     #./mac/setup/setup_docker.sh
