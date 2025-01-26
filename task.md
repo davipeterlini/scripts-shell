@@ -1,5 +1,11 @@
 Geral
 
+- 26/01/2025
+  - Criação do script para instalação do python e do coder framework da maneira correta na máquina 
+  - Atualização do script do python para ir para a versão oficial de scripts e pastas 
+  - Estrutura de scripts e pastas
+
+
 - construa um plugin na pasta mac/vscode/install_plugins.sh
   - esse script deve instalar as extenções básicas no vscode 
   - dentre elas: 
