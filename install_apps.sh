@@ -9,6 +9,12 @@ source "$(dirname "$0")/utils/detect_os.sh"
 
 # Function to install apps on Linux
 install_apps_linux() {
+    # Check if dialog is installed
+    if ! command -v dialog &> /dev/null; then
+        echo "dialog is not installed. Installing dialog..."
+        sudo apt-get install -y dialog
+    fi
+
     local apps=("$@")
     for app in "${apps[@]}"; do
         sudo apt-get install -y "$app"
@@ -19,6 +25,12 @@ install_apps_linux() {
 install_apps_mac() {
     # Install Homebrew if not installed
     install_homebrew
+    # Check if dialog is installed
+    if ! command -v dialog &> /dev/null; then
+        echo "dialog is not installed. Installing dialog..."
+        brew install dialog
+    fi
+
     local apps=("$@")
     for app in "${apps[@]}"; do
         brew install "$app"
@@ -26,19 +38,6 @@ install_apps_mac() {
 }
 
 main() {
-    # Check if dialog is installed
-    if ! command -v dialog &> /dev/null; then
-        echo "dialog is not installed. Installing dialog..."
-        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            sudo apt-get install -y dialog
-        elif [[ "$OSTYPE" == "darwin"* ]]; then
-            brew install dialog
-        else
-            echo "Unsupported OS."
-            exit 1
-        fi
-    fi
-
     # Detect the operating system
     os=$(detect_os)
     echo "Detected OS: $os"
