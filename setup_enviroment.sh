@@ -4,7 +4,7 @@
     source "$(dirname "$0")/utils/load_env.sh"
     load_env
 
-source "$(dirname "$0")/utils/detect_os.sh"
+    source "$(dirname "$0")/utils/detect_os.sh"
 
 # Function to install additional apps and configurations on macOS
 setup_mac() {
