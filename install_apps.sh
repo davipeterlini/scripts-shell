@@ -5,8 +5,6 @@ source "$(dirname "$0")/utils/load_env.sh"
 load_env
 source "$(dirname "$0")/utils/display_menu.sh"
 source "$(dirname "$0")/utils/detect_os.sh"
-source "$(dirname "$0")/mac/install_apps.sh"
-source "$(dirname "$0")/linux/install_apps.sh"
 
 main() {
     # Detect the operating system
