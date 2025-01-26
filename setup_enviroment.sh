@@ -14,7 +14,7 @@ setup_mac() {
 
 # Function to install additional apps and configurations on Linux (Debian-based)
 setup_linux() {
-
+    # Add Linux-specific setup steps here
 }
 
 # Detect the operating system and execute the corresponding script
@@ -33,12 +33,10 @@ detect_and_install_apps() {
             echo "macOS detected."
             setup_mac
             ;;
-
         Linux)
             echo "Linux detected."
             setup_linux
             ;;
-
         *)
             echo "Unsupported operating system."
             exit 1
