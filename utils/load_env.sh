@@ -33,24 +33,8 @@ set_home_based_on_os() {
   esac
 }
 
-# Function to update the .env file with the new HOME variable for macOS
-update_env_file_mac() {
-  local env_file=$(find_env_file)
-  if [ -f "$env_file" ]; then
-    # Remove existing HOME definition if it exists
-    sed -i '' '/^HOME=/d' "$env_file"
-    # Insert the new HOME definition at the beginning of the file
-    sed -i '' "1i\\
-HOME=\"$HOME\"
-" "$env_file"
-  else
-    echo ".env file not found. Exiting..."
-    exit 1
-  fi
-}
-
-# Function to update the .env file with the new HOME variable for Linux
-update_env_file_linux() {
+# Function to update the .env file with the new HOME variable
+update_env_file() {
   local env_file=$(find_env_file)
   if [ -f "$env_file" ]; then
     # Remove existing HOME definition if it exists
@@ -109,56 +93,11 @@ load_env() {
     read -p "Enter the USER for the environment: " user
     set_home_based_on_os "$user"
     # Update the .env file with the new HOME variable
-    if [[ "$(uname -s)" == "Darwin" ]]; then
-      update_env_file_mac
-    else
-      update_env_file_linux
-    fi
+    update_env_file
   fi
 
   # Mark environment as loaded
   export ENV_LOADED=true
-}
-
-# Function to load a specific environment variable from .env and .env.local files
-load_env_var() {
-  local var_name="$1"
-  local user="$2"
-  local env_file=$(find_env_file)
-  if [ -f "$env_file" ]; then
-    local var_value=$(grep -v '^#' "$env_file" | grep -E "^${var_name}=" | cut -d '=' -f2-)
-    export "${var_name}=${var_value}"
-  else
-    echo ".env file not found. Exiting..."
-    exit 1
-  fi
-
-  if [ -f "$env_file.local" ]; then
-    local var_value=$(grep -v '^#' "$env_file.local" | grep -E "^${var_name}=" | cut -d '=' -f2-)
-    export "${var_name}=${var_value}"
-  else
-    echo ".env.local file not found. Make sure to create it for sensitive information."
-  fi
-
-  # Check if HOME is already set and ask the user if they want to use it
-  if ! check_existing_home; then
-    # Set the HOME variable based on the operating system
-    set_home_based_on_os "$user"
-    # Update the .env file with the new HOME variable
-    if [[ "$(uname -s)" == "Darwin" ]]; then
-      update_env_file_mac
-    else
-      update_env_file_linux
-    fi
-  fi
-}
-
-# Function to load .env and .env.local files and then load a specific environment variable
-load_env_and_var() {
-  local var_name="$1"
-  local user="$2"
-  load_env "$user"
-  load_env_var "$var_name" "$user"
 }
 
 # Main script execution

@@ -18,10 +18,3 @@ detect_os() {
             ;;
     esac
 }
-
-# Main script execution
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    os=$(detect_os)
-    export OS_DETECTED=true
-    echo "$os"
-fi
