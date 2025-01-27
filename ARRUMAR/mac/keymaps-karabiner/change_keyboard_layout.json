@@ -1,0 +1,13 @@
+{
+    "description": "Change keyboard layout when right_option key is pressed",
+    "manipulators": [
+        {
+            "from": {
+                "key_code": "right_option",
+                "modifiers": { "optional": ["any"] }
+            },
+            "to": [{ "key_code": "f11" }],
+            "type": "basic"
+        }
+    ]
+}
