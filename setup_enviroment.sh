@@ -26,6 +26,7 @@ detect_and_install_apps() {
 
     # Install selected apps
     ./install_apps.sh
+    ./vscode/install_plugins.sh
 
     case "$os" in
         macOS)
