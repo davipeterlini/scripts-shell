@@ -13,7 +13,11 @@ Geral
     - Remover as funções que não estão sendo utilizadas
   - Crie um script para detecção do profile que está sendo utilizado na pasta utils
   - Colocar os scripts de setup na paras do mac e adequá-los a nova estrutura
-
+  - Criação de plugin para VScode
+  - Criação de script de setup de vscode 
+    - Nesse script chame o script install_plugins.sh
+    - Lembres-se esse script deve conter configurações do vscode
+    - Esse script deve manter o padrão que está sendo realizado em outros scripts ou melhor ter uma arquitetura limpa otimizada e coesa
 
 
 
