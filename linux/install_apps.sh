@@ -12,8 +12,6 @@ source "$(dirname "$0")/update_apps.sh"
 
 # Function to install apps on Linux
 install_apps_linux() {
-    # Install FlatPak if not installed
-    install_flatpak
     # Check if dialog is installed
     if ! command -v dialog &> /dev/null; then
         echo "dialog is not installed. Installing dialog..."
@@ -32,7 +30,7 @@ main() {
     update_all_apps_linux
     
     # Install Homebrew if not installed
-    install_homebrew
+    install_flatpak
 
     # Display menu and get user choices
     choices=$(display_menu)
