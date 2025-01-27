@@ -9,8 +9,6 @@
 # Function to install additional apps and configurations on macOS
 setup_mac() {
     ./mac/setup/setup_iterm.sh
-    ./mac/setup/update_apps.sh
-    ./mac/setup/setup_terminal.sh
 }
 
 # Function to install additional apps and configurations on Linux (Debian-based)
