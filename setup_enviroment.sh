@@ -9,6 +9,7 @@
 # Function to install additional apps and configurations on macOS
 setup_mac() {
     ./mac/setup/setup_iterm.sh
+    ./mac/setup/setup_terminal.sh
 }
 
 # Function to install additional apps and configurations on Linux (Debian-based)
@@ -27,6 +28,7 @@ detect_and_install_apps() {
     # Install selected apps
     ./install_apps.sh
     ./vscode/install_plugins.sh
+    ./vscode/setup_vscode.sh
 
     case "$os" in
         macOS)
