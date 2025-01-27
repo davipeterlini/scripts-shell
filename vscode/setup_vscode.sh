@@ -2,7 +2,7 @@
 
 # Load environment variables and utility functions if not already loaded
 if [ -z "$ENV_LOADED" ]; then
-    source "$(dirname "$0")/../utils/load_env.sh"
+source "$(dirname "$0")/../utils/load_env.sh"
 load_env
     export ENV_LOADED=true
 fi
@@ -30,6 +30,7 @@ setup_vscode_config() {
 }
 EOL
 
+# TODO - precisa arrumar isso para pegar da forma correta
 # Write VSCode extensions recommendations
 vscode_extensions_file=".vscode/extensions.json"
 cat > "$vscode_extensions_file" <<EOL

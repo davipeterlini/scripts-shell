@@ -18,7 +18,10 @@ Geral
     - Nesse script chame o script install_plugins.sh
     - Lembres-se esse script deve conter configurações do vscode
     - Esse script deve manter o padrão que está sendo realizado em outros scripts ou melhor ter uma arquitetura limpa otimizada e coesa
-
+  
+  - Configurações do Google Cloud 
+  - Configurações do Colima 
+  - Configurações do Python
 
 
   - Remover o arquivo .env do commit 
