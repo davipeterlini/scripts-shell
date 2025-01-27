@@ -23,5 +23,3 @@ choose_shell_profile() {
   echo "Profile file set to $profile_file"
   export PROFILE_FILE="$profile_file"
 }
-
-choose_shell_profile
