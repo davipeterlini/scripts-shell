@@ -2,8 +2,8 @@
 
 # Load environment variables and utility functions if not already loaded
 if [ -z "$ENV_LOADED" ]; then
-    source "$(dirname "$0")/utils/load_env.sh"
-    load_env
+    source "$(dirname "$0")/../utils/load_env.sh"
+load_env
     export ENV_LOADED=true
 fi
 
@@ -30,34 +30,12 @@ setup_vscode_config() {
 }
 EOL
 
-    # Write VSCode extensions recommendations
-    cat > "$vscode_extensions_file" <<EOL
+# Write VSCode extensions recommendations
+vscode_extensions_file=".vscode/extensions.json"
+cat > "$vscode_extensions_file" <<EOL
 {
     "recommendations": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "styled-components.vscode-styled-components",
-        "naumovs.color-highlight",
-        "unifiedjs.vscode-mdx",
-        "vitest.explorer",
-        "rangav.vscode-thunder-client",
-        "ms-azuretools.vscode-docker",
-        "mikestead.dotenv",
-        "gerane.Theme-Dracula",
-        "mervin.markdown-formatter",
-        "MS-CEINTL.vscode-language-pack-pt-BR",
-        "alphabotsec.vscode-eclipse-keybindings",
-        "moshfeu.compare-folders",
-        "Gruntfuggly.todo-tree",
-        "Noctarya.typescript-web-development-extension-pack",
-        "Orta.vscode-jest",
-        "firsttris.vscode-jest-runner",
-        "ms-playwright.playwright",
-        "GitHub.copilot",
-        "GitHub.copilot-labs",
-        "prompt-flow.prompt-flow",
-        "cit-flow-coder-assistant.cit-flow-coder-assistant",
-        "PrismaCloud.prisma-cloud"
+        $(echo $VSCODE_EXTENSIONS | sed 's/,/","/g' | sed 's/^/"/' | sed 's/$/"/')
     ]
 }
 EOL
