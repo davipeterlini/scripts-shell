@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/zsh
 
 # Function to install Oh My Zsh
 install_oh_my_zsh() {
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
-        echo "Installing Oh My Zsh..."
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    echo "Installing Oh My Zsh..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
     else
         echo "Oh My Zsh aready install"
 fi
@@ -25,11 +25,17 @@ install_plugins() {
     sed -i '' 's/plugins=(/plugins=(zsh-syntax-highlighting zsh-autosuggestions /' ~/.zshrc
 }
 
+change_theme() {
+    echo "Modify the .zshrc file to use the 'agnoster' theme"
+    sed -i '' 's/ZSH_THEME="robbyrussell"/# ZSH_THEME="robbyrussell"\nZSH_THEME="agnoster"/' ~/.zshrc
+}
+
 # Main script execution
 main() {
     install_oh_my_zsh
-    install_powerlevel10k
+    #install_powerlevel10k
     install_plugins
+    change_theme
     echo "Terminal setup completed. Please restart your terminal."
 }
 
