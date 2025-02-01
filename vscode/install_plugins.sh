@@ -33,9 +33,14 @@ extensions=(
 )
 
 # Install each extension
-for extension in "${extensions[@]}"; do
-    echo "Installing $extension..."
-    install_extension "$extension"
-done
+install_vscode_extensions() {
+    for extension in "${extensions[@]}"; do
+        code --install-extension "$extension" || {
+            echo "Failed to install extension: $extension"
+            exit 1
+        }
+    done
+}
 
-echo "All extensions installed successfully."
+# Main script execution
+install_vscode_extensions
