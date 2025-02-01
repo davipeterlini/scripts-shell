@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# TODO - acrescentar no script - pip install --upgrade openai
 # Ensure Python is installed and PATH is configured
 ./install_python.sh
 
