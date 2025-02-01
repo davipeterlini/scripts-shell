@@ -6,6 +6,7 @@ install_extension() {
     code --install-extension "$extension" --force
 }
 
+# TODO - precisa pegar do .env
 # List of extensions to install
 extensions=(
     "rangav.vscode-thunder-client"
@@ -28,7 +29,6 @@ extensions=(
     "GitHub.copilot"
     "GitHub.copilot-labs"
     "PrismaCloud.prisma-cloud"
-    "styled-components.vscode-styled-components"
     "unifiedjs.vscode-mdx"
     # CI&T
     "prompt-flow.prompt-flow"
