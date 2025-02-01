@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO - altere o script para pegar a versão do pyhton da variável de ambiente
+# TODO - altere o script para identicar o so a partir do script ultis
 # Function to install Python
 install_python() {
     echo "Installing Python..."
