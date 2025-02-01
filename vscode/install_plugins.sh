@@ -27,9 +27,12 @@ extensions=(
     "ms-playwright.playwright"
     "GitHub.copilot"
     "GitHub.copilot-labs"
+    "PrismaCloud.prisma-cloud"
+    "styled-components.vscode-styled-components"
+    "unifiedjs.vscode-mdx"
+    # CI&T
     "prompt-flow.prompt-flow"
     "cit-flow-coder-assistant.cit-flow-coder-assistant"
-    "PrismaCloud.prisma-cloud"
 )
 
 # Install each extension
@@ -37,7 +40,7 @@ install_vscode_extensions() {
     for extension in "${extensions[@]}"; do
         code --install-extension "$extension" || {
             echo "Failed to install extension: $extension"
-            exit 1
+        exit 1
         }
     done
 }
