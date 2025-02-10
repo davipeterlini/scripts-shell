@@ -10,9 +10,9 @@ install_coder() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
         python3 -m venv coder_env
         source coder_env/bin/activate
-        pip install coder
+        pip3 install https://storage.googleapis.com/flow-coder/coder-0.88-py3-none-any.whl
     else
-        pip3 install coder
+        pip3 install https://storage.googleapis.com/flow-coder/coder-0.88-py3-none-any.whl
     fi
     echo "Coder installed successfully."
 }
