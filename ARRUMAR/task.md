@@ -47,7 +47,7 @@ Geral
     }
 
     main
-  - 
+  - Justes dos scripts de instalação do Mac
 
 
 - 26/01/2025
