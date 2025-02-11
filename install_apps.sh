@@ -21,14 +21,11 @@ source "$(dirname "$0")/utils/detect_os.sh"
 source "$(dirname "$0")/utils/display_menu.sh"
 source "$(dirname "$0")/mac/install_homebrew.sh"
 source "$(dirname "$0")/mac/update_brew_apps.sh"
-source "$(dirname "$0")/mac/install_brew_apps.sh"
 
 # Linux
 source "$(dirname "$0")/linux/install_flatpak.sh"
 source "$(dirname "$0")/linux/update_flatpak_apps.sh"
 source "$(dirname "$0")/linux/update_aptget_apps.sh"
-source "$(dirname "$0")/linux/install_aptget_apps.sh"
-source "$(dirname "$0")/linux/install_flatpak_apps.sh"
 
 
 main() {
@@ -38,7 +35,7 @@ main() {
 
     if [[ "$os" == "macOS" ]]; then
         # Update all Homebrew packages before installation
-        update_all_apps_mac
+        #update_all_apps_mac
         
         # Install Homebrew if not installed
         install_homebrew
@@ -48,15 +45,16 @@ main() {
 
         # Install selected apps
         if [[ "$choices" == *"1"* ]]; then
-            install_brew_apps $(echo "$INSTALL_APPS_BASIC_MAC" | tr ',' ' ')
+            ./mac/install_brew_apps.sh $(echo "$INSTALL_APPS_BASIC_MAC" | tr ',' ' ')
         fi
         if [[ "$choices" == *"2"* ]]; then
-            install_brew_apps $(echo "$INSTALL_APPS_DEV_MAC" | tr ',' ' ')
+            ./mac/install_brew_apps.sh $(echo "$INSTALL_APPS_DEV_MAC" | tr ',' ' ')
         fi
         if [[ "$choices" == *"3"* ]]; then
-            install_brew_apps $(echo "$APPS_TO_INSTALL_MAC" | tr ',' ' ')
+            ./mac/install_brew_apps.sh $(echo "$APPS_TO_INSTALL_MAC" | tr ',' ' ')
         fi
     elif [[ "$os" == "Linux" ]]; then
+        echo "LINUX detected."
         # Update all Flatpak and apt-get packages before installation
         update_flatpak_apps
         update_aptget_apps
@@ -66,18 +64,18 @@ main() {
 
         # Install selected apps
         if [[ "$choices" == *"1"* ]]; then
-            install_flatpak_apps $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT" | tr ',' ' ')
-            install_aptget_apps $(echo "$INSTALL_APPS_BASIC_LINUX_APT" | tr ',' ' ')
+            ./linux/install_flatpak_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT" | tr ',' ' ')
+            ./linux/install_aptget_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_APT" | tr ',' ' ')
         fi
         if [[ "$choices" == *"2"* ]]; then
-            install_flatpak_apps $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT_DEV" | tr ',' ' ')
-            install_aptget_apps $(echo "$INSTALL_APPS_BASIC_LINUX_APT_DEV" | tr ',' ' ')
+            ./linux/install_flatpak_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT_DEV" | tr ',' ' ')
+            ./linux/install_aptget_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_APT_DEV" | tr ',' ' ')
         fi
         if [[ "$choices" == *"3"* ]]; then
-            install_flatpak_apps $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT" | tr ',' ' ')
-            install_flatpak_apps $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT_DEV" | tr ',' ' ')
-            install_aptget_apps $(echo "$INSTALL_APPS_BASIC_LINUX_APT" | tr ',' ' ')
-            install_aptget_apps $(echo "$INSTALL_APPS_BASIC_LINUX_APT_DEV" | tr ',' ' ')
+            ./linux/install_flatpak_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT" | tr ',' ' ')
+            ./linux/install_flatpak_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT_DEV" | tr ',' ' ')
+            ./linux/install_aptget_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_APT" | tr ',' ' ')
+            ./linux/install_aptget_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_APT_DEV" | tr ',' ' ')
         fi
     else
         echo "Unsupported OS."
