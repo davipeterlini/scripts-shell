@@ -1,29 +1,16 @@
 #!/bin/bash
 
-# Load environment variables and utility functions
-# Load environment variables and utility functions if not already loaded
-if [ -z "$ENV_LOADED" ]; then
-    source "$(dirname "$0")/utils/load_env.sh"
-    load_env
-    export ENV_LOADED=true
-fi
-source "$(dirname "$0")/install_homebrew.sh"
-
 # Function to update all Homebrew packages
 update_all_apps_mac() {
-    echo "Updating Homebrew and all installed packages..."
+    echo "Updating all Homebrew packages..."
     brew update
     brew upgrade
     brew cleanup
 }
 
-# Main function to handle the update process
-main() {
-    # Install Homebrew if not installed
-    install_homebrew
-
-    # Update all Homebrew packages
+# Main script execution
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    source "$(dirname "$0")/install_homebrew.sh"
+    install_homebrew "Call from Update"
     update_all_apps_mac
-}
-
-main
+fi
