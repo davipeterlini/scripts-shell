@@ -1,30 +1,23 @@
 #!/bin/bash
 
-# Function to install a single app using Homebrew and check its version
-install_app() {
-    local app="$1"
-    echo "Installing $app..."
-    brew install "$app"
+# Load the script to install Homebrew if not already installed
+source "$(dirname "$0")/install_homebrew.sh"
 
-    # Check and display the version of the installed app
-    if command -v "$app" &> /dev/null; then
-        echo "$app version: $($app --version)"
-    else
-        echo "Failed to install $app or unable to check version."
-    fi
+# Function to install apps using Homebrew
+install_brew_apps() {
+    local apps=("$@")
+    for app in "${apps[@]}"; do
+        brew install "$app"
+    done
 }
 
-# Main function to handle app installation
+# Main script execution
 main() {
-    if [ "$#" -eq 0 ]; then
-        echo "No apps specified for installation."
-        exit 1
-    fi
+    # Install Homebrew if not installed
+    install_homebrew
 
-    # Install each specified app
-    for app in "$@"; do
-        install_app "$app"
-    done
+    # Install the provided apps
+    install_brew_apps "$@"
 }
 
 main "$@"
