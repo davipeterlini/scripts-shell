@@ -3,7 +3,7 @@
 # Load environment variables and utility functions if not already loaded
 if [ -z "$ENV_LOADED" ]; then
 source "$(dirname "$0")/../utils/load_env.sh"
-    load_env
+load_env
     export ENV_LOADED=true
 fi
 
@@ -49,7 +49,7 @@ main() {
     setup_vscode_config
 
     echo "Installing VSCode extensions..."
-    ./vscode/install_plugins.sh.sh
+    ./vscode/install_vscode_plugins.sh
 
     echo "VSCode setup completed successfully."
 }
