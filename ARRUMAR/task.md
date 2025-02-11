@@ -66,6 +66,11 @@ Geral
   - Justes dos scripts de instalação do Mac
   - Testes e ajustes dos scripts do VScode
   - Crie um script para detecção do profile que está sendo utilizado na pasta utils
+  - Ajustes dos scripts no diretório do linux 
+  - 
+
+  - Testar scripts do linux
+
 
 
   
