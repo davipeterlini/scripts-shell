@@ -1,6 +1,22 @@
 Geral
 
-
+- 26/01/2025
+  - Criação do script para instalação do python e do coder framework da maneira correta na máquina 
+  - Atualização do script do python para ir para a versão oficial de scripts e pastas 
+  - Estrutura de scripts e pastas
+  - Faça um esquema de configuração que não fique pedindo para atualizar excecutar novamente os scripts que foram executados
+  - Ajustes nos scripts principais 
+  - Removendo do git o que ainda precisa de organização 
+  - Otimize os scripts da pasta utils e considere as informações; 
+    - Manter uma arquitetura limpa 
+    - Manter Coesão 
+    - Remover as funções que não estão sendo utilizadas
+  - Colocar os scripts de setup na paras do mac e adequá-los a nova estrutura
+  - Criação de plugin para VScode
+  - Criação de script de setup de vscode 
+    - Nesse script chame o script install_plugins.sh
+    - Lembres-se esse script deve conter configurações do vscode
+    - Esse script deve manter o padrão que está sendo realizado em outros scripts ou melhor ter uma arquitetura limpa otimizada e coesa
 - 10/02/2025
   - Ajustes o script 
     #!/bin/bash
@@ -48,26 +64,10 @@ Geral
 
     main
   - Justes dos scripts de instalação do Mac
-
-
-- 26/01/2025
-  - Criação do script para instalação do python e do coder framework da maneira correta na máquina 
-  - Atualização do script do python para ir para a versão oficial de scripts e pastas 
-  - Estrutura de scripts e pastas
-  - Faça um esquema de configuração que não fique pedindo para atualizar excecutar novamente os scripts que foram executados
-  - Ajustes nos scripts principais 
-  - Removendo do git o que ainda precisa de organização 
-  - Otimize os scripts da pasta utils e considere as informações; 
-    - Manter uma arquitetura limpa 
-    - Manter Coesão 
-    - Remover as funções que não estão sendo utilizadas
+  - Testes e ajustes dos scripts do VScode
   - Crie um script para detecção do profile que está sendo utilizado na pasta utils
-  - Colocar os scripts de setup na paras do mac e adequá-los a nova estrutura
-  - Criação de plugin para VScode
-  - Criação de script de setup de vscode 
-    - Nesse script chame o script install_plugins.sh
-    - Lembres-se esse script deve conter configurações do vscode
-    - Esse script deve manter o padrão que está sendo realizado em outros scripts ou melhor ter uma arquitetura limpa otimizada e coesa
+
+
   
   - Configurações do Google Cloud 
   - Configurações do Colima 
