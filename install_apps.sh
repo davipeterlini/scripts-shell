@@ -19,6 +19,8 @@ source "$(dirname "$0")/mac/install_homebrew.sh"
 source "$(dirname "$0")/mac/update_brew_apps.sh"
 source "$(dirname "$0")/linux/install_flatpak.sh"
 source "$(dirname "$0")/linux/install_flatpak_apps.sh"
+source "$(dirname "$0")/linux/install_apt_get_apps.sh"
+.sh
 
 main() {
     # Detect the operating system
@@ -52,15 +54,17 @@ main() {
         # Install selected apps
         if [[ "$choices" == *"1"* ]]; then
             ./linux/install_flatpak_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT" | tr ',' ' ')
-            ./linux/install_flatpak_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_APT" | tr ',' ' ')
+            ./linux/install_apt_get_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_APT" | tr ',' ' ')
         fi
         if [[ "$choices" == *"2"* ]]; then
             ./linux/install_flatpak_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT_DEV" | tr ',' ' ')
-            ./linux/install_flatpak_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_APT_DEV" | tr ',' ' ')
+            ./linux/install_apt_get_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_APT_DEV" | tr ',' ' ')
         fi
         if [[ "$choices" == *"3"* ]]; then
             ./linux/install_flatpak_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT" | tr ',' ' ')
             ./linux/install_flatpak_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT_DEV" | tr ',' ' ')
+            ./linux/install_apt_get_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_APT" | tr ',' ' ')
+            ./linux/install_apt_get_apps.sh $(echo "$INSTALL_APPS_BASIC_LINUX_APT_DEV" | tr ',' ' ')
         fi
     else
         echo "Unsupported OS."
