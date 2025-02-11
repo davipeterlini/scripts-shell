@@ -18,20 +18,6 @@ source "$(dirname "$0")/utils/display_menu.sh"
 source "$(dirname "$0")/mac/install_homebrew.sh"
 source "$(dirname "$0")/mac/update_apps.sh"
 
-# Function to install apps on macOS
-install_apps_mac() {
-    # Check if dialog is installed
-    if ! command -v dialog &> /dev/null; then
-        echo "dialog is not installed. Installing dialog..."
-        brew install dialog
-    fi
-
-    local apps=("$@")
-    for app in "${apps[@]}"; do
-        brew install "$app"
-    done
-}
-
 main() {
     # Detect the operating system
     os=$(detect_os)
@@ -48,9 +34,15 @@ main() {
         choices=$(display_menu)
 
         # Install selected apps
-        [[ "$choices" == *"1"* ]] && install_apps_mac $(echo "$INSTALL_APPS_BASIC_MAC" | tr ',' ' ')
-        [[ "$choices" == *"2"* ]] && install_apps_mac $(echo "$INSTALL_APPS_DEV_MAC" | tr ',' ' ')
-        [[ "$choices" == *"3"* ]] && install_apps_mac $(echo "$APPS_TO_INSTALL_MAC" | tr ',' ' ')
+        if [[ "$choices" == *"1"* ]]; then
+            ./mac/install_brew_apps.sh $(echo "$INSTALL_APPS_BASIC_MAC" | tr ',' ' ')
+        fi
+        if [[ "$choices" == *"2"* ]]; then
+            ./mac/install_brew_apps.sh $(echo "$INSTALL_APPS_DEV_MAC" | tr ',' ' ')
+        fi
+        if [[ "$choices" == *"3"* ]]; then
+            ./mac/install_brew_apps.sh $(echo "$APPS_TO_INSTALL_MAC" | tr ',' ' ')
+        fi
     elif [[ "$os" == "Linux" ]]; then
         ./linux/install_apps.sh
     else
