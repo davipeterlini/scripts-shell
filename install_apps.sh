@@ -16,7 +16,7 @@ fi
 source "$(dirname "$0")/utils/detect_os.sh"
 source "$(dirname "$0")/utils/display_menu.sh"
 source "$(dirname "$0")/mac/install_homebrew.sh"
-source "$(dirname "$0")/mac/update_apps.sh"
+source "$(dirname "$0")/mac/update_brew_apps.sh"
 
 main() {
     # Detect the operating system
