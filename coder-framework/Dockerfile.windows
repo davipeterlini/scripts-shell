@@ -1,4 +1,4 @@
-FROM debian:slim
+FROM alpine:slim
 
 # Instala o mingw-w64
 RUN apt-get update && \
