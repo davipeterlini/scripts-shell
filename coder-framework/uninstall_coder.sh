@@ -8,7 +8,7 @@ uninstall_coder_conda() {
         conda_env=$(echo $conda_path | sed 's|/bin/coder||')
         echo "Found conda environment: $conda_env"
         echo "Removing coder from conda environment..."
-        conda run -n base conda remove coder -y
+        conda run -p /usr/local/Caskroom/miniconda/base conda remove coder -y
         echo "Coder uninstalled successfully from conda."
     else
         echo "Coder is not installed via conda."
