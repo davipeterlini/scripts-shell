@@ -79,7 +79,15 @@ Geral
   - Atualizar script para instalar o coder sem o uso do conda 
   - Verificar o arquivo .zshrc para ver o novo path do coder
   - Verificar como é realizado no coder para pegar a versão latest
+    - Ver no código do coder
     - A partir da url - https://storage.googleapis.com/flow-coder/update_info.json
+
+
+
+
+
+  - Vscode 
+    - Instalação da extensão - MDX, vscode-styled-components
 
 
   - Alterar no script de build 
