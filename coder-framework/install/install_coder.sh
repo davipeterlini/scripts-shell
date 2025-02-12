@@ -57,12 +57,16 @@ configure_path() {
     fi
 }
 
+# TODO - faz sentido der o conda para instalação ? 
 # Main script execution
-if [[ $1 == "conda" ]]; then
-    install_coder_conda
-else
-    install_coder_venv
-    configure_path
-fi
+# if [[ $1 == "conda" ]]; then
+#     install_coder_conda
+# else
+#     install_coder_venv
+#     configure_path
+# fi
 
+
+install_coder_venv
+configure_path
 echo "Coder installation completed. Please restart your terminal or run 'source ~/.zshrc' to apply PATH changes."
