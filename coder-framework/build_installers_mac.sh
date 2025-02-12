@@ -9,13 +9,17 @@ mkdir -p coder-framework/build/linux
 mkdir -p coder-framework/build/windows
 
 # Build macOS .dmg
-echo "Building macOS .dmg..."
+echo "========================================"
+echo "Building macOS .dmg"
+echo "========================================"
 pkgbuild --root coder-framework/install --identifier com.example.coder --version 1.0 --install-location /usr/local/bin coder-framework/build/mac/coder.pkg
 hdiutil create coder-framework/build/mac/coder.dmg -volname "Coder Installer" -srcfolder coder-framework/build/mac/coder.pkg
 echo -e "\033[0;32mBuild macOS .dmg completed.\033[0m"
 
 # Build Linux .deb
-echo "Building Linux .deb..."
+echo "========================================"
+echo "Building Linux .deb"
+echo "========================================"
 if ! command -v dpkg-deb &> /dev/null; then
     echo "dpkg-deb could not be found, installing it..."
     brew install dpkg
@@ -38,7 +42,9 @@ mv coder-framework/build/linux/coder.deb coder-framework/build/linux/coder_1.0_a
 echo -e "\033[0;32mBuild Linux .deb completed.\033[0m"
 
 # Build Windows .exe
-echo "Building Windows .exe..."
+echo "========================================"
+echo "Building Windows .exe"
+echo "========================================"
 if ! command -v makensis &> /dev/null; then
     echo "makensis could not be found, please install it first."
     exit 1
