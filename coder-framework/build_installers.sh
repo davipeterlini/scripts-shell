@@ -8,11 +8,6 @@ mkdir -p coder-framework/build/mac
 mkdir -p coder-framework/build/linux
 mkdir -p coder-framework/build/windows
 
-# Build macOS .dmg
-echo "Building macOS .dmg..."
-pkgbuild --root coder-framework/install --identifier com.example.coder --version 1.0 --install-location /usr/local/bin coder-framework/build/mac/coder.pkg
-hdiutil create coder-framework/build/mac/coder.dmg -volname "Coder Installer" -srcfolder coder-framework/build/mac/coder.pkg
-
 # Check if Docker is running
 if ! docker info > /dev/null 2>&1; then
     echo "Docker is not running. Starting Docker..."
@@ -24,6 +19,13 @@ if ! docker info > /dev/null 2>&1; then
     done
     echo "Docker started."
 fi
+
+# Build macOS .dmg using Docker
+echo "Building macOS .dmg using Docker..."
+docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace -e "USER=$(id -u)" -e "GROUP=$(id -g)" macos-docker:latest /bin/bash -c "
+    pkgbuild --root install --identifier com.example.coder --version 1.0 --install-location /usr/local/bin build/mac/coder.pkg
+    hdiutil create build/mac/coder.dmg -volname 'Coder Installer' -srcfolder build/mac/coder.pkg
+"
 
 # Build Linux .deb using Docker
 echo "Building Linux .deb using Docker..."
@@ -45,6 +47,18 @@ EOF
     dpkg-deb --build build/linux/coder
     mv build/linux/coder.deb build/linux/coder_1.0_all.deb
 "
+
+# Build Windows .exe using Docker
+echo "Building Windows .exe using Docker..."
+docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace windows-docker:latest /bin/bash -c "
+    cp install/install_coder.bat build/windows/install_coder.bat
+    makensis -V4 -DOutFile=build/windows/coder_installer.exe -DInstallDir=\$PROGRAMFILES\Coder -DSourceDir=build/windows install_coder.nsi
+"
+
+# Build macOS .dmg
+# echo "Building macOS .dmg..."
+# pkgbuild --root coder-framework/install --identifier com.example.coder --version 1.0 --install-location /usr/local/bin coder-framework/build/mac/coder.pkg
+# hdiutil create coder-framework/build/mac/coder.dmg -volname "Coder Installer" -srcfolder coder-framework/build/mac/coder.pkg
 
 # Build Linux .deb
 # echo "Building Linux .deb..."
@@ -69,8 +83,8 @@ EOF
 # mv coder-framework/build/linux/coder.deb coder-framework/build/linux/coder_1.0_all.deb
 
 # Build Windows .exe
-echo "Building Windows .exe..."
-cp coder-framework/install/install_coder.bat coder-framework/build/windows/install_coder.bat
-makensis -V4 -DOutFile=coder-framework/build/windows/coder_installer.exe -DInstallDir=$PROGRAMFILES\Coder -DSourceDir=coder-framework/build/windows coder-framework/install_coder.nsi
+# echo "Building Windows .exe..."
+# cp coder-framework/install/install_coder.bat coder-framework/build/windows/install_coder.bat
+# makensis -V4 -DOutFile=coder-framework/build/windows/coder_installer.exe -DInstallDir=$PROGRAMFILES\Coder -DSourceDir=coder-framework/build/windows coder-framework/install_coder.nsi
 
 echo "Build completed. Installers are located in the coder-framework/build directory."
