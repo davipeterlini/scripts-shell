@@ -89,7 +89,11 @@ Geral
   - O script de instalação deve ter a possibilidade de instalar o conda 
   - Deve existir um script de check de instalação do coder 
   - Deve existir um script de check de onde o coder está executando 
-  - 
+  - Geração de pacote do Mac, Linux via mac 
+  - geração de pacote do linux, via docker 
+  - Geração de pacote do mac e windows via docker
+  
+  - Deixe a linha coloriada para a mensagem de que gerou o pacote de cada SO
 
 
 
