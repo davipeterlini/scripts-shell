@@ -10,6 +10,7 @@ source "$(dirname "$0")/utils/detect_os.sh"
 setup_mac() {
     ./mac/setup/setup_iterm.sh
     ./mac/setup/setup_terminal.sh
+    # TODO - falta configurações de teclado e de ajustes do mac os
 }
 
 # Function to install additional apps and configurations on Linux (Debian-based)
@@ -27,7 +28,6 @@ detect_and_install_apps() {
 
     # Install selected apps
     ./install_apps.sh
-    ./vscode/install_plugins.sh
     ./vscode/setup_vscode.sh
 
     case "$os" in
