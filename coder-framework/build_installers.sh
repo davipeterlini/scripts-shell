@@ -21,7 +21,9 @@ if ! docker info > /dev/null 2>&1; then
 fi
 
 # Build macOS .dmg using Docker
+echo "========================================"
 echo "Building macOS .dmg using Docker..."
+echo "========================================"
 docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace dockurr/macos:latest /bin/bash -c "
     pkgbuild --root install --identifier com.example.coder --version 1.0 --install-location /usr/local/bin build/mac/coder.pkg
     hdiutil create build/mac/coder.dmg -volname 'Coder Installer' -srcfolder build/mac/coder.pkg
@@ -29,7 +31,9 @@ docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace dockurr/mac
 echo -e "\033[0;32mBuild macOS .dmg completed.\033[0m"
 
 # Build Linux .deb using Docker
+echo "========================================"
 echo "Building Linux .deb using Docker..."
+echo "========================================"
 docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace ubuntu:latest /bin/bash -c "
     apt-get update && apt-get install -y dpkg-dev
     mkdir -p build/linux/coder/DEBIAN
@@ -51,7 +55,9 @@ EOF
 echo -e "\033[0;32mBuild Linux .deb completed.\033[0m"
 
 # Build Windows .exe using Docker
+echo "========================================"
 echo "Building Windows .exe using Docker..."
+echo "========================================"
 docker build -t my-windows-compiler -f coder-framework/Dockerfile.windows .
 docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace my-windows-compiler
 echo -e "\033[0;32mBuild Windows .exe completed.\033[0m"

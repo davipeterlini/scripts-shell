@@ -93,7 +93,7 @@ Geral
   - geração de pacote do linux, via docker 
   - Geração de pacote do mac e windows via docker
   - Use apenas um dockerfile com a imagem alpine:latest e gere o .deb (linux), .pkg e .dmg (mac) e o .exe (windows)
-
+  - Coloque algum separador que separe visualmente no terminal a geração de cada build para cada SO 
 
 
   - Vscode 
