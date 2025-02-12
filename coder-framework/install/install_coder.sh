@@ -66,7 +66,8 @@ configure_path() {
 #     configure_path
 # fi
 
-
+# Main script execution
 install_coder_venv
 configure_path
+
 echo "Coder installation completed. Please restart your terminal or run 'source ~/.zshrc' to apply PATH changes."
