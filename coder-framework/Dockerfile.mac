@@ -2,7 +2,16 @@ FROM debian:latest
 
 # Install necessary tools for building macOS packages
 RUN apt-get update && \
-    apt-get install -y pkgbuild hdiutil
+    apt-get install -y curl xz-utils
+
+# Install pkgbuild and hdiutil manually
+RUN curl -L -o pkgbuild.tar.xz https://example.com/path/to/pkgbuild.tar.xz && \
+    tar -xf pkgbuild.tar.xz -C /usr/local/bin && \
+    rm pkgbuild.tar.xz
+
+RUN curl -L -o hdiutil.tar.xz https://example.com/path/to/hdiutil.tar.xz && \
+    tar -xf hdiutil.tar.xz -C /usr/local/bin && \
+    rm hdiutil.tar.xz
 
 # Set the working directory
 WORKDIR /workspace
@@ -11,8 +20,8 @@ WORKDIR /workspace
 COPY . .
 
 # Build the macOS .pkg and .dmg
-RUN pkgbuild --root install --identifier com.example.coder --version 1.0 --install-location /usr/local/bin build/mac/coder.pkg && \
-    hdiutil create build/mac/coder.dmg -volname "Coder Installer" -srcfolder build/mac/coder.pkg
+RUN /usr/local/bin/pkgbuild --root install --identifier com.example.coder --version 1.0 --install-location /usr/local/bin build/mac/coder.pkg && \
+    /usr/local/bin/hdiutil create build/mac/coder.dmg -volname "Coder Installer" -srcfolder build/mac/coder.pkg
 
 # Default command
 CMD ["bash"]
