@@ -1,0 +1,18 @@
+FROM debian:latest
+
+# Install necessary tools for building macOS packages
+RUN apt-get update && \
+    apt-get install -y pkgbuild hdiutil
+
+# Set the working directory
+WORKDIR /workspace
+
+# Copy the source code to the container
+COPY . .
+
+# Build the macOS .pkg and .dmg
+RUN pkgbuild --root install --identifier com.example.coder --version 1.0 --install-location /usr/local/bin build/mac/coder.pkg && \
+    hdiutil create build/mac/coder.dmg -volname "Coder Installer" -srcfolder build/mac/coder.pkg
+
+# Default command
+CMD ["bash"]
