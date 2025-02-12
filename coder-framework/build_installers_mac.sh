@@ -37,6 +37,14 @@ mv coder-framework/build/linux/coder.deb coder-framework/build/linux/coder_1.0_a
 
 # Build Windows .exe
 echo "Building Windows .exe..."
+if ! command -v makensis &> /dev/null; then
+    echo "makensis could not be found, please install it first."
+    exit 1
+fi
+if [ ! -f coder-framework/install/install_coder.bat ]; then
+    echo "install_coder.bat not found in coder-framework/install/"
+    exit 1
+fi
 cp coder-framework/install/install_coder.bat coder-framework/build/windows/install_coder.bat
 makensis -V4 -DOutFile=coder-framework/build/windows/coder_installer.exe -DInstallDir=$PROGRAMFILES\Coder -DSourceDir=coder-framework/build/windows coder-framework/install_coder.nsi
 
