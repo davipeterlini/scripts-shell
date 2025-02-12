@@ -81,7 +81,9 @@ Geral
   - Verificar como é realizado no coder para pegar a versão latest
     - Ver no código do coder
     - A partir da url - https://storage.googleapis.com/flow-coder/update_info.json
-
+  - Ajustes no script de instalação do coder 
+  - Criação de alies para testes do coder
+    - alias coder_venv="$HOME/coder_env/bin/coder"
 
 
 

@@ -12,5 +12,15 @@ check_coder() {
     fi
 }
 
+# Function to run coder from the virtual environment
+run_coder_venv() {
+    $HOME/coder_env/bin/coder "$@"
+}
+
 # Main script execution
-check_coder
+if [[ $1 == "venv" ]]; then
+    shift
+    run_coder_venv "$@"
+else
+    check_coder
+fi
