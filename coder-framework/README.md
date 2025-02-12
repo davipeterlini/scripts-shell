@@ -18,3 +18,26 @@ hdiutil create coder-framework/build/mac/coder.dmg -volname "Coder Installer" -s
    - `coder-framework/build/mac/coder.dmg`: Especifica o caminho e o nome do arquivo de imagem de disco a ser criado.
    - `-volname "Coder Installer"`: Define o nome do volume que será exibido quando a imagem de disco for montada.
    - `-srcfolder coder-framework/build/mac/coder.pkg`: Especifica a pasta de origem que contém os arquivos a serem incluídos na imagem de disco.
+
+### Explicação do Script `install_coder.sh`
+
+1. **Instalação do Python**:
+   - O script `install_python.sh` é executado para garantir que o Python está instalado e configurado corretamente.
+
+2. **Função `install_coder`**:
+   - Cria um ambiente virtual Python chamado `coder_env`.
+   - Ativa o ambiente virtual.
+   - Atualiza o `pip` para a versão mais recente.
+   - Instala o pacote `coder` usando o comando `pip install https://storage.googleapis.com/flow-coder/coder-0.88-py3-none-any.whl`.
+   - Desativa o ambiente virtual.
+
+3. **Função `configure_path`**:
+   - Adiciona o diretório `coder_env/bin` ao PATH no arquivo de configuração do shell (`.zshrc`).
+   - Verifica se a entrada do PATH já existe no arquivo de configuração do shell e a adiciona se não existir.
+
+4. **Execução Principal do Script**:
+   - Chama a função `install_coder` para instalar o `coder`.
+   - Chama a função `configure_path` para configurar o PATH.
+   - Exibe uma mensagem indicando que a instalação foi concluída e recomenda reiniciar o terminal ou executar `source ~/.zshrc` para aplicar as mudanças no PATH.
+
+Com este script, você pode instalar o `coder` diretamente com Python e configurá-lo para ser executado sem o uso do conda.
