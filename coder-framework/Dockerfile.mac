@@ -4,11 +4,12 @@ FROM debian:latest
 RUN apt-get update && \
     apt-get install -y curl xz-utils
 
-# Install pkgbuild and hdiutil manually
+# Install pkgbuild manually
 RUN curl -L -o pkgbuild.tar.xz https://example.com/path/to/pkgbuild.tar.xz && \
     tar -xf pkgbuild.tar.xz -C /usr/local/bin && \
     rm pkgbuild.tar.xz
 
+# Install hdiutil manually
 RUN curl -L -o hdiutil.tar.xz https://example.com/path/to/hdiutil.tar.xz && \
     tar -xf hdiutil.tar.xz -C /usr/local/bin && \
     rm hdiutil.tar.xz
