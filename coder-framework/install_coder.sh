@@ -3,13 +3,22 @@
 # Ensure Python is installed and PATH is configured
 source "$(dirname "$0")/install_python.sh"
 
+# Function to get the latest version of coder
+get_latest_coder_url() {
+    echo "Fetching the latest version of coder..."
+    latest_info=$(curl -s https://storage.googleapis.com/flow-coder/update_info.json)
+    coder_url=$(echo $latest_info | python3 -c "import sys, json; print(json.load(sys.stdin)['url'])")
+    echo "Latest coder URL: $coder_url"
+}
+
 # Function to install coder
 install_coder() {
     echo "Installing coder..."
     python3 -m venv coder_env
     source coder_env/bin/activate
     pip install --upgrade pip
-    pip install https://storage.googleapis.com/flow-coder/coder-0.88-py3-none-any.whl
+    get_latest_coder_url
+    pip install $coder_url
     deactivate
     echo "Coder installed successfully."
 }
