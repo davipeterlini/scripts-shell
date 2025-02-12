@@ -15,6 +15,10 @@ hdiutil create coder-framework/build/mac/coder.dmg -volname "Coder Installer" -s
 
 # Build Linux .deb
 echo "Building Linux .deb..."
+if ! command -v dpkg-deb &> /dev/null; then
+    echo "dpkg-deb could not be found, installing it..."
+    brew install dpkg
+fi
 mkdir -p coder-framework/build/linux/coder/DEBIAN
 cat <<EOF > coder-framework/build/linux/coder/DEBIAN/control
 Package: coder
