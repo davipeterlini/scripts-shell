@@ -74,7 +74,14 @@ Geral
     - Criar o script de geração do executável de instalação do coder para os SOs
 - 12/02/2025
   - Entender o que o script de build faz para gerar o executável do mac
-  - Identificar onde é feita a instalação do coder no mac - find . -name coder
+  - Identificar onde é feita a instalação do coder no mac which coder
+    - /usr/local/Caskroom/miniconda/base/bin/coder
+  - Atualizar script para instalar o coder sem o uso do conda 
+  - Verificar o arquivo .zshrc para ver o novo path do coder
+  - Verificar como é realizado no coder para pegar a versão latest
+    - A partir da url - https://storage.googleapis.com/flow-coder/update_info.json
+
+
   - Alterar no script de build 
   - Instanciar o docker do windows e linux para fazer o build do script do coder e gerar o executável  
   - Testar no MAC
