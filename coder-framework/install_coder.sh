@@ -33,7 +33,7 @@ install_coder() {
 configure_path() {
     echo "Configuring PATH..."
     SHELL_CONFIG_FILE="$HOME/.zshrc"
-    PATH_ENTRY="export PATH=\$PATH:$HOME/coder_env/bin"
+    PATH_ENTRY='export PATH=$PATH:$HOME/coder_env/bin'
 
     if ! grep -Fxq "$PATH_ENTRY" $SHELL_CONFIG_FILE; then
         echo '' >> $SHELL_CONFIG_FILE
