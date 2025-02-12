@@ -83,6 +83,8 @@ Geral
     - A partir da url - https://storage.googleapis.com/flow-coder/update_info.json
   - Ajustes no script de instalação do coder 
   - Criação de alies para testes do coder
+    - export PATH=$HOME/coder_env/bin:$PATH
+    - source ~/.zshrc
     - alias coder_venv="$HOME/coder_env/bin/coder"
 
 
