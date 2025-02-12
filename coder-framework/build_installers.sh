@@ -22,7 +22,7 @@ fi
 
 # Build macOS .dmg using Docker
 echo "Building macOS .dmg using Docker..."
-docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace -e "USER=$(id -u)" -e "GROUP=$(id -g)" macos-docker:latest /bin/bash -c "
+docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace dockurr/macos:latest /bin/bash -c "
     pkgbuild --root install --identifier com.example.coder --version 1.0 --install-location /usr/local/bin build/mac/coder.pkg
     hdiutil create build/mac/coder.dmg -volname 'Coder Installer' -srcfolder build/mac/coder.pkg
 "
