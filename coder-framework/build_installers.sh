@@ -50,7 +50,7 @@ EOF
 
 # Build Windows .exe using Docker
 echo "Building Windows .exe using Docker..."
-docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace windows-docker:latest /bin/bash -c "
+docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace dockurr/windows:latest /bin/bash -c "
     cp install/install_coder.bat build/windows/install_coder.bat
     makensis -V4 -DOutFile=build/windows/coder_installer.exe -DInstallDir=\$PROGRAMFILES\Coder -DSourceDir=build/windows install_coder.nsi
 "
