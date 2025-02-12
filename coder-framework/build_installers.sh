@@ -50,7 +50,7 @@ EOF
 
 # Build Windows .exe using Docker
 echo "Building Windows .exe using Docker..."
-docker build -t my-windows-compiler -f Dockerfile.windows .
+docker build -t my-windows-compiler -f coder-framework/Dockerfile.windows .
 docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace my-windows-compiler
 
 echo "Build completed. Installers are located in the coder-framework/build directory."
