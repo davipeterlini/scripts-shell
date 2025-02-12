@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Ensure Python is installed and PATH is configured
+source "$(dirname "$0")/install_python.sh"
+install_python
+
 # Load environment variables
 source "$(dirname "$0")/../utils/load_env.sh"
 load_env
