@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Ensure Python is installed and PATH is configured
-source "$(dirname "$0")/install_python.sh"
+# Load environment variables
+source "$(dirname "$0")/../utils/load_env.sh"
+load_env
 
 # Function to get the latest version of coder
 get_latest_coder_url() {
@@ -14,8 +15,9 @@ get_latest_coder_url() {
 # Function to install coder
 install_coder() {
     echo "Installing coder..."
-    python3 -m venv coder_env
-    source coder_env/bin/activate
+    coder_env_dir="$HOME/coder_env"
+    python3 -m venv $coder_env_dir
+    source $coder_env_dir/bin/activate
     pip install --upgrade pip
     get_latest_coder_url
     pip install $coder_url
@@ -27,7 +29,7 @@ install_coder() {
 configure_path() {
     echo "Configuring PATH..."
     SHELL_CONFIG_FILE="$HOME/.zshrc"
-    PATH_ENTRY='export PATH=$PATH:$(pwd)/coder_env/bin'
+    PATH_ENTRY="export PATH=\$PATH:$HOME/coder_env/bin"
 
     if ! grep -Fxq "$PATH_ENTRY" $SHELL_CONFIG_FILE; then
         echo '' >> $SHELL_CONFIG_FILE
