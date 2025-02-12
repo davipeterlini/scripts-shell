@@ -92,8 +92,7 @@ Geral
   - Geração de pacote do Mac, Linux via mac 
   - geração de pacote do linux, via docker 
   - Geração de pacote do mac e windows via docker
-  
-  - Deixe a linha coloriada para a mensagem de que gerou o pacote de cada SO
+  - Use apenas um dockerfile com a imagem alpine:latest e gere o .deb (linux), .pkg e .dmg (mac) e o .exe (windows)
 
 
 

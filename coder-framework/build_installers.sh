@@ -13,7 +13,7 @@ if ! docker info > /dev/null 2>&1; then
     echo "Docker is not running. Starting Docker..."
     open --background -a Docker
     # Wait until Docker daemon is running
-    while ! docker info > /dev/null 2>&1; do
+    while ! docker info > /dev/null; do
         echo "Waiting for Docker to start..."
         sleep 2
     done
@@ -26,6 +26,7 @@ docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace dockurr/mac
     pkgbuild --root install --identifier com.example.coder --version 1.0 --install-location /usr/local/bin build/mac/coder.pkg
     hdiutil create build/mac/coder.dmg -volname 'Coder Installer' -srcfolder build/mac/coder.pkg
 "
+echo -e "\033[0;32mBuild macOS .dmg completed.\033[0m"
 
 # Build Linux .deb using Docker
 echo "Building Linux .deb using Docker..."
@@ -47,10 +48,12 @@ EOF
     dpkg-deb --build build/linux/coder
     mv build/linux/coder.deb build/linux/coder_1.0_all.deb
 "
+echo -e "\033[0;32mBuild Linux .deb completed.\033[0m"
 
 # Build Windows .exe using Docker
 echo "Building Windows .exe using Docker..."
 docker build -t my-windows-compiler -f coder-framework/Dockerfile.windows .
 docker run --rm -v "$(pwd)/coder-framework:/workspace" -w /workspace my-windows-compiler
+echo -e "\033[0;32mBuild Windows .exe completed.\033[0m"
 
 echo "Build completed. Installers are located in the coder-framework/build directory."
