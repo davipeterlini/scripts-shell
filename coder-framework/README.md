@@ -24,18 +24,22 @@ hdiutil create coder-framework/build/mac/coder.dmg -volname "Coder Installer" -s
 1. **Instalação do Python**:
    - O script `install_python.sh` é executado para garantir que o Python está instalado e configurado corretamente.
 
-2. **Função `install_coder`**:
-   - Cria um ambiente virtual Python chamado `coder_env`.
+2. **Função `get_latest_coder_url`**:
+   - Obtém a URL da última versão do `coder` a partir de um arquivo JSON hospedado em uma URL específica.
+
+3. **Função `install_coder`**:
+   - Cria um ambiente virtual Python chamado `coder_env` no diretório `$HOME`.
    - Ativa o ambiente virtual.
    - Atualiza o `pip` para a versão mais recente.
-   - Instala o pacote `coder` usando o comando `pip install https://storage.googleapis.com/flow-coder/coder-0.88-py3-none-any.whl`.
+   - Obtém a URL da última versão do `coder` e instala o pacote `coder` usando o comando `pip install`.
    - Desativa o ambiente virtual.
 
-3. **Função `configure_path`**:
-   - Adiciona o diretório `coder_env/bin` ao PATH no arquivo de configuração do shell (`.zshrc`).
+4. **Função `configure_path`**:
+   - Adiciona o diretório `$HOME/coder_env/bin` ao PATH no arquivo de configuração do shell (`.zshrc`).
    - Verifica se a entrada do PATH já existe no arquivo de configuração do shell e a adiciona se não existir.
 
-4. **Execução Principal do Script**:
+5. **Execução Principal do Script**:
+   - Chama a função `install_python` para garantir que o Python está instalado.
    - Chama a função `install_coder` para instalar o `coder`.
    - Chama a função `configure_path` para configurar o PATH.
    - Exibe uma mensagem indicando que a instalação foi concluída e recomenda reiniciar o terminal ou executar `source ~/.zshrc` para aplicar as mudanças no PATH.
