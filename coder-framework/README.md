@@ -45,3 +45,6 @@ hdiutil create coder-framework/build/mac/coder.dmg -volname "Coder Installer" -s
    - Exibe uma mensagem indicando que a instalação foi concluída e recomenda reiniciar o terminal ou executar `source ~/.zshrc` para aplicar as mudanças no PATH.
 
 Com este script, você pode instalar o `coder` diretamente com Python e configurá-lo para ser executado sem o uso do conda.
+
+### Nota Importante
+Se você remover `$HOME/coder_env/bin` do seu profile, o `coder` deixará de funcionar, pois o executável `coder` não estará mais no PATH do sistema. Isso significa que o sistema não conseguirá localizar o comando `coder` quando você tentar executá-lo.
