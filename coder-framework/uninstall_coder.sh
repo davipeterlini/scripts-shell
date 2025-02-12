@@ -7,7 +7,8 @@ uninstall_coder_conda() {
     if [[ $conda_path == *"/miniconda/"* ]]; then
         conda_env=$(echo $conda_path | sed 's|/bin/coder||')
         echo "Found conda environment: $conda_env"
-        conda remove --name base --all
+        echo "Removing coder from conda environment..."
+        conda run -n base conda remove coder -y
         echo "Coder uninstalled successfully from conda."
     else
         echo "Coder is not installed via conda."
@@ -17,8 +18,8 @@ uninstall_coder_conda() {
 # Function to remove coder environment if installed via script
 uninstall_coder_script() {
     echo "Uninstalling coder installed via script..."
-    if [ -d "coder_env" ]; then
-        rm -rf coder_env
+    if [ -d "$HOME/coder_env" ]; then
+        rm -rf "$HOME/coder_env"
         echo "Coder environment removed successfully."
     else
         echo "Coder environment not found."
