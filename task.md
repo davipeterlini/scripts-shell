@@ -86,7 +86,10 @@ Geral
     - export PATH=$HOME/coder_env/bin:$PATH
     - source ~/.zshrc
     - alias coder_venv="$HOME/coder_env/bin/coder"
-
+  - O script de instalação deve ter a possibilidade de instalar o conda 
+  - Deve existir um script de check de instalação do coder 
+  - Deve existir um script de check de onde o coder está executando 
+  - 
 
 
 

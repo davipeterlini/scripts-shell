@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Remove existing build directory if it exists
+rm -rf coder-framework/build
+
 # Create directories for build outputs
 mkdir -p coder-framework/build/mac
 mkdir -p coder-framework/build/linux
