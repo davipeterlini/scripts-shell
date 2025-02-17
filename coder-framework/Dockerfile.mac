@@ -1,11 +1,15 @@
-FROM debian:latest
+FROM dockurr/macos
+
+# Set environment variable for macOS version
+ENV VERSION="13"
 
 # Install necessary tools for building macOS packages
 RUN apt-get update && \
     apt-get install -y curl xz-utils
 
 # Install pkgbuild manually
-RUN curl -L -o pkgbuild.tar.gz <correct_url_to_pkgbuild.tar.gz> && \
+RUN curl -L -o pkgbuild.tar.gz https://example.com/path/to/pkgbuild.tar.gz && \
+    file pkgbuild.tar.gz && \
     tar -xzf pkgbuild.tar.gz -C /usr/local/bin && \
     rm pkgbuild.tar.gz
 
