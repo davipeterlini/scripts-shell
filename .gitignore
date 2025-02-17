@@ -8,5 +8,5 @@
 # Fix
 no-commit/
 coder_env/
-build/
+#build/
 chatHistory.json
