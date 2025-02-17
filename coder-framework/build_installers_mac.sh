@@ -22,8 +22,10 @@ echo "Building Linux .deb"
 echo "========================================"
 if ! command -v dpkg-deb &> /dev/null; then
     echo "dpkg-deb could not be found, installing it..."
-    brew install dpkg
+    sudo apt-get install dpkg-dev
 fi
+
+# Create the DEBIAN control file
 mkdir -p coder-framework/build/linux/coder/DEBIAN
 cat <<EOF > coder-framework/build/linux/coder/DEBIAN/control
 Package: coder
@@ -35,8 +37,16 @@ Depends: python3, python3-pip
 Maintainer: Your Name <your_email@example.com>
 Description: Coder installation package
 EOF
+
+# Create directories for files to be installed
 mkdir -p coder-framework/build/linux/coder/usr/local/bin
+
+# Copy necessary files to the package structure
 cp coder-framework/install/install_coder.sh coder-framework/build/linux/coder/usr/local/bin/install_coder.sh
+# Adicione outros arquivos necessários aqui
+# cp coder-framework/install/other_file coder-framework/build/linux/coder/usr/local/bin/
+
+# Build the .deb package
 dpkg-deb --build coder-framework/build/linux/coder
 mv coder-framework/build/linux/coder.deb coder-framework/build/linux/coder_1.0_all.deb
 echo -e "\033[0;32mBuild Linux .deb completed.\033[0m"
