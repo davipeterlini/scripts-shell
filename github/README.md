@@ -38,3 +38,4 @@ Este script instala a CLI do GitHub (`gh`) e configura um token de acesso pessoa
 
 ### install_configure_gh_GH.sh
 Este script instala a CLI do GitHub (`gh`) e configura um token de acesso pessoal (PAT) usando a CLI do GitHub. Ele verifica se há tokens existentes, cria novos tokens se necessário e armazena o token no perfil do shell do usuário.
+Resumo: Gera o Classic Token remoto e disponibiliza local
