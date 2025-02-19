@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO - esse script está com problema e não está gerando o classic token
+
 # Atualizar Homebrew
 echo "Atualizando Homebrew..."
 brew update
