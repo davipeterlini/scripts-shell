@@ -95,6 +95,8 @@ Geral
   - Coloque algum separador que separe visualmente no terminal a geração de cada build para cada SO 
   - Use apenas um dockerfile com a imagem alpine:latest e gere o .deb (linux), .pkg e .dmg (mac) e o .exe (windows)
   - Remova o arquivo Dockerfile e o Dockerfile.windows da raiz do repo
+- 22/02
+  - Adicionar arquivo de config nas configurações global do vscode - settings.json - /Users/davi.peterlini/.config/Code/User
 
   - Vscode 
     - Instalação da extensão - MDX, vscode-styled-components
