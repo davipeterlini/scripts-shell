@@ -1,6 +1,9 @@
 # Ignore .env.local file
 .env.local
 
+# Fonts
+fonts/
+
 # Coder Framework
 .coder 
 .coderignore
