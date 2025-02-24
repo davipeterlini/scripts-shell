@@ -1,10 +1,5 @@
 {
-  "recommendations": [
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "styled-components.vscode-styled-components",
-    "naumovs.color-highlight",
-    "unifiedjs.vscode-mdx",
-    "vitest.explorer"
-  ]
+    "recommendations": [
+        ""
+    ]
 }
