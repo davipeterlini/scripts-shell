@@ -99,12 +99,23 @@ Geral
   - Adicionar arquivo de config nas configurações global do vscode - settings.json - /Users/davi.peterlini/.config/Code/User
 - 25/02/2025
   - Instalação do meld via brew - https://github.com/yousseb/meld/releases#:~:text=3-,meldmerge.dmg,-37.3%20MB
-  - Ajustes dos scipts do Git 
-    - 1 - Criar o multi ssh - ssh_multiple_github_accounts.sh
-    - 2 - Verificar para gerar o GIHUB_TOKEN - generate-classic-token-gh-local.sh
-    - 3 - Habilitar a chave desejada para autenticação - connect_git_ssh_account.sh
-      - Precisa habilitar o SSH quando for conta de trabalho ou organização
-
+  - Github
+    - Ajustes dos scipts do Git 
+      - 1 - Criar o multi ssh - ssh_multiple_github_accounts.sh
+      - 2 - Verificar para gerar o GIHUB_TOKEN - generate-classic-token-gh-local.sh
+      - 3 - Habilitar a chave desejada para autenticação - connect_git_ssh_account.sh
+    - Ajustes dos TODOS
+  - Coder 
+    - Instalação 
+    - Script de instalação
+  - Script Geral 
+    - Adicionar chamada do git
+  - Vscode 
+    - Instalação da extensão - MDX, vscode-styled-components
+    - Instalação das extensões no vscode 
+      - Separar scripts para instalação das extensões da cit e de coisas da CI&T
+      - Configuração do keymap 
+      - Configuração o autosave
 
 
     - Verificar script para configurar o multi ssh na máquina
@@ -115,12 +126,7 @@ Geral
       Se sim crie outra variável no local profile com nome NPM_TOKEN e grave o mesmo valor da GITHUB_WORK
       se não existir crie rode o script generate-classic-token-gh-local e faça a criação do NPM_TOKEN
 
-  - Vscode 
-    - Instalação da extensão - MDX, vscode-styled-components
-    - Instalação das extensões no vscode 
-      - Separar scripts para instalação das extensões da cit e de coisas da CI&T
-      - Configuração do keymap 
-      - Configuração o autosave
+
 
 
   - Alterar no script de build 
