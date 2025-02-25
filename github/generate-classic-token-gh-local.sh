@@ -1,4 +1,5 @@
 #!/bin/bash
+# TODO - coloque o script em inglês
 
 # Atualizar Homebrew
 echo "Atualizando Homebrew..."
@@ -67,9 +68,15 @@ else
   esac
 fi
 
+
+# TODO - recado para abrir o browser correta para onfiguração (Colocar cor e em negrito para essa info)
+
+
 # Verificar se existe um Personal Access Token (PAT) e se está expirado
+# TODO - eu preciso que o comando gh auth token list name,token,expiresAt verifique se existe tokens e traga a lista e verifique qual dos tokens da lista está expirado
+# TODO - esse comando mostra o token gh auth token gerado local
 echo "Verificando Personal Access Tokens (classic)..."
-tokens=$(gh auth token list --json name,token,expiresAt)
+tokens=$(gh auth token list name,token,expiresAt)
 
 if [ -z "$tokens" ]; then
   echo "Nenhum Personal Access Token (classic) encontrado. Gerando um novo token..."
@@ -94,19 +101,27 @@ else
   fi
 fi
 
+# TODO - escolha o tipo de perfil de usuário (work ou personal)
+# TODO - faça com que a variável de ambiente seja guardada no profile com o nome com o prefixo, Ex: GITHUB_TOKEN_WORK - choose_shell_profile.sh
+# TODO - ver esquema de label do script - ssh_multiple_github_accounts.sh
 # Armazenar o token no perfil escolhido pelo usuário
 if [ -n "$new_token" ]; then
   echo "Armazenando o token no perfil $profile_file..."
   echo "export GITHUB_TOKEN=$new_token" >> "$profile_file"
   source "$profile_file"
   echo "Perfil $profile_file recarregado."
+  # TODO - imprimir o GITHUB_TOKEN caso queira usar para autenticar
 fi
+
+# TODO - conferir se já existe o token e não salvar novamente
 
 # Autenticar no GitHub CLI
 echo "Autenticando no GitHub CLI..."
 gh auth login
 
-# TODO: token gerado não parece no site do GitHub - https://github.com/settings/tokens
 echo "Instalação e configuração do GitHub CLI concluídas!"
+# TODO - como consultar o token amarmazenado por que não aparece na página: https://github.com/settings/tokens 
 echo "Token armazenado no perfil: $GITHUB_TOKEN (Nome: $new_token_name)"
 echo "Você pode visualizar e gerenciar seus tokens em: https://github.com/settings/tokens"
+
+# TODO - direcione para o link https://github.com/settings/keys para fazer as autorizações de sso

@@ -33,16 +33,14 @@ set_home_based_on_os() {
   esac
 }
 
-# Function to update the .env file with the new HOME variable
 update_env_file() {
   local env_file=$(find_env_file)
   if [ -f "$env_file" ]; then
     # Remove existing HOME definition if it exists
-    sed -i '/^HOME=/d' "$env_file"
-    # Insert the new HOME definition at the beginning of the file
-    sed -i "1i\\
-HOME=\"$HOME\"
-" "$env_file"
+    sed -i '' -e '/^HOME=/d' "$env_file"
+    # Insert the new HOME definition at the beginning of the file (without quotes)
+    sed -i '' -e '1i\
+HOME='"$HOME" "$env_file"
   else
     echo ".env file not found. Exiting..."
     exit 1

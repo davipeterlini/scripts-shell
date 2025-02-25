@@ -1,4 +1,5 @@
 #!/bin/bash
+# TODO - precisa salvar o nome das chaves geradas no env SSH_KEY_PERSONAL, SSH_KEY_WORK
 
 # Function to generate SSH key for a given email and label
 generate_ssh_key() {

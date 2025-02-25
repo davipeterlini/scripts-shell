@@ -1,5 +1,6 @@
 #!/bin/bash
 # info - https://chatgpt.com/c/517f0f91-66e8-4ac9-af99-b9b18411a3d4
+# TODO - adicionar o esquema de label como prefixo (work, personal)
 
 # Get the directory of the current script
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
