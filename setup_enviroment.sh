@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO - deve ter um mecanismo que ao interromper CTRL + C no terminal interrompe script por script
+
 # Load environment variables and utility functions
 source "$(dirname "$0")/utils/load_env.sh"
 load_env
@@ -8,6 +10,7 @@ source "$(dirname "$0")/utils/detect_os.sh"
 
 # Function to install additional apps and configurations on macOS
 setup_mac() {
+    ./grant_permissions.sh
     ./mac/setup/setup_iterm.sh
     ./mac/setup/setup_terminal.sh
     # TODO - falta configurações de teclado e de ajustes do mac os
@@ -28,7 +31,6 @@ detect_and_install_apps() {
 
     # Install selected apps
     ./install_apps.sh
-    ./vscode/setup_vscode.sh
 
     case "$os" in
         macOS)

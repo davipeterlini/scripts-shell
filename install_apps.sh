@@ -29,6 +29,16 @@ source "$(dirname "$0")/linux/update_aptget_apps.sh"
 
 
 main() {
+    # TODO - garantir o funcionamento
+    ./vscode/setup_vscode.sh
+    ./github/configure_two_ssh_github_keys.sh # TODO - colocar pergunta para se deseja fazer ou não a execução do script
+    # TODO - chama duas vezes por que não tem script que faz a configuração dupla
+    ./github/generate-classic-token-gh-local.sh # TODO - colocar pergunta para se deseja fazer ou não a execução do script
+    ./github/generate-classic-token-gh-local.sh
+    # Conexão de qual conta será trabalhada
+    ./github/connect_git_ssh_account.sh # TODO - colocar pergunta para se deseja fazer ou não a execução do script
+
+
     # Detect the operating system
     os=$(detect_os)
     echo "Operational System: $os"
