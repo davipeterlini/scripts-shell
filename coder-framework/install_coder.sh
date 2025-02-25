@@ -4,26 +4,8 @@ set -e
 
 # Constantes
 PYTHON_URL="https://www.python.org/"
-CODER_JSON_URL="https://storage.googleapis.com/flow-coder/update_info.json"
+CODER_URL="https://storage.googleapis.com/flow-coder/coder-0.87-py3-none-any.whl"
 CODER_FILE="coder-latest.whl"
-
-# Função para obter a última versão do Coder
-get_latest_coder_url() {
-    echo "Obtendo a última versão do Coder..."
-    local latest_info=$(curl -s "$CODER_JSON_URL")
-
-    # Extração da URL com Python
-    local latest_url=$(echo "$latest_info" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data['url'])")
-    
-    # Verificar se a URL é válida
-    if [[ ! "$latest_url" =~ ^https?:// ]]; then
-        echo "Erro: URL extraída não é válida."
-        exit 1
-    fi
-    
-    echo "Última versão do Coder: $latest_url"
-    echo "$latest_url"
-}
 
 # Função para verificar a instalação do Python
 check_python() {
@@ -90,14 +72,8 @@ install_coder() {
     if check_coder; then
         return
     fi
-    local coder_url=$(get_latest_coder_url)
-
-    # Baixando o pacote do Coder com verificação do download
     echo "Baixando o pacote do Coder..."
-    if ! curl -o "$CODER_FILE" "$coder_url"; then
-        echo "Erro ao baixar o pacote do Coder."
-        exit 1
-    fi
+    curl -o "$CODER_FILE" "$CODER_URL"
 
     echo "Instalando o Coder..."
     python3 -m pip install --upgrade pip
