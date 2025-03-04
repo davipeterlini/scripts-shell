@@ -116,7 +116,20 @@ Geral
       - Separar scripts para instalação das extensões da cit e de coisas da CI&T
       - Configuração do keymap 
       - Configuração o autosave
+- 04/03/2025
+  - Configuraçãos do MAC - Iterm
+    - Dado o script: mac/setup/setup_iterm.sh e mac/setup/setup_terminal.sh 
+      Quais as diferenças entre os dois e quais os itens que estão duplicados
+      Una os dois scripts mantendo o que faz mais sentido
+  - Configuraçãos do MAC - Mac
+    - Crie um script para fazer o passo a passo abaixo no mac
+      - Abra uma janela do Finder clicando no ícone do Finder no Dock.
+      - Selecione uma pasta que deseja visualizar no formato de lista.
+      - Clique no botão "Lista" na barra de ferramentas do Finder para alterar a visualização para o formato de lista.
+      - Acesse o menu "Visualizar" e selecione "Mostrar Opções de Visualização" ou pressione Command (⌘) + J.
+      - Na janela que se abrir, ajuste as configurações conforme desejado para personalizar a visualização em lista.
 
+Para aplicar essa visualização a todas as pastas, clique em "Usar como Padrão".
 
     - Verificar script para configurar o multi ssh na máquina
     - Criar script para executar o passo a passo do git em máquina nova 
