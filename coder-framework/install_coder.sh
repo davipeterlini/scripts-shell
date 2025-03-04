@@ -4,7 +4,7 @@ set -e
 
 # Constantes
 PYTHON_URL="https://www.python.org/"
-CODER_URL="https://storage.googleapis.com/flow-coder/coder-0.87-py3-none-any.whl"
+CODER_URL="https://storage.googleapis.com/flow-coder/coder-0.86-py3-none-any.whl"
 CODER_FILE="coder-latest.whl"
 
 # Função para verificar a instalação do Python
@@ -56,10 +56,31 @@ install_python() {
     esac
 }
 
+# Função para instalar o pipx
+install_pipx() {
+    echo "Instalando pipx..."
+    local os_name="$(uname -s)"
+    case "$os_name" in
+        Darwin)
+            brew install pipx
+            ;;
+        Linux)
+            python3 -m pip install --user pipx
+            ;;
+        MINGW*|CYGWIN*|MSYS*)
+            python3 -m pip install --user pipx
+            ;;
+        *)
+            echo "Sistema operacional não suportado para pipx"
+            exit 1
+            ;;
+    esac
+}
+
 # Função para verificar a instalação do Coder
 check_coder() {
     echo "Verificando instalação do Coder..."
-    if python3 -m pip show coder &>/dev/null; then
+    if pipx list | grep -q "coder"; then
         echo "Coder já está instalado."
         return 0
     fi
@@ -72,19 +93,12 @@ install_coder() {
     if check_coder; then
         return
     fi
-    echo "Baixando o pacote do Coder..."
-    curl -o "$CODER_FILE" "$CODER_URL"
-
-    echo "Instalando o Coder..."
-    python3 -m pip install --upgrade pip
-    python3 -m pip install "$CODER_FILE"
-
-    echo "Removendo arquivo temporário..."
-    rm -f "$CODER_FILE"
-
+    echo "Instalando Coder com pipx..."
+    pipx install "$CODER_URL"
     echo "Coder instalado com sucesso!"
 }
 
 # Execução principal
 install_python
+install_pipx
 install_coder
