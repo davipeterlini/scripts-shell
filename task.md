@@ -118,8 +118,16 @@
   - Configurar as chaves ssh da forma correta no mac do trabalho
   - Geração do README da pasta do git 
     - Documentar configuração do amviente e qual script do git executar primeiro
+  - Atualize o README para ter os detalhes dos scripts 
+    github/configure_two_ssh_github_keys.sh 
+    github/connect_git_ssh_account.sh 
+    github/generate-classic-token-gh-local.sh
+    E adicione uma sessão de qual a sequencia deve ser executada dos scripts para a configuração correta do ambiente
+  - Gere um script que execute a sequencia colocada no readme 
+    salve o script na pasta github com o nome setup_github.sh
+  - Coloque cores, no script gerado, para os prints de mensagens no terminal
+  - Agora adicione cores nas mensgaens
 
-    
   - Criação de script para montar ambiente de desenvolvimento
     - O script deve ter executado 
   - Configuraçãos do MAC - Iterm
