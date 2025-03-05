@@ -55,16 +55,16 @@ setup_github_accounts() {
 
     # Account 1
     read -p "Enter email for GitHub account 1: " email1
-    read -p "Enter label for GitHub account 1 (e.g., work): " label1
-    read -p "Enter name for GitHub account 1: " name1
+    read -p "Enter label for GitHub account 1 (e.g., work or personal): " label1
+    read -p "Enter name for GitHub account 1 (e.g., mac-work ou mac-personal): " name1
     generate_ssh_key "$email1" "$label1"
     configure_ssh_config "$label1"
     configure_git "$label1" "$email1" "$name1"
 
     # Account 2
     read -p "Enter email for GitHub account 2: " email2
-    read -p "Enter label for GitHub account 2 (e.g., personal): " label2
-    read -p "Enter name for GitHub account 2: " name2
+    read -p "Enter label for GitHub account 2 (e.g., work or personal): " label2
+    read -p "Enter name for GitHub account 2 (e.g., mac-work ou mac-personal): " name2
     generate_ssh_key "$email2" "$label2"
     configure_ssh_config "$label2"
     configure_git "$label2" "$email2" "$name2"

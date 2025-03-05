@@ -127,6 +127,7 @@
     salve o script na pasta github com o nome setup_github.sh
   - Coloque cores, no script gerado, para os prints de mensagens no terminal
   - Agora adicione cores nas mensgaens
+  - Atualize o readme adicionando a documentação do novo script
 
   - Criação de script para montar ambiente de desenvolvimento
     - O script deve ter executado 
