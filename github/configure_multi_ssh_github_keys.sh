@@ -66,6 +66,11 @@ configure_git() {
     local email=$2
     local name=$3
 
+    # TODO - remover
+    # print_info "Configurando o Git para o label $label..."
+    # git config --global user.name "$name"
+    # git config --global user.email "$email"
+
     # Add the new method call here
     print_info "Associando chave SSH gerada a conta remota"
     handle_github_cli_auth
@@ -108,7 +113,7 @@ associate_ssh_key_with_github() {
     print_info "The account should match the email and name you provided for $label."
 
     print_info "Please authenticate with GitHub CLI:"
-    #echo "Generating GitHub token with repo and workflow permissions..."
+    print_info "Generating GitHub token with repo and workflow permissions..."
     gh auth refresh -h github.com -s repo,workflow
     #gh auth login
 
