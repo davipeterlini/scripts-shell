@@ -57,7 +57,7 @@ configure_ssh_config() {
   print_alert "Configurando o arquivo SSH config para o label $label..."
   {
     echo ""
-    echo "Host github-${label}"
+    echo "Host github.com-${label}"
     echo "  HostName github.com"
     echo "  User git"
     echo "  IdentityFile $ssh_key_path"
