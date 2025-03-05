@@ -107,13 +107,6 @@ associate_ssh_key_with_github() {
     print_alert "IMPORTANT: Please ensure you are logged into the correct GitHub account in your browser."
     print_info "The account should match the email and name you provided for $label."
 
-    # TODO - remover para sempre fazer
-    # Check if the user is authenticated with gh
-    # if ! gh auth status &> /dev/null; then
-    #     print_info "Please authenticate with GitHub CLI:"
-    #     gh auth login
-    # fi
-
     print_info "Please authenticate with GitHub CLI:"
     gh auth login
 
