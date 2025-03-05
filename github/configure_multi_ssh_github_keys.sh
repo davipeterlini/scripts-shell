@@ -9,7 +9,6 @@ load_env
 # Load colors message
 source "$(dirname "$0")/../utils/colors_message.sh"
 
-
 # Função para gerar uma chave SSH
 generate_ssh_key() {
   local email="$1"
