@@ -37,7 +37,8 @@ generate_ssh_key() {
   local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
 
   print_alert "Gerando chave SSH para $email com o label $label..."
-  ssh-keygen -t rsa -b 4096 -C "$email" -f "$ssh_key_path"
+  # Gerar a chave SSH automaticamente sem prompts
+  ssh-keygen -t rsa -b 4096 -C "$email" -f "$ssh_key_path" -N ""
 
   print_alert "Adicionando a chave SSH ao agente..."
   eval "$(ssh-agent -s)"
@@ -86,7 +87,7 @@ setup_github_accounts() {
     # Account
     read -p "Enter email for GitHub account: " email
     read -p "Enter label for GitHub account (e.g., work, personal, ...): " label
-    read -p "Enter username for GitHub account (e.g., usaername): " name
+    read -p "Enter username for GitHub account (e.g., username): " name
 
     generate_ssh_key "$email" "$label"
     configure_ssh_config "$label"
@@ -95,7 +96,6 @@ setup_github_accounts() {
     print_success "Setup completed for $label. Please add the generated SSH keys to your GitHub account."
 
     # Perguntar se deseja configurar outra conta
-    echo "/n"
     read -p "Deseja configurar mais uma conta GitHub? (Y/N): " choice
     case "$choice" in
       [Yy]* ) continue ;;
