@@ -139,6 +139,8 @@
   - Altere o script github/configure_multi_ssh_github_keys.sh para que gere um token GITHUB_TOKEN com as permissões: gh auth refresh -h github.com -s repo,workflow
   - Deixar todos os comentários e mensagens em inglês no github/configure_multi_ssh_github_keys.sh
 
+
+
   - Remova o arquivo $HOME/.ssh/known_hosts sempre que executar o script github/configure_multi_ssh_github_keys.sh
 
   - Altere para que a configuração do o SSO, após adicionar a key remota possar ser realizad via script 

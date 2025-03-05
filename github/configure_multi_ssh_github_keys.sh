@@ -101,28 +101,27 @@ associate_ssh_key_with_github() {
 
     ensure_gh_installed
 
-    echo "Associating SSH key with GitHub for $label..."
+    print_info "Associating SSH key with GitHub for $label..."
     
     # Alert the user to log in with the correct account
     print_alert "IMPORTANT: Please ensure you are logged into the correct GitHub account in your browser."
     print_info "The account should match the email and name you provided for $label."
 
-    if ! echo "$github_token" | gh auth login --with-token; then
-        echo "Failed to authenticate with GitHub. Please check your token and try again."
-        return 1
-    fi
+    # if ! echo "$github_token" | gh auth login --with-token; then
+    #     echo "Failed to authenticate with GitHub. Please check your token and try again."
+    #     return 1
+    # fi
 
-    # Verify the authenticated user
-    authenticated_user=$(gh api user --jq .login)
-    if [ "$authenticated_user" != "$github_account" ]; then
-        print_error "Authenticated as $authenticated_user, but expected $github_account."
-        gh auth logout
-    fi
+    # # Verify the authenticated user
+    # authenticated_user=$(gh api user --jq .login)
+    # if [ "$authenticated_user" != "$github_account" ]; then
+    #     print_error "Authenticated as $authenticated_user, but expected $github_account."
+    #     gh auth logout
+    # fi
 
     print_info "Please authenticate with GitHub CLI:"
     print_info "Generating GitHub token with repo and workflow permissions..."
-    gh auth refresh -h github.com -s repo,workflow
-    #gh auth login
+    gh auth login -s repo,workflow
 
     # TODO - testar para verificar se funciona o SSO
     # Check if SSO is available and configure it
