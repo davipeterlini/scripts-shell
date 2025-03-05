@@ -1,50 +1,64 @@
-# Build macOS .dmg
-echo "Building macOS .dmg..."
-pkgbuild --root coder-framework --identifier com.example.coder --version 1.0 --install-location /usr/local/bin coder-framework/build/mac/coder.pkg
-hdiutil create coder-framework/build/mac/coder.dmg -volname "Coder Installer" -srcfolder coder-framework/build/mac/coder.pkg
+# Coder Framework Installation
 
-1. `echo "Building macOS .dmg..."`: Esta linha imprime uma mensagem no terminal indicando que o processo de construção do instalador para macOS está começando.
+This guide provides instructions to install Python, configure the PATH, and install the Coder framework on macOS, Linux, and Windows systems.
 
-2. `pkgbuild --root coder-framework --identifier com.example.coder --version 1.0 --install-location /usr/local/bin coder-framework/build/mac/coder.pkg`:
-   - `pkgbuild`: Comando utilizado para criar um pacote de instalação para macOS.
-   - `--root coder-framework`: Especifica o diretório raiz que contém os arquivos a serem incluídos no pacote.
-   - `--identifier com.example.coder`: Define um identificador único para o pacote.
-   - `--version 1.0`: Define a versão do pacote.
-   - `--install-location /usr/local/bin`: Especifica o local onde os arquivos serão instalados no sistema de destino.
-   - `coder-framework/build/mac/coder.pkg`: Especifica o caminho e o nome do arquivo de pacote a ser criado.
+## Installation Steps
 
-3. `hdiutil create coder-framework/build/mac/coder.dmg -volname "Coder Installer" -srcfolder coder-framework/build/mac/coder.pkg`:
-   - `hdiutil create`: Comando utilizado para criar uma imagem de disco no macOS.
-   - `coder-framework/build/mac/coder.dmg`: Especifica o caminho e o nome do arquivo de imagem de disco a ser criado.
-   - `-volname "Coder Installer"`: Define o nome do volume que será exibido quando a imagem de disco for montada.
-   - `-srcfolder coder-framework/build/mac/coder.pkg`: Especifica a pasta de origem que contém os arquivos a serem incluídos na imagem de disco.
+1. **Install Python**:
+    - The script will install Python 3 and pip (Python package installer).
 
-### Explicação do Script `install_coder.sh`
+2. **Configure PATH**:
+    - The script will add the Python scripts directory to your PATH.
 
-1. **Instalação do Python**:
-   - O script `install_python.sh` é executado para garantir que o Python está instalado e configurado corretamente.
+3. **Install Coder**:
+    - The script will install the Coder framework using pip.
 
-2. **Função `get_latest_coder_url`**:
-   - Obtém a URL da última versão do `coder` a partir de um arquivo JSON hospedado em uma URL específica.
+## Instructions
 
-3. **Função `install_coder`**:
-   - Cria um ambiente virtual Python chamado `coder_env` no diretório `$HOME`.
-   - Ativa o ambiente virtual.
-   - Atualiza o `pip` para a versão mais recente.
-   - Obtém a URL da última versão do `coder` e instala o pacote `coder` usando o comando `pip install`.
-   - Desativa o ambiente virtual.
+1. **Clone the Repository**:
+    ```sh
+    git clone <repository_url>
+    cd coder-framework
+    ```
 
-4. **Função `configure_path`**:
-   - Adiciona o diretório `$HOME/coder_env/bin` ao PATH no arquivo de configuração do shell (`.zshrc`).
-   - Verifica se a entrada do PATH já existe no arquivo de configuração do shell e a adiciona se não existir.
+2. **Run the Python Installation Script**:
+    ```sh
+    chmod +x install_python.sh
+    ./install_python.sh
+    ```
 
-5. **Execução Principal do Script**:
-   - Chama a função `install_python` para garantir que o Python está instalado.
-   - Chama a função `install_coder` para instalar o `coder`.
-   - Chama a função `configure_path` para configurar o PATH.
-   - Exibe uma mensagem indicando que a instalação foi concluída e recomenda reiniciar o terminal ou executar `source ~/.zshrc` para aplicar as mudanças no PATH.
+3. **Run the Coder Installation Script**:
+    ```sh
+    chmod +x install_coder.sh
+    ./install_coder.sh
+    ```
 
-Com este script, você pode instalar o `coder` diretamente com Python e configurá-lo para ser executado sem o uso do conda.
+4. **Apply PATH Changes**:
+    - After running the scripts, restart your terminal or run the following command to apply the PATH changes:
+    ```sh
+    source ~/.bashrc
+    ```
+    - If you are using Zsh, run:
+    ```sh
+    source ~/.zshrc
+    ```
 
-### Nota Importante
-Se você remover `$HOME/coder_env/bin` do seu profile, o `coder` deixará de funcionar, pois o executável `coder` não estará mais no PATH do sistema. Isso significa que o sistema não conseguirá localizar o comando `coder` quando você tentar executá-lo.
+## Notes
+
+- The script supports macOS, Linux, and Windows systems.
+- If you encounter any issues, please ensure that you have the necessary permissions to install software and modify configuration files.
+
+## Troubleshooting
+
+- **Unsupported OS**:
+    - If you are using an unsupported OS, please install Python manually and configure the PATH accordingly.
+- **Permission Issues**:
+    - If you encounter permission issues, try running the script with `sudo`:
+    ```sh
+    sudo ./install_python.sh
+    sudo ./install_coder.sh
+    ```
+
+## Contact
+
+For any questions or issues, please contact [your_email@example.com].

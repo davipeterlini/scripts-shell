@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Load environment variables
-source "$(dirname "$0")/../utils/load_env.sh"
-load_env
-
 # TODO - altere o script para pegar a versão do pyhton da variável de ambiente
 # TODO - altere o script para identicar o so a partir do script ultis
 # Function to install Python

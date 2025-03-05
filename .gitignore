@@ -9,7 +9,6 @@ fonts/
 .coderignore
 
 # Fix
-no-commit/
 coder_env/
 #build/
 chatHistory.json

@@ -1,5 +1,3 @@
-Geral
-
 - 26/01/2025
   - Criação do script para instalação do python e do coder framework da maneira correta na máquina 
   - Atualização do script do python para ir para a versão oficial de scripts e pastas 
@@ -116,7 +114,10 @@ Geral
       - Separar scripts para instalação das extensões da cit e de coisas da CI&T
       - Configuração do keymap 
       - Configuração o autosave
-- 04/03/2025
+- 05/03/2025
+  - Configurar as chaves ssh da forma correta no mac do trabalho
+  - Criação de script para montar ambiente de desenvolvimento
+    - O script deve ter executado 
   - Configuraçãos do MAC - Iterm
     - Dado o script: mac/setup/setup_iterm.sh e mac/setup/setup_terminal.sh 
       Quais as diferenças entre os dois e quais os itens que estão duplicados
