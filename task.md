@@ -135,8 +135,14 @@
     Obs: não faça modificações no scrip, apenas adicione no final dele o método
   - Crie um script de color message echam nos scripts do git
   - Leve a estrutura de cores do script github/configure_multi_ssh_github_keys.sh para a pasta utils e chame ele no script github/configure_multi_ssh_github_keys.sh
-  - Altere para que faça o SSO via script 
-  - Altere para que 
+  - Altere para que script faça overwrite da maneira correta no arquivo .ssh/config
+  - Altere o script github/configure_multi_ssh_github_keys.sh para que gere um token GITHUB_TOKEN com as permissões: gh auth refresh -h github.com -s repo,workflow
+
+  - Altere para que a configuração do o SSO, após adicionar a key remota possar ser realizad via script 
+    Alterar o script github/configure_multi_ssh_github_keys.sh, no método associate_ssh_key_with_github
+
+
+  
 
 
 

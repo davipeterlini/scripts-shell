@@ -85,7 +85,7 @@ configure_git() {
     local email=$2
     local name=$3
 
-    #print_info "Configurando o Git para o label $label..."
+    print_info "Configurando o Git para o label $label..."
     git config --global user.name "$name"
     git config --global user.email "$email"
 
@@ -141,14 +141,14 @@ associate_ssh_key_with_github() {
 
     # TODO - testar para verificar se funciona o SSO
     # Check if SSO is available and configure it
-    if gh auth status | grep -q "SSO:"; then
-        echo "SSO detected for this account. Configuring SSO..."
-        gh auth refresh -h github.com -s admin:public_key
-        echo "Please follow the prompts to authorize SSO for your organizations."
-        gh auth status
-    else
-        echo "No SSO detected for this account."
-    fi
+    # if gh auth status | grep -q "SSO:"; then
+    #     echo "SSO detected for this account. Configuring SSO..."
+    #     gh auth refresh -h github.com -s admin:public_key
+    #     echo "Please follow the prompts to authorize SSO for your organizations."
+    #     gh auth status
+    # else
+    #     echo "No SSO detected for this account."
+    # fi
 
     # Add the SSH key to GitHub
     gh ssh-key add "$ssh_key_path.pub" --title "SSH key for $label"
