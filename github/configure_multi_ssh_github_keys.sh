@@ -82,6 +82,7 @@ configure_git() {
 
     # Add the new method call here
     print_alert "Associar a chave SSH gerada a conta remota"
+    handle_github_cli_auth
     associate_ssh_key_with_github "$label"
 
     print_alert "Configuração do Git concluída para username: $name email: $email."
@@ -135,6 +136,23 @@ associate_ssh_key_with_github() {
         echo "SSH key successfully associated with GitHub for $label."
     else
         echo "Failed to associate SSH key with GitHub for $label."
+    fi
+}
+
+# Function to handle GitHub CLI authentication
+handle_github_cli_auth() {
+    if [ -n "$GITHUB_TOKEN" ]; then
+        echo "GITHUB_TOKEN environment variable detected."
+        echo "To have GitHub CLI store credentials, you need to clear this variable."
+        read -p "Do you want to clear GITHUB_TOKEN and let GitHub CLI handle authentication? (y/n): " clear_token
+        if [ "$clear_token" = "y" ]; then
+            unset GITHUB_TOKEN
+            echo "GITHUB_TOKEN has been cleared. GitHub CLI will now prompt for authentication."
+        else
+            echo "GITHUB_TOKEN remains set. GitHub CLI will use this for authentication."
+        fi
+    else
+        echo "No GITHUB_TOKEN detected. GitHub CLI will handle authentication normally."
     fi
 }
 
