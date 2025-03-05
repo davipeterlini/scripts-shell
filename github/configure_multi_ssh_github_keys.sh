@@ -27,25 +27,6 @@ generate_ssh_key() {
   cat "${ssh_key_path}.pub"
 }
 
-# Função para configurar o arquivo SSH config
-# TODO - remover
-# configure_ssh_config() {
-#   local label="$1"
-#   local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
-#   local ssh_config_path="$HOME/.ssh/config"
-
-#   print_info "Configurando o arquivo SSH config para o label $label..."
-#   {
-#     echo ""
-#     echo "Host github.com-${label}"
-#     echo "  HostName github.com"
-#     echo "  User git"
-#     echo "  IdentityFile $ssh_key_path"
-#   } >> "$ssh_config_path"
-
-#   print_info "Configuração para github-${label} adicionada ao arquivo SSH config."
-# }
-
 add_or_update_config() {
   local label="$1"
   local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
