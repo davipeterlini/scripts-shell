@@ -28,7 +28,7 @@ generate_ssh_key() {
 }
 
 # Função para configurar o arquivo SSH config
-# TODO - Precisava verificar se a configuração já existe se sim não fazer novamente ou fazer por sima de uma existente
+# TODO - remover
 configure_ssh_config() {
   local label="$1"
   local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
@@ -85,9 +85,10 @@ configure_git() {
     local email=$2
     local name=$3
 
-    print_info "Configurando o Git para o label $label..."
-    git config --global user.name "$name"
-    git config --global user.email "$email"
+    # TODO - remover
+    #print_info "Configurando o Git para o label $label..."
+    #git config --global user.name "$name"
+    #git config --global user.email "$email"
 
     # Add the new method call here
     print_info "Associando chave SSH gerada a conta remota"
@@ -118,7 +119,6 @@ ensure_gh_installed() {
 }
 
 # New function to associate SSH key with GitHub
-
 associate_ssh_key_with_github() {
     local label=$1
     local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
@@ -130,14 +130,16 @@ associate_ssh_key_with_github() {
     # Alert the user to log in with the correct account
     print_alert "IMPORTANT: Please ensure you are logged into the correct GitHub account in your browser."
     print_info "The account should match the email and name you provided for $label."
-    print_alert "Press Enter when you are ready to proceed."
-    read -p ""
 
+    # TODO - remover para sempre fazer
     # Check if the user is authenticated with gh
-    if ! gh auth status &> /dev/null; then
-        print_info "Please authenticate with GitHub CLI:"
-        gh auth login
-    fi
+    # if ! gh auth status &> /dev/null; then
+    #     print_info "Please authenticate with GitHub CLI:"
+    #     gh auth login
+    # fi
+
+    print_info "Please authenticate with GitHub CLI:"
+    gh auth login
 
     # TODO - testar para verificar se funciona o SSO
     # Check if SSO is available and configure it
@@ -176,7 +178,6 @@ handle_github_cli_auth() {
         print_info "No GITHUB_TOKEN detected. GitHub CLI will handle authentication normally."
     fi
 }
-
 
 # Função principal para configurar múltiplas contas GitHub
 setup_github_accounts() {
