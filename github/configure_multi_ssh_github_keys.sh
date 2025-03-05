@@ -108,7 +108,9 @@ associate_ssh_key_with_github() {
     print_info "The account should match the email and name you provided for $label."
 
     print_info "Please authenticate with GitHub CLI:"
-    gh auth login
+    #echo "Generating GitHub token with repo and workflow permissions..."
+    gh auth refresh -h github.com -s repo,workflow
+    #gh auth login
 
     # TODO - testar para verificar se funciona o SSO
     # Check if SSO is available and configure it
@@ -138,6 +140,7 @@ handle_github_cli_auth() {
         print_info "To have GitHub CLI store credentials, you need to clear this variable."
         read -p "Do you want to clear GITHUB_TOKEN and let GitHub CLI handle authentication? (y/n): " clear_token
         if [ "$clear_token" = "y" ]; then
+            # TODO - precisa ter o gh auth logout
             unset GITHUB_TOKEN
             print_success "GITHUB_TOKEN has been cleared. GitHub CLI will now prompt for authentication."
         else
