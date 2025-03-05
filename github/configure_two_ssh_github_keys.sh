@@ -24,13 +24,16 @@ configure_ssh_config() {
   fi
 
   print_info "Configuring SSH config file for label $label..."
+  
+  # Ensure there's exactly one blank line at the end of the file
+  sed -i.bak -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$ssh_config_path"
+  echo "" >> "$ssh_config_path"
+
   {
-    echo ""
     echo "Host github.com-${label}"
     echo "  HostName github.com"
     echo "  User git"
     echo "  IdentityFile $ssh_key_path"
-    echo ""
   } >> "$ssh_config_path"
 
   print_success "Configuration for github.com-${label} added to SSH config file."
@@ -44,5 +47,9 @@ configure_ssh_config "personal" "$SSH_KEY_PERSONAL"
 
 # Work account
 configure_ssh_config "work" "$SSH_KEY_WORK"
+
+# Ensure there's exactly one blank line at the end of the file
+sed -i.bak -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$HOME/.ssh/config"
+echo "" >> "$HOME/.ssh/config"
 
 print_success "SSH configuration complete. Please ensure you have the correct SSH keys generated and added to your GitHub accounts."

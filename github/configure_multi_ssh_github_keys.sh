@@ -64,15 +64,16 @@ add_or_update_config() {
     print_info "Existing configuration removed."
   fi
 
+  # Ensure there's exactly one blank line at the end of the file
+  sed -i.bak -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$ssh_config_path"
+  echo "" >> "$ssh_config_path"
+
   print_info "Configuring SSH config file for label $label..."
   {
-    echo ""
-    echo ""
     echo "Host github.com-${label}"
     echo "  HostName github.com"
     echo "  User git"
     echo "  IdentityFile $ssh_key_path"
-    echo ""
   } >> "$ssh_config_path"
 
   print_success "Configuration for github.com-${label} added to SSH config file."
