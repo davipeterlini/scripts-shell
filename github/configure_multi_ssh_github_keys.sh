@@ -72,18 +72,19 @@ configure_ssh_config() {
 
 # Função para configurar o Git
 configure_git() {
-  local label=$1
-  local email=$2
-  local name=$3
+    local label=$1
+    local email=$2
+    local name=$3
 
-  print_alert "Configurando o Git para o label $label..."
-  git config --global user.name "$name"
-  git config --global user.email "$email"
+    print_alert "Configurando o Git para o label $label..."
+    git config --global user.name "$name"
+    git config --global user.email "$email"
 
-  print_alert "Configuração do Git concluída para username: $name email: $email."
     # Add the new method call here
     print_alert "Associar a chave SSH gerada a conta remota"
     associate_ssh_key_with_github "$label"
+
+    print_alert "Configuração do Git concluída para username: $name email: $email."
 }
 
 # Function to check if gh is installed and install it if not
