@@ -28,6 +28,7 @@ generate_ssh_key() {
 }
 
 # Função para configurar o arquivo SSH config
+# TODO - Precisava verificar se a configuração já existe se sim não fazer novamente ou fazer por sima de uma existente
 configure_ssh_config() {
   local label="$1"
   local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
@@ -51,7 +52,7 @@ configure_git() {
     local email=$2
     local name=$3
 
-    print_info "Configurando o Git para o label $label..."
+    #print_info "Configurando o Git para o label $label..."
     git config --global user.name "$name"
     git config --global user.email "$email"
 
@@ -60,7 +61,7 @@ configure_git() {
     handle_github_cli_auth
     associate_ssh_key_with_github "$label"
 
-    print_alert "Configuração do Git concluída para username: $name email: $email."
+    print_success "Configuração do Github concluída para username: $name email: $email."
 }
 
 # Function to check if gh is installed and install it if not
