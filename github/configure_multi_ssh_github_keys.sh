@@ -111,6 +111,12 @@ associate_ssh_key_with_github() {
 
     echo "Associating SSH key with GitHub for $label..."
     
+    # Alert the user to log in with the correct account
+    echo "IMPORTANT: Please ensure you are logged into the correct GitHub account in your browser."
+    echo "The account should match the email and name you provided for $label."
+    echo "Press Enter when you are ready to proceed."
+    read -p ""
+
     # Check if the user is authenticated with gh
     if ! gh auth status &> /dev/null; then
         echo "Please authenticate with GitHub CLI:"
