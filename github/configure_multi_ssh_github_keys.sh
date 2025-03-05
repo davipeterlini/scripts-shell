@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script para configurar múltiplas chaves SSH para contas GitHub
+# Script to configure multiple SSH keys for GitHub accounts
 
 # Load environment variables and utility functions
 source "$(dirname "$0")/../utils/load_env.sh"
@@ -9,21 +9,21 @@ load_env
 # Load colors message
 source "$(dirname "$0")/../utils/colors_message.sh"
 
-# Função para gerar uma chave SSH
+# Function to generate an SSH key
 generate_ssh_key() {
   local email="$1"
   local label="$2"
   local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
 
-  print_info "Gerando chave SSH para $email com o label $label..."
-  # Gerar a chave SSH automaticamente sem prompts
+  print_info "Generating SSH key for $email with label $label..."
+  # Generate the SSH key automatically without prompts
   ssh-keygen -t rsa -b 4096 -C "$email" -f "$ssh_key_path" -N ""
 
-  print_info "Adicionando a chave SSH ao agente..."
+  print_info "Adding the SSH key to the agent..."
   eval "$(ssh-agent -s)"
   ssh-add "$ssh_key_path"
 
-  print_success "Chave pública gerada:"
+  print_success "Generated public key:"
   cat "${ssh_key_path}.pub"
 }
 
@@ -60,7 +60,7 @@ add_or_update_config() {
   print_success "Configuration for github.com-${label} added to SSH config file."
 }
 
-# Função para configurar o Git
+# Function to configure Git
 configure_git() {
     local label=$1
     local email=$2
@@ -72,11 +72,11 @@ configure_git() {
     # git config --global user.email "$email"
 
     # Add the new method call here
-    print_info "Associando chave SSH gerada a conta remota"
+    print_info "Associating generated SSH key with remote account"
     handle_github_cli_auth
     associate_ssh_key_with_github "$label"
 
-    print_success "Configuração do Github concluída para username: $name email: $email."
+    print_success "GitHub configuration completed for username: $name email: $email."
 }
 
 # Function to check if gh is installed and install it if not
