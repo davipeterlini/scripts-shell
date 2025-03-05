@@ -66,11 +66,6 @@ configure_git() {
     local email=$2
     local name=$3
 
-    # TODO - remover
-    #print_info "Configurando o Git para o label $label..."
-    #git config --global user.name "$name"
-    #git config --global user.email "$email"
-
     # Add the new method call here
     print_info "Associando chave SSH gerada a conta remota"
     handle_github_cli_auth
