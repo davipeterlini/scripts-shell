@@ -25,6 +25,7 @@ configure_ssh_config() {
 
   print_info "Configuring SSH config file for label $label..."
   {
+    echo ""
     echo "Host github.com-${label}"
     echo "  HostName github.com"
     echo "  User git"

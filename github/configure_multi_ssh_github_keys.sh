@@ -48,7 +48,7 @@ configure_ssh_config() {
 
 add_or_update_config() {
   local label="$1"
-  local ssh_key_path="$2"
+  local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
   local ssh_config_path="$HOME/.ssh/config"
 
   print_info "Checking configuration for github.com-${label}..."
@@ -66,6 +66,8 @@ add_or_update_config() {
 
   print_info "Configuring SSH config file for label $label..."
   {
+    echo ""
+    echo ""
     echo "Host github.com-${label}"
     echo "  HostName github.com"
     echo "  User git"
