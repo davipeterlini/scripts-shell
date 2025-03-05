@@ -40,6 +40,25 @@ configure_npm_paths() {
     source "$profile_file"
 }
 
+# Function to handle GitHub CLI authentication
+handle_github_cli_auth() {
+    if [ -n "$GITHUB_TOKEN" ]; then
+        echo "GITHUB_TOKEN environment variable detected."
+        echo "To have GitHub CLI store credentials, you need to clear this variable."
+        read -p "Do you want to clear GITHUB_TOKEN and let GitHub CLI handle authentication? (y/n): " clear_token
+        if [ "$clear_token" = "y" ]; then
+            unset GITHUB_TOKEN
+            echo "GITHUB_TOKEN has been cleared. GitHub CLI will now prompt for authentication."
+            gh auth login
+        else
+            echo "GITHUB_TOKEN remains set. GitHub CLI will use this for authentication."
+        fi
+    else
+        echo "No GITHUB_TOKEN detected. GitHub CLI will handle authentication normally."
+        gh auth login
+    fi
+}
+
 # Main function to detect OS and setup npm accordingly
 main() {
     # Detect the operating system
@@ -64,6 +83,9 @@ main() {
 
     # Configure npm paths
     configure_npm_paths
+
+    # Handle GitHub CLI authentication
+    handle_github_cli_auth
 }
 
 main
