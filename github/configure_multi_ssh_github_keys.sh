@@ -66,11 +66,6 @@ configure_git() {
     local email=$2
     local name=$3
 
-    # TODO - remover
-    # print_info "Configurando o Git para o label $label..."
-    # git config --global user.name "$name"
-    # git config --global user.email "$email"
-
     # Add the new method call here
     print_info "Associating generated SSH key with remote account"
     handle_github_cli_auth
@@ -99,7 +94,7 @@ ensure_gh_installed() {
     fi
 }
 
-# New function to associate SSH key with GitHub
+# Function to associate SSH key with GitHub
 associate_ssh_key_with_github() {
     local label=$1
     local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
@@ -168,7 +163,7 @@ handle_github_cli_auth() {
     fi
 }
 
-# Função principal para configurar múltiplas contas GitHub
+# Main function to configure multiple GitHub accounts
 setup_github_accounts() {
   print_info "Setting up multiple GitHub accounts..."
 
@@ -179,23 +174,23 @@ setup_github_accounts() {
     read -p "Enter username for GitHub account (e.g., username): " name
 
     generate_ssh_key "$email" "$label"
-    #configure_ssh_config "$label"
     add_or_update_config "$label"
     configure_git "$label" "$email" "$name"
 
     print_success "Setup completed for $label. Please add the generated SSH keys to your GitHub account."
 
-    # Perguntar se deseja configurar outra conta
-    read -p "Deseja configurar mais uma conta GitHub? (Y/N): " choice
+    # Ask if the user wants to configure another GitHub account
+    read -p "Do you want to configure another GitHub account? (Y/N): " choice
     case "$choice" in
       [Yy]* ) continue ;;
       [Nn]* ) break ;;
-      * ) echo -e "${RED}Por favor, responda Y (sim) ou N (não).${NC}" ;;
+          * ) echo -e "${RED}Please answer Y (yes) or N (no).${NC}" ;;
     esac
   done
 
-  print_success "Configuração de múltiplas contas GitHub concluída!"
+  print_success "Multiple GitHub accounts configuration completed!"
+
 }
 
-# Executar a função principal
+# Execute the main function
 setup_github_accounts
