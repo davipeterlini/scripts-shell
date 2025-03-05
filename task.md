@@ -116,6 +116,10 @@
       - Configuração o autosave
 - 05/03/2025
   - Configurar as chaves ssh da forma correta no mac do trabalho
+  - Geração do README da pasta do git 
+    - Documentar configuração do amviente e qual script do git executar primeiro
+
+    
   - Criação de script para montar ambiente de desenvolvimento
     - O script deve ter executado 
   - Configuraçãos do MAC - Iterm

@@ -1,59 +1,87 @@
 # GitHub Scripts
 
-Este diretório contém scripts úteis para configurar e gerenciar contas do GitHub, incluindo geração de chaves SSH, configuração de tokens e gerenciamento de múltiplas contas.
+Este diretório contém scripts relacionados à automação e configuração de repositórios GitHub. Abaixo está uma descrição detalhada de cada script presente nesta pasta.
 
-## Scripts Disponíveis
+## Scripts
 
-### 1. `generate-classic-token-gh-local.sh`
-- **Descrição**: Gera um token clássico do GitHub para autenticação local.
-- **Uso**:
-  ```bash
-  ./github/generate-classic-token-gh-local.sh
-  ```
+### 1. `configure_two_ssh_github_keys.sh`
+**Descrição:** Este script configura duas chaves SSH distintas para serem usadas com diferentes contas do GitHub. Ele permite que você gerencie múltiplas contas GitHub no mesmo ambiente local.
 
-### 2. `configure_two_ssh_github_keys.sh`
-- **Descrição**: Configura duas chaves SSH para diferentes contas do GitHub.
-- **Uso**:
-  ```bash
-  ./github/configure_two_ssh_github_keys.sh
-  ```
+**Uso:**
+```bash
+./configure_two_ssh_github_keys.sh
+```
 
-### 3. `connect_git_ssh_account.sh`
-- **Descrição**: Conecta uma conta do GitHub usando uma chave SSH específica.
-- **Uso**:
-  ```bash
-  ./github/connect_git_ssh_account.sh
-  ```
+---
 
-### 4. `setup_multiple_bitbucket_accounts.sh`
-- **Descrição**: Configura múltiplas contas do GitHub para uso simultâneo.
-- **Uso**:
-  ```bash
-  ./github/setup_multiple_bitbucket_accounts.sh
-  ```
+### 2. `connect_git_ssh_account.sh`
+**Descrição:** Este script conecta uma conta GitHub ao seu ambiente local usando uma chave SSH previamente configurada. Ele atualiza o arquivo de configuração SSH para associar a chave à conta GitHub.
 
-### 5. `ssh_multiple_bitbucket_accounts.sh`
-- **Descrição**: Gerencia conexões SSH para múltiplas contas do GitHub.
-- **Uso**:
-  ```bash
-  ./github/ssh_multiple_bitbucket_accounts.sh
-  ```
+**Uso:**
+```bash
+./connect_git_ssh_account.sh
+```
 
-## Notas
-- Certifique-se de conceder permissões de execução aos scripts antes de usá-los:
-  ```bash
-  chmod +x ./github/*.sh
-  ```
-- Execute os scripts no terminal e siga as instruções interativas, se aplicável.
-- Verifique se você possui as dependências necessárias instaladas, como `ssh` e `git`.
+---
 
-## Requisitos
-- **Sistema Operacional**: Compatível com macOS, Linux e Windows (via WSL).
-- **Dependências**: `ssh`, `git`, e outras ferramentas relacionadas ao gerenciamento de chaves e autenticação.
+### 3. `generate-classic-token-gh-local.sh`
+**Descrição:** Este script gera um token clássico de acesso pessoal (Personal Access Token - PAT) para o GitHub e o armazena localmente para ser usado em operações autenticadas, como push e pull.
 
-## Dicas
-- Para verificar se as chaves SSH estão configuradas corretamente, use:
-  ```bash
-  ssh -T git@github.com
-  ```
-- Para gerenciar múltiplas contas, configure o arquivo `~/.ssh/config` adequadamente.
+**Uso:**
+```bash
+./generate-classic-token-gh-local.sh
+```
+
+---
+
+## Sequência de Execução dos Scripts
+
+Para configurar corretamente o ambiente GitHub, siga a sequência abaixo:
+
+1. **Configure as chaves SSH para múltiplas contas:**
+   Execute o script `configure_two_ssh_github_keys.sh` para criar e configurar as chaves SSH necessárias.
+
+   ```bash
+   ./configure_two_ssh_github_keys.sh
+   ```
+
+2. **Conecte uma conta GitHub usando SSH:**
+   Use o script `connect_git_ssh_account.sh` para associar uma chave SSH a uma conta GitHub específica.
+
+   ```bash
+   ./connect_git_ssh_account.sh
+   ```
+
+3. **Gere um token clássico de acesso pessoal:**
+   Por fim, execute o script `generate-classic-token-gh-local.sh` para criar e armazenar um token de acesso pessoal.
+
+   ```bash
+   ./generate-classic-token-gh-local.sh
+   ```
+
+Seguindo esta ordem, você garantirá que o ambiente esteja configurado corretamente para trabalhar com múltiplas contas GitHub e autenticação segura.
+
+---
+
+## Como Executar os Scripts
+
+1. Certifique-se de que os scripts possuem permissões de execução:
+   ```bash
+   chmod +x script_name.sh
+   ```
+
+2. Execute o script desejado:
+   ```bash
+   ./script_name.sh
+   ```
+
+---
+
+## Contribuição
+
+Se você deseja adicionar ou modificar scripts nesta pasta, siga as diretrizes abaixo:
+1. Certifique-se de que o script está bem documentado.
+2. Teste o script antes de enviá-lo.
+3. Envie um pull request com uma descrição clara das alterações.
+
+---
