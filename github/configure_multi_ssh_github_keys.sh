@@ -85,6 +85,7 @@ ensure_gh_installed() {
 }
 
 # New function to associate SSH key with GitHub
+# TODO - precisa configurar o SSO se existir 
 associate_ssh_key_with_github() {
     local label=$1
     local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
