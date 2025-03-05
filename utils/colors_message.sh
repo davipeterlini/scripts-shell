@@ -24,7 +24,7 @@ function print_alert() {
 
 # Função para exibir mensagens de erro
 function print_error() {
-  echo -e "${RED}Erro: $1${NC}"
+  echo -e "${RED}❌ Erro: $1${NC}"
 }
 
 # Função para exibir mensagens formatadas
