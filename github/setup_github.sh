@@ -38,21 +38,21 @@ else
   exit 1
 fi
 
-# Passo 2: Conectar uma conta GitHub usando SSH
-print_message "Passo 2: Conectando uma conta GitHub usando SSH..."
-if "${BASE_DIR}/connect_git_ssh_account.sh"; then
+# Passo 2: Gerar um token clássico de acesso pessoal
+print_message "Passo 2: Gerando um token clássico de acesso pessoal..."
+if "${BASE_DIR}/generate-classic-token-gh-local.sh"; then
   print_success "Passo 2 concluído com sucesso!"
 else
-  print_error "Erro ao executar connect_git_ssh_account.sh. Abortando."
+  print_error "Erro ao executar generate-classic-token-gh-local.sh. Abortando."
   exit 1
 fi
 
-# Passo 3: Gerar um token clássico de acesso pessoal
-print_message "Passo 3: Gerando um token clássico de acesso pessoal..."
-if "${BASE_DIR}/generate-classic-token-gh-local.sh"; then
+# Passo 3: Conectar uma conta GitHub usando SSH
+print_message "Passo 3: Conectando uma conta GitHub usando SSH..."
+if "${BASE_DIR}/connect_git_ssh_account.sh"; then
   print_success "Passo 3 concluído com sucesso!"
 else
-  print_error "Erro ao executar generate-classic-token-gh-local.sh. Abortando."
+  print_error "Erro ao executar connect_git_ssh_account.sh. Abortando."
   exit 1
 fi
 
