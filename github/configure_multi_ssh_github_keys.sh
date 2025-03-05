@@ -68,16 +68,65 @@ configure_ssh_config() {
 
 # Função para configurar o Git
 configure_git() {
-  local label="$1"
-  local email="$2"
-  local name="$3"
+  local label=$1
+  local email=$2
+  local name=$3
 
   print_alert "Configurando o Git para o label $label..."
   git config --global user.name "$name"
   git config --global user.email "$email"
 
   print_alert "Configuração do Git concluída para username: $name email: $email."
+    # Add the new method call here
+    print_alert "Associar a chave SSH gerada a conta remota"
+    associate_ssh_key_with_github "$label"
 }
+
+# Function to check if gh is installed and install it if not
+ensure_gh_installed() {
+    if ! command -v gh &> /dev/null; then
+        echo "GitHub CLI (gh) is not installed. Installing..."
+        if [[ "$(uname)" == "Darwin" ]]; then
+            brew install gh
+        elif [[ "$(uname)" == "Linux" ]]; then
+            # For Ubuntu/Debian-based systems
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt update
+            sudo apt install gh
+        else
+            echo "Unsupported operating system for automatic gh installation."
+            echo "Please install GitHub CLI (gh) manually and run this script again."
+            exit 1
+        fi
+    fi
+}
+
+# New function to associate SSH key with GitHub
+associate_ssh_key_with_github() {
+    local label=$1
+    local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
+
+    ensure_gh_installed
+
+    echo "Associating SSH key with GitHub for $label..."
+    
+    # Check if the user is authenticated with gh
+    if ! gh auth status &> /dev/null; then
+        echo "Please authenticate with GitHub CLI:"
+        gh auth login
+    fi
+
+    # Add the SSH key to GitHub
+    gh ssh-key add "$ssh_key_path.pub" --title "SSH key for $label"
+
+    if [ $? -eq 0 ]; then
+        echo "SSH key successfully associated with GitHub for $label."
+    else
+        echo "Failed to associate SSH key with GitHub for $label."
+    fi
+}
+
 
 # Função principal para configurar múltiplas contas GitHub
 setup_github_accounts() {
