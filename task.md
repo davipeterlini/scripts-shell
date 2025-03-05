@@ -128,6 +128,9 @@
   - Coloque cores, no script gerado, para os prints de mensagens no terminal
   - Agora adicione cores nas mensgaens
   - Atualize o readme adicionando a documentação do novo script
+  - Altere o script github/configure_two_ssh_github_keys.sh para que permita configurar multiplas chaves ssh 
+    Ou seja ao configurar uma chave ssh deve aparecer a pergunta se deseja configurar mais uma chave e se o useuário pressionar Y então novamente abre a caixa de dialogo para configuração
+  - Altere o script github/generate-classic-token-gh-local.sh para que posso verificar quais as chaves SSH da pasta home/.ssh geradas no script github/configure_two_ssh_github_keys.sh para que seja possível montar mostrar uma mensaqgem para escolher para qual 
 
   - Criação de script para montar ambiente de desenvolvimento
     - O script deve ter executado 
