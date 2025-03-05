@@ -60,17 +60,17 @@ add_or_update_config() {
       return
     fi
     # Remove existing configuration
-    sed -i.bak "/Host github.com-${label}/,/Host /d" "$ssh_config_path"
+    sed -i.bak "/Host github.com-${label}/,/^$/d" "$ssh_config_path"
     print_info "Existing configuration removed."
   fi
 
   print_info "Configuring SSH config file for label $label..."
   {
-    echo ""
     echo "Host github.com-${label}"
     echo "  HostName github.com"
     echo "  User git"
     echo "  IdentityFile $ssh_key_path"
+    echo ""
   } >> "$ssh_config_path"
 
   print_success "Configuration for github.com-${label} added to SSH config file."
