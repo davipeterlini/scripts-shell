@@ -132,7 +132,10 @@
     Ou seja ao configurar uma chave ssh deve aparecer a pergunta se deseja configurar mais uma chave e se o useuário pressionar Y então novamente abre a caixa de dialogo para configuração
   - Adicione a geração remota da chave do ssh
   - Adicione um novo método no script github/configure_multi_ssh_github_keys.sh para fazer o vinculo da chave ssh criada local, ao github remoto 
-    Obs: não faça modificações no scrip, apenas adicione no final dele o métodoa
+    Obs: não faça modificações no scrip, apenas adicione no final dele o método
+  - Crie um script de color message echam nos scripts do git
+
+
   - Altere o script github/generate-classic-token-gh-local.sh para que posso verificar quais as chaves SSH da pasta home/.ssh geradas no script github/configure_two_ssh_github_keys.sh para que seja possível montar mostrar uma mensaqgem para escolher para qual 
 
   - Criação de script para montar ambiente de desenvolvimento

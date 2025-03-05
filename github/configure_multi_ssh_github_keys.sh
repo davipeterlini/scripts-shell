@@ -6,33 +6,9 @@
 source "$(dirname "$0")/../utils/load_env.sh"
 load_env
 
-# Cores para mensagens no terminal
-GREEN="\033[1;32m"
-YELLOW="\033[1;33m"
-RED="\033[0;31m"
-NC="\033[0m" # Sem cor
+# Load colors message
+source "$(dirname "$0")/../utils/colors_message.sh"
 
-# Função para exibir mensagens formatadas
-# function print_message() {
-#   echo -e "\n${YELLOW}========================================${NC}"
-#   echo -e "${GREEN}$1${NC}"
-#   echo -e "${YELLOW}========================================${NC}"
-# }
-
-# Função para exibir mensagens de sucesso
-function print_success() {
-  echo -e "\n${GREEN}$1${NC}"
-}
-
-# Função para exibir mensagens de erro
-function print_alert() {
-  echo -e "\n${YELLOW}$1${NC}"
-}
-
-# Função para exibir mensagens de erro
-function print_error() {
-  echo -e "${RED}Erro: $1${NC}"
-}
 
 # Função para gerar uma chave SSH
 generate_ssh_key() {
@@ -40,15 +16,15 @@ generate_ssh_key() {
   local label="$2"
   local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
 
-  print_alert "Gerando chave SSH para $email com o label $label..."
+  print_info "Gerando chave SSH para $email com o label $label..."
   # Gerar a chave SSH automaticamente sem prompts
   ssh-keygen -t rsa -b 4096 -C "$email" -f "$ssh_key_path" -N ""
 
-  print_alert "Adicionando a chave SSH ao agente..."
+  print_info "Adicionando a chave SSH ao agente..."
   eval "$(ssh-agent -s)"
   ssh-add "$ssh_key_path"
 
-  print_alert "Chave pública gerada (adicione esta chave à sua conta GitHub):"
+  print_success "Chave pública gerada:"
   cat "${ssh_key_path}.pub"
 }
 
@@ -58,7 +34,7 @@ configure_ssh_config() {
   local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
   local ssh_config_path="$HOME/.ssh/config"
 
-  print_alert "Configurando o arquivo SSH config para o label $label..."
+  print_info "Configurando o arquivo SSH config para o label $label..."
   {
     echo ""
     echo "Host github.com-${label}"
@@ -67,7 +43,7 @@ configure_ssh_config() {
     echo "  IdentityFile $ssh_key_path"
   } >> "$ssh_config_path"
 
-  print_alert "Configuração para github-${label} adicionada ao arquivo SSH config."
+  print_info "Configuração para github-${label} adicionada ao arquivo SSH config."
 }
 
 # Função para configurar o Git
@@ -76,12 +52,12 @@ configure_git() {
     local email=$2
     local name=$3
 
-    print_alert "Configurando o Git para o label $label..."
+    print_info "Configurando o Git para o label $label..."
     git config --global user.name "$name"
     git config --global user.email "$email"
 
     # Add the new method call here
-    print_alert "Associar a chave SSH gerada a conta remota"
+    print_info "Associando chave SSH gerada a conta remota"
     handle_github_cli_auth
     associate_ssh_key_with_github "$label"
 
@@ -91,7 +67,7 @@ configure_git() {
 # Function to check if gh is installed and install it if not
 ensure_gh_installed() {
     if ! command -v gh &> /dev/null; then
-        echo "GitHub CLI (gh) is not installed. Installing..."
+        print_info "GitHub CLI (gh) is not installed. Installing..."
         if [[ "$(uname)" == "Darwin" ]]; then
             brew install gh
         elif [[ "$(uname)" == "Linux" ]]; then
@@ -101,8 +77,8 @@ ensure_gh_installed() {
             sudo apt update
             sudo apt install gh
         else
-            echo "Unsupported operating system for automatic gh installation."
-            echo "Please install GitHub CLI (gh) manually and run this script again."
+            print_error "Unsupported operating system for automatic gh installation."
+            print_info "Please install GitHub CLI (gh) manually and run this script again."
             exit 1
         fi
     fi
@@ -118,14 +94,14 @@ associate_ssh_key_with_github() {
     echo "Associating SSH key with GitHub for $label..."
     
     # Alert the user to log in with the correct account
-    echo "IMPORTANT: Please ensure you are logged into the correct GitHub account in your browser."
-    echo "The account should match the email and name you provided for $label."
-    echo "Press Enter when you are ready to proceed."
+    print_alert "IMPORTANT: Please ensure you are logged into the correct GitHub account in your browser."
+    print_info "The account should match the email and name you provided for $label."
+    print_alert "Press Enter when you are ready to proceed."
     read -p ""
 
     # Check if the user is authenticated with gh
     if ! gh auth status &> /dev/null; then
-        echo "Please authenticate with GitHub CLI:"
+        print_info "Please authenticate with GitHub CLI:"
         gh auth login
     fi
 
@@ -133,33 +109,33 @@ associate_ssh_key_with_github() {
     gh ssh-key add "$ssh_key_path.pub" --title "SSH key for $label"
 
     if [ $? -eq 0 ]; then
-        echo "SSH key successfully associated with GitHub for $label."
+        print_success "SSH key successfully associated with GitHub for $label."
     else
-        echo "Failed to associate SSH key with GitHub for $label."
+        print_error "Failed to associate SSH key with GitHub for $label."
     fi
 }
 
 # Function to handle GitHub CLI authentication
 handle_github_cli_auth() {
     if [ -n "$GITHUB_TOKEN" ]; then
-        echo "GITHUB_TOKEN environment variable detected."
-        echo "To have GitHub CLI store credentials, you need to clear this variable."
+        print_info "GITHUB_TOKEN environment variable detected."
+        print_info "To have GitHub CLI store credentials, you need to clear this variable."
         read -p "Do you want to clear GITHUB_TOKEN and let GitHub CLI handle authentication? (y/n): " clear_token
         if [ "$clear_token" = "y" ]; then
             unset GITHUB_TOKEN
-            echo "GITHUB_TOKEN has been cleared. GitHub CLI will now prompt for authentication."
+            print_success "GITHUB_TOKEN has been cleared. GitHub CLI will now prompt for authentication."
         else
-            echo "GITHUB_TOKEN remains set. GitHub CLI will use this for authentication."
+            print_info "GITHUB_TOKEN remains set. GitHub CLI will use this for authentication."
         fi
     else
-        echo "No GITHUB_TOKEN detected. GitHub CLI will handle authentication normally."
+        print_info "No GITHUB_TOKEN detected. GitHub CLI will handle authentication normally."
     fi
 }
 
 
 # Função principal para configurar múltiplas contas GitHub
 setup_github_accounts() {
-  print_alert "Setting up multiple GitHub accounts..."
+  print_info "Setting up multiple GitHub accounts..."
 
   while true; do
     # Account
