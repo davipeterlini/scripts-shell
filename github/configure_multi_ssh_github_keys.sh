@@ -2,6 +2,10 @@
 
 # Script para configurar múltiplas chaves SSH para contas GitHub
 
+# Load environment variables and utility functions
+source "$(dirname "$0")/../utils/load_env.sh"
+load_env
+
 # Cores para mensagens no terminal
 GREEN="\033[1;32m"
 YELLOW="\033[1;33m"
