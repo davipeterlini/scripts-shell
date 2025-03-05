@@ -46,6 +46,33 @@ configure_ssh_config() {
   print_info "Configuração para github-${label} adicionada ao arquivo SSH config."
 }
 
+# Function to add or update SSH configuration
+add_or_update_config() {
+    local host=$1
+    local identity_file=$2
+    local user=$3
+
+    if check_config_exists "$host"; then
+        echo "Configuration for $host already exists in ~/.ssh/config"
+        read -p "Do you want to overwrite it? (y/n): " overwrite
+        if [[ $overwrite != "y" ]]; then
+            echo "Skipping configuration for $host"
+            return
+        fi
+        # Remove existing configuration
+        sed -i.bak "/Host $host/,/Host /d" ~/.ssh/config
+    fi
+
+    echo "Adding configuration for $host to ~/.ssh/config"
+    cat << EOF >> ~/.ssh/config
+
+Host $host
+    HostName github.com
+    User $user
+    IdentityFile $identity_file
+EOF
+}
+
 # Função para configurar o Git
 configure_git() {
     local label=$1
@@ -156,7 +183,8 @@ setup_github_accounts() {
     read -p "Enter username for GitHub account (e.g., username): " name
 
     generate_ssh_key "$email" "$label"
-    configure_ssh_config "$label"
+    #configure_ssh_config "$label"
+    add_or_update_config "$label"
     configure_git "$label" "$email" "$name"
 
     print_success "Setup completed for $label. Please add the generated SSH keys to your GitHub account."
