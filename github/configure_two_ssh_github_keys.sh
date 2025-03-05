@@ -1,53 +1,47 @@
 #!/bin/bash
 
-# Load environment variables
+# Load environment variables and utility functions
 source "$(dirname "$0")/../utils/load_env.sh"
 load_env
+source "$(dirname "$0")/../utils/colors_message.sh"
 
-# Function to check if configuration exists
-check_config_exists() {
-    local host=$1
-    if grep -q "Host $host" ~/.ssh/config; then
-        return 0
-    else
-        return 1
+configure_ssh_config() {
+  local label="$1"
+  local ssh_key_path="$2"
+  local ssh_config_path="$HOME/.ssh/config"
+
+  print_info "Checking configuration for github.com-${label}..."
+  if grep -q "Host github.com-${label}" "$ssh_config_path"; then
+    print_alert "Configuration for github.com-${label} already exists."
+    read -p "Do you want to overwrite it? (y/n): " overwrite
+    if [[ $overwrite != "y" ]]; then
+      print_info "Skipping configuration for github.com-${label}"
+      return
     fi
-}
+    # Remove existing configuration
+    sed -i.bak "/Host github.com-${label}/,/Host /d" "$ssh_config_path"
+    print_info "Existing configuration removed."
+  fi
 
-# Function to add or update SSH configuration
-add_or_update_config() {
-    local host=$1
-    local identity_file=$2
-    local user=$3
+  print_info "Configuring SSH config file for label $label..."
+  {
+    echo ""
+    echo "Host github.com-${label}"
+    echo "  HostName github.com"
+    echo "  User git"
+    echo "  IdentityFile $ssh_key_path"
+  } >> "$ssh_config_path"
 
-    if check_config_exists "$host"; then
-        echo "Configuration for $host already exists in ~/.ssh/config"
-        read -p "Do you want to overwrite it? (y/n): " overwrite
-        if [[ $overwrite != "y" ]]; then
-            echo "Skipping configuration for $host"
-            return
-        fi
-        # Remove existing configuration
-        sed -i.bak "/Host $host/,/Host /d" ~/.ssh/config
-    fi
-
-    echo "Adding configuration for $host to ~/.ssh/config"
-    cat << EOF >> ~/.ssh/config
-
-Host $host
-    HostName github.com
-    User $user
-    IdentityFile $identity_file
-EOF
+  print_success "Configuration for github.com-${label} added to SSH config file."
 }
 
 # Main script
-echo "Configuring SSH for two GitHub accounts..."
+print_info "Configuring SSH for two GitHub accounts..."
 
 # Personal account
-add_or_update_config "github.com-personal" "$SSH_KEY_PERSONAL" "git"
+configure_ssh_config "personal" "$SSH_KEY_PERSONAL"
 
 # Work account
-add_or_update_config "github.com-work" "$SSH_KEY_WORK" "git"
+configure_ssh_config "work" "$SSH_KEY_WORK"
 
-echo "SSH configuration complete. Please ensure you have the correct SSH keys generated and added to your GitHub accounts."
+print_success "SSH configuration complete. Please ensure you have the correct SSH keys generated and added to your GitHub accounts."

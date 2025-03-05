@@ -46,31 +46,34 @@ configure_ssh_config() {
   print_info "Configuração para github-${label} adicionada ao arquivo SSH config."
 }
 
-# Function to add or update SSH configuration
 add_or_update_config() {
-    local host=$1
-    local identity_file=$2
-    local user=$3
+  local label="$1"
+  local ssh_key_path="$2"
+  local ssh_config_path="$HOME/.ssh/config"
 
-    if check_config_exists "$host"; then
-        echo "Configuration for $host already exists in ~/.ssh/config"
-        read -p "Do you want to overwrite it? (y/n): " overwrite
-        if [[ $overwrite != "y" ]]; then
-            echo "Skipping configuration for $host"
-            return
-        fi
-        # Remove existing configuration
-        sed -i.bak "/Host $host/,/Host /d" ~/.ssh/config
+  print_info "Checking configuration for github.com-${label}..."
+  if grep -q "Host github.com-${label}" "$ssh_config_path"; then
+    print_alert "Configuration for github.com-${label} already exists."
+    read -p "Do you want to overwrite it? (y/n): " overwrite
+    if [[ $overwrite != "y" ]]; then
+      print_info "Skipping configuration for github.com-${label}"
+      return
     fi
+    # Remove existing configuration
+    sed -i.bak "/Host github.com-${label}/,/Host /d" "$ssh_config_path"
+    print_info "Existing configuration removed."
+  fi
 
-    echo "Adding configuration for $host to ~/.ssh/config"
-    cat << EOF >> ~/.ssh/config
+  print_info "Configuring SSH config file for label $label..."
+  {
+    echo ""
+    echo "Host github.com-${label}"
+    echo "  HostName github.com"
+    echo "  User git"
+    echo "  IdentityFile $ssh_key_path"
+  } >> "$ssh_config_path"
 
-Host $host
-    HostName github.com
-    User $user
-    IdentityFile $identity_file
-EOF
+  print_success "Configuration for github.com-${label} added to SSH config file."
 }
 
 # Função para configurar o Git
