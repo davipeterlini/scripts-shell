@@ -85,7 +85,7 @@ ensure_gh_installed() {
 }
 
 # New function to associate SSH key with GitHub
-# TODO - precisa configurar o SSO se existir 
+
 associate_ssh_key_with_github() {
     local label=$1
     local ssh_key_path="$HOME/.ssh/id_rsa_${label}"
@@ -104,6 +104,17 @@ associate_ssh_key_with_github() {
     if ! gh auth status &> /dev/null; then
         print_info "Please authenticate with GitHub CLI:"
         gh auth login
+    fi
+
+    # TODO - testar para verificar se funciona o SSO
+    # Check if SSO is available and configure it
+    if gh auth status | grep -q "SSO:"; then
+        echo "SSO detected for this account. Configuring SSO..."
+        gh auth refresh -h github.com -s admin:public_key
+        echo "Please follow the prompts to authorize SSO for your organizations."
+        gh auth status
+    else
+        echo "No SSO detected for this account."
     fi
 
     # Add the SSH key to GitHub
