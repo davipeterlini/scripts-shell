@@ -39,10 +39,6 @@ setup_vscode() {
     ./vscode/install_vscode_plugins.sh
 
     print_success "VSCode setup completed successfully."
-    ./grant_permissions.sh
-    ./vscode/setup/setup_iterm.sh
-    ./mac/setup/setup_terminal.sh
-    # TODO - falta configurações de teclado e de ajustes do mac os
 }
 
 # Function to install additional apps and configurations on macOS
