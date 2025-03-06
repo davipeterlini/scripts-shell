@@ -138,7 +138,12 @@
   - Altere para que script faça overwrite da maneira correta no arquivo .ssh/config
   - Altere o script github/configure_multi_ssh_github_keys.sh para que gere um token GITHUB_TOKEN com as permissões: gh auth refresh -h github.com -s repo,workflow
   - Deixar todos os comentários e mensagens em inglês no github/configure_multi_ssh_github_keys.sh
-
+- 06/03/2025
+  - Remover a instalação das extensções do vscode do script do setup
+  - Ajustes no script de setup da raiz
+  
+  - Aplique as cores nos script setup_enviroment.sh para que no terminal seja exibido com cor as mensagens
+  
 
 
   - Remova o arquivo $HOME/.ssh/known_hosts sempre que executar o script github/configure_multi_ssh_github_keys.sh

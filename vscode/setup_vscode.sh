@@ -48,9 +48,6 @@ main() {
     echo "Setting up VSCode configurations..."
     setup_vscode_config
 
-    echo "Installing VSCode extensions..."
-    ./vscode/install_vscode_plugins.sh
-
     echo "VSCode setup completed successfully."
 }
 
