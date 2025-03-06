@@ -34,14 +34,12 @@ setup_github () {
 setup_vscode() {
     print_info "Installing VSCode extensions..."
     ./vscode/install_vscode_plugins.sh
-    
+
     print_info "Setting up VSCode configurations..."
     ./vscode/setup_vscode.sh
 
-
-
-    print_info "Installing VSCode extensions..."
-    ./vscode/install_vscode_plugins.sh
+    print_info "Saving VSCode settings..."
+    ./vscode/save_vscode_settings.sh
 
     print_success "VSCode setup completed successfully."
 }
