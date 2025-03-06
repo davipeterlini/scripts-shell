@@ -8,37 +8,37 @@ load_env
 source "$(dirname "$0")/utils/detect_os.sh"
 
 # Load colors message
-source "$(dirname "$0")/../utils/colors_message.sh"
+source "$(dirname "$0")/utils/colors_message.sh"
 
 # Function to Install and configure VSCode
 setup_initial() {
-    echo "Granting permissions for all scripts..."
+    print_info "Granting permissions for all scripts..."
     ./grant_permissions.sh
 
-    echo "Install selected apps"
+    print_info "Install selected apps"
     ./install_apps.sh
 }
 
 setup_github () {
-    echo "Configuring multiple SSH keys for GitHub accounts..."
+    print_info "Configuring multiple SSH keys for GitHub accounts..."
     ./github/configure_multi_ssh_github_keys.sh
 
-    echo "Connecting to GitHub using SSH..."
+    print_info "Connecting to GitHub using SSH..."
     ./github/connect_git_ssh_account.sh
 
-    echo "Generating GitHub Personal Access Token..."
+    print_info "Generating GitHub Personal Access Token..."
     ./github/generate-classic-token-gh-local.sh
 }
 
 # Function to Install and configure VSCode
 setup_vscode() {
-    echo "Setting up VSCode configurations..."
+    print_info "Setting up VSCode configurations..."
     ./vscode/vscode/setup_vscode.sh
 
-    echo "Installing VSCode extensions..."
+    print_info "Installing VSCode extensions..."
     ./vscode/install_vscode_plugins.sh
 
-    echo "VSCode setup completed successfully."
+    print_success "VSCode setup completed successfully."
     ./grant_permissions.sh
     ./vscode/setup/setup_iterm.sh
     ./mac/setup/setup_terminal.sh
@@ -47,7 +47,9 @@ setup_vscode() {
 
 # Function to install additional apps and configurations on macOS
 setup_mac() {
+    print_info "Setting up macOS configurations..."
     ./mac/setup/setup_iterm.sh
+    print_info "Setting up terminal configurations..."
     ./mac/setup/setup_terminal.sh
     # TODO - falta configurações de teclado e de ajustes do mac os
 }
@@ -59,11 +61,11 @@ setup_mac() {
 
 # Detect the operating system and execute the corresponding script
 detect_and_install_apps() {
-    echo "Detecting the operating system..."
+    print_info "Detecting the operating system..."
 
     # Detect the operating system
     os=$(detect_os)
-    echo "Detected OS: $os"
+    print_info "Detected OS: $os"
 
     # TODO - testar no linux
     setup_initial
@@ -72,16 +74,15 @@ detect_and_install_apps() {
 
     case "$os" in
         macOS)
-            echo "macOS detected."
+            print_info "macOS detected."
             setup_mac
-            
             ;;
         Linux)
-            echo "Linux detected."
+            print_info "Linux detected."
             setup_linux
             ;;
         *)
-            echo "Unsupported operating system."
+            print_error "Unsupported operating system."
             exit 1
             ;;
     esac
