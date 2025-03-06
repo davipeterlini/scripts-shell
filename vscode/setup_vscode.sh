@@ -7,6 +7,8 @@ load_env
     export ENV_LOADED=true
 fi
 
+source "$(dirname "$0")/save_vscode_settings.sh"
+
 # Function to set up VSCode configurations
 setup_vscode_config() {
     local vscode_settings_dir="$HOME/.config/Code/User"
@@ -47,6 +49,9 @@ EOL
 main() {
     echo "Setting up VSCode configurations..."
     setup_vscode_config
+
+    echo "Saving VSCode global settings..."
+    save_vscode_settings
 
     echo "VSCode setup completed successfully."
 }
