@@ -45,6 +45,7 @@ setup_vscode() {
 setup_mac() {
     print_info "Setting up macOS configurations..."
     ./mac/setup/setup_iterm.sh
+    
     print_info "Setting up terminal configurations..."
     ./mac/setup/setup_terminal.sh
     # TODO - falta configurações de teclado e de ajustes do mac os
