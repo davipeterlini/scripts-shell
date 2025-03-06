@@ -33,7 +33,7 @@ setup_github () {
 # Function to Install and configure VSCode
 setup_vscode() {
     print_info "Setting up VSCode configurations..."
-    ./vscode/vscode/setup_vscode.sh
+    ./vscode/setup_vscode.sh
 
     print_info "Installing VSCode extensions..."
     ./vscode/install_vscode_plugins.sh
@@ -77,7 +77,7 @@ detect_and_install_apps() {
             ;;
         Linux)
             print_info "Linux detected."
-            setup_linux
+            # setup_linux
             ;;
         *)
             print_error "Unsupported operating system."
@@ -88,6 +88,5 @@ detect_and_install_apps() {
 
 # Execute the script
 detect_and_install_apps
-
 
 # TODO - deve ter um mecanismo que ao interromper CTRL + C no terminal interrompe script por script

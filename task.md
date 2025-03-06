@@ -143,9 +143,8 @@
   - Ajustes no script de setup da raiz
   - Ajustes dos scripts da pasta mac 
   - Criando um README para a pasta MAC
-  
   - Aplique as cores nos script setup_enviroment.sh para que no terminal seja exibido com cor as mensagens
-  
+  - Colocar a configuração do settings.json do vscode na configuração global
 
 
   - Remova o arquivo $HOME/.ssh/known_hosts sempre que executar o script github/configure_multi_ssh_github_keys.sh
