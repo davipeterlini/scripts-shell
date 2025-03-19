@@ -71,7 +71,7 @@ fi
 
 # TODO - recado para abrir o browser correta para onfiguração (Colocar cor e em negrito para essa info)
 
-
+# TODO - precisa gravar no .zshrc e gravar a data que foi gerado o token
 # Verificar se existe um Personal Access Token (PAT) e se está expirado
 # TODO - eu preciso que o comando gh auth token list name,token,expiresAt verifique se existe tokens e traga a lista e verifique qual dos tokens da lista está expirado
 # TODO - esse comando mostra o token gh auth token gerado local
@@ -80,7 +80,7 @@ tokens=$(gh auth token list name,token,expiresAt)
 
 if [ -z "$tokens" ]; then
   echo "Nenhum Personal Access Token (classic) encontrado. Gerando um novo token..."
-  gh auth refresh -h github.com -s repo,workflow
+  gh auth refresh -h github.com -s repo,workflow,delete_repo
   new_token=$(gh auth token)
   new_token_name="Generated Token"
   echo "Novo token gerado: $new_token (Nome: $new_token_name)"
