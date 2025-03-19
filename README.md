@@ -55,16 +55,16 @@ chmod +x grant_permissions.sh
 ./bitbucket/connect_bitbucket_ssh_account.sh
 ```
 
-### setup_multiple_bitbucket_accounts.sh
+### configure_multi_ssh_bitbucket_keys.sh
 ```shell script
 chmod +x grant_permissions.sh
 ./grant_permissions.sh
-./bitbucket/setup_multiple_bitbucket_accounts.sh
+./bitbucket/configure_multi_ssh_bitbucket_keys.sh
 ```
 
-### ssh_multiple_bitbucket_accounts.sh
+### generate-classic-token-bb-local.sh
 ```shell script
 chmod +x grant_permissions.sh
 ./grant_permissions.sh
-./bitbucket/ssh_multiple_bitbucket_accounts.sh
+./bitbucket/generate-classic-token-bb-local.sh
 ```
