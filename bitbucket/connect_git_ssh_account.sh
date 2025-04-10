@@ -7,7 +7,7 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 source "$SCRIPT_DIR/../utils/load_env.sh"
 load_env
 
-# Load the list_projects function from the new script
+# Load the list_projects function
 source "$SCRIPT_DIR/../utils/list_projects.sh"
 
 # Function to prompt user to choose an identity
@@ -17,7 +17,7 @@ choose_identity() {
   read -p "Please choose an identity by number: " IDENTITY_NUMBER
 
   local index=1
-  for identity in $(env | grep '^PROJECT_DIR_' | sed 's/^PROJECT_DIR_//' | sed 's/=.*//'); do
+  for identity in $(env | grep '^SSH_KEY_BB_' | sed 's/^SSH_KEY_BB_//' | sed 's/=.*//'); do
     if [ "$index" -eq "$IDENTITY_NUMBER" ]; then
       IDENTITY=$(echo $identity | tr '[:upper:]' '[:lower:]')
       break
@@ -35,15 +35,19 @@ choose_identity() {
 add_identity() {
   local identity=$1
   local identity_upper=$(echo "$identity" | tr '[:lower:]' '[:upper:]')
-  local project_dir_var="PROJECT_DIR_${identity_upper}"
+  local ssh_key_var="SSH_KEY_BB_${identity_upper}"
+  local project_dir_var="PROJECT_DIR_BB_${identity_upper}"
 
-  local ssh_key="$HOME/.ssh/id_rsa_bitbucket_$identity"
+  local ssh_key=$(eval echo \$$ssh_key_var)
   local project_dir=$(eval echo \$$project_dir_var)
 
-  if [ -z "$project_dir" ]; then
-    echo "Project directory for $identity is not set. Exiting..."
+  if [ -z "$ssh_key" ] || [ -z "$project_dir" ]; then
+    echo "SSH key or project directory for $identity is not set. Exiting..."
     exit 1
   fi
+
+  # Expand the tilde (~) to the home directory
+  ssh_key=$(eval echo "$ssh_key")
 
   if [ ! -f "$ssh_key" ]; then
     echo "SSH key file $ssh_key does not exist. Exiting..."
@@ -62,8 +66,8 @@ add_identity() {
         break
         ;;
       [Nn]* )
-        echo "Adding new identity without removing the current one."
-        break
+        echo "Exiting..."
+        exit 0
         ;;
       * )
         echo "Please answer y or n."
@@ -76,7 +80,7 @@ add_identity() {
   echo "Check the $identity key stay in ssh-agent"
   ssh-add -l
   echo "Test Connection"
-    ssh -T git@bitbucket.org
+  ssh -T git@bitbucket.org
 }
 
 # Load environment variables
@@ -93,7 +97,7 @@ fi
 IDENTITY_UPPER=$(echo "$IDENTITY" | tr '[:lower:]' '[:upper:]')
 
 # Check if the specified identity is valid
-if ! env | grep -q "^PROJECT_DIR_${IDENTITY_UPPER}="; then
+if ! env | grep -q "^SSH_KEY_BB_${IDENTITY_UPPER}="; then
   echo "Invalid identity specified. Use one of the following:"
   list_projects
   exit 1
