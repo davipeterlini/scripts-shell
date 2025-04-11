@@ -49,5 +49,3 @@ chmod +x grant_permissions.sh
 ./grant_permissions.sh
 ./bitbucket/ssh_multiple_bitbucket_accounts.sh
 ```
-
-teste
