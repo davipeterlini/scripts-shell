@@ -20,6 +20,9 @@ source "$(dirname "$0")/utils/display_menu.sh"
 
 # MAC
 source "$(dirname "$0")/mac/install_brew_apps.sh"
+source "$(dirname "$0")/utils/display_menu.sh"
+source "$(dirname "$0")/mac/install_homebrew.sh"
+source "$(dirname "$0")/mac/update_brew_apps.sh"
 
 # Linux
 source "$(dirname "$0")/linux/install_flatpak.sh"
