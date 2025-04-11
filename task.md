@@ -1,5 +1,3 @@
-Geral
-
 - 26/01/2025
   - Criação do script para instalação do python e do coder framework da maneira correta na máquina 
   - Atualização do script do python para ir para a versão oficial de scripts e pastas 
@@ -184,7 +182,9 @@ Geral
     - Separe cada funcionalidade por método e chame na main
   - Verifique se o colima está instalado se sim verifique se está rodando se não execute o start 
     - Caso não esteja instalado faça a instação
-
+- 11/05/2025
+  - Ajustes Geral do repo
+  - Remover Scripts que não são mais utilizados
 
   - Vscode 
     - Configurar o botão de F2 no visual code 
