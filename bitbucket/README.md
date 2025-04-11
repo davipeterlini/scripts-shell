@@ -15,26 +15,27 @@ Este script gera um token clássico para autenticação com a API do Bitbucket. 
 
 ## Passo a Passo para Gerar e Configurar Chave SSH no Bitbucket
 
-### 1. Gerar a Chave SSH
-Para gerar uma nova chave SSH para o Bitbucket, execute o seguinte comando:
+### 1. Liberar a permissão
+Para liberar a permissão de execução dos scripts execute o script abaixo:
 ```shell
 chmod +x grant_permissions.sh
 ./grant_permissions.sh
-./bitbucket/generate_ssh_key_bitbucket.sh
 ```
 
-### 2. Conectar a Conta Bitbucket com a Chave SSH
+### 2. Configurar Múltiplas Contas Bitbucket
+Se você precisar configurar múltiplas contas do Bitbucket no mesmo sistema, execute o seguinte comando:
+```shell
+./bitbucket/configure_multi_ssh_bitbucket_keys.sh
+```
+
+### 3. Conectar a Conta Bitbucket com a Chave SSH
 Para conectar sua conta Bitbucket usando a chave SSH gerada, execute o seguinte comando:
 ```shell
-chmod +x grant_permissions.sh
-./grant_permissions.sh
 ./bitbucket/connect_bitbucket_ssh_account.sh
 ```
 
-### 3. Configurar Múltiplas Contas Bitbucket
-Se você precisar configurar múltiplas contas do Bitbucket no mesmo sistema, execute o seguinte comando:
+### 4. Gerar o BITBUCKET_TOKEN 
+Para gerar a o classic token do bitbuxket, execute o seguinte comando:
 ```shell
-chmod +x grant_permissions.sh
-./grant_permissions.sh
-./bitbucket/configure_multi_ssh_bitbucket_keys.sh
+./bitbucket/generate-classic-token-bb-local.sh
 ```
