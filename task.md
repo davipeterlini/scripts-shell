@@ -116,7 +116,53 @@ Geral
       - Separar scripts para instalação das extensões da cit e de coisas da CI&T
       - Configuração do keymap 
       - Configuração o autosave
-- 04/03/2025
+- 05/03/2025
+  - Configurar as chaves ssh da forma correta no mac do trabalho
+  - Geração do README da pasta do git 
+    - Documentar configuração do amviente e qual script do git executar primeiro
+  - Atualize o README para ter os detalhes dos scripts 
+    github/configure_two_ssh_github_keys.sh 
+    github/connect_git_ssh_account.sh 
+    github/generate-classic-token-gh-local.sh
+    E adicione uma sessão de qual a sequencia deve ser executada dos scripts para a configuração correta do ambiente
+  - Gere um script que execute a sequencia colocada no readme 
+    salve o script na pasta github com o nome setup_github.sh
+  - Coloque cores, no script gerado, para os prints de mensagens no terminal
+  - Agora adicione cores nas mensgaens
+  - Atualize o readme adicionando a documentação do novo script
+  - Altere o script github/configure_two_ssh_github_keys.sh para que permita configurar multiplas chaves ssh 
+    Ou seja ao configurar uma chave ssh deve aparecer a pergunta se deseja configurar mais uma chave e se o useuário pressionar Y então novamente abre a caixa de dialogo para configuração
+  - Adicione a geração remota da chave do ssh
+  - Adicione um novo método no script github/configure_multi_ssh_github_keys.sh para fazer o vinculo da chave ssh criada local, ao github remoto 
+    Obs: não faça modificações no scrip, apenas adicione no final dele o método
+  - Crie um script de color message echam nos scripts do git
+  - Leve a estrutura de cores do script github/configure_multi_ssh_github_keys.sh para a pasta utils e chame ele no script github/configure_multi_ssh_github_keys.sh
+  - Altere para que script faça overwrite da maneira correta no arquivo .ssh/config
+  - Altere o script github/configure_multi_ssh_github_keys.sh para que gere um token GITHUB_TOKEN com as permissões: gh auth refresh -h github.com -s repo,workflow
+  - Deixar todos os comentários e mensagens em inglês no github/configure_multi_ssh_github_keys.sh
+- 06/03/2025
+  - Remover a instalação das extensções do vscode do script do setup
+  - Ajustes no script de setup da raiz
+  - Ajustes dos scripts da pasta mac 
+  - Criando um README para a pasta MAC
+  - Aplique as cores nos script setup_enviroment.sh para que no terminal seja exibido com cor as mensagens
+  - Colocar a configuração do settings.json do vscode na configuração global
+
+
+  - Remova o arquivo $HOME/.ssh/known_hosts sempre que executar o script github/configure_multi_ssh_github_keys.sh
+
+  - Altere para que a configuração do o SSO, após adicionar a key remota possar ser realizad via script 
+    Alterar o script github/configure_multi_ssh_github_keys.sh, no método associate_ssh_key_with_github
+
+
+  
+
+
+
+  - Altere o script github/generate-classic-token-gh-local.sh para que posso verificar quais as chaves SSH da pasta home/.ssh geradas no script github/configure_two_ssh_github_keys.sh para que seja possível montar mostrar uma mensaqgem para escolher para qual 
+
+  - Criação de script para montar ambiente de desenvolvimento
+    - O script deve ter executado 
   - Configuraçãos do MAC - Iterm
     - Dado o script: mac/setup/setup_iterm.sh e mac/setup/setup_terminal.sh 
       Quais as diferenças entre os dois e quais os itens que estão duplicados
