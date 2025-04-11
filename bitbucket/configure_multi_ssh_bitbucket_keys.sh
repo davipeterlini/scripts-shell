@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Script to configure multiple SSH keys for Bitbucket accounts
+# TODO - esse script precisa fazer como é feito no script do github 
+# e abrir o terminal e depois salvar a chave no https://bitbucket.org/account/settings/ssh-keys/
 
 # Load environment variables and utility functions
 source "$(dirname "$0")/../utils/load_env.sh"

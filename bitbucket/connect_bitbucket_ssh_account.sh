@@ -37,7 +37,7 @@ add_identity() {
   local identity_upper=$(echo "$identity" | tr '[:lower:]' '[:upper:]')
   local project_dir_var="PROJECT_DIR_${identity_upper}"
 
-  local ssh_key="$HOME/.ssh/id_rsa_bitbucket_$identity"
+  local ssh_key="$HOME/.ssh/id_rsa_bb_$identity"
   local project_dir=$(eval echo \$$project_dir_var)
 
   if [ -z "$project_dir" ]; then
