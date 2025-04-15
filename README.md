@@ -1,4 +1,7 @@
-shell script
+# Scripts principais 
+
+## To Exec all scripts
+```shell script
 chmod +x grant_permissions.sh
 ./grant_permissions.sh
 ```
