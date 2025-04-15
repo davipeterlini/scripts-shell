@@ -17,6 +17,20 @@ confirm_action() {
     esac
 }
 
+# Function to display menu and get user choice
+display_menu() {
+    local options=("$@")
+    echo -e "${BLUE_BOLD}Select the apps to uninstall:${NC}"
+    for i in "${!options[@]}"; do
+        echo "$((i+1)). ${options[i]}"
+    done
+    echo "$((${#options[@]}+1)). Uninstall all apps one by one"
+    echo "$((${#options[@]}+2)). Exit"
+    
+    read -p "Enter your choice (comma-separated for multiple selections): " choices
+    echo $choices
+}
+
 # Function to uninstall a Homebrew package
 uninstall_brew_package() {
     local app_name=$1
@@ -144,15 +158,35 @@ main() {
         exit 1
     fi
 
-    for app in "${APPS_TO_UNINSTALL[@]}"; do
-        if confirm_action "Do you want to process the uninstallation of $app?"; then
+    # Display menu and get user choices
+    choices=$(display_menu "${APPS_TO_UNINSTALL[@]}")
+    
+    # Process user choices
+    IFS=',' read -ra selected_choices <<< "$choices"
+    for choice in "${selected_choices[@]}"; do
+        if [ "$choice" -eq $((${#APPS_TO_UNINSTALL[@]}+1)) ]; then
+            # Uninstall all apps one by one
+            for app in "${APPS_TO_UNINSTALL[@]}"; do
+                if confirm_action "Do you want to process the uninstallation of $app?"; then
+                    uninstall_app "$app"
+                else
+                    print_alert "Skipping uninstallation of $app."
+                fi
+            done
+            break
+        elif [ "$choice" -eq $((${#APPS_TO_UNINSTALL[@]}+2)) ]; then
+            # Exit
+            print_info "Exiting the uninstallation process."
+            exit 0
+        elif [ "$choice" -ge 1 ] && [ "$choice" -le ${#APPS_TO_UNINSTALL[@]} ]; then
+            app="${APPS_TO_UNINSTALL[$((choice-1))]}"
             uninstall_app "$app"
         else
-            print_alert "Skipping uninstallation of $app."
+            print_error "Invalid choice: $choice"
         fi
     done
 
-    print_success "All specified apps have been processed for uninstallation."
+    print_success "All selected apps have been processed for uninstallation."
 }
 
 main
