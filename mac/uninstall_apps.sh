@@ -66,7 +66,7 @@ remove_pkg_installation() {
     fi
 }
 
-# Function to remove SH installations (this is a general approach, might need adjustments)
+# Function to remove SH installations
 remove_sh_installation() {
     local app_name=$1
     if [ -f "/usr/local/bin/$app_name" ]; then
@@ -82,7 +82,7 @@ remove_sh_installation() {
     fi
 }
 
-# Function to remove ZIP installations (assuming they're extracted to /Applications)
+# Function to remove ZIP installations
 remove_zip_installation() {
     local app_name=$1
     if [ -d "/Applications/$app_name" ]; then
@@ -98,16 +98,24 @@ remove_zip_installation() {
     fi
 }
 
-# Main uninstall function
+# Function to identify installation method and call appropriate removal function
 uninstall_app() {
     local app_name=$1
     print_info "Processing uninstallation for $app_name..."
 
-    uninstall_brew_package "$app_name"
-    remove_app_bundle "$app_name"
-    remove_pkg_installation "$app_name"
-    remove_sh_installation "$app_name"
-    remove_zip_installation "$app_name"
+    if brew list "$app_name" &>/dev/null; then
+        uninstall_brew_package "$app_name"
+    elif [ -d "/Applications/$app_name.app" ]; then
+        remove_app_bundle "$app_name"
+    elif pkgutil --pkgs | grep -q -i "$app_name"; then
+        remove_pkg_installation "$app_name"
+    elif [ -f "/usr/local/bin/$app_name" ]; then
+        remove_sh_installation "$app_name"
+    elif [ -d "/Applications/$app_name" ]; then
+        remove_zip_installation "$app_name"
+    else
+        print_alert "Unable to determine installation method for $app_name. Skipping."
+    fi
 
     if confirm_action "Do you want to perform a final cleanup for any remaining files of $app_name?"; then
         print_info "Cleaning up remaining files for $app_name..."
@@ -122,12 +130,21 @@ uninstall_app() {
 
 # Main script execution
 main() {
-    if [ $# -eq 0 ]; then
-        print_error "Please provide at least one app name to uninstall."
+    # Check if UNINSTALL_APPS_MAC is defined in .env
+    if [ -z "$UNINSTALL_APPS_MAC" ]; then
+        print_error "UNINSTALL_APPS_MAC is not defined in the .env file."
         exit 1
     fi
 
-    for app in "$@"; do
+    # Convert comma-separated string to array
+    IFS=',' read -ra APPS_TO_UNINSTALL <<< "$UNINSTALL_APPS_MAC"
+
+    if [ ${#APPS_TO_UNINSTALL[@]} -eq 0 ]; then
+        print_error "No apps specified for uninstallation in UNINSTALL_APPS_MAC."
+        exit 1
+    fi
+
+    for app in "${APPS_TO_UNINSTALL[@]}"; do
         if confirm_action "Do you want to process the uninstallation of $app?"; then
             uninstall_app "$app"
         else
@@ -138,4 +155,4 @@ main() {
     print_success "All specified apps have been processed for uninstallation."
 }
 
-main "$@"
+main
