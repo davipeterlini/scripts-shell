@@ -54,7 +54,6 @@ Para gerar a o classic token do bitbuxket, execute o seguinte comando:
 ./bitbucket/generate-classic-token-bb-local.sh
 ```
 
-
 ______________________________________________________________________________________________________________________________
 
 # GitHub Scripts
