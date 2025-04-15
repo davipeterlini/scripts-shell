@@ -3,10 +3,8 @@
 # Load environment variables and utility functions
 source "$(dirname "$0")/utils/load_env.sh"
 load_env
-
 # Load OS detection script
 source "$(dirname "$0")/utils/detect_os.sh"
-
 # Load colors message
 source "$(dirname "$0")/utils/colors_message.sh"
 
