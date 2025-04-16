@@ -29,8 +29,30 @@ else
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
+# Function to adjust permissions
+adjust_permissions() {
+    echo "Adjusting permissions for Homebrew directories..."
+    sudo chown -R $(whoami) /usr/local/Homebrew
+    sudo chown -R $(whoami) /usr/local/Cellar
+    sudo chown -R $(whoami) /usr/local/Caskroom
+    sudo chown -R $(whoami) /usr/local/bin
+    sudo chown -R $(whoami) /usr/local/etc
+    sudo chown -R $(whoami) /usr/local/include
+    sudo chown -R $(whoami) /usr/local/lib
+    sudo chown -R $(whoami) /usr/local/opt
+    sudo chown -R $(whoami) /usr/local/sbin
+    sudo chown -R $(whoami) /usr/local/share
+    sudo chown -R $(whoami) /usr/local/var
+    sudo chown -R $(whoami) ~/Library/Caches/Homebrew
+    sudo chown -R $(whoami) ~/Library/Logs/Homebrew
+    sudo chown -R $(whoami) ~/Library/Preferences/Homebrew
+    sudo chown -R $(whoami) ~/Library/Application\ Support/Homebrew
+}
+
 # Atualiza o Homebrew
 print_message "green" "Atualizando o Homebrew..."
+adjust_permissions
 update_brew_apps
+
 
 print_message "green" "Instalação e atualização do Homebrew concluídas com sucesso."
