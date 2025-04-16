@@ -185,6 +185,17 @@
 - 11/05/2025
   - Ajustes Geral do repo
   - Remover Scripts que não são mais utilizados
+- 14/04/2025
+  - Ajuste de estrutura do repo
+  - Ajustes de scripts do python 
+- 15/04/2025
+  - Ajuste da estrutura do repo 
+  - Ajustes de scripts do mac 
+- 16/04/2025
+  - Ajustar para buscar a variável home de um env.local e não mais do env
+  - Criar um script para trocar automaticamente entre o github da conta pessoal e github da conta de trabalho, fazer essa verificação com o comando do git que trás o repo e o usuário 
+
+
 
   - Vscode 
     - Configurar o botão de F2 no visual code 
