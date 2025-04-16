@@ -27,6 +27,20 @@ source "$(dirname "$0")/linux/install_flatpak.sh"
 source "$(dirname "$0")/linux/update_flatpak_apps.sh"
 source "$(dirname "$0")/linux/update_aptget_apps.sh"
 
+install_dialog() {
+    # Check if dialog is installed
+    if ! command -v dialog &> /dev/null; then
+        echo "dialog is not installed. Installing dialog..."
+        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            sudo apt-get install -y dialog
+        elif [[ "$OSTYPE" == "darwin"* ]]; then
+            brew install dialog
+        else
+            echo "Unsupported OS."
+            exit 1
+        fi
+    fi
+}
 
 main() {
     # Detect the operating system
@@ -36,6 +50,7 @@ main() {
     if [[ "$os" == "macOS" ]]; then        
         # Install Homebrew if not installed
         install_homebrew
+        install_dialog
 
         # Display menu and get user choices
         choices=$(display_menu)
