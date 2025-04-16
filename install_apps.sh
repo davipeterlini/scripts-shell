@@ -20,9 +20,7 @@ source "$(dirname "$0")/utils/display_menu.sh"
 
 # MAC
 source "$(dirname "$0")/mac/install_brew_apps.sh"
-source "$(dirname "$0")/utils/display_menu.sh"
 source "$(dirname "$0")/mac/install_homebrew.sh"
-source "$(dirname "$0")/mac/update_brew_apps.sh"
 
 # Linux
 source "$(dirname "$0")/linux/install_flatpak.sh"
@@ -31,24 +29,11 @@ source "$(dirname "$0")/linux/update_aptget_apps.sh"
 
 
 main() {
-    # TODO - garantir o funcionamento
-    ./vscode/setup_vscode.sh
-    ./github/configure_two_ssh_github_keys.sh # TODO - colocar pergunta para se deseja fazer ou não a execução do script
-    # TODO - chama duas vezes por que não tem script que faz a configuração dupla
-    ./github/generate-classic-token-gh-local.sh # TODO - colocar pergunta para se deseja fazer ou não a execução do script
-    ./github/generate-classic-token-gh-local.sh
-    # Conexão de qual conta será trabalhada
-    ./github/connect_git_ssh_account.sh # TODO - colocar pergunta para se deseja fazer ou não a execução do script
-
-
     # Detect the operating system
     os=$(detect_os)
     echo "Operational System: $os"
 
-    if [[ "$os" == "macOS" ]]; then
-        # Update all Homebrew packages before installation
-        #update_all_apps_mac
-        
+    if [[ "$os" == "macOS" ]]; then        
         # Install Homebrew if not installed
         install_homebrew
 

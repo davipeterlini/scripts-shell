@@ -1,14 +1,10 @@
 #!/bin/bash
 
-# Load environment variables and utility functions
 source "$(dirname "$0")/utils/load_env.sh"
 load_env
-# Load OS detection script
 source "$(dirname "$0")/utils/detect_os.sh"
-# Load colors message
 source "$(dirname "$0")/utils/colors_message.sh"
 
-# Function to Install and configure VSCode
 setup_initial() {
     print_info "Granting permissions for all scripts..."
     ./grant_permissions.sh
@@ -28,7 +24,6 @@ setup_github () {
     ./github/generate-classic-token-gh-local.sh
 }
 
-# Function to Install and configure VSCode
 setup_vscode() {
     print_info "Installing VSCode extensions..."
     ./vscode/install_vscode_plugins.sh
@@ -42,7 +37,6 @@ setup_vscode() {
     print_success "VSCode setup completed successfully."
 }
 
-# Function to install additional apps and configurations on macOS
 setup_mac() {
     print_info "Setting up macOS configurations..."
     ./mac/setup/setup_iterm.sh
@@ -53,10 +47,12 @@ setup_mac() {
     # TODO - falta configurações de teclado e de ajustes do mac os
 }
 
-# Function to install additional apps and configurations on Linux (Debian-based)
-# setup_linux() {
-#     # Add Linux-specific setup steps here
-# }
+setup_linux() {
+    print_info "Setting up terminal configurations..."
+    ./mac/setup/setup_terminal.sh
+
+    # TODO - criar mais scripts e colocar mais configurações
+}
 
 # Detect the operating system and execute the corresponding script
 detect_and_install_apps() {
@@ -68,7 +64,7 @@ detect_and_install_apps() {
 
     # TODO - testar no linux
     setup_initial
-    setup_github
+    #setup_github
     setup_vscode
 
     case "$os" in
@@ -78,7 +74,7 @@ detect_and_install_apps() {
             ;;
         Linux)
             print_info "Linux detected."
-            # setup_linux
+            setup_linux
             ;;
         *)
             print_error "Unsupported operating system."
