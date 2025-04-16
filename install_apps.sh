@@ -54,7 +54,6 @@ main() {
 
         # Display menu and get user choices
         choices=$(display_menu)
-        echo "OOOOOOOO"
 
         if [[ "$choices" == *"1"* ]]; then
             install_brew_apps $(echo "$INSTALL_APPS_BASIC_MAC" | tr ',' ' ')
