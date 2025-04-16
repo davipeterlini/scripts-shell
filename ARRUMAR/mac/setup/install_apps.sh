@@ -4,8 +4,8 @@
 source "$(dirname "$0")/../../utils/load_env.sh"
 load_env
 source "$(dirname "$0")/../../utils/display_menu.sh"
-source "$(dirname "$0")/install_homebrew.sh"
-source "$(dirname "$0")/update_apps.sh"
+source "$(dirname "$0")/mac/install_homebrew.sh"
+source "$(dirname "$0")/mac/update_apps.sh"
 
 # Function to install apps on macOS
 install_apps_mac() {

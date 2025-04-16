@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$(dirname "$0")/mac/install_homebrew.sh"
+
 # Function to update all Homebrew packages
 update_brew_apps() {
     echo "Updating all Homebrew packages..."
@@ -10,7 +12,6 @@ update_brew_apps() {
 
 # Main script execution
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    source "$(dirname "$0")/install_homebrew.sh"
-    install_homebrew "Call from Update"
+    install_homebrew
     update_brew_apps
 fi

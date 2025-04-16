@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 # Load Homebrew installation script
-source "$(dirname "$0")/../install_homebrew.sh"
+source "$(dirname "$0")/mac/install_homebrew.sh"
 
 # Function to install iTerm2
 install_iterm2() {

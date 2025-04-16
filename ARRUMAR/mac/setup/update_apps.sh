@@ -3,7 +3,7 @@
 # Load environment variables and utility functions
 source "$(dirname "$0")/../../utils/load_env.sh"
 load_env
-source "$(dirname "$0")/install_homebrew.sh"
+source "$(dirname "$0")/mac/install_homebrew.sh"
 
 # Function to update all Homebrew packages
 update_all_apps_mac() {
