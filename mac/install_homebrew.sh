@@ -1,8 +1,7 @@
 #!/bin/bash
 
-source "$(dirname "$0")/mac/update_brew_apps.sh"
+#source "$(dirname "$0")/mac/update_brew_apps.sh"
 
-# TODO - se o homebrew já tiver sido instalado ignorar instalação
 # Função para exibir mensagens coloridas
 function print_message() {
     local color=$1
@@ -15,19 +14,22 @@ function print_message() {
     esac
 }
 
-# Verifica se o Homebrew já está instalado
-if command -v brew &> /dev/null; then
-    print_message "yellow" "Homebrew já está instalado."
-else
-    # Instala o Homebrew
-    print_message "green" "Instalando o Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# TODO - se o homebrew já tiver sido instalado ignorar instalação
+install_homebrew() {
+    # Verifica se o Homebrew já está instalado
+    if command -v brew &> /dev/null; then
+        print_message "yellow" "Homebrew já está instalado."
+    else
+        # Instala o Homebrew
+        print_message "green" "Instalando o Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-    # Adiciona o Homebrew ao PATH
-    print_message "green" "Adicionando o Homebrew ao PATH..."
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
+        # Adiciona o Homebrew ao PATH
+        print_message "green" "Adicionando o Homebrew ao PATH..."
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+}
 
 # Function to adjust permissions
 adjust_permissions() {
@@ -50,9 +52,13 @@ adjust_permissions() {
 }
 
 # Atualiza o Homebrew
-print_message "green" "Atualizando o Homebrew..."
-adjust_permissions
-update_brew_apps
 
+main() {
+    print_message "green" "Atualizando o Homebrew..."
+    install_homebrew
+    #adjust_permissions
+    #update_brew_apps
+    print_message "green" "Instalação e atualização do Homebrew concluídas com sucesso."
+}
 
-print_message "green" "Instalação e atualização do Homebrew concluídas com sucesso."
+main "$@"

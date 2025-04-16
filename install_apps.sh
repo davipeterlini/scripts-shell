@@ -39,8 +39,8 @@ main() {
 
         # Display menu and get user choices
         choices=$(display_menu)
+        echo "OOOOOOOO"
 
-        # Install selected apps
         if [[ "$choices" == *"1"* ]]; then
             install_brew_apps $(echo "$INSTALL_APPS_BASIC_MAC" | tr ',' ' ')
         fi
@@ -59,7 +59,6 @@ main() {
         # Display menu and get user choices
         choices=$(display_menu)
 
-        # Install selected apps
         if [[ "$choices" == *"1"* ]]; then
             install_flatpak_apps $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT" | tr ',' ' ')
             install_aptget_apps $(echo "$INSTALL_APPS_BASIC_LINUX_APT" | tr ',' ' ')

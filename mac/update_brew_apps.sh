@@ -12,6 +12,6 @@ update_brew_apps() {
 
 # Main script execution
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    install_homebrew
+    #install_homebrew
     update_brew_apps
 fi
