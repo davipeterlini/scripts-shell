@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "$(dirname "$0")/update_brew_apps.sh"
+source "$(dirname "$0")/mac/update_brew_apps.sh"
 
 # TODO - se o homebrew já tiver sido instalado ignorar instalação
 # Função para exibir mensagens coloridas

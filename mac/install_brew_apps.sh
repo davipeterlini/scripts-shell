@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Load the script to install Homebrew if not already installed
-source "$(dirname "$0")/install_homebrew.sh"
-
+source "$(dirname "$0")/mac/install_homebrew.sh"
 
 # Function to install apps using Homebrew
 install_brew_apps() {
