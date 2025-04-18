@@ -192,7 +192,10 @@
   - Ajuste da estrutura do repo 
   - Ajustes de scripts do mac 
 - 16/04/2025
-  - Ajustar para buscar a variável home de um env.local e não mais do env
+  - Altere o load_env.sh para: 
+    - Não olhar mais para o arquivo .env para pegar a variável home do usuário  (HOME)
+    - Olhar para o arquivo .env.local
+    - Se o arquivo não existir ele deve ser criado
   - Criar um script para trocar automaticamente entre o github da conta pessoal e github da conta de trabalho, fazer essa verificação com o comando do git que trás o repo e o usuário 
 
 
