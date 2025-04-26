@@ -200,8 +200,12 @@
 
 
 
+
+
+
   - Vscode 
     - Configurar o botão de F2 no visual code 
+    - Mudar linguagem de exibição do vscode para inglês
 
 
 
