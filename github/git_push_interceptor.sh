@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Load environment variables
-source "$(dirname "$0")/../utils/load_env.sh"
-load_env
-
 # Function to get the remote URL of the current git repository
 get_remote_url() {
     git config --get remote.origin.url
