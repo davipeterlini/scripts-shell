@@ -34,7 +34,7 @@ cp "$(dirname "$0")/git_push_interceptor.sh" "$INTERCEPTOR_PATH"
 cp "$ENV_LOCAL_FILE" "$ENV_GIT_PATH"
 
 # Make the script executable
-chmod +x "$INTERCEPTOR_PATH"
+chmod a+x "$INTERCEPTOR_PATH"
 
 # Add the Git alias
 git config --global alias.push "!$INTERCEPTOR_PATH"
