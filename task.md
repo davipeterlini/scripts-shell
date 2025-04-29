@@ -201,7 +201,7 @@
   - Arrumar Scripts da automação do git
   - Colocar uma lógica no script github/setup_git_push_interceptor.sh que sempre sobreescreve as variáveis de ambiente que já existem no .env.local
   - Ajuste de script de setup para configurar o git no momento da instalação
-  
+  - Tenho mais de uma chave SSH em minha máquina e preciso gerenciar isso de maneira automatizada, para quando digitar git push no repo ele use a chave correta, como devo proceder para que isso acontece dessa forma
 
 
 
