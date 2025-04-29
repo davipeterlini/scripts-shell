@@ -197,7 +197,11 @@
     - Olhar para o arquivo .env.local
     - Se o arquivo não existir ele deve ser criado
   - Criar um script para trocar automaticamente entre o github da conta pessoal e github da conta de trabalho, fazer essa verificação com o comando do git que trás o repo e o usuário 
-
+- 29/04/2025
+  - Arrumar Scripts da automação do git
+  - Colocar uma lógica no script github/setup_git_push_interceptor.sh que sempre sobreescreve as variáveis de ambiente que já existem no .env.local
+  - Ajuste de script de setup para configurar o git no momento da instalação
+  
 
 
 
@@ -206,6 +210,9 @@
   - Vscode 
     - Configurar o botão de F2 no visual code 
     - Mudar linguagem de exibição do vscode para inglês
+
+
+
 
 
 

@@ -51,11 +51,27 @@ echo "Select your work SSH key:"
 work_github_ssh_key=$(choose_ssh_key)
 
 # Update .env.local with the new variables
-echo "" >> "$ENV_LOCAL_FILE"
-echo "PERSONAL_GITHUB_USERNAME=$personal_username" >> "$ENV_LOCAL_FILE"
-echo "WORK_GITHUB_USERNAME=$work_username" >> "$ENV_LOCAL_FILE"
-echo "PERSONAL_GITHUB_SSH_KEY=$personal_github_ssh_key" >> "$ENV_LOCAL_FILE"
-echo "WORK_GITHUB_SSH_KEY=$work_github_ssh_key" >> "$ENV_LOCAL_FILE"
+# Update .env.local with the new variables
+update_env_variable() {
+  local key=$1
+  local value=$2
+  if grep -q "^${key}=" "$ENV_LOCAL_FILE"; then
+    sed -i "s/^${key}=.*/${key}=${value}/" "$ENV_LOCAL_FILE"
+  else
+    echo "" >> "$ENV_LOCAL_FILE"
+    echo "${key}=${value}" >> "$ENV_LOCAL_FILE"
+  fi
+}
+
+update_env_variable "PERSONAL_GITHUB_USERNAME" "$personal_username"
+update_env_variable "WORK_GITHUB_USERNAME" "$work_username"
+update_env_variable "PERSONAL_GITHUB_SSH_KEY" "$personal_github_ssh_key"
+update_env_variable "WORK_GITHUB_SSH_KEY" "$work_github_ssh_key"
+# echo "" >> "$ENV_LOCAL_FILE"
+#       echo "PERSONAL_GITHUB_USERNAME=$personal_username" >> "$ENV_LOCAL_FILE"
+# echo "WORK_GITHUB_USERNAME=$work_username" >> "$ENV_LOCAL_FILE"
+# echo "PERSONAL_GITHUB_SSH_KEY=$personal_github_ssh_key" >> "$ENV_LOCAL_FILE"
+# echo "WORK_GITHUB_SSH_KEY=$work_github_ssh_key" >> "$ENV_LOCAL_FILE"
 
 echo "Git Push Interceptor has been set up successfully!"
 echo "The interceptor script is located at: $INTERCEPTOR_PATH"
