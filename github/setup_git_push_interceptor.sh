@@ -58,6 +58,7 @@ update_env_variable() {
         #sed -i "s/^${key}=.*/${key}=${value}/" "$ENV_LOCAL_FILE"
         sed -i '' "s|^$key=.*|$key=$value|" "$ENV_LOCAL_FILE"
     else
+      # TODO altere abaixo para que pule a linha apenas na primeira variável a ser escrita
       echo "" >> "$ENV_LOCAL_FILE"
       echo "${key}=${value}" >> "$ENV_LOCAL_FILE"
     fi
