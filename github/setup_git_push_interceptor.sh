@@ -22,6 +22,7 @@ choose_ssh_key() {
   done
 }
 
+VAR_REMOTE="git config --get remote.origin.url"
 
 # Define the path where the interceptor script will be placed
 INTERCEPTOR_PATH="$HOME/git_push_interceptor.sh"
@@ -29,7 +30,8 @@ INTERCEPTOR_PATH="$HOME/git_push_interceptor.sh"
 ENV_GIT_PATH="$HOME/.env.git.local"
 
 # Copy the interceptor script to the defined path
-cp "$(dirname "$0")/git_push_interceptor.sh" "$INTERCEPTOR_PATH"
+echo $VAR_REMOTE
+cp "$(dirname "$0")/git_push_interceptor.sh" "$INTERCEPTOR_PATH '$VAR_REMOTE'"
 
 cp "$ENV_LOCAL_FILE" "$ENV_GIT_PATH"
 

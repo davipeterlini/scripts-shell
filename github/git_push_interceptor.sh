@@ -2,7 +2,23 @@
 
 # Function to get the remote URL of the current git repository
 get_remote_url() {
-    git config --get remote.origin.url
+    # git config --get remote.origin.url
+    # Se a verificação abaixo estiver vazio faça REMOTE_URL="$1"
+    # Se não estiver vazio faça REMOTE_URL="$(git config --get remote.origin.url)"
+    if [[ -z "$1" ]]; then
+        echo "No remote URL provided. Attempting to retrieve from git config..."
+        # Check if the git repository is initialized
+        if ! git rev-parse --is-inside-work-tree &>/dev/null; then
+            echo "Error: Not inside a git repository."
+            exit 1
+        fi
+        # Get the remote URL from git config
+        REMOTE_URL="$(git config --get remote.origin.url)"
+    else
+        echo "Using provided remote URL: $1"
+    fi
+    #git config --get remote.origin.url
+    
 }
 
 # Function to extract the username from the remote URL
