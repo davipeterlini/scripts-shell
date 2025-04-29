@@ -52,3 +52,4 @@ No changes to your regular Git workflow are needed. Simply use `git push` as you
 - If you encounter any issues, ensure that the paths in your Git alias and environment variables are correct.
 - Check that the `github/connect_git_ssh_account.sh` script is in the correct location relative to the interceptor script.
 - Verify that your SSH keys are properly set up and the paths in the environment variables are correct.
+
