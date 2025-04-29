@@ -22,7 +22,7 @@ choose_ssh_key() {
   done
 }
 
-VAR_REMOTE="git config --get remote.origin.url"
+
 
 # Define the path where the interceptor script will be placed
 INTERCEPTOR_PATH="$HOME/git_push_interceptor.sh"
@@ -30,8 +30,7 @@ INTERCEPTOR_PATH="$HOME/git_push_interceptor.sh"
 ENV_GIT_PATH="$HOME/.env.git.local"
 
 # Copy the interceptor script to the defined path
-echo $VAR_REMOTE
-cp "$(dirname "$0")/git_push_interceptor.sh" "$INTERCEPTOR_PATH '$VAR_REMOTE'"
+cp "$(dirname "$0")/git_push_interceptor.sh" "$INTERCEPTOR_PATH"
 
 cp "$ENV_LOCAL_FILE" "$ENV_GIT_PATH"
 
@@ -39,7 +38,9 @@ cp "$ENV_LOCAL_FILE" "$ENV_GIT_PATH"
 chmod a+x "$INTERCEPTOR_PATH"
 
 # Add the Git alias
-git config --global alias.push "!$INTERCEPTOR_PATH"
+VAR_REMOTE="git config --get remote.origin.url"
+# TODO - ao executar isso não está funcionando corretamente
+git config --global alias.push "!$INTERCEPTOR_PATH '$VAR_REMOTE'"
 
 # Prompt for GitHub usernames and SSH key paths
 read -p "Enter your personal GitHub username: " personal_username
