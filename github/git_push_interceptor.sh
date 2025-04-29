@@ -27,9 +27,9 @@ determine_repo_type() {
 connect_ssh_key() {
     local repo_type=$1
     if [[ "$repo_type" == "personal" ]]; then
-        "$(dirname "$0")/connect_git_ssh_account.sh" "$SSH_KEY_PERSONAL"
+        "$(dirname "$0")/connect_git_ssh_account.sh" "$PERSONAL_GITHUB_SSH_KEY"
     elif [[ "$repo_type" == "work" ]]; then
-        "$(dirname "$0")/connect_git_ssh_account.sh" "$SSH_KEY_WORK"
+        "$(dirname "$0")/connect_git_ssh_account.sh" "$WORK_GITHUB_SSH_KEY"
     else
         echo "Unknown repo type. Using default SSH key."
     fi

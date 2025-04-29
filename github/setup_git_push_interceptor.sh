@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# Get the directory of the current script
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
-
-# Load environment variables from .env file
-source "$SCRIPT_DIR/../utils/load_env.sh"
+# Load environment variables and utility functions
+source "$(dirname "$0")/../utils/load_env.sh"
 load_env
 
 # Function to list SSH keys and allow user to choose one
@@ -13,10 +10,10 @@ choose_ssh_key() {
   local ssh_dir="$HOME/.ssh"
   local ssh_keys=("$ssh_dir"/*)
   
-  echo "Available SSH keys in $ssh_dir:"
+  #echo "Available SSH keys in $ssh_dir:"
   select ssh_key in "${ssh_keys[@]}"; do
     if [[ -n "$ssh_key" ]]; then
-      echo "You selected: $ssh_key"
+      #echo "You selected: $ssh_key"
       echo "$ssh_key"
       return
     else
@@ -34,8 +31,7 @@ ENV_GIT_PATH="$HOME/.env.git.local"
 # Copy the interceptor script to the defined path
 cp "$(dirname "$0")/git_push_interceptor.sh" "$INTERCEPTOR_PATH"
 
-cp "$(dirname "$0")/.env.local" "$ENV_GIT_PATH"
-
+cp "$ENV_LOCAL_FILE" "$ENV_GIT_PATH"
 
 # Make the script executable
 chmod +x "$INTERCEPTOR_PATH"
@@ -48,17 +44,18 @@ read -p "Enter your personal GitHub username: " personal_username
 read -p "Enter your work GitHub username: " work_username
 # Prompt user to select personal SSH key
 echo "Select your personal SSH key:"
-personal_ssh_key=$(choose_ssh_key)
+personal_github_ssh_key=$(choose_ssh_key)
 
 # Prompt user to select work SSH key
 echo "Select your work SSH key:"
-work_ssh_key=$(choose_ssh_key)
+work_github_ssh_key=$(choose_ssh_key)
 
 # Update .env.local with the new variables
+echo "" >> "$ENV_LOCAL_FILE"
 echo "PERSONAL_GITHUB_USERNAME=$personal_username" >> "$ENV_LOCAL_FILE"
 echo "WORK_GITHUB_USERNAME=$work_username" >> "$ENV_LOCAL_FILE"
-echo "SSH_KEY_PERSONAL=$personal_ssh_key" >> "$ENV_LOCAL_FILE"
-echo "SSH_KEY_WORK=$work_ssh_key" >> "$ENV_LOCAL_FILE"
+echo "PERSONAL_GITHUB_SSH_KEY=$personal_github_ssh_key" >> "$ENV_LOCAL_FILE"
+echo "WORK_GITHUB_SSH_KEY=$work_github_ssh_key" >> "$ENV_LOCAL_FILE"
 
 echo "Git Push Interceptor has been set up successfully!"
 echo "The interceptor script is located at: $INTERCEPTOR_PATH"
