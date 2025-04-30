@@ -24,6 +24,17 @@ setup_github () {
     ./github/generate-classic-token-gh-local.sh
 }
 
+setup_bitbucket () {
+    print_info "Configuring multiple SSH keys for GitHub accounts..."
+    ./bitbucket/configure_multi_ssh_bitbucket_keys.sh
+
+    print_info "Connecting to GitHub using SSH..."
+    ./bitbucket/connect_bitbucket_ssh_account.sh
+
+    print_info "Generating GitHub Personal Access Token..."
+    ./bitbucket/generate-classic-token-bb-local.sh
+}
+
 setup_vscode() {
     print_info "Installing VSCode extensions..."
     ./vscode/install_vscode_plugins.sh
@@ -65,6 +76,7 @@ detect_and_install_apps() {
     # TODO - testar no linux
     setup_initial
     #setup_github
+    #setup_bitbucket
     setup_vscode
 
     case "$os" in

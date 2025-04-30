@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO - aplicar o autosave 
+# TODO - aplicar o wrapper de linha
+
 # Load environment variables and utility functions if not already loaded
 if [ -z "$ENV_LOADED" ]; then
 source "$(dirname "$0")/../utils/load_env.sh"

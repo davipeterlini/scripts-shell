@@ -62,7 +62,7 @@ main() {
             install_brew_apps $(echo "$INSTALL_APPS_DEV_MAC" | tr ',' ' ')
         fi
         if [[ "$choices" == *"3"* ]]; then
-            install_brew_apps $(echo "$APPS_TO_INSTALL_MAC" | tr ',' ' ')
+            install_brew_apps $(echo "$OTHER_APPS_TO_INSTALL_MAC" | tr ',' ' ')
         fi
     elif [[ "$os" == "Linux" ]]; then
         echo "LINUX detected."
