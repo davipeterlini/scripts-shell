@@ -202,7 +202,13 @@
   - Colocar uma lógica no script github/setup_git_push_interceptor.sh que sempre sobreescreve as variáveis de ambiente que já existem no .env.local
   - Ajuste de script de setup para configurar o git no momento da instalação
   - Tenho mais de uma chave SSH em minha máquina e preciso gerenciar isso de maneira automatizada, para quando digitar git push no repo ele use a chave correta, como devo proceder para que isso acontece dessa forma
-
+- 30/04
+  - mostrar o repo para o ary 
+  - proteger a branch main do repo scripts-shell
+  - Gerar script para atualizar o repo de scripts-shell do trabalho assim que fizer git push nesse repo 
+    - Copiar com o comando git para não perder histórico 
+    - Comandos de commit git add . && git commit -m |update version| && git push 
+  
 
 
 
