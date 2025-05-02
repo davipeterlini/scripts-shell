@@ -4,8 +4,8 @@
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 # Source the utility scripts
-source "$SCRIPT_DIR/utils/colors_message.sh"
-source "$SCRIPT_DIR/utils/load_env.sh"
+source "$SCRIPT_DIR/../utils/colors_message.sh"
+source "$SCRIPT_DIR/../utils/load_env.sh"
 
 # Load environment variables
 load_env
@@ -84,16 +84,24 @@ setup_personal_projects() {
     create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/platform"
     
     # Create and populate pocs directory
+    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/pocs"
+    clone_or_update_repo "git@github.com:mannaandpoem/OpenManus.git" "$PROJECT_DIR_PERSONAL/pocs"
+    clone_or_update_repo "git@github.com:ModelTC/lightllm.git" "$PROJECT_DIR_PERSONAL/pocs"
+    clone_or_update_repo "git@github.com:stackblitz/bolt.new.git" "$PROJECT_DIR_PERSONAL/pocs"
+    clone_or_update_repo "git@github.com:stackblitz-labs/bolt.diy.git" "$PROJECT_DIR_PERSONAL/pocs"
+    clone_or_update_repo "org-14957082@github.com:openai/codex.git" "$PROJECT_DIR_PERSONAL/pocs"
+    
+    # Create and populate pocs-personal directory
     create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/pocs-personal"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-hub-app.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:davipeterlini/LLMTester.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-finance-track.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-squad-pulse.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-cli-replit.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-prototyper-app.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-model-local.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-coder-cli.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-google-calendar-to-notion.git" "$PROJECT_DIR_PERSONAL/pocs"
+    clone_or_update_repo "git@github.com:davipeterlini/poc-hub-app.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
+    clone_or_update_repo "git@github.com:davipeterlini/LLMTester.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
+    clone_or_update_repo "git@github.com:davipeterlini/poc-finance-track.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
+    clone_or_update_repo "git@github.com:davipeterlini/poc-squad-pulse.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
+    clone_or_update_repo "git@github.com:davipeterlini/poc-cli-replit.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
+    clone_or_update_repo "git@github.com:davipeterlini/poc-prototyper-app.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
+    clone_or_update_repo "git@github.com:davipeterlini/poc-model-local.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
+    clone_or_update_repo "git@github.com:davipeterlini/poc-coder-cli.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
+    clone_or_update_repo "git@github.com:davipeterlini/poc-google-calendar-to-notion.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
     
     # Create and populate subscription-club directory
     create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/subscription-club"
