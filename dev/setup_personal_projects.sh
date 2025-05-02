@@ -84,7 +84,7 @@ setup_personal_projects() {
     create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/platform"
     
     # Create and populate pocs directory
-    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/pocs"
+    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/pocs-personal"
     clone_or_update_repo "git@github.com:davipeterlini/poc-hub-app.git" "$PROJECT_DIR_PERSONAL/pocs"
     clone_or_update_repo "git@github.com:davipeterlini/LLMTester.git" "$PROJECT_DIR_PERSONAL/pocs"
     clone_or_update_repo "git@github.com:davipeterlini/poc-finance-track.git" "$PROJECT_DIR_PERSONAL/pocs"

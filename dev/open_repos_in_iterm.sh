@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../utils/colors_message.sh"
 source "$SCRIPT_DIR/../utils/list_projects.sh"
 source "$SCRIPT_DIR/../utils/load_env.sh"
+source "$SCRIPT_DIR/../utils/display_menu.sh"
 
 # Load environment variables
 load_env
@@ -15,6 +16,25 @@ check_iterm() {
         print_error "iTerm2 is not installed. Please install it first."
         exit 1
     fi
+}
+
+# Function to prompt user to select repository type
+select_repo_type() {
+    local options=("Personal Projects" "Work Projects")
+    local choice
+    
+    print_info "Select repository type:"
+    display_menu "${options[@]}"
+    read -p "Enter your choice (1-${#options[@]}): " choice
+    
+    case $choice in
+        1) echo "personal" ;;
+        2) echo "work" ;;
+        *) 
+            print_error "Invalid choice"
+            exit 1
+            ;;
+    esac
 }
 
 # Function to open repositories in iTerm2 tabs
@@ -29,7 +49,7 @@ open_repos_in_iterm() {
         print_info "Loading work projects..."
         repos=($(list_work_projects))
     else
-        print_error "Please specify 'personal' or 'work' as an argument"
+        print_error "Invalid repository type. Use 'personal' or 'work'"
         exit 1
     fi
     
@@ -82,17 +102,21 @@ EOF
 # Main execution
 check_iterm
 
-if [ "$#" -ne 1 ]; then
-    print_error "Usage: $0 [personal|work]"
-    exit 1
+# If no argument is provided, prompt the user to select
+if [ "$#" -eq 0 ]; then
+    repo_type=$(select_repo_type)
+else
+    # Check if the provided argument is valid
+    case "$1" in
+        personal|work)
+            repo_type="$1"
+            ;;
+        *)
+            print_error "Invalid argument. Use 'personal' or 'work'"
+            exit 1
+            ;;
+    esac
 fi
 
-case "$1" in
-    personal|work)
-        open_repos_in_iterm "$1"
-        ;;
-    *)
-        print_error "Invalid argument. Use 'personal' or 'work'"
-        exit 1
-        ;;
-esac
+# Open repositories in iTerm
+open_repos_in_iterm "$repo_type"
