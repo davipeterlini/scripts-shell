@@ -209,9 +209,10 @@
     - Copiar com o comando git para não perder histórico 
     - Comandos de commit git add . && git commit -m |update version| && git push 
 - 02/05/2025
-  - 
+  - Salvar versões de config do .ssh 
+  - Colocar variáveis globais no script de dev 1
   - Colocar o open manus dentro do project start para geração de plano  
-
+  - Re autenticar no coder CLI - 
 
 
 
