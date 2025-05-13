@@ -213,7 +213,9 @@
   - Colocar variáveis globais no script de dev 1
   - Colocar o open manus dentro do project start para geração de plano  
   - Re autenticar no coder CLI - 
-
+- 13/05/2025
+  - Necessário alterar o config para não commitar mais com o user da CI&T no git pessoal 
+    - https://github.com/davipeterlini/scripts-shell/graphs/contributors
 
 
   - Vscode 

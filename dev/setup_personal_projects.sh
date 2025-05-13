@@ -10,6 +10,11 @@ source "$SCRIPT_DIR/../utils/load_env.sh"
 # Load environment variables
 load_env
 
+# Global variables for repository links
+GITHUB_BASE_URL="git@github.com:davipeterlini"
+GITHUB_ORG_BASE_URL="git@github.com"
+GITHUB_OTHER_BASE_URL="org-14957082@github.com:openai"
+
 # Function to create directory if it doesn't exist
 create_directory_if_not_exists() {
     local dir="$1"
@@ -71,43 +76,55 @@ setup_personal_projects() {
     create_directory_if_not_exists "$PROJECT_DIR_PERSONAL"
     
     # Create and populate automation directory
-    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/automation"
-    clone_or_update_repo "git@github.com:davipeterlini/scripts-shell.git" "$PROJECT_DIR_PERSONAL/automation"
-    clone_or_update_repo "git@github.com:davipeterlini/project-starter.git" "$PROJECT_DIR_PERSONAL/automation"
-    
-    # Create and populate challenge directory
-    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/challenge"
-    clone_or_update_repo "git@github.com:davipeterlini/code-challenge-nubank.git" "$PROJECT_DIR_PERSONAL/challenge"
-    clone_or_update_repo "git@github.com:davipeterlini/desafio-mestre-ml-google.git" "$PROJECT_DIR_PERSONAL/challenge"
-    
+    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/"
+    clone_or_update_repo "$GITHUB_BASE_URL/scripts-shell.git" "$PROJECT_DIR_PERSONAL/"
+    clone_or_update_repo "$GITHUB_BASE_URL/project-starter.git" "$PROJECT_DIR_PERSONAL/"
+
     # Create platform directory
     create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/platform"
-    
-    # Create and populate pocs directory
-    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:mannaandpoem/OpenManus.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:ModelTC/lightllm.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:stackblitz/bolt.new.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "git@github.com:stackblitz-labs/bolt.diy.git" "$PROJECT_DIR_PERSONAL/pocs"
-    clone_or_update_repo "org-14957082@github.com:openai/codex.git" "$PROJECT_DIR_PERSONAL/pocs"
-    
-    # Create and populate pocs-personal directory
-    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/pocs-personal"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-hub-app.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
-    clone_or_update_repo "git@github.com:davipeterlini/LLMTester.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-finance-track.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-squad-pulse.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-cli-replit.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-prototyper-app.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-model-local.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-coder-cli.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
-    clone_or_update_repo "git@github.com:davipeterlini/poc-google-calendar-to-notion.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
-    
+
     # Create and populate subscription-club directory
     create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/subscription-club"
-    clone_or_update_repo "git@github.com:davipeterlini/HealthTrackPlus.git" "$PROJECT_DIR_PERSONAL/subscription-club"
-    clone_or_update_repo "git@github.com:davipeterlini/lifetrek-compass.git" "$PROJECT_DIR_PERSONAL/subscription-club"
+    clone_or_update_repo "$GITHUB_BASE_URL/subscription-club-mobile.git" "$PROJECT_DIR_PERSONAL/subscription-club"
+    clone_or_update_repo "$GITHUB_BASE_URL/subscription-club-service.git" "$PROJECT_DIR_PERSONAL/subscription-club"
+    clone_or_update_repo "$GITHUB_BASE_URL/subscription-club-mobile-app.git" "$PROJECT_DIR_PERSONAL/subscription-club"
+    clone_or_update_repo "$GITHUB_BASE_URL/subscription-club-docs.git" "$PROJECT_DIR_PERSONAL/subscription-club"
+    clone_or_update_repo "$GITHUB_BASE_URL/subscription-club-web-app.git" "$PROJECT_DIR_PERSONAL/subscription-club"
+    clone_or_update_repo "$GITHUB_BASE_URL/subscription-club-desing-system.git" "$PROJECT_DIR_PERSONAL/subscription-club"
+    clone_or_update_repo "$GITHUB_BASE_URL/subscription-club-iac.git" "$PROJECT_DIR_PERSONAL/subscription-club"
+
+    # Create and populate pocs directory
+    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/pocs"
+    clone_or_update_repo "$GITHUB_ORG_BASE_URL/mannaandpoem/OpenManus.git" "$PROJECT_DIR_PERSONAL/pocs"
+    clone_or_update_repo "$GITHUB_ORG_BASE_URL/ModelTC/lightllm.git" "$PROJECT_DIR_PERSONAL/pocs"
+    clone_or_update_repo "$GITHUB_ORG_BASE_URL/stackblitz/bolt.new.git" "$PROJECT_DIR_PERSONAL/pocs"
+    clone_or_update_repo "$GITHUB_ORG_BASE_URL/stackblitz-labs/bolt.diy.git" "$PROJECT_DIR_PERSONAL/pocs"
+    clone_or_update_repo "$GITHUB_OTHER_BASE_URL/codex.git" "$PROJECT_DIR_PERSONAL/pocs"
+
+    # Create and populate pocs replit directory
+    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/pocs-replit"
+    clone_or_update_repo "$GITHUB_BASE_URL/poc-hub-app.git" "$PROJECT_DIR_PERSONAL/pocs-replit"
+    clone_or_update_repo "$GITHUB_BASE_URL/LLMTester.git" "$PROJECT_DIR_PERSONAL/pocs-replit"
+    clone_or_update_repo "$GITHUB_BASE_URL/poc-finance-track.git" "$PROJECT_DIR_PERSONAL/pocs-replit"
+    clone_or_update_repo "$GITHUB_BASE_URL/poc-squad-pulse.git" "$PROJECT_DIR_PERSONAL/pocs-replit"
+    clone_or_update_repo "$GITHUB_BASE_URL/poc-cli-replit.git" "$PROJECT_DIR_PERSONAL/pocs-replit"
+    clone_or_update_repo "$GITHUB_BASE_URL/poc-prototyper-app.git" "$PROJECT_DIR_PERSONAL/pocs-replit"
+    clone_or_update_repo "$GITHUB_BASE_URL/HealthTrackPlus.git" "$PROJECT_DIR_PERSONAL/pocs-replit"
+
+    # Create and populate pocs-lovable directory
+    clone_or_update_repo "$GITHUB_BASE_URL/lifetrek-compass.git" "$PROJECT_DIR_PERSONAL/pocs-lovable"
+
+    # Create and populate pocs-personal directory
+    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/pocs-personal"
+    clone_or_update_repo "$GITHUB_BASE_URL/poc-model-local.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
+    clone_or_update_repo "$GITHUB_BASE_URL/poc-coder-cli.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
+    clone_or_update_repo "$GITHUB_BASE_URL/poc-google-calendar-to-notion.git" "$PROJECT_DIR_PERSONAL/pocs-personal"
     
+    # Create and populate challenge directory
+    #create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/challenge"
+    #clone_or_update_repo "$GITHUB_BASE_URL/code-challenge-nubank.git" "$PROJECT_DIR_PERSONAL/challenge"
+    #clone_or_update_repo "$GITHUB_BASE_URL/desafio-mestre-ml-google.git" "$PROJECT_DIR_PERSONAL/challenge"
+
     print_success "Personal projects directory structure setup completed!"
 }
 
