@@ -1,0 +1,12 @@
+Include /Users/davi.peterlini/.colima/ssh_config
+
+
+Host github.com-personal
+  HostName github.com
+  User git
+  IdentityFile /Users/davi.peterlini/.ssh/id_rsa_personal
+
+Host github.com-work
+  HostName github.com
+  User git
+  IdentityFile /Users/davi.peterlini/.ssh/id_rsa_work
