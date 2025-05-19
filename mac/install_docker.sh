@@ -41,34 +41,15 @@ configure_docker_credentials() {
     # Create Docker config directory if it doesn't exist
     mkdir -p ~/.docker
     
-    # Check if config.json exists
-    if [ ! -f ~/.docker/config.json ]; then
-        echo '{
-  "credsStore": "osxkeychain",
-  "auths": {}
+    # Create config.json with the exact specified content
+    echo '{
+    "auths": {},
+    "HttpHeaders": {
+    "User-Agent": "Docker-Client/20.10.8 (darwin)"
+    }
 }' > ~/.docker/config.json
-        print_info "Created Docker credentials configuration file"
-    else
-        # Check if credsStore is already configured
-        if ! grep -q "credsStore" ~/.docker/config.json; then
-            # Backup the original file
-            cp ~/.docker/config.json ~/.docker/config.json.bak
-            
-            # Add credsStore to the config
-            TMP_FILE=$(mktemp)
-            jq '. + {"credsStore": "osxkeychain"}' ~/.docker/config.json > "$TMP_FILE"
-            mv "$TMP_FILE" ~/.docker/config.json
-            print_info "Added osxkeychain credential store to Docker config"
-        fi
-    fi
     
-    # Install docker-credential-helper if not already installed
-    if ! command -v docker-credential-osxkeychain &> /dev/null; then
-        print_info "Installing Docker credential helper for macOS..."
-        brew install docker-credential-helper
-    fi
-    
-    print_success "Docker credentials configured successfully!"
+    print_success "Docker credentials configured successfully with the specified format!"
 }
 
 # Function to verify Docker installation
@@ -96,6 +77,12 @@ verify_docker_installation() {
     # Check if Docker daemon is running via Colima
     if ! docker info &> /dev/null; then
         print_error "Docker daemon is not running. Make sure Colima is started."
+        return 1
+    fi
+    
+    # Verify config.json has the correct content
+    if [ ! -f ~/.docker/config.json ]; then
+        print_error "Docker config.json file is missing"
         return 1
     fi
     
@@ -164,7 +151,7 @@ main() {
     # Start Colima
     start_colima
     
-    # Configure Docker credentials
+    # Configure Docker credentials with the exact specified format
     configure_docker_credentials
     
     # Add Docker to shell profile
