@@ -216,6 +216,8 @@
 - 19/05/2025
   - Criando o script de instalação e configuração do docker no mac 
   - Crie um script para o setup do docker e outro para a instalação separe o script existente atualmente
+
+
   - Necessário alterar o config para não commitar mais com o user da CI&T no git pessoal 
     - https://github.com/davipeterlini/scripts-shell/graphs/contributors
 
