@@ -2,6 +2,7 @@
 
 # Import color scheme and profile selection script
 source ./utils/colors_message.sh
+source ./utils/choose_shell_profile.sh
 ENV_EXAMPLE="./dev/.env.example"
 
 create_env_file() {
@@ -16,30 +17,6 @@ create_env_file() {
         echo -e "${RED}Error: $env_example_path does not exist.${NC}"
         exit 1
     fi
-}
-
-# Function to ask the user which shell they are using and set the profile file
-choose_shell_profile() {
-  echo "Which shell are you using? (Enter the corresponding number)"
-  echo "1) bash"
-  echo "2) zsh"
-  read -p "Choose an option (1 or 2): " shell_choice
-
-  case $shell_choice in
-    1)
-      profile_file="$HOME/.bashrc"
-      ;;
-    2)
-      profile_file="$HOME/.zshrc"
-      ;;
-    *)
-      echo "Invalid option. Exiting..."
-      exit 1
-      ;;
-  esac
-
-  echo "Profile file set to $profile_file"
-  export PROFILE_FILE="$profile_file"
 }
 
 # Function to add the export line to the profile
@@ -149,7 +126,10 @@ reload_profile() {
 # Main script flow
 main() {
     create_env_file
+    
+    # Use the external choose_shell_profile script instead of the internal function
     choose_shell_profile
+    
     add_export_to_profile "$PROFILE_FILE"
     
     # Setup variables - will prompt for each variable one by one with proper waiting
