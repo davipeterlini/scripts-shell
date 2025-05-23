@@ -213,6 +213,9 @@
   - Colocar variáveis globais no script de dev 1
   - Colocar o open manus dentro do project start para geração de plano  
   - Re autenticar no coder CLI - 
+- 19/05/2025
+  - Criando o script de instalação e configuração do docker no mac 
+  - Crie um script para o setup do docker e outro para a instalação separe o script existente atualmente
 - 23/05/2025
   - Crie um script para configurar o .env global 
     - Esse script deve fazer o seguinte:
@@ -230,14 +233,6 @@
     - Criar o .env na raiz do profile do usuário a partir do .env da pasta scripts/.env.example
     As outras funções podem continar a existir
   - export $(grep -v '^#' ~/.env | xargs)
-
-
-
-
-
-
-
-
 
 
 
