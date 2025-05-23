@@ -2,11 +2,11 @@
 
 # Import color scheme and profile selection script
 source ./utils/colors_message.sh
-source ./utils/choose_shell_profile.sh
+ENV_EXAMPLE="./dev/.env.example"
 
 create_env_file() {
     local user_profile_dir="$HOME"
-    local env_example_path="./dev/.env.example"
+    local env_example_path="$ENV_EXAMPLE"
     local env_target_path="$user_profile_dir/.env"
 
     if [ -f "$env_example_path" ]; then
@@ -18,9 +18,34 @@ create_env_file() {
     fi
 }
 
+# Function to ask the user which shell they are using and set the profile file
+choose_shell_profile() {
+  echo "Which shell are you using? (Enter the corresponding number)"
+  echo "1) bash"
+  echo "2) zsh"
+  read -p "Choose an option (1 or 2): " shell_choice
+
+  case $shell_choice in
+    1)
+      profile_file="$HOME/.bashrc"
+      ;;
+    2)
+      profile_file="$HOME/.zshrc"
+      ;;
+    *)
+      echo "Invalid option. Exiting..."
+      exit 1
+      ;;
+  esac
+
+  echo "Profile file set to $profile_file"
+  export PROFILE_FILE="$profile_file"
+}
+
 # Function to add the export line to the profile
 add_export_to_profile() {
-  local profile_path="$HOME/$1"
+  local profile_path="$1"
+  echo "PROFILEEEEEEE $profile_path"
   local export_line="export \$(grep -v '^#' ~/.env | xargs)"
   
   if [ -f "$profile_path" ]; then
@@ -45,10 +70,8 @@ print_env_variables() {
 # Main script flow
 main() {
     create_env_file
-
-    local profile
-    profile=$(get_user_profile_choice)
-    add_export_to_profile "$profile"
+    choose_shell_profile
+    add_export_to_profile "$PROFILE_FILE"
 
     # Reload the profile to apply changes
     if [ -f "$HOME/$profile" ]; then
