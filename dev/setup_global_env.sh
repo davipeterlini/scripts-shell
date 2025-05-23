@@ -88,7 +88,7 @@ update_env_key() {
   mv "$temp_file" "$env_file"
 }
 
-# Function to setup secrets in the .env file
+# Function to setup secrets in the .env file - asking for each one by one
 setup_secrets() {
   local env_file="$HOME/.env"
   local secrets_added=()
@@ -107,32 +107,42 @@ setup_secrets() {
     return 0
   fi
   
-  echo -e "${GREEN}Let's set up your secrets one by one. Press Enter to skip a secret.${NC}"
+  echo -e "${GREEN}Let's set up your secrets one by one:${NC}"
   
   # Read the .env file and process each line
   while IFS= read -r line; do
     # Skip comments and empty lines
     if [[ "$line" =~ ^#.*$ || -z "$line" ]]; then
+      # Print the comment line to show what section we're in
+      if [[ "$line" =~ ^#.*$ ]]; then
+        echo -e "${BLUE}$line${NC}"
+      fi
       continue
     fi
     
     # Extract the key name
     key=$(echo "$line" | cut -d'=' -f1)
     
-    # Ask user for the value with a more explicit prompt
-    read -p "Enter value for $key to add to .env (press Enter to skip): " value
+    # Ask user for the value with a clear prompt
+    read -p "Enter value for $key (press Enter to skip): " value
     
-    # If a value was provided, update the .env file
+    # If a value was provided, immediately update the .env file
     if [ ! -z "$value" ]; then
-      # Use the update_env_key function to update the .env file
       update_env_key "$env_file" "$key" "$value"
       secrets_added+=("$key")
+      echo -e "${GREEN}Added $key to .env file${NC}"
+    else
+      echo -e "${YELLOW}Skipped $key${NC}"
     fi
+    
+    # Add a blank line for readability between variables
+    echo ""
+    
   done < "$env_file"
   
-  # Print all the secrets that were added
+  # Print summary of all the secrets that were added
   if [ ${#secrets_added[@]} -gt 0 ]; then
-    echo -e "${GREEN}Secrets added to .env file:${NC}"
+    echo -e "${GREEN}Summary of secrets added to .env file:${NC}"
     for secret in "${secrets_added[@]}"; do
       echo "- $secret"
     done
