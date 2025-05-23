@@ -73,6 +73,7 @@ main() {
     choose_shell_profile
     add_export_to_profile "$PROFILE_FILE"
 
+    # TODO - leve a parte abaixo para uma função separada da main e imprima todas as variáveis do arquivo .env criado
     # Reload the profile to apply changes
     if [ -f "$HOME/$profile" ]; then
       echo -e "${YELLOW}Reloading the profile file $profile...${NC}"
