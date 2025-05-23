@@ -7,35 +7,6 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # Sem cor
 
-
-# Função para verificar e criar o diretório ~/.coder-ide
-create_coder_ide_directory() {
-  if [ ! -d "$HOME/.coder-ide" ]; then
-    echo -e "${YELLOW}Criando diretório ~/.coder-ide...${NC}"
-    mkdir -p "$HOME/.coder-ide"
-  fi
-}
-
-# Função para criar o arquivo .env.example, se não existir
-create_env_example() {
-  local env_example_path="$HOME/.coder-ide/.env.example"
-  if [ ! -f "$env_example_path" ]; then
-    echo -e "${YELLOW}Criando arquivo .env.example...${NC}"
-    echo "# Exemplo de arquivo .env" > "$env_example_path"
-    echo "VAR1=valor1" >> "$env_example_path"
-    echo "VAR2=valor2" >> "$env_example_path"
-  fi
-}
-
-# Função para criar o arquivo .env a partir do .env.example, se não existir
-create_env_file() {
-  local env_path="$HOME/.coder-ide/.env"
-  if [ ! -f "$env_path" ]; then
-    echo -e "${YELLOW}Criando arquivo .env...${NC}"
-    cp "$HOME/.coder-ide/.env.example" "$env_path"
-  fi
-}
-
 create_env_file() {
     local user_profile_dir="$HOME"
     local env_example_path="./dev/.env.example"
