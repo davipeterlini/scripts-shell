@@ -88,10 +88,11 @@ update_env_key() {
   mv "$temp_file" "$env_file"
 }
 
-# Function to setup secrets in the .env file - asking for values with the exact format requested
-setup_secrets() {
+# Function to setup variables in the .env file - properly waiting for each input
+setup_variables() {
   local env_file="$HOME/.env"
-  local secrets_added=()
+  local variables_updated=0
+  local keys=()
   
   # Check if .env file exists
   if [ ! -f "$env_file" ]; then
@@ -99,17 +100,9 @@ setup_secrets() {
     return 1
   fi
   
-  # Ask user if they want to set secrets
-  read -p "Do you want to set up secrets in your .env file? (y/n): " setup_choice
+  echo -e "${GREEN}Setting up environment variables:${NC}"
   
-  if [[ "$setup_choice" != "y" && "$setup_choice" != "Y" ]]; then
-    echo -e "${YELLOW}Skipping secrets setup.${NC}"
-    return 0
-  fi
-  
-  echo -e "${GREEN}Setting up your environment variables:${NC}"
-  
-  # Read the .env file and process each line
+  # First, collect all the variable keys from the .env file
   while IFS= read -r line; do
     # Skip comments and empty lines
     if [[ "$line" =~ ^#.*$ || -z "$line" ]]; then
@@ -118,30 +111,26 @@ setup_secrets() {
     
     # Extract the key name
     key=$(echo "$line" | cut -d'=' -f1)
+    keys+=("$key")
+  done < "$env_file"
+  
+  # Now process each key one by one, waiting for user input after each
+  for key in "${keys[@]}"; do
+    # Clear prompt for each variable
+    printf "Put the value %s: " "$key"
     
-    # Ask user for the value using the exact format requested
-    echo -n "Put the value $key: "
-    read value
+    # Using read -r to preserve backslashes in input
+    read -r value
     
     # If a value was provided, update the .env file
     if [ ! -z "$value" ]; then
       update_env_key "$env_file" "$key" "$value"
-      secrets_added+=("$key")
-    else
-      echo -e "${YELLOW}Skipped $key${NC}"
+      ((variables_updated++))
     fi
-    
-  done < "$env_file"
-  
-  # Print all the secrets that were added
-  echo -e "\n${GREEN}Variables added to .env file:${NC}"
-  for secret in "${secrets_added[@]}"; do
-    echo "- $secret"
   done
   
-  if [ ${#secrets_added[@]} -eq 0 ]; then
-    echo -e "${YELLOW}No variables were added to .env file.${NC}"
-  fi
+  # Simple completion message
+  echo -e "${GREEN}Updated $variables_updated environment variables.${NC}"
 }
 
 # Function to reload the profile
@@ -163,8 +152,8 @@ main() {
     choose_shell_profile
     add_export_to_profile "$PROFILE_FILE"
     
-    # Setup secrets
-    setup_secrets
+    # Setup variables - will prompt for each variable one by one with proper waiting
+    setup_variables
     
     # Reload the profile to apply changes
     reload_profile "$PROFILE_FILE"
