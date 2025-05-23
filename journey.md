@@ -213,7 +213,36 @@
   - Colocar variáveis globais no script de dev 1
   - Colocar o open manus dentro do project start para geração de plano  
   - Re autenticar no coder CLI - 
-- 13/05/2025
+- 23/05/2025
+  - Crie um script para configurar o .env global 
+    - Esse script deve fazer o seguinte:
+      - Criar o .env na raiz do profile do usuário a partir do .env da pasta scripts/.env.example
+      - De a opção de o usuário escolher o profile que ele quer salvar .zshrc ou .basrc
+      - Salve a linha abaixo dentro do profile: 
+          export $(grep -v '^#' .coder-ide/.env | xargs)
+      - Imprima as variáveis salvas no terminal de acordo com o env criado
+    - Esse script deve usar o esquema de cor do utils
+    - Esse script deve estar na pasta scripts
+  - Coloque cores no script 
+  - Arrumar script de scripts/utils/grant_permissions.sh para sempre executar no dir correto 
+  - Teste do script de setup de envs
+  - Altere o script setup_env.sh para 
+    - Criar o .env na raiz do profile do usuário a partir do .env da pasta scripts/.env.example
+    As outras funções podem continar a existir
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   - Necessário alterar o config para não commitar mais com o user da CI&T no git pessoal 
     - https://github.com/davipeterlini/scripts-shell/graphs/contributors
 
