@@ -45,7 +45,6 @@ choose_shell_profile() {
 # Function to add the export line to the profile
 add_export_to_profile() {
   local profile_path="$1"
-  echo "PROFILEEEEEEE $profile_path"
   local export_line="export \$(grep -v '^#' ~/.env | xargs)"
   
   if [ -f "$profile_path" ]; then

@@ -229,6 +229,7 @@
   - Altere o script setup_env.sh para 
     - Criar o .env na raiz do profile do usuário a partir do .env da pasta scripts/.env.example
     As outras funções podem continar a existir
+  - export $(grep -v '^#' ~/.env | xargs)
 
 
 
