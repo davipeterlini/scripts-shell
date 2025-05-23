@@ -14,9 +14,9 @@ create_env_file() {
 
     if [ -f "$env_example_path" ]; then
         cp "$env_example_path" "$env_target_path"
-        echo ".env file created at $env_target_path"
+        echo -e "${GREEN}.env file created at $env_target_path${NC}"
     else
-        echo "Error: $env_example_path does not exist."
+        echo -e "${RED}Error: $env_example_path does not exist.${NC}"
         exit 1
     fi
 }
@@ -43,9 +43,16 @@ add_export_to_profile() {
   local profile_path="$HOME/$1"
   local export_line="export \$(grep -v '^#' ~/.env | xargs)"
   
-  if ! grep -q "$export_line" "$profile_path"; then
-    echo -e "${YELLOW}Adicionando linha de exportação ao $1...${NC}"
-    echo "$export_line" >> "$profile_path"
+  if [ -f "$profile_path" ]; then
+    if ! grep -q "$export_line" "$profile_path"; then
+      echo -e "${YELLOW}Adicionando linha de exportação ao $1...${NC}"
+      echo "$export_line" >> "$profile_path"
+    else
+      echo -e "${GREEN}A linha de exportação já existe no $1.${NC}"
+    fi
+  else
+    echo -e "${RED}O arquivo $1 não existe. Certifique-se de que o shell correto está configurado.${NC}"
+    exit 1
   fi
 }
 
@@ -57,18 +64,22 @@ print_env_variables() {
 
 # Fluxo principal do script
 main() {
-    #create_coder_ide_directory
-    #create_env_example
-    #create_env_file
     create_env_file
 
-  local profile
-  profile=$(get_user_profile_choice)
-  add_export_to_profile "$profile"
+    local profile
+    profile=$(get_user_profile_choice)
+    add_export_to_profile "$profile"
 
-  # Recarregar o profile para aplicar as mudanças
-  source "$HOME/$profile"
-  print_env_variables
+    # Recarregar o profile para aplicar as mudanças
+    if [ -f "$HOME/$profile" ]; then
+      echo -e "${YELLOW}Recarregando o arquivo de profile $profile...${NC}"
+      source "$HOME/$profile"
+    else
+      echo -e "${RED}Não foi possível recarregar o arquivo de profile $profile porque ele não existe.${NC}"
+      exit 1
+    fi
+
+    print_env_variables
 }
 
 # Executar o script
