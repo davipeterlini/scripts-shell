@@ -233,6 +233,12 @@
     - Criar o .env na raiz do profile do usuário a partir do .env da pasta scripts/.env.example
     As outras funções podem continar a existir
   - export $(grep -v '^#' ~/.env | xargs)
+- 24/05/2025
+
+
+
+
+
 
 
 
