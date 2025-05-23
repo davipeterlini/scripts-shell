@@ -26,6 +26,7 @@ get_user_profile_choice() {
   echo -e "${BLUE}Escolha o profile onde deseja salvar as configurações:${NC}"
   echo -e "${GREEN}1. .zshrc${NC}"
   echo -e "${GREEN}2. .bashrc${NC}"
+  echo -e "${YELLOW}Digite o número correspondente à sua escolha:${NC}"
   read -p "Digite 1 ou 2: " profile_option
 
   case "$profile_option" in
