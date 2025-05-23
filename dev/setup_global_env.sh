@@ -66,6 +66,28 @@ print_env_variables() {
   cat "$HOME/.env"
 }
 
+# Function to update a specific key in the .env file (macOS compatible)
+update_env_key() {
+  local env_file="$1"
+  local key="$2"
+  local value="$3"
+  
+  # Create a temporary file
+  local temp_file=$(mktemp)
+  
+  # Replace the line containing the key with the new key=value pair
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^"$key"= ]]; then
+      echo "$key=$value" >> "$temp_file"
+    else
+      echo "$line" >> "$temp_file"
+    fi
+  done < "$env_file"
+  
+  # Replace the original file with the temporary file
+  mv "$temp_file" "$env_file"
+}
+
 # Function to setup secrets in the .env file
 setup_secrets() {
   local env_file="$HOME/.env"
@@ -75,7 +97,7 @@ setup_secrets() {
   if [ ! -f "$env_file" ]; then
     echo -e "${RED}Error: $env_file does not exist.${NC}"
     return 1
-  }
+  fi
   
   # Ask user if they want to set secrets
   read -p "Do you want to set up secrets in your .env file? (y/n): " setup_choice
@@ -97,25 +119,25 @@ setup_secrets() {
     # Extract the key name
     key=$(echo "$line" | cut -d'=' -f1)
     
-    # Ask user for the value
-    read -p "Enter value for $key: " value
+    # Ask user for the value with a more explicit prompt
+    read -p "Enter value for $key to add to .env (press Enter to skip): " value
     
     # If a value was provided, update the .env file
     if [ ! -z "$value" ]; then
-      # Use sed to replace the line in .env file
-      sed -i "s|^$key=.*|$key=$value|" "$env_file"
+      # Use the update_env_key function to update the .env file
+      update_env_key "$env_file" "$key" "$value"
       secrets_added+=("$key")
     fi
   done < "$env_file"
   
   # Print all the secrets that were added
   if [ ${#secrets_added[@]} -gt 0 ]; then
-    echo -e "${GREEN}Secrets added:${NC}"
+    echo -e "${GREEN}Secrets added to .env file:${NC}"
     for secret in "${secrets_added[@]}"; do
       echo "- $secret"
     done
   else
-    echo -e "${YELLOW}No secrets were added.${NC}"
+    echo -e "${YELLOW}No secrets were added to .env file.${NC}"
   fi
 }
 
