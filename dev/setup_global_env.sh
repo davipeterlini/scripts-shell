@@ -66,22 +66,85 @@ print_env_variables() {
   cat "$HOME/.env"
 }
 
+# Function to setup secrets in the .env file
+setup_secrets() {
+  local env_file="$HOME/.env"
+  local secrets_added=()
+  
+  # Check if .env file exists
+  if [ ! -f "$env_file" ]; then
+    echo -e "${RED}Error: $env_file does not exist.${NC}"
+    return 1
+  }
+  
+  # Ask user if they want to set secrets
+  read -p "Do you want to set up secrets in your .env file? (y/n): " setup_choice
+  
+  if [[ "$setup_choice" != "y" && "$setup_choice" != "Y" ]]; then
+    echo -e "${YELLOW}Skipping secrets setup.${NC}"
+    return 0
+  fi
+  
+  echo -e "${GREEN}Let's set up your secrets one by one. Press Enter to skip a secret.${NC}"
+  
+  # Read the .env file and process each line
+  while IFS= read -r line; do
+    # Skip comments and empty lines
+    if [[ "$line" =~ ^#.*$ || -z "$line" ]]; then
+      continue
+    fi
+    
+    # Extract the key name
+    key=$(echo "$line" | cut -d'=' -f1)
+    
+    # Ask user for the value
+    read -p "Enter value for $key: " value
+    
+    # If a value was provided, update the .env file
+    if [ ! -z "$value" ]; then
+      # Use sed to replace the line in .env file
+      sed -i "s|^$key=.*|$key=$value|" "$env_file"
+      secrets_added+=("$key")
+    fi
+  done < "$env_file"
+  
+  # Print all the secrets that were added
+  if [ ${#secrets_added[@]} -gt 0 ]; then
+    echo -e "${GREEN}Secrets added:${NC}"
+    for secret in "${secrets_added[@]}"; do
+      echo "- $secret"
+    done
+  else
+    echo -e "${YELLOW}No secrets were added.${NC}"
+  fi
+}
+
+# Function to reload the profile
+reload_profile() {
+  local profile="$1"
+  
+  if [ -f "$profile" ]; then
+    echo -e "${YELLOW}Reloading the profile file $(basename $profile)...${NC}"
+    source "$profile"
+  else
+    echo -e "${RED}Could not reload the profile file $(basename $profile) because it does not exist.${NC}"
+    exit 1
+  fi
+}
+
 # Main script flow
 main() {
     create_env_file
     choose_shell_profile
     add_export_to_profile "$PROFILE_FILE"
-
-    # TODO - leve a parte abaixo para uma função separada da main e imprima todas as variáveis do arquivo .env criado
+    
+    # Setup secrets
+    setup_secrets
+    
     # Reload the profile to apply changes
-    if [ -f "$HOME/$profile" ]; then
-      echo -e "${YELLOW}Reloading the profile file $profile...${NC}"
-      source "$HOME/$profile"
-    else
-      echo -e "${RED}Could not reload the profile file $profile because it does not exist.${NC}"
-      exit 1
-    fi
-
+    reload_profile "$PROFILE_FILE"
+    
+    # Print all environment variables
     print_env_variables
 }
 
