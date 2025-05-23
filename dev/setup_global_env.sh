@@ -88,7 +88,7 @@ update_env_key() {
   mv "$temp_file" "$env_file"
 }
 
-# Function to setup secrets in the .env file - asking for each one by one
+# Function to setup secrets in the .env file - asking for values with the exact format requested
 setup_secrets() {
   local env_file="$HOME/.env"
   local secrets_added=()
@@ -107,47 +107,40 @@ setup_secrets() {
     return 0
   fi
   
-  echo -e "${GREEN}Let's set up your secrets one by one:${NC}"
+  echo -e "${GREEN}Setting up your environment variables:${NC}"
   
   # Read the .env file and process each line
   while IFS= read -r line; do
     # Skip comments and empty lines
     if [[ "$line" =~ ^#.*$ || -z "$line" ]]; then
-      # Print the comment line to show what section we're in
-      if [[ "$line" =~ ^#.*$ ]]; then
-        echo -e "${BLUE}$line${NC}"
-      fi
       continue
     fi
     
     # Extract the key name
     key=$(echo "$line" | cut -d'=' -f1)
     
-    # Ask user for the value with a clear prompt
-    read -p "Enter value for $key (press Enter to skip): " value
+    # Ask user for the value using the exact format requested
+    echo -n "Put the value $key: "
+    read value
     
-    # If a value was provided, immediately update the .env file
+    # If a value was provided, update the .env file
     if [ ! -z "$value" ]; then
       update_env_key "$env_file" "$key" "$value"
       secrets_added+=("$key")
-      echo -e "${GREEN}Added $key to .env file${NC}"
     else
       echo -e "${YELLOW}Skipped $key${NC}"
     fi
     
-    # Add a blank line for readability between variables
-    echo ""
-    
   done < "$env_file"
   
-  # Print summary of all the secrets that were added
-  if [ ${#secrets_added[@]} -gt 0 ]; then
-    echo -e "${GREEN}Summary of secrets added to .env file:${NC}"
-    for secret in "${secrets_added[@]}"; do
-      echo "- $secret"
-    done
-  else
-    echo -e "${YELLOW}No secrets were added to .env file.${NC}"
+  # Print all the secrets that were added
+  echo -e "\n${GREEN}Variables added to .env file:${NC}"
+  for secret in "${secrets_added[@]}"; do
+    echo "- $secret"
+  done
+  
+  if [ ${#secrets_added[@]} -eq 0 ]; then
+    echo -e "${YELLOW}No variables were added to .env file.${NC}"
   fi
 }
 
