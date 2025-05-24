@@ -237,6 +237,14 @@
   - Criar script de baixar repôs e criação de pastas locais do trabalho 
     - Armazenamento dos arquivos de configuração 
     - Ajustes do profile local com os tokens e informações dos api keys do projeto 
+  - Instalação do MCP do flow
+    - Fazer donwload do MCP do flow e Instalar
+      https://drive.usercontent.google.com/download?id=1iADIQiNa7Mw5Fz4VjWkR55bcoWC7an7q&export=download&authuser=0
+    - Intalação
+      - npm i -g <PATH_TO_PACKAGE>/mcp-ciandt-flow.tgz
+    - Configuração
+      - 
+
 
   - Crie um script na pasta dev para executar os scripts dessa pasta selecionando a partir de trabalho e pessoal
     - Coloque os scripts do git aqui para confiugração correta
