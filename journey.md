@@ -234,7 +234,7 @@
     As outras funções podem continar a existir
   - export $(grep -v '^#' ~/.env | xargs)
 - 24/05/2025
-
+  - 
 
 
 

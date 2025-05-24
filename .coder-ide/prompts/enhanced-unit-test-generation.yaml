@@ -1,0 +1,7 @@
+name: Enhanced Unit Test Generation Prompt
+version: 0.0.2
+schema: v1
+prompts:
+  - name: Comprehensive Unit Test Suite
+    description: Generate a complete suite of unit tests for the provided code snippet.
+    prompt: Please create a thorough and well-structured suite of unit tests for the following code. Ensure that all relevant edge cases, including boundary conditions, invalid inputs, and performance considerations, are covered. Please also include explanations for each test case to clarify the purpose and expected outcomes.

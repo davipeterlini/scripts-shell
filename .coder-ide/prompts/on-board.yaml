@@ -1,0 +1,60 @@
+name: Project Onboard
+version: 0.0.1
+schema: v1
+prompts:
+  - name: Project Onboard
+    description: Generate a comprehensive project overview for new developers
+    prompts:
+      context: |
+        @codebase
+        @url https://just.systems/man/en/
+
+        Por favor, forneça um resumo geral do projeto com as seguintes diretrizes:
+            - Identifique a linguagem de programação principal e o tipo de projeto
+            - Determine as pastas mais importantes no projeto, no máximo 10
+            - Analise cada pasta importante passo a passo:
+                - Explique o que cada pasta faz isoladamente por meio de uma síntese da página README ou arquivos de configuração relevantes (package.json, Cargo.toml, pom.xml, etc.), se disponíveis
+                - Mencione as bibliotecas/pacotes mais populares ou comuns utilizados nessa pasta e seus papéis
+                - Após cobrir pastas individuais, apresente no máximo 5 insights gerais sobre a arquitetura do projeto:
+                    - Como diferentes partes da base de código se encaixam
+                    - A arquitetura ou padrões de design do projeto visíveis na estrutura das pastas e dependências
+                    - Forneça no máximo 5 insights sobre a arquitetura do projeto que não foram abordados na análise por pasta
+            - Em seguida, determine quais ferramentas estão sendo utilizadas no ambiente de desenvolvimento deste repositório
+            - Se existir um arquivo de automação de tarefas (Makefile, .justfile, package.json scripts, etc.), liste as principais tarefas disponíveis
+            - Por fim, adicione qualquer insight adicional
+
+        Importante: Não faça uma resposta muito longa. Atente-se aos diretórios principais, apenas.
+
+        Sua resposta deve estar estruturada, clara e focada em dar ao desenvolvedor novo uma compreensão detalhada de componentes individuais e um vislumbre geral do projeto como um todo.
+        Não invente nenhuma informação. Atenha-se exclusivamente ao código oferecido neste repositório. Se não houver informações suficientes no contexto para que você determine alguma das informações solicitadas, apenas responda que faltam informações.
+
+      example_response: |
+        ## Tipo de projeto
+        Este é um projeto Node.js construído com TypeScript.
+
+        ## Pastas importantes
+        ### /src
+            Descrição: Contém a lógica da aplicação principal.
+            Pacotes-chave: Express.js para roteamento, Mongoose para operações de banco de dados.
+        ### /test
+            Descrição: Contém testes unitários e de integração.
+            Pacotes-chave: Jest para testes, Supertest para testes de API.
+            
+        ## Arquitetura do projeto
+            - O frontend é construído com React e Redux para gerenciamento de estado.
+            - O backend é uma aplicação Node.js que utiliza Express.js para roteamento e Mongoose para operações de banco de dados.
+            - A aplicação segue a arquitetura Model-View-Controller (MVC).
+            
+        ## Ferramentas de desenvolvimento
+            - ESLint e Prettier para formatação de código
+            - Husky para hooks de git
+            - Docker para containerização
+            
+        ## Principais tarefas (package.json)
+            - npm start: Inicia a aplicação
+            - npm test: Executa os testes
+            - npm run build: Compila o código TypeScript
+            
+        ## Insights adicionais
+            - O projeto usa uma estrutura de monorepo
+            - Implementa CI/CD usando GitHub Actions

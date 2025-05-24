@@ -1,0 +1,15 @@
+name: Commit Message
+version: 0.0.1
+schema: v1
+prompts:
+  - name: Commit Message
+    description: Generate a commit message from a git diff
+    prompt: |
+      <system>
+      You are an expert programmer
+      </system>
+
+      @diff
+
+      From the provided git diff, generate a commit message respecting the Conventional Commits specification.
+      Your response strictly has to be only the commit message.
