@@ -74,17 +74,30 @@ setup_work_projects() {
     
     # Create flow directory structure
     create_directory_if_not_exists "$PROJECT_DIR_WORK/flow"
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/PLUGINS"
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/channels"
+    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/chat"
+    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/ai-core"
+    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/coder"
+    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/coder/cases"
+    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/coder/mcp-server"
+    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/coder/pocs"
     
     # Clone flow repositories
     # Note: Replace these with your actual work repositories
-    clone_or_update_repo "git@github.com:ciandt/flow-channels-app-service.git" "$PROJECT_DIR_WORK/flow/channels"
+    clone_or_update_repo "git@github.com:CI-T-HyperX/flow-channels-app-service.git" "$PROJECT_DIR_WORK/flow/chat"
+    clone_or_update_repo "git@github.com:CI-T-HyperX/flow-core-app-llm-service.git" "$PROJECT_DIR_WORK/flow/ai-core"
+    clone_or_update_repo "git@github.com:CI-T-HyperX/flow-coder-framework.git" "$PROJECT_DIR_WORK/flow/coder"
+    clone_or_update_repo "git@github.com:CI-T-HyperX/flow-coder-service.git" "$PROJECT_DIR_WORK/flow/coder"
+    clone_or_update_repo "git@bitbucket.org:ciandt_it/flow-coder-extension.git" "$PROJECT_DIR_WORK/flow/coder"
+    clone_or_update_repo "git@github.com:davipeterlinicit/case-end-to-end-ops.git" "$PROJECT_DIR_WORK/flow/coder/cases"
+    clone_or_update_repo "git@github.com:davipeterlinicit/coder-cases.git" "$PROJECT_DIR_WORK/flow/coder/cases"
+    clone_or_update_repo "git@github.com:laisbonafeciandt/case-end-to-end-metrics.git" "$PROJECT_DIR_WORK/flow/coder/cases"
+    clone_or_update_repo "git@github.com:arysanchez/case-end-to-end-chat.git" "$PROJECT_DIR_WORK/flow/coder/cases"
+    clone_or_update_repo "git@github.com:CI-T-HyperX/mcp-ciandt-flow.git" "$PROJECT_DIR_WORK/flow/coder/mcp-server"
     
     # Create other common work directories
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/docs"
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/tools"
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/pocs"
+    # create_directory_if_not_exists "$PROJECT_DIR_WORK/docs"
+    # create_directory_if_not_exists "$PROJECT_DIR_WORK/tools"
+    # create_directory_if_not_exists "$PROJECT_DIR_WORK/pocs"
     
     print_success "Work projects directory structure setup completed!"
     print_info "Note: You may need to add specific repositories to clone in this script."
