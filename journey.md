@@ -236,19 +236,16 @@
 - 24/05/2025
   - Criar script de baixar repôs e criação de pastas locais do trabalho 
     - Armazenamento dos arquivos de configuração 
-    - Ajustes do profile local com os tokens e informações dos api keys do projeto 
+    - Ajustes do profile local com os tokens e informações dos api keys do projeto
+
+
   - Instalação do MCP do flow
     - Fazer donwload do MCP do flow e Instalar
       https://drive.usercontent.google.com/download?id=1iADIQiNa7Mw5Fz4VjWkR55bcoWC7an7q&export=download&authuser=0
     - Intalação
       - npm i -g <PATH_TO_PACKAGE>/mcp-ciandt-flow.tgz
-    - Configuração
-      - 
-
-
   - Crie um script na pasta dev para executar os scripts dessa pasta selecionando a partir de trabalho e pessoal
     - Coloque os scripts do git aqui para confiugração correta
-
   - Atualizar o script do setup geral para executar a instalação e configuração do docker no Mac e no Linux
     - Atualizar script do docker para no final executar um teste em uma imagem simples do docker e assim que o teste for concluído dar down no docker e remover a imagem, lembre-se de iniciar o colima para subir o docker 
 

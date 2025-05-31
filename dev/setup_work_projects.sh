@@ -94,8 +94,6 @@ setup_work_projects() {
     clone_or_update_repo "git@github.com:arysanchez/case-end-to-end-chat.git" "$PROJECT_DIR_WORK/flow/coder/cases"
     clone_or_update_repo "git@github.com:CI-T-HyperX/mcp-ciandt-flow.git" "$PROJECT_DIR_WORK/flow/coder/mcp-server"
 
-
-    
     # Create other common work directories
     # create_directory_if_not_exists "$PROJECT_DIR_WORK/docs"
     # create_directory_if_not_exists "$PROJECT_DIR_WORK/tools"
