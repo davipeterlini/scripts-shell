@@ -20,24 +20,20 @@ if [ -f "$HOME/.ssh/config" ]; then
     cp "$HOME/.ssh/config" "$HOME/.ssh/config.backup.$(date +%Y%m%d%H%M%S)"
 fi
 
-# Função para selecionar a versão do arquivo de configuração
-select_config_version() {
-    echo "Selecione a versão do arquivo de configuração:"
-    echo "1) Versão 1"
-    echo "2) Versão 2"
-    echo "3) Versão 3"
-    read -p "Escolha (1-3): " choice
-    
-    case $choice in
-        1) echo "config-ssh-v1" ;;
-        2) echo "config-ssh-v2" ;;
-        3) echo "config-ssh-v3" ;;
-        *) echo "Opção inválida. Usando versão 2 como padrão."; echo "config-ssh-v2" ;;
-    esac
-}
-
 # Seleciona a versão do arquivo de configuração
-CONFIG_FILE=$(select_config_version)
+echo "Selecione a versão do arquivo de configuração:"
+echo "1) Versão 1"
+echo "2) Versão 2"
+echo "3) Versão 3"
+read -p "Escolha (1-3): " choice
+
+case $choice in
+    1) CONFIG_FILE="config-ssh-v1" ;;
+    2) CONFIG_FILE="config-ssh-v2" ;;
+    3) CONFIG_FILE="config-ssh-v3" ;;
+    *) echo "Opção inválida. Usando versão 2 como padrão."; CONFIG_FILE="config-ssh-v2" ;;
+esac
+
 CONFIG_PATH="$ASSETS_DIR/$CONFIG_FILE"
 
 if [ ! -f "$CONFIG_PATH" ]; then
