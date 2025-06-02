@@ -85,20 +85,23 @@ setup_work_projects() {
     # Note: Replace these with your actual work repositories
     clone_or_update_repo "git@github.com:CI-T-HyperX/flow-channels-app-service.git" "$PROJECT_DIR_WORK/flow/chat"
     clone_or_update_repo "git@github.com:CI-T-HyperX/flow-core-app-llm-service.git" "$PROJECT_DIR_WORK/flow/ai-core"
+    # Flow Coder CLI
     clone_or_update_repo "git@github.com:CI-T-HyperX/flow-coder-framework.git" "$PROJECT_DIR_WORK/flow/coder"
+    # Flow Coder Service
     clone_or_update_repo "git@github.com:CI-T-HyperX/flow-coder-service.git" "$PROJECT_DIR_WORK/flow/coder"
+    # Flow Coder Extension
     clone_or_update_repo "git@bitbucket.org:ciandt_it/flow-coder-extension.git" "$PROJECT_DIR_WORK/flow/coder"
+    # Flow Coder Cases
     clone_or_update_repo "git@github.com:davipeterlinicit/case-end-to-end-ops.git" "$PROJECT_DIR_WORK/flow/coder/cases"
-    clone_or_update_repo "git@github.com:davipeterlinicit/coder-cases.git" "$PROJECT_DIR_WORK/flow/coder/cases"
     clone_or_update_repo "git@github.com:laisbonafeciandt/case-end-to-end-metrics.git" "$PROJECT_DIR_WORK/flow/coder/cases"
     clone_or_update_repo "git@github.com:arysanchez/case-end-to-end-chat.git" "$PROJECT_DIR_WORK/flow/coder/cases"
+    clone_or_update_repo "git@github.com:davipeterlinicit/coder-cases.git" "$PROJECT_DIR_WORK/flow/coder/cases"
+    clone_or_update_repo "git@github.com:CI-T-HyperX/flow-core-lib-commons-py.git" "$PROJECT_DIR_WORK/flow/coder/cases"
+    # Flow Coder POCs
+    clone_or_update_repo "git@github.com:continuedev/continue.git" "$PROJECT_DIR_WORK/flow/coder/pocs"
+    # Flow MCP Server
     clone_or_update_repo "git@github.com:CI-T-HyperX/mcp-ciandt-flow.git" "$PROJECT_DIR_WORK/flow/coder/mcp-server"
 
-    # Create other common work directories
-    # create_directory_if_not_exists "$PROJECT_DIR_WORK/docs"
-    # create_directory_if_not_exists "$PROJECT_DIR_WORK/tools"
-    # create_directory_if_not_exists "$PROJECT_DIR_WORK/pocs"
-    
     print_success "Work projects directory structure setup completed!"
     print_info "Note: You may need to add specific repositories to clone in this script."
 }

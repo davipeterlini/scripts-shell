@@ -237,6 +237,14 @@
   - Criar script de baixar repôs e criação de pastas locais do trabalho 
     - Armazenamento dos arquivos de configuração 
     - Ajustes do profile local com os tokens e informações dos api keys do projeto
+- 02/05/2025
+  - Atualizar o script de setup do trabalho para a configuração local 
+  
+  - Colocar a configuração do NPMTOKEN no script de trabalho 
+    - Verificar como fazer no repo do llm orchastrator
+    - Gerar o git do token via GH e gravar no .env e no .zshrc
+  - Ajustar o .zshrc para que possa deixar separado as variáveis de ambiente corretamente
+
 
 
   - Instalação do MCP do flow

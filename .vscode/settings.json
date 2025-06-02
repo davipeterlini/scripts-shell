@@ -5,6 +5,4 @@
   "terminal.integrated.tabs.location": "left",
   "terminal.integrated.splitCwd": "inherited",
   "terminal.integrated.cwd": "${workspaceFolder}",
-  "terminal.integrated.persistentSessionScrollback": true,
-  "terminal.integrated.persistentSessionRestore": true
 }
