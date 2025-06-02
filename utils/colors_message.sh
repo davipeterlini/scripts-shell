@@ -9,7 +9,7 @@ NC='\033[0m' # No Color
 
 # Função para exibir mensagens de informação
 function print_info() {
-  echo -e "${BLUE}ℹ️  $1${NC}"
+  echo -e "\n${BLUE}ℹ️  $1${NC}"
 }
 
 # Função para exibir mensagens de sucesso
