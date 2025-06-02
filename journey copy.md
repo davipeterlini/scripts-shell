@@ -250,6 +250,8 @@
     - Verificar como fazer no repo do llm orchastrator
     - Gerar o git do token via GH e gravar no .env e no .zshrc
   - Ajustar o .zshrc para que possa deixar separado as variáveis de ambiente corretamente
+sdfas
+  - O noem dadsafrsa
 
   - Instalação do MCP do flow
     - Fazer donwload do MCP do flow e Instalar

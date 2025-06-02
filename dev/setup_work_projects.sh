@@ -9,11 +9,9 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 readonly ERROR_LOG="/tmp/git_error_output"
 
 # Import utilities
-
-
-# Source the utility scripts
 source "$SCRIPT_DIR/../utils/colors_message.sh"
 source "$SCRIPT_DIR/../utils/load_env.sh"
+
 # Load environment variables
 load_env
 
@@ -46,13 +44,6 @@ readonly DIRECTORIES=(
     "$PROJECT_DIR_WORK/flow/coder/pocs"
 )
 
-#######################################
-# Creates directory if it doesn't exist
-# Arguments:
-#   $1 - Directory path
-# Returns:
-#   None
-#######################################
 create_directory() {
     local dir="$1"
     
@@ -65,13 +56,6 @@ create_directory() {
     fi
 }
 
-#######################################
-# Updates repository by pulling changes
-# Arguments:
-#   $1 - Repository path
-# Returns:
-#   0 - Success, 1 - Failure
-#######################################
 update_repository() {
     local repo_path="$1"
     local current_branch
@@ -112,14 +96,6 @@ update_repository() {
     fi
 }
 
-#######################################
-# Clones a repository
-# Arguments:
-#   $1 - Repository URL
-#   $2 - Target directory
-# Returns:
-#   0 - Success, 1 - Failure
-#######################################
 clone_repository() {
     local repo_url="$1"
     local target_dir="$2"
@@ -137,14 +113,6 @@ clone_repository() {
     fi
 }
 
-#######################################
-# Manages repository (clone or update)
-# Arguments:
-#   $1 - Repository URL
-#   $2 - Target directory
-# Returns:
-#   None
-#######################################
 manage_repository() {
     local repo_url="$1"
     local target_dir="$2"
@@ -162,13 +130,6 @@ manage_repository() {
     fi
 }
 
-#######################################
-# Creates the directory structure
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
 create_directory_structure() {
     print_info "Setting up work projects directory structure..."
     
@@ -179,13 +140,6 @@ create_directory_structure() {
     print_success "Directory structure created successfully!"
 }
 
-#######################################
-# Sets up all repositories
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
 setup_repositories() {
     print_info "Setting up repositories..."
     
@@ -197,13 +151,6 @@ setup_repositories() {
     print_success "Repository setup completed!"
 }
 
-#######################################
-# Main function
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
 main() {
     print_info "Starting work projects setup..."
     

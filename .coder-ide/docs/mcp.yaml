@@ -1,8 +1,0 @@
-name: MCP docs
-version: 0.0.1
-schema: v1
-docs:
-  - startUrl: https://github.com/modelcontextprotocol/typescript-sdk
-    name: MCP Typescript SDK
-  - startUrl: https://modelcontextprotocol.io/llms-full.txt
-    name: MCP Documentation
