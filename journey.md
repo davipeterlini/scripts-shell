@@ -240,7 +240,9 @@
 - 02/05/2025
   - Atualizar o script de setup do trabalho para a configuração local 
   - Backup dos arquivos de configuração do .ssh
-  -  
+  - Atualize os scripts de setup_personal_projects.sh e setup_work_projects.sh para que se o repo existir e se estiver na main fazer o git pull 
+    - Caso não estiver na main fazer o git pull origin main e se gerar conflito colocar uma mensagem de alerta do conflito
+  - 
 
   - Colocar a configuração do NPMTOKEN no script de trabalho 
     - Verificar como fazer no repo do llm orchastrator
