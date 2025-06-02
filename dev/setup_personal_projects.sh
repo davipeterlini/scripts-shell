@@ -40,30 +40,52 @@ clone_or_update_repo() {
         print_info "Repository already exists: $repo_name"
         print_info "Updating repository..."
         
-        # Navigate to repo directory and pull latest changes
+        # Navigate to repo directory
         cd "$repo_path" || return
         
         # Check which branch is currently active
         local current_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "detached")
         
-        # Try to pull from origin main or master
-        if git pull origin main; then
-            print_success "Updated repository from main branch: $repo_name"
-        elif git pull origin master; then
-            print_success "Updated repository from master branch: $repo_name"
+        if [ "$current_branch" = "main" ]; then
+            # If on main branch, simply do a git pull
+            print_info "Currently on main branch, pulling latest changes..."
+            if git pull; then
+                print_success "Updated repository: $repo_name"
+            else
+                print_error "Failed to update repository: $repo_name"
+            fi
         else
-            print_alert "Could not update repository: $repo_name. Staying on branch: $current_branch"
+            # If not on main branch, try to pull from origin main
+            print_info "Currently on branch: $current_branch, pulling from origin main..."
+            if git pull origin main 2> /tmp/git_error_output; then
+                print_success "Pulled changes from main branch into $current_branch: $repo_name"
+            else
+                # Check if there are merge conflicts
+                if grep -q "CONFLICT" /tmp/git_error_output; then
+                    print_alert "MERGE CONFLICT: There are conflicts when pulling main into $current_branch in repository: $repo_name"
+                    print_alert "Please resolve conflicts manually before continuing."
+                else
+                    print_error "Failed to pull from main branch: $repo_name"
+                fi
+            fi
         fi
         
         # Return to original directory
         cd - > /dev/null
     else
-        print_info "Cloning repository: $repo_name"
-        git clone "$repo_url" "$repo_path"
-        if [ $? -eq 0 ]; then
-            print_success "Repository cloned: $repo_name"
+        # Check if the repository exists before attempting to clone
+        print_info "Checking if repository exists: $repo_name"
+        if git ls-remote "$repo_url" &> /dev/null; then
+            print_info "Cloning repository: $repo_name"
+            git clone "$repo_url" "$repo_path"
+            if [ $? -eq 0 ]; then
+                print_success "Repository cloned: $repo_name"
+            else
+                print_error "Failed to clone repository: $repo_name"
+            fi
         else
-            print_error "Failed to clone repository: $repo_name"
+            print_alert "Repository does not exist or is not accessible: $repo_name"
+            print_info "Skipping repository: $repo_name"
         fi
     fi
 }
@@ -112,6 +134,7 @@ setup_personal_projects() {
     clone_or_update_repo "$GITHUB_BASE_URL/HealthTrackPlus.git" "$PROJECT_DIR_PERSONAL/pocs-replit"
 
     # Create and populate pocs-lovable directory
+    create_directory_if_not_exists "$PROJECT_DIR_PERSONAL/pocs-lovable"
     clone_or_update_repo "$GITHUB_BASE_URL/lifetrek-compass.git" "$PROJECT_DIR_PERSONAL/pocs-lovable"
 
     # Create and populate pocs-personal directory

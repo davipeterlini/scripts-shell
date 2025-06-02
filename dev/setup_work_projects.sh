@@ -1,19 +1,60 @@
 #!/bin/bash
+# setup_work_projects.sh
+# Purpose: Set up and maintain work project repositories
+# Following clean code and clean architecture principles
 
-# Get the directory of the current script
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
+# Constants
+readonly SCRIPT_DIR=$(dirname "$(realpath "$0")")
+readonly UTILS_DIR="$SCRIPT_DIR/../utils"
+readonly ERROR_LOG="/tmp/git_error_output"
 
-# Source the utility scripts
-source "$SCRIPT_DIR/utils/colors_message.sh"
-source "$SCRIPT_DIR/utils/load_env.sh"
+# Import utilities
+source "$UTILS_DIR/colors_message.sh"
+source "$UTILS_DIR/load_env.sh"
 
 # Load environment variables
 load_env
 
-# Function to create directory if it doesn't exist
-create_directory_if_not_exists() {
+# Repository configuration - can be moved to a separate config file later
+declare -A REPOSITORIES=(
+    # Format: [target_directory]="repository_url"
+    ["$PROJECT_DIR_WORK/flow/chat"]="git@github.com:CI-T-HyperX/flow-channels-app-service.git"
+    ["$PROJECT_DIR_WORK/flow/ai-core"]="git@github.com:CI-T-HyperX/flow-core-app-llm-service.git"
+    ["$PROJECT_DIR_WORK/flow/coder"]="git@github.com:CI-T-HyperX/flow-coder-framework.git"
+    ["$PROJECT_DIR_WORK/flow/coder"]="git@github.com:CI-T-HyperX/flow-coder-service.git"
+    ["$PROJECT_DIR_WORK/flow/coder"]="git@bitbucket.org:ciandt_it/flow-coder-extension.git"
+    ["$PROJECT_DIR_WORK/flow/coder/cases"]="git@github.com:davipeterlinicit/case-end-to-end-ops.git"
+    ["$PROJECT_DIR_WORK/flow/coder/cases"]="git@github.com:laisbonafeciandt/case-end-to-end-metrics.git"
+    ["$PROJECT_DIR_WORK/flow/coder/cases"]="git@github.com:arysanchez/case-end-to-end-chat.git"
+    ["$PROJECT_DIR_WORK/flow/coder/cases"]="git@github.com:davipeterlinicit/coder-cases.git"
+    ["$PROJECT_DIR_WORK/flow/coder/cases"]="git@github.com:CI-T-HyperX/flow-core-lib-commons-py.git"
+    ["$PROJECT_DIR_WORK/flow/coder/pocs"]="git@github.com:continuedev/continue.git"
+    ["$PROJECT_DIR_WORK/flow/coder/mcp-server"]="git@github.com:CI-T-HyperX/mcp-ciandt-flow.git"
+)
+
+# Directory structure configuration
+readonly DIRECTORIES=(
+    "$PROJECT_DIR_WORK"
+    "$PROJECT_DIR_WORK/flow"
+    "$PROJECT_DIR_WORK/flow/chat"
+    "$PROJECT_DIR_WORK/flow/ai-core"
+    "$PROJECT_DIR_WORK/flow/coder"
+    "$PROJECT_DIR_WORK/flow/coder/cases"
+    "$PROJECT_DIR_WORK/flow/coder/mcp-server"
+    "$PROJECT_DIR_WORK/flow/coder/pocs"
+)
+
+#######################################
+# Creates directory if it doesn't exist
+# Arguments:
+#   $1 - Directory path
+# Returns:
+#   None
+#######################################
+create_directory() {
     local dir="$1"
-    if [ ! -d "$dir" ]; then
+    
+    if [[ ! -d "$dir" ]]; then
         print_info "Creating directory: $dir"
         mkdir -p "$dir"
         print_success "Directory created: $dir"
@@ -22,89 +63,161 @@ create_directory_if_not_exists() {
     fi
 }
 
-# Function to clone or update repository
-clone_or_update_repo() {
-    local repo_url="$1"
-    local target_dir="$2"
+#######################################
+# Updates repository by pulling changes
+# Arguments:
+#   $1 - Repository path
+# Returns:
+#   0 - Success, 1 - Failure
+#######################################
+update_repository() {
+    local repo_path="$1"
+    local current_branch
     
-    # Extract repo name from URL
-    local repo_name=$(basename "$repo_url" .git)
-    local repo_path="$target_dir/$repo_name"
+    cd "$repo_path" || return 1
     
-    if [ -d "$repo_path" ]; then
-        print_info "Repository already exists: $repo_name"
-        print_info "Updating repository..."
-        
-        # Navigate to repo directory and pull latest changes
-        cd "$repo_path" || return
-        
-        # Check which branch is currently active
-        local current_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "detached")
-        
-        # Try to pull from origin main, master, or develop
-        if git pull origin main; then
-            print_success "Updated repository from main branch: $repo_name"
-        elif git pull origin master; then
-            print_success "Updated repository from master branch: $repo_name"
-        elif git pull origin develop; then
-            print_success "Updated repository from develop branch: $repo_name"
+    # Get current branch name
+    current_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "detached")
+    
+    if [[ "$current_branch" == "main" ]]; then
+        print_info "Currently on main branch, pulling latest changes..."
+        if git pull; then
+            print_success "Updated repository: $(basename "$repo_path")"
+            cd - > /dev/null
+            return 0
         else
-            print_alert "Could not update repository: $repo_name. Staying on branch: $current_branch"
+            print_error "Failed to update repository: $(basename "$repo_path")"
+            cd - > /dev/null
+            return 1
         fi
-        
-        # Return to original directory
-        cd - > /dev/null
     else
-        print_info "Cloning repository: $repo_name"
-        git clone "$repo_url" "$repo_path"
-        if [ $? -eq 0 ]; then
-            print_success "Repository cloned: $repo_name"
+        print_info "Currently on branch: $current_branch, pulling from origin main..."
+        if git pull origin main 2> "$ERROR_LOG"; then
+            print_success "Pulled changes from main branch into $current_branch: $(basename "$repo_path")"
+            cd - > /dev/null
+            return 0
         else
-            print_error "Failed to clone repository: $repo_name"
+            # Check for merge conflicts
+            if grep -q "CONFLICT" "$ERROR_LOG"; then
+                print_alert "MERGE CONFLICT: There are conflicts when pulling main into $current_branch in repository: $(basename "$repo_path")"
+                print_alert "Please resolve conflicts manually before continuing."
+            else
+                print_error "Failed to pull from main branch: $(basename "$repo_path")"
+            fi
+            cd - > /dev/null
+            return 1
         fi
     fi
 }
 
-# Main function to set up project structure
-setup_work_projects() {
-    print_info "Setting up work projects directory structure..."
+#######################################
+# Clones a repository
+# Arguments:
+#   $1 - Repository URL
+#   $2 - Target directory
+# Returns:
+#   0 - Success, 1 - Failure
+#######################################
+clone_repository() {
+    local repo_url="$1"
+    local target_dir="$2"
+    local repo_name
     
-    # Create base directory if it doesn't exist
-    create_directory_if_not_exists "$PROJECT_DIR_WORK"
+    repo_name=$(basename "$repo_url" .git)
     
-    # Create flow directory structure
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow"
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/chat"
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/ai-core"
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/coder"
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/coder/cases"
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/coder/mcp-server"
-    create_directory_if_not_exists "$PROJECT_DIR_WORK/flow/coder/pocs"
-    
-    # Clone flow repositories
-    # Note: Replace these with your actual work repositories
-    clone_or_update_repo "git@github.com:CI-T-HyperX/flow-channels-app-service.git" "$PROJECT_DIR_WORK/flow/chat"
-    clone_or_update_repo "git@github.com:CI-T-HyperX/flow-core-app-llm-service.git" "$PROJECT_DIR_WORK/flow/ai-core"
-    # Flow Coder CLI
-    clone_or_update_repo "git@github.com:CI-T-HyperX/flow-coder-framework.git" "$PROJECT_DIR_WORK/flow/coder"
-    # Flow Coder Service
-    clone_or_update_repo "git@github.com:CI-T-HyperX/flow-coder-service.git" "$PROJECT_DIR_WORK/flow/coder"
-    # Flow Coder Extension
-    clone_or_update_repo "git@bitbucket.org:ciandt_it/flow-coder-extension.git" "$PROJECT_DIR_WORK/flow/coder"
-    # Flow Coder Cases
-    clone_or_update_repo "git@github.com:davipeterlinicit/case-end-to-end-ops.git" "$PROJECT_DIR_WORK/flow/coder/cases"
-    clone_or_update_repo "git@github.com:laisbonafeciandt/case-end-to-end-metrics.git" "$PROJECT_DIR_WORK/flow/coder/cases"
-    clone_or_update_repo "git@github.com:arysanchez/case-end-to-end-chat.git" "$PROJECT_DIR_WORK/flow/coder/cases"
-    clone_or_update_repo "git@github.com:davipeterlinicit/coder-cases.git" "$PROJECT_DIR_WORK/flow/coder/cases"
-    clone_or_update_repo "git@github.com:CI-T-HyperX/flow-core-lib-commons-py.git" "$PROJECT_DIR_WORK/flow/coder/cases"
-    # Flow Coder POCs
-    clone_or_update_repo "git@github.com:continuedev/continue.git" "$PROJECT_DIR_WORK/flow/coder/pocs"
-    # Flow MCP Server
-    clone_or_update_repo "git@github.com:CI-T-HyperX/mcp-ciandt-flow.git" "$PROJECT_DIR_WORK/flow/coder/mcp-server"
-
-    print_success "Work projects directory structure setup completed!"
-    print_info "Note: You may need to add specific repositories to clone in this script."
+    print_info "Cloning repository: $repo_name"
+    if git clone "$repo_url" "$target_dir/$repo_name"; then
+        print_success "Repository cloned: $repo_name"
+        return 0
+    else
+        print_error "Failed to clone repository: $repo_name"
+        return 1
+    fi
 }
 
-# Execute the main function
-setup_work_projects
+#######################################
+# Manages repository (clone or update)
+# Arguments:
+#   $1 - Repository URL
+#   $2 - Target directory
+# Returns:
+#   None
+#######################################
+manage_repository() {
+    local repo_url="$1"
+    local target_dir="$2"
+    local repo_name
+    local repo_path
+    
+    repo_name=$(basename "$repo_url" .git)
+    repo_path="$target_dir/$repo_name"
+    
+    if [[ -d "$repo_path" ]]; then
+        print_info "Repository already exists: $repo_name"
+        update_repository "$repo_path"
+    else
+        clone_repository "$repo_url" "$target_dir"
+    fi
+}
+
+#######################################
+# Creates the directory structure
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+create_directory_structure() {
+    print_info "Setting up work projects directory structure..."
+    
+    for dir in "${DIRECTORIES[@]}"; do
+        create_directory "$dir"
+    done
+    
+    print_success "Directory structure created successfully!"
+}
+
+#######################################
+# Sets up all repositories
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+setup_repositories() {
+    print_info "Setting up repositories..."
+    
+    for target_dir in "${!REPOSITORIES[@]}"; do
+        repo_url="${REPOSITORIES[$target_dir]}"
+        manage_repository "$repo_url" "$target_dir"
+    done
+    
+    print_success "Repository setup completed!"
+}
+
+#######################################
+# Main function
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+main() {
+    print_info "Starting work projects setup..."
+    
+    # Ensure environment variables are loaded
+    if [[ -z "$PROJECT_DIR_WORK" ]]; then
+        print_error "PROJECT_DIR_WORK environment variable is not set. Please check your .env file."
+        exit 1
+    fi
+    
+    create_directory_structure
+    setup_repositories
+    
+    print_success "Work projects setup completed successfully!"
+}
+
+# Execute main function if script is run directly
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main
+fi

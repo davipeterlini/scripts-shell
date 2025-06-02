@@ -242,7 +242,9 @@
   - Backup dos arquivos de configuração do .ssh
   - Atualize os scripts de setup_personal_projects.sh e setup_work_projects.sh para que se o repo existir e se estiver na main fazer o git pull 
     - Caso não estiver na main fazer o git pull origin main e se gerar conflito colocar uma mensagem de alerta do conflito
-  - 
+  - Lembre-se que não é para fazer clone se o dir existir e se o dir do repo tambem e sim apenas para atualizar 
+  - Sempre antes de fazer a criação dos diretórios verifique se eles já existem, se não existem não crie novamente apenas passe a etapa 
+  - Ajuste os scripts com clen code e clean arquitecture
 
   - Colocar a configuração do NPMTOKEN no script de trabalho 
     - Verificar como fazer no repo do llm orchastrator
