@@ -240,6 +240,7 @@
 - 02/05/2025
   - Atualizar o script de setup do trabalho para a configuração local 
   
+  
   - Colocar a configuração do NPMTOKEN no script de trabalho 
     - Verificar como fazer no repo do llm orchastrator
     - Gerar o git do token via GH e gravar no .env e no .zshrc
