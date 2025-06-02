@@ -4,14 +4,16 @@
 # Following clean code and clean architecture principles
 
 # Constants
-readonly SCRIPT_DIR=$(dirname "$(realpath "$0")")
-readonly UTILS_DIR="$SCRIPT_DIR/../utils"
+# Get the directory of the current script
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
 readonly ERROR_LOG="/tmp/git_error_output"
 
 # Import utilities
-source "$UTILS_DIR/colors_message.sh"
-source "$UTILS_DIR/load_env.sh"
 
+
+# Source the utility scripts
+source "$SCRIPT_DIR/../utils/colors_message.sh"
+source "$SCRIPT_DIR/../utils/load_env.sh"
 # Load environment variables
 load_env
 
