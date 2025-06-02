@@ -245,12 +245,13 @@
   - Lembre-se que não é para fazer clone se o dir existir e se o dir do repo tambem e sim apenas para atualizar 
   - Sempre antes de fazer a criação dos diretórios verifique se eles já existem, se não existem não crie novamente apenas passe a etapa 
   - Ajuste os scripts com clen code e clean arquitecture
+  - Ajustes de scripts do github
+
 
   - Colocar a configuração do NPMTOKEN no script de trabalho 
     - Verificar como fazer no repo do llm orchastrator
     - Gerar o git do token via GH e gravar no .env e no .zshrc
   - Ajustar o .zshrc para que possa deixar separado as variáveis de ambiente corretamente
-
   - Instalação do MCP do flow
     - Fazer donwload do MCP do flow e Instalar
       https://drive.usercontent.google.com/download?id=1iADIQiNa7Mw5Fz4VjWkR55bcoWC7an7q&export=download&authuser=0
