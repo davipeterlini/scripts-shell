@@ -16,9 +16,6 @@ source "$(dirname "$0")/../../utils/list_projects.sh"
 # Load environment variables
 load_env
 
-PROJECT_DIRS="teste"
-PROJECT_REPOS="teste"
-
 # TODO - precisa pegar automaticamento do env de acordo com a escolha do user se personal ou se work
 check_variable_exists() { 
     if [[ -z "$PROJECT_WORK_DIR" ]]; then
@@ -31,8 +28,8 @@ check_variable_exists() {
         exit 1
     fi
 
-    PROJECT_DIRS=$PROJECT_WORK_REPOS
-    ROJECT_REPOS=$PROJECT_WORK_DIR  
+    PROJECT_DIRS=$PROJECT_WORK_DIR
+    PROJECT_REPOS=$PROJECT_WORK_REPOS
 }
 
 # Main script execution
@@ -42,10 +39,16 @@ main() {
 
     check_variable_exists
 
-    create_directories "${!PROJECT_DIRS[@]}"  
+    create_directories "${PROJECT_DIRS[@]}"  
 
-    # Manage repositories
-    manage_repositories "${PROJECT_REPOS[@]}"
+    # Manage repositories - pass directories and repos as alternating arguments
+    # This assumes PROJECT_DIRS and PROJECT_REPOS arrays have the same length
+    local args=()
+    for ((i=0; i<${#PROJECT_DIRS[@]}; i++)); do
+        args+=("${PROJECT_DIRS[$i]}" "${PROJECT_REPOS[$i]}")
+    done
+    
+    manage_repositories "${args[@]}"
 
     print_success "Work projects setup completed successfully!"
 }

@@ -31,10 +31,14 @@ merge_back_repository() {
 }
 
 # Function to manage repositories - Update or Clone repo
+# Modified to work with Bash 3.2 (no associative arrays)
 manage_repositories() {
-    declare -A repositories=("$@")
-    for target_dir in "${!repositories[@]}"; do
-        local repo_url="${repositories[$target_dir]}"
+    # Process arguments in pairs (target_dir and repo_url)
+    while [[ $# -ge 2 ]]; do
+        local target_dir="$1"
+        local repo_url="$2"
+        shift 2
+        
         local repo_name=$(basename "$repo_url" .git)
         local repo_path="$target_dir/$repo_name"
 
