@@ -7,9 +7,9 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 readonly ERROR_LOG="/tmp/git_error_output"
 
 # Import utilities
-source "$SCRIPT_DIR/../../utils/colors_message.sh"
-source "$SCRIPT_DIR/../../utils/load_env.sh"
-source "$SCRIPT_DIR/../../utils/bash_tools.sh"
+source "$(dirname "$0")/../../utils/colors_message.sh"
+source "$(dirname "$0")/../../utils/load_env.sh"
+source "$(dirname "$0")/../../utils/bash_tools.sh"
 
 # Load environment variables
 load_env
