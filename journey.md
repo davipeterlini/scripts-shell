@@ -276,8 +276,15 @@
   - Ajustar os scripts: 
     - dev/setup_personal_projects.sh
     - dev/setup_work_projects.sh
-
   - 
+
+
+- Problemas extensão 
+  - Locking
+    - Quando estou executando algo e ele está no meu da geração de arquivo e finalizo causa um locking no vscode deixando o usuário travado em várias coisas que ele está fazendo 
+    - 
+
+
 
   - Ajustar o config do ssh para que possa funcionar da forma correta nos repos corretos 
 
