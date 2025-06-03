@@ -13,7 +13,6 @@ source "$PROJECT_ROOT/utils/colors_message.sh"
 source "$PROJECT_ROOT/utils/load_env.sh"
 source "$PROJECT_ROOT/utils/bash_tools.sh"
 source "$PROJECT_ROOT/utils/manage_git_repo.sh"
-source "$PROJECT_ROOT/utils/list_projects.sh"
 source "./dev/utils/load_dev_env.sh"
 
 # Load environment variables
@@ -45,11 +44,6 @@ validate_env_variables() {
 
 # Main script execution
 setup_projects_main() {
-    # Display project selection and exit
-    list_projects
-
-    echo
-
     # Get user's choice between personal and work projects
     local project_type="$1"
     print_info "Selected project type: $project_type"

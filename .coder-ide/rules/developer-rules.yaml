@@ -3,14 +3,20 @@ version: 0.0.1
 schema: v1
 rules:
   - name: tool_use
-    rule: "Whenever generating code, apply it using tools (function calling) and avoid making commits to Git
+    rule: 
+      Whenever generating code, apply it using tools (function calling) and avoid making commits to Git
   - name: edit-coding
-    rule: Whenever necessary, you must make changes to the code in a direct and precise manner.
+    rule: 
+      Whenever necessary, you must make changes to the code in a direct and precise manner.
   - name: task
-    rule: When requested to perform a development task, you must always execute it by modifying the source code, creating or updating files, and, whenever necessary, use the sequential thinking tool to assist in planning and executing the task."
+    rule: 
+      When requested to perform a development task, you must always execute it by modifying the source code, creating or updating files, and, whenever necessary, use the sequential thinking tool to assist in planning and executing the task."
   - name: testing
-    rule: Every time you implement a new feature, you must create all the necessary unit tests to validate the functionality.
-  - name: always_respond_in_portuguese
-    rule: Always respond in Portuguese.
-  - name: keep_code_items_in_english
-    rule: Always keep code items, such as user messages or comments, in English.
+    rule: 
+      Every time you implement a new feature, you must create all the necessary unit tests to validate the functionality.
+  - name: always respond in portuguese
+    rule: 
+      Always respond in Portuguese.
+  - name: keep code items in english
+    rule:   
+      Always keep code items, such as user messages or comments, in English.

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Get the directory of the current script
@@ -101,10 +100,40 @@ load_dev_env() {
   print_success "Variáveis de ambiente de desenvolvimento carregadas com sucesso."
 }
 
+# Function to select environment based on project and file in assets
+select_env_based_on_project() {
+  local project_name=$1
+  local asset_file=$2
+  local env_file="$DEV_DIR/.env.${project_name}"
+
+  if [ -z "$project_name" ] || [ -z "$asset_file" ]; then
+    print_error "Nome do projeto ou arquivo de asset não fornecido."
+    exit 1
+  fi
+
+  if [ ! -f "$env_file" ]; then
+    print_alert "Arquivo de ambiente para o projeto '$project_name' não encontrado: $env_file"
+    exit 1
+  fi
+
+  print_info "Carregando variáveis de ambiente do arquivo: $env_file"
+  set -a
+  source "$env_file"
+  set +a
+
+  print_success "Variáveis de ambiente para o projeto '$project_name' carregadas com sucesso."
+}
+
 # Main script execution
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   if [ -z "$DEV_ENV_LOADED" ]; then
     load_dev_env
     export DEV_ENV_LOADED=true
   fi
+
+  # Example usage of the new function
+  # Uncomment the following lines to test
+  # project_name="example_project"
+  # asset_file="example_asset_file"
+  # select_env_based_on_project "$project_name" "$asset_file"
 fi
