@@ -7,8 +7,8 @@ source "$SCRIPT_DIR/colors_message.sh"
 # Function to ask the user which shell they are using and set the profile file
 choose_shell_profile() {
   print_header "Which shell are you using? (Enter the corresponding number)"
-  print_info "1) bash"
-  print_info "2) zsh"
+  print "1) bash"
+  print "2) zsh"
   read -p "Choose an option (1 or 2): " shell_choice
 
   case $shell_choice in
