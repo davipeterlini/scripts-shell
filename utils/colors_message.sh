@@ -27,7 +27,11 @@ function print_error() {
   echo -e "${RED}❌ Erro: $1${NC}"
 }
 
-Função para exibir mensagens formatadas
+function print() {
+  echo -e "${RED} $1${NC}"
+}
+
+#Função para exibir mensagens formatadas
 function print_header() {
   echo -e "\n${YELLOW}========================================${NC}"
   echo -e "${GREEN}$1${NC}"

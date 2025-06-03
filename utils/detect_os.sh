@@ -8,15 +8,15 @@ detect_os() {
     case "$(uname -s)" in
         Darwin)
             print_success "Operating System detected: macOS"
-            echo "macOS"
+            print "macOS"
             ;;
         Linux)
             print_success "Operating System detected: Linux"
-            echo "Linux"
+            print "Linux"
             ;;
         CYGWIN*|MINGW32*|MSYS*|MINGW*)
             print_success "Operating System detected: Windows"
-            echo "Windows"
+            print "Windows"
             ;;
         *)
             print_error "Unsupported Operating System"
