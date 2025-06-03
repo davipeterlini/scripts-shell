@@ -12,21 +12,10 @@ SCRIPT_BASE_DIR="utils"
 PROJECT_BASE_DIR="dev"
 
 
-# Função para detectar o sistema operacional
-detect_operating_system() {
-  local os_script="$SCRIPT_BASE_DIR/detect_os.sh"
-  if [ -f "$os_script" ]; then
-    log "Detectando o sistema operacional..."
-    OS=$(source "$os_script")
-    export OS
-  else
-    error_exit "O script $os_script não foi encontrado. Abortando."
-  fi
-}
 
 # Função para configurar o projeto
 setup_project_configuration() {
-  local project_script="$PROJECT_BASE_DIR/project-folder/projesetup_project.sh"
+  local project_script="$PROJECT_BASE_DIR/project-folder/setup_project.sh"
   execute_script "$project_script" "Executando configuração do projeto..."
 }
 
@@ -58,7 +47,8 @@ main() {
   # Use the external choose_shell_profile script instead of the internal function
   choose_shell_profile
 
-  detect_operating_system
+  execute_script "$project_script" "Executando configuração do projeto..."
+
   setup_project_configuration
   setup_git_and_bitbucket
   setup_git_and_bitbucket_in_subfolder
