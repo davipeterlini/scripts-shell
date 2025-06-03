@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$(dirname "$0")/../../utils/colors_message.sh"
+
 # Function to clone a repository
 clone_repository() {
     local repo_url="$1"

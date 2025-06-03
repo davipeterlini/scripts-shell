@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$(dirname "$0")/../../utils/colors_message.sh"
+
 # Function to create directories
 create_directories() {
     local directories=("$@")
