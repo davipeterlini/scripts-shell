@@ -11,67 +11,87 @@ source "$PROJECT_ROOT/utils/colors_message.sh"
 # Diretório dos assets
 ASSETS_DIR="$PROJECT_ROOT/dev/assets/ssh-git"
 
-print_info "Configuração do SSH para GitHub"
+# Função para criar o diretório ~/.ssh, se necessário
+create_ssh_directory() {
+    if [ ! -d "$HOME/.ssh" ]; then
+        print_info "Criando diretório ~/.ssh..."
+        mkdir -p "$HOME/.ssh"
+        chmod 700 "$HOME/.ssh"
+        print_success "Diretório ~/.ssh criado com sucesso!"
+    fi
+}
 
-# Verifica se o diretório ~/.ssh existe, se não, cria
-if [ ! -d "$HOME/.ssh" ]; then
-    print_info "Criando diretório ~/.ssh..."
-    mkdir -p "$HOME/.ssh"
-    chmod 700 "$HOME/.ssh"
-    print_success "Diretório ~/.ssh criado com sucesso!"
-fi
+# Função para fazer backup do arquivo ~/.ssh/config existente
+backup_existing_config() {
+    if [ -f "$HOME/.ssh/config" ]; then
+        print_info "Fazendo backup do arquivo ~/.ssh/config existente..."
+        local backup_file="$HOME/.ssh/config.backup.$(date +%Y%m%d%H%M%S)"
+        cp "$HOME/.ssh/config" "$backup_file"
+        print_success "Backup criado: $backup_file"
+    fi
+}
 
-# Faz backup do arquivo de configuração existente, se houver
-if [ -f "$HOME/.ssh/config" ]; then
-    print_info "Fazendo backup do arquivo ~/.ssh/config existente..."
-    BACKUP_FILE="$HOME/.ssh/config.backup.$(date +%Y%m%d%H%M%S)"
-    cp "$HOME/.ssh/config" "$BACKUP_FILE"
-    print_success "Backup criado: $BACKUP_FILE"
-fi
+# Função para selecionar a versão do arquivo de configuração
+select_config_version() {
+    local config_files=($(ls "$ASSETS_DIR"))
+    local num_files=${#config_files[@]}
 
-# Conta o número de arquivos na pasta de configurações
-CONFIG_FILES=($(ls "$ASSETS_DIR"))
-NUM_FILES=${#CONFIG_FILES[@]}
+    print_info "Seleção da Versão"
+    echo -e "${BLUE}Selecione a versão do arquivo de configuração:${NC}"
+    for i in $(seq 1 $num_files); do
+        echo -e "${BLUE}${i})${NC} ${config_files[$((i-1))]}"
+    done
 
-# Seleciona a versão do arquivo de configuração
-print_info "Seleção da Versão"
-echo -e "${BLUE}Selecione a versão do arquivo de configuração:${NC}"
-for i in $(seq 1 $NUM_FILES); do
-    echo -e "${BLUE}${i})${NC} ${CONFIG_FILES[$((i-1))]}"
-done
-read -p "$(echo -e ${YELLOW}"Escolha (1-$NUM_FILES): "${NC})" choice
+    read -p "$(echo -e ${YELLOW}"Escolha (1-$num_files): "${NC})" choice
 
-if [[ $choice -ge 1 && $choice -le $NUM_FILES ]]; then
-    CONFIG_FILE="${CONFIG_FILES[$((choice-1))]}"
-else
-    print_alert "Opção inválida. Usando a primeira configuração como padrão."
-    CONFIG_FILE="${CONFIG_FILES[0]}"
-fi
+    if [[ $choice -ge 1 && $choice -le $num_files ]]; then
+        echo "${config_files[$((choice-1))]}"
+    else
+        print_alert "Opção inválida. Usando a primeira configuração como padrão."
+        echo "${config_files[0]}"
+    fi
+}
 
-CONFIG_PATH="$ASSETS_DIR/$CONFIG_FILE"
+# Função para configurar o arquivo ~/.ssh/config
+configure_ssh() {
+    local config_file="$1"
+    local config_path="$ASSETS_DIR/$config_file"
 
-if [ ! -f "$CONFIG_PATH" ]; then
-    print_error "Arquivo de configuração $CONFIG_PATH não encontrado."
-    exit 1
-fi
+    if [ ! -f "$config_path" ]; then
+        print_error "Arquivo de configuração $config_path não encontrado."
+        exit 1
+    fi
 
-print_success "Usando arquivo de configuração: $CONFIG_FILE"
+    print_success "Usando arquivo de configuração: $config_file"
 
-# Substitui a variável $HOME pelo valor real e salva no arquivo ~/.ssh/config
-print_info "Configurando SSH"
-print_info "Configurando arquivo ~/.ssh/config..."
-sed "s|\$HOME|$HOME|g" "$CONFIG_PATH" > "$HOME/.ssh/config"
+    print_info "Configurando arquivo ~/.ssh/config..."
+    sed "s|\$HOME|$HOME|g" "$config_path" > "$HOME/.ssh/config"
 
-# Define as permissões corretas para o arquivo de configuração
-chmod 600 "$HOME/.ssh/config"
-print_success "Permissões do arquivo definidas como 600 (leitura/escrita apenas para o proprietário)"
+    chmod 600 "$HOME/.ssh/config"
+    print_success "Permissões do arquivo definidas como 600 (leitura/escrita apenas para o proprietário)"
+}
 
-print_info "Configuração Concluída"
-print_success "O arquivo ~/.ssh/config foi configurado usando $CONFIG_FILE"
-print_info "As variáveis de ambiente \$HOME foram substituídas pelo valor real: $HOME"
+# Função para exibir o conteúdo do arquivo configurado
+display_config_content() {
+    print_info "Conteúdo do Arquivo Configurado"
+    cat "$HOME/.ssh/config"
+}
 
-# Exibe o conteúdo do arquivo configurado
-print_info "Conteúdo do Arquivo Configurado"
-cat "$HOME/.ssh/config"
+# Fluxo principal do script
+setup_ssh_config_main() {
+    print_info "Configuração do SSH para GitHub"
 
-print_info "Operação Finalizada com Sucesso!"
+    create_ssh_directory
+    backup_existing_config
+
+    local selected_config_file
+    selected_config_file=$(select_config_version)
+
+    configure_ssh "$selected_config_file"
+    display_config_content
+
+    print_info "Operação Finalizada com Sucesso!"
+}
+
+# Executa o script
+setup_ssh_config_main

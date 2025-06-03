@@ -5,7 +5,8 @@ load_env
 source "$(dirname "$0")/utils/detect_os.sh"
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/execute_script.sh"
-source "$(dirname "$0")/setup_projects.sh" # Importando o script setup_projects.sh
+source "$(dirname "$0")/setup_projects.sh" 
+source "$(dirname "$0")/setup_ssh_config.sh"
 
 # Definir o diretório base dos scripts
 SCRIPT_BASE_DIR="utils"
@@ -81,18 +82,11 @@ main() {
   # Create and config folders for work and personal
   setup_projects_main
 
-
-
-
-  execute_script "$project_script" "Executando configuração do projeto..."
-
-  setup_project_configuration
   setup_git_and_bitbucket
-  setup_git_and_bitbucket_in_subfolder
-  setup_ssh_configuration
+
+  setup_ssh_config_main
 
   # Chamada da função setup_projects_main
-  
 
   log "Setup concluído com sucesso!"
 }
