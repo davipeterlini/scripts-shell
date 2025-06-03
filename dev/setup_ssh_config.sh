@@ -46,15 +46,15 @@ list_assets_files() {
 }
 
 display_files_with_index() {
-    local files=($1)
+    local files=("$@")
     print_info "Available configuration files:"
     for i in "${!files[@]}"; do
-        print_info "$((i + 1))) ${files[$i]}"
+        print "$((i + 1))) ${files[$i]}"
     done
 }
 
 get_user_choice() {
-    local files=($1)
+    local files=("$@")
     read -p "$(print_info "Choose a file by number: ")" choice
 
     if ! [[ "$choice" =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt ${#files[@]} ]; then
@@ -85,7 +85,7 @@ display_config_content() {
 }
 
 main() {
-    print_info "Starting SSH Configuration for GitHub"
+    print_header "Starting SSH Configuration for GitHub"
 
     create_ssh_directory
     backup_existing_config
