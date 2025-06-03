@@ -260,7 +260,6 @@
   - Criar um script para cconfigurar o setup project e solicitar ao usuário qual deve ser o script que vai ser usado abaixo a partir do utils/list_projects.sh
     - dev/setup_personal_projects.sh
     - dev/setup_work_projects.sh
-  - No script de dev/setup_project.sh list os projetos a partir do 
   - Crie um script de setup na pasta dev para fazer as seguintes execuções 
     - Selecionar o profile com utils/choose_shell_profile.sh 
     - Escolher o SO e salvar em variável global a partir do script utils/detect_os.sh
@@ -268,6 +267,7 @@
     - Execução do script dev/setup_git_and_bitbucket.sh
     - Execução do script dev/git/setup_git_and_bitbucket.sh
     - Execução do script dev/git/setup_ssh_config.sh
+  - No script de dev/setup_project.sh list os projetos a partir do 
   - Ajustar os scripts: 
     - dev/setup_personal_projects.sh
     - dev/setup_work_projects.sh
