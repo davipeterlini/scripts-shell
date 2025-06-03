@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Importando o arquivo de mensagens com cores
+source "$(dirname "$0")/colors_message.sh"
+
 # Get the directory of the current script
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
@@ -14,7 +17,7 @@ find_env_files() {
     fi
     dir=$(dirname "$dir")
   done
-  echo "Error: .env file not found in any parent directory."
+  print_error "Arquivo .env não encontrado em nenhum diretório pai."
   exit 1
 }
 
@@ -28,7 +31,7 @@ set_home_based_on_os() {
       export HOME="/home/$USER"
       ;;
     *)
-      echo "Unsupported operating system."
+      print_error "Sistema operacional não suportado."
       exit 1
       ;;
   esac
@@ -38,14 +41,14 @@ set_home_based_on_os() {
 update_env_local_file() {
   if [ ! -f "$ENV_LOCAL_FILE" ]; then
     echo "HOME=$HOME" > "$ENV_LOCAL_FILE"
-    echo "Created .env.local file with HOME variable."
+    print_success "Arquivo .env.local criado com a variável HOME."
   else
     if grep -q '^HOME=' "$ENV_LOCAL_FILE"; then
       sed -i '' "s|^HOME=.*|HOME=$HOME|" "$ENV_LOCAL_FILE"
-      echo "Updated HOME variable in .env.local file."
+      print_success "Variável HOME atualizada no arquivo .env.local."
     else
       echo "HOME=$HOME" >> "$ENV_LOCAL_FILE"
-      echo "Added HOME variable to .env.local file."
+      print_success "Variável HOME adicionada ao arquivo .env.local."
     fi
   fi
 }
@@ -59,13 +62,13 @@ load_env() {
     source "$ENV_FILE"
     set +a
   else
-    echo "Error: .env file not found. Exiting..."
+    print_error "Arquivo .env não encontrado. Saindo..."
     exit 1
   fi
 
   if [ ! -f "$ENV_LOCAL_FILE" ]; then
     touch "$ENV_LOCAL_FILE"
-    echo "Created empty .env.local file."
+    print_alert "Arquivo .env.local vazio criado."
   fi
 
   set -a
