@@ -302,7 +302,7 @@
 
     para a respotas altere o arquivo: dev/assets/ssh-git/config-ssh-v2 com a forma correta de configuração para que tudo funcione corretamente 
     ou seja ao estar em um repo git@github.com:CI-T-HyperX ou git@github.com:davipeterlinicit ele use o usuário davipeterlinicit e assim por diante
-  - dasdsa
+  - Teste para verificar se o esquema do config funcionou 
 
 - Problemas extensão 
   - Locking

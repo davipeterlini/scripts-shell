@@ -29,20 +29,24 @@ if [ -f "$HOME/.ssh/config" ]; then
     print_success "Backup criado: $BACKUP_FILE"
 fi
 
+# Conta o número de arquivos na pasta de configurações
+CONFIG_FILES=($(ls "$ASSETS_DIR"))
+NUM_FILES=${#CONFIG_FILES[@]}
+
 # Seleciona a versão do arquivo de configuração
 print_info "Seleção da Versão"
 echo -e "${BLUE}Selecione a versão do arquivo de configuração:${NC}"
-echo -e "${BLUE}1)${NC} Versão 1"
-echo -e "${BLUE}2)${NC} Versão 2"
-echo -e "${BLUE}3)${NC} Versão 3"
-read -p "$(echo -e ${YELLOW}"Escolha (1-3): "${NC})" choice
+for i in $(seq 1 $NUM_FILES); do
+    echo -e "${BLUE}${i})${NC} ${CONFIG_FILES[$((i-1))]}"
+done
+read -p "$(echo -e ${YELLOW}"Escolha (1-$NUM_FILES): "${NC})" choice
 
-case $choice in
-    1) CONFIG_FILE="config-ssh-v1" ;;
-    2) CONFIG_FILE="config-ssh-v2" ;;
-    3) CONFIG_FILE="config-ssh-v3" ;;
-    *) print_alert "Opção inválida. Usando versão 2 como padrão."; CONFIG_FILE="config-ssh-v2" ;;
-esac
+if [[ $choice -ge 1 && $choice -le $NUM_FILES ]]; then
+    CONFIG_FILE="${CONFIG_FILES[$((choice-1))]}"
+else
+    print_alert "Opção inválida. Usando a primeira configuração como padrão."
+    CONFIG_FILE="${CONFIG_FILES[0]}"
+fi
 
 CONFIG_PATH="$ASSETS_DIR/$CONFIG_FILE"
 
