@@ -1,4 +1,8 @@
+
 #!/bin/bash
+
+# Importando o arquivo de mensagens com cores
+source "$(dirname "$0")/colors_message.sh"
 
 # Function to execute a script with a description
 execute_script() {
@@ -6,9 +10,10 @@ execute_script() {
   local description=$2
 
   if [ -f "$script_path" ]; then
-    log "$description"
+    print_info "$description"
     bash "$script_path"
+    print_success "Execução do script $script_path concluída com sucesso."
   else
-    error_exit "O script $script_path não foi encontrado. Abortando."
+    print_error "O script $script_path não foi encontrado. Abortando."
   fi
 }
