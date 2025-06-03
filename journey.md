@@ -257,7 +257,7 @@
   - Ajustar o config do ssh para que possa funcionar da forma correta nos repos corretos 
   - Mova a pasta assests na raiz para a pasta dev 
     - Altere o script dev/setup_ssh_config.sh para pegar da pastas assests correta 
-  - 
+  - mova o script setup_git_and_bitbucket.sh para a pastas dev  
 
   - Colocar a configuração do NPMTOKEN no script de trabalho 
     - Verificar como fazer no repo do llm orchastrator

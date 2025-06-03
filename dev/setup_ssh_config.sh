@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script para configurar o arquivo ~/.ssh/config com as configurações da pasta assets/ssh-git
+# Script para configurar o arquivo ~/.ssh/config com as configurações da pasta dev/assets/ssh-git
 # Substitui as variáveis de ambiente $HOME pelo valor real do diretório home do usuário
 
 # Importa o utilitário de cores
@@ -9,7 +9,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$PROJECT_ROOT/utils/colors_message.sh"
 
 # Diretório dos assets
-ASSETS_DIR="$PROJECT_ROOT/assets/ssh-git"
+ASSETS_DIR="$PROJECT_ROOT/dev/assets/ssh-git"
 
 print_info "Configuração do SSH para GitHub"
 
