@@ -46,10 +46,18 @@ validate_env_variables() {
 setup_projects_main() {
     # Get user's choice between personal and work projects
     local project_type="$1"
-    print_info "Selected project type: $project_type"
+    local project_name="$2"
+    local asset_file="$3"
+
+    #print_info "Selected project type: $project_type"
 
     # Load environment variables based on user's choice
-    load_dev_env "$project_type"
+    load_dev_env
+
+    # If project_name and asset_file are provided, select environment based on project
+    if [[ -n "$project_name" && -n "$asset_file" ]]; then
+        select_env_based_on_project "$project_name" "$asset_file"
+    fi
 
     # Validate environment variables
     validate_env_variables "$project_type"

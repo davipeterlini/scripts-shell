@@ -303,6 +303,12 @@
     para a respotas altere o arquivo: dev/assets/ssh-git/config-ssh-v2 com a forma correta de configuração para que tudo funcione corretamente 
     ou seja ao estar em um repo git@github.com:CI-T-HyperX ou git@github.com:davipeterlinicit ele use o usuário davipeterlinicit e assim por diante
   - Teste para verificar se o esquema do config funcionou 
+  - Eu preciso que ao executar o script setup_projects.sh sejam feitos os seguintes passos 
+    - Abra um seletor para que o usuário escolha entre personal e work, de acordo com os arquivos de .evn da pasta assests/envs
+    - Carrege as variaveis do arquivo env.xxxxx escolhido para a execução 
+    - Na sequência crie as pastas a partir da var: 
+
+
 
 - Problemas extensão 
   - Locking
