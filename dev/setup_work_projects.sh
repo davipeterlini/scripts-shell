@@ -11,7 +11,7 @@ source "$(dirname "$0")/../utils/colors_message.sh"
 source "$(dirname "$0")/../utils/load_env.sh"
 source "$(dirname "$0")/../utils/bash_tools.sh"
 source "$(dirname "$0")/../utils/manage_git_repo.sh"
-source "$(dirname "$0")../utils/list_projects.sh"
+source "$(dirname "$0")/../utils/list_projects.sh"
 source "$(dirname "$0")/utils/load_dev_env.sh"
 
 # Load environment variables

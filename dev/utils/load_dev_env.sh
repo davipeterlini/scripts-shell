@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source "$SCRIPT_DIR/../../utils/colors_message.sh"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Get the directory of the current script
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
