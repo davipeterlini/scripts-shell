@@ -5,34 +5,11 @@ source "$(dirname "$0")/utils/load_env.sh"
 load_env
 source "$(dirname "$0")/utils/detect_os.sh"
 source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/execute_script.sh"
 
 # Definir o diretório base dos scripts
 SCRIPT_BASE_DIR="utils"
 PROJECT_BASE_DIR="dev"
-
-# Função para exibir mensagens de log
-log() {
-  echo "[SETUP] $1"
-}
-
-# Função para exibir mensagens de erro e encerrar o script
-error_exit() {
-  echo "[ERRO] $1"
-  exit 1
-}
-
-# Função para verificar se um arquivo existe antes de executá-lo
-execute_script() {
-  local script_path=$1
-  local description=$2
-
-  if [ -f "$script_path" ]; then
-    log "$description"
-    bash "$script_path"
-  else
-    error_exit "O script $script_path não foi encontrado. Abortando."
-  fi
-}
 
 # Função para selecionar o profile
 select_shell_profile() {
@@ -78,6 +55,11 @@ setup_ssh_configuration() {
 
 # Função principal
 main() {
+
+  # Detect the operating system
+  os=$(detect_os)
+  echo "Operational System: $os"
+
   log "Iniciando o processo de setup..."
   select_shell_profile
   detect_operating_system
