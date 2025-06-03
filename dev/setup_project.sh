@@ -36,7 +36,7 @@ execute_setup_script() {
 main() {
   list_projects
 
-  print_info "\nEscolha o script de configuração a ser usado:"
+  print_info "Escolha o script de configuração a ser usado:"
   echo "1) dev/setup_personal_projects.sh"
   echo "2) dev/setup_work_projects.sh"
   read -p "Digite o número correspondente à sua escolha: " choice
