@@ -1,9 +1,0 @@
-name: Playwright
-version: 0.0.1
-schema: v1
-mcpServers:
-  - name: Playwright
-    command: npx
-    args:
-      - -y
-      - "@playwright/mcp@latest"

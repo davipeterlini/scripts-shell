@@ -16,10 +16,8 @@ source "$(dirname "$0")/../../utils/list_projects.sh"
 # Load environment variables
 load_env
 
-# Main script execution
-main() {
-    list_projects
-
+# TODO - precisa pegar automaticamento do env de acordo com a escolha do user se personal ou se work
+check_exist_var() { 
     if [[ -z "$PROJECT_WORK_DIR" ]]; then
         print_error "PROJECT_WORK_DIR environment variable is not set. Please check your root .env file."
         exit 1
@@ -29,6 +27,14 @@ main() {
         print_error "PROJECT_WORK_REPOS environment variable is not set. Please check your root .env file."
         exit 1
     fi
+}
+
+# Main script execution
+main() {
+    list_projects
+    echo $HOME
+
+    check_exist_var
 
     # Convert PROJECT_WORK_REPOS from a comma-separated string to an associative array
     declare -A REPOSITORIES
@@ -39,7 +45,7 @@ main() {
     done
 
     # Create directories
-    create_directories "${!REPOSITORIES[@]}"
+    create_directories "${!PROJECT_WORK_DIR[@]}"
 
     # Manage repositories
     manage_repositories "${REPOSITORIES[@]}"

@@ -1,8 +1,0 @@
-name: Separete File Playwright
-version: 0.0.1
-schema: v1
-mcpServers:
-  - name: Flow
-    command: mcp-ciandt-flow
-    env:
-      FLOW_TOKEN: "${FLOW_TOKEN}"
