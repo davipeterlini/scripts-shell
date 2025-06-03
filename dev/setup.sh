@@ -9,7 +9,7 @@ source "$(dirname "$0")/../utils/choose_shell_profile.sh"
 
 # Scripts
 source "$(dirname "$0")/setup_projects.sh" 
-#source "$(dirname "$0")/setup_ssh_config.sh"
+source "$(dirname "$0")/setup_ssh_config.sh"
 #source "$(dirname "$0")/setup_global_env.sh"
 #source "$(dirname "$0")/open_project_iterm.sh"
 
@@ -29,7 +29,7 @@ main() {
 
   #setup_git_and_bitbucket
 
-  #setup_ssh_config_main
+  setup_ssh_config_main
 
   #setup_global_env_main
 
