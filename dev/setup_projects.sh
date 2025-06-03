@@ -50,7 +50,7 @@ validate_env_variables() {
 }
 
 # Main script execution
-main() {
+setup_projects_main() {
     # Display project selection and exit
     display_project_selection
 
@@ -73,5 +73,5 @@ main() {
 
 # Check if the script is being executed directly or sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
+    setup_projects_main "$@"
 fi
