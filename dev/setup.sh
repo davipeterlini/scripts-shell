@@ -38,15 +38,38 @@ detect_os() {
   fi
 }
 
+# Função para configurar o projeto
+setup_project() {
+  local project_script="dev/project-folder/projesetup_project.sh"
+  execute_script "$project_script" "Executando configuração do projeto..."
+}
+
+# Função para configurar Git e Bitbucket
+setup_git_and_bitbucket() {
+  local git_script="dev/setup_git_and_bitbucket.sh"
+  execute_script "$git_script" "Configurando Git e Bitbucket..."
+}
+
+# Função para configurar Git e Bitbucket na subpasta git
+setup_git_and_bitbucket_subfolder() {
+  local git_subfolder_script="dev/git/setup_git_and_bitbucket.sh"
+  execute_script "$git_subfolder_script" "Configurando Git e Bitbucket na subpasta git..."
+}
+
+# Função para configurar SSH
+setup_ssh() {
+  local ssh_script="dev/git/setup_ssh_config.sh"
+  execute_script "$ssh_script" "Configurando SSH..."
+}
+
 # Função principal
 main() {
   select_profile
   detect_os
-
-  execute_script "dev/project-folder/setup_project.sh" "Executando configuração do projeto..."
-  execute_script "dev/setup_git_and_bitbucket.sh" "Configurando Git e Bitbucket..."
-  execute_script "dev/git/setup_git_and_bitbucket.sh" "Configurando Git e Bitbucket na subpasta git..."
-  execute_script "dev/git/setup_ssh_config.sh" "Configurando SSH..."
+  setup_project
+  setup_git_and_bitbucket
+  setup_git_and_bitbucket_subfolder
+  setup_ssh
 
   log "Setup concluído com sucesso!"
 }
