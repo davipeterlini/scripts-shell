@@ -267,6 +267,10 @@
     - Execução do script dev/setup_git_and_bitbucket.sh
     - Execução do script dev/git/setup_git_and_bitbucket.sh
     - Execução do script dev/git/setup_ssh_config.sh
+  - Ajustar scripts de dev para seguir o padrão de clean code 
+    - setup.sh 
+
+
   - No script de dev/setup_project.sh list os projetos a partir do 
   - Ajustar os scripts: 
     - dev/setup_personal_projects.sh
