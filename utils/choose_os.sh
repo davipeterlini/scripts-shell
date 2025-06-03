@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Importa o script de mensagens coloridas
-source "$(dirname "$0")/../../utils/colors_message.sh"
-
 # Função para escolher o sistema operacional
 choose_os() {
     print_header "Escolha o sistema operacional para iniciar as aplicações de desenvolvimento:"

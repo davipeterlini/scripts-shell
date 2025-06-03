@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "$(dirname "$0")/../../utils/colors_message.sh"
-
 # Function to detect the operating system
 detect_os() {
     print_info "Detecting the operating system..."

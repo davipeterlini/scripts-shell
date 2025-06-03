@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Importando o arquivo de mensagens com cores
-source "$(dirname "$0")/colors_message.sh"
-
 # Get the directory of the current script
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 

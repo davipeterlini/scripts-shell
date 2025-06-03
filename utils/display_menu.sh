@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Importando o arquivo de mensagens com cores
-source "$(dirname "$0")/colors_message.sh"
-
 # Function to display a menu using dialog
 display_menu() {
     local choices=$(dialog --stdout --checklist "Select the type of apps to install:" 15 50 3 \

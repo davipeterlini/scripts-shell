@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Importando o arquivo de mensagens com cores
-source "$(dirname "$0")/colors_message.sh"
-
 # Function to detect the shell profile being used
 detect_profile() {
   if [ -n "$ZSH_VERSION" ]; then

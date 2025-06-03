@@ -1,9 +1,6 @@
 
 #!/bin/bash
 
-# Importando o arquivo de mensagens com cores
-source "$(dirname "$0")/colors_message.sh"
-
 # Function to execute a script with a description
 execute_script() {
   local script_path=$1

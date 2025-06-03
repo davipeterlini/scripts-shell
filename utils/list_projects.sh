@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Importando o arquivo de mensagens com cores
-source "$(dirname "$0")/colors_message.sh"
-
 # Function to display available projects
 list_projects() {
   print_header "Available Projects:"
