@@ -246,6 +246,14 @@
   - Sempre antes de fazer a criação dos diretórios verifique se eles já existem, se não existem não crie novamente apenas passe a etapa 
   - Ajuste os scripts com clen code e clean arquitecture
   - Ajustes de scripts do github
+  - Criar script de configurar o config do .ssh 
+- 03/05/2025
+  - Altere o script github/setup_ssh_config.sh para que esteja dentro da pasta dev e pegue o assests da pasta: assets/ssh-git
+  - Criar um script de setup de repos dentro da pasta dev
+    - Esse script deve executar o setup do git e bitbucket executando na sequências os scripts
+      - github/configure_multi_ssh_github_keys.sh
+      - github/setup_ssh_config.sh
+      - bitbucket/configure_multi_ssh_bitbucket_keys.sh
 
 
   - Colocar a configuração do NPMTOKEN no script de trabalho 
