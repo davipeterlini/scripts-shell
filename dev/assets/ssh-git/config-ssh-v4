@@ -1,0 +1,50 @@
+Include $HOME/.colima/ssh_config
+
+Host github.com
+  HostName github.com
+  User git
+  IdentitiesOnly yes
+
+# Work repositories
+Host github.com-CI-T-HyperX
+  HostName github.com
+  User davipeterlinicit
+  IdentityFile $HOME/.ssh/id_rsa_work
+  IdentitiesOnly yes
+  Match exec "git config --get remote.origin.url 2>/dev/null | grep -qE '^git@github.com:CI-T-HyperX(/|$)'"
+
+Host github.com-davipeterlinicit
+  HostName github.com
+  User davipeterlinicit
+  IdentityFile $HOME/.ssh/id_rsa_work
+  IdentitiesOnly yes
+  Match exec "git config --get remote.origin.url 2>/dev/null | grep -qE '^git@github.com:davipeterlinicit(/|$)'"
+
+# Personal repositories
+Host github.com-davipeterlini
+  HostName github.com
+  User davipeterlini
+  IdentityFile $HOME/.ssh/id_rsa_personal
+  IdentitiesOnly yes
+  Match exec "git config --get remote.origin.url 2>/dev/null | grep -qE '^git@github.com:davipeterlini(/|$)'"
+
+Host github.com-futureit
+  HostName github.com
+  User davipeterlini
+  IdentityFile $HOME/.ssh/id_rsa_personal
+  IdentitiesOnly yes
+  Match exec "git config --get remote.origin.url 2>/dev/null | grep -qE '^git@github.com:futureit(/|$)'"
+
+Host github.com-medicalclub
+  HostName github.com
+  User davipeterlini
+  IdentityFile $HOME/.ssh/id_rsa_personal
+  IdentitiesOnly yes
+  Match exec "git config --get remote.origin.url 2>/dev/null | grep -qE '^git@github.com:medicalclub(/|$)'"
+
+# Bitbucket configuration
+Host bitbucket.org
+  HostName bitbucket.org
+  User git
+  IdentityFile $HOME/.ssh/id_rsa_bb_work
+  IdentitiesOnly yes

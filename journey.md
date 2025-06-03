@@ -276,13 +276,38 @@
   - Ajustar os scripts: 
     - dev/setup_personal_projects.sh
     - dev/setup_work_projects.sh
-  - 
+  - Ajustar o ~/.ssh/config que atualmente é: 
 
+    ```
+    Include $HOME/.colima/ssh_config
+
+    Host github.com
+      HostName github.com
+      User git
+      IdentityFile $HOME/.ssh/id_rsa_work
+      IdentitiesOnly yes
+      Match exec "git config --get remote.origin.url 2>/dev/null | grep -qE '^git@github.com:davipeterlini(/|$)'"
+        IdentityFile $HOME/.ssh/id_rsa_personal
+
+    Host bitbucket.org
+      HostName bitbucket.org
+      User git
+      IdentityFile $HOME/.ssh/id_rsa_bb_work
+      IdentitiesOnly yes 
+    ```
+
+    Eu preciso que essa configuração acima seja ajustada para respeitar as seguintes regras 
+      - Se o repo for da URL: git@github.com:CI-T-HyperX ou git@github.com:davipeterlinicit ele deve usar o $HOME/.ssh/id_rsa_work e o usuário davipeterlinicit (isso para push o pull)
+      - Se o repo for da URL: git@github.com:davipeterlini ou git@github.com:futureit ou git@github.com:medicalclub  ele deve usar o $HOME/.ssh/id_rsa_personal e o usuário davipeterlini (isso para push o pull)
+
+    para a respotas altere o arquivo: dev/assets/ssh-git/config-ssh-v2 com a forma correta de configuração para que tudo funcione corretamente 
+    ou seja ao estar em um repo git@github.com:CI-T-HyperX ou git@github.com:davipeterlinicit ele use o usuário davipeterlinicit e assim por diante
+  - dasdsa
 
 - Problemas extensão 
   - Locking
     - Quando estou executando algo e ele está no meu da geração de arquivo e finalizo causa um locking no vscode deixando o usuário travado em várias coisas que ele está fazendo 
-    - 
+    - - Quando clico em cancel a operação realmente está parando
 
 
 

@@ -19,8 +19,18 @@ load_env
 
 # Main script execution
 main() {
+    # Display available projects and stop for user input
+    print_info "Please select a project type:"
+    list_projects
+    
+    # Stop execution here to wait for user input
+    print_info "Script execution paused. Please provide your selection."
+    exit 0
+    
+    # The code below will not execute until the script is modified to continue past this point
+    
     # Get user's choice between personal and work projects
-    local project_type=$(list_projects)
+    local project_type="$1"  # This would be provided when the script is restarted
     echo "Selected project type: $project_type"
     echo $HOME
     
