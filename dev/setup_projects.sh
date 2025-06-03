@@ -14,14 +14,13 @@ source "$PROJECT_ROOT/utils/manage_git_repo.sh"
 select_environment() {
     env_dir="$PROJECT_ROOT/dev/assets"
     env_files=("$env_dir/.env.personal" "$env_dir/.env.work")
-    echo "Select an environment:"
+    print_info "Select an environment:"
     select env_file in "${env_files[@]}"; do
         if [ -n "$env_file" ]; then
-            echo "You selected $env_file"
-            echo "$env_file"
+            print_success "You selected $env_file"
             return 
         else
-            echo "Invalid selection. Try again."
+            print_error "Invalid selection. Try again."
         fi
     done
 }
@@ -31,8 +30,6 @@ setup_projects_main() {
     # Select environment
     select_environment
     selected_env=$env_file
-
-    echo $env_file
 
     # Load the selected environment variables
     if [ -f "$selected_env" ]; then
@@ -53,8 +50,10 @@ setup_projects_main() {
     # Create directories
     create_directories "${PROJECT_DIR[@]}"
 
+
+    print $PROJECT_REPOS
     # Clone or update repositories
-    manage_repositories "${PROJECT_REPOS[@]}"
+    #manage_repositories "${PROJECT_REPOS[@]}"
 
     print_success "Project setup completed successfully!"
 }
