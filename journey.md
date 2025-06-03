@@ -255,6 +255,8 @@
       - bitbucket/configure_multi_ssh_bitbucket_keys.sh
       - dev/setup_ssh_config.sh
   - Ajustar o config do ssh para que possa funcionar da forma correta nos repos corretos 
+  - Mova a pasta assests na raiz para a pasta dev 
+    - Altere o script dev/setup_ssh_config.sh para pegar da pastas assests correta 
   - 
 
   - Colocar a configuração do NPMTOKEN no script de trabalho 
