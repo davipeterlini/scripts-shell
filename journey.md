@@ -254,7 +254,7 @@
       - github/configure_multi_ssh_github_keys.sh
       - bitbucket/configure_multi_ssh_bitbucket_keys.sh
       - dev/setup_ssh_config.sh
-
+  - 
 
   - Colocar a configuração do NPMTOKEN no script de trabalho 
     - Verificar como fazer no repo do llm orchastrator
