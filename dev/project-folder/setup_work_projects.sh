@@ -10,6 +10,7 @@ readonly ERROR_LOG="/tmp/git_error_output"
 source "$(dirname "$0")/../../utils/colors_message.sh"
 source "$(dirname "$0")/../../utils/load_env.sh"
 source "$(dirname "$0")/../../utils/bash_tools.sh"
+source "$(dirname "$0")/../../utils/manage_git_repo.sh"
 
 # Load environment variables
 load_env
@@ -42,23 +43,6 @@ readonly DIRECTORIES=(
     "$PROJECT_DIR_WORK/flow/coder/pocs"
 )
 
-# Function to manage repositories
-manage_repositories() {
-    for target_dir in "${!REPOSITORIES[@]}"; do
-        local repo_url="${REPOSITORIES[$target_dir]}"
-        local repo_name=$(basename "$repo_url" .git)
-        local repo_path="$target_dir/$repo_name"
-
-        if [[ -d "$repo_path" ]]; then
-            print_info "Updating repository: $repo_name"
-            (cd "$repo_path" && git pull)
-        else
-            print_info "Cloning repository: $repo_name"
-            git clone "$repo_url" "$repo_path"
-        fi
-    done
-}
-
 # Main script execution
 main() {
     if [[ -z "$PROJECT_DIR_WORK" ]]; then
@@ -67,7 +51,7 @@ main() {
     fi
 
     create_directories "${DIRECTORIES[@]}"
-    manage_repositories
+    manage_repositories "${REPOSITORIES[@]}"
 
     print_success "Work projects setup completed successfully!"
 }
