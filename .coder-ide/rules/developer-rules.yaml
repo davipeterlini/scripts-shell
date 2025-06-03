@@ -1,0 +1,6 @@
+name: New rules
+version: 0.0.1
+schema: v1
+rules:
+  - name: User Agent Mode with gpt-4o
+    rule: Whenever you execute something using the agent mode with the GPT-4 model, make the suggested changes and implementations.
