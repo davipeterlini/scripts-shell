@@ -3,15 +3,17 @@
 # Purpose: Set up and maintain work project repositories
 
 # Constants
-readonly SCRIPT_DIR=$(dirname "$(realpath "$0")")
-readonly ERROR_LOG="/tmp/git_error_output"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$PROJECT_ROOT" && pwd)"
+source "$PROJECT_ROOT/utils/colors_message.sh"
+
 
 # Import utilities
-source "$SCRIPT_DIR/../utils/colors_message.sh"
-source "$SCRIPT_DIR/../utils/load_env.sh"
-source "$SCRIPT_DIR/../utils/bash_tools.sh"
-source "$SCRIPT_DIR/../utils/manage_git_repo.sh"
-source "$SCRIPT_DIR/../utils/list_projects.sh"
+source "$PROJECT_ROOT/utils/colors_message.sh"
+source "$PROJECT_ROOT/utils/load_env.sh"
+source "$PROJECT_ROOT/utils/bash_tools.sh"
+source "$PROJECT_ROOT/utils/manage_git_repo.sh"
+source "$PROJECT_ROOT/utils/list_projects.sh"
 source "$SCRIPT_DIR/utils/load_dev_env.sh"
 
 # Load environment variables
