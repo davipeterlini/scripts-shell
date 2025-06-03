@@ -31,27 +31,15 @@ declare -A REPOSITORIES=(
     ["$PROJECT_DIR_WORK/flow/coder/mcp-server"]="git@github.com:CI-T-HyperX/mcp-ciandt-flow.git"
 )
 
-# Directory structure configuration
-readonly DIRECTORIES=(
-    "$PROJECT_DIR_WORK"
-    "$PROJECT_DIR_WORK/flow"
-    "$PROJECT_DIR_WORK/flow/chat"
-    "$PROJECT_DIR_WORK/flow/ai-core"
-    "$PROJECT_DIR_WORK/flow/coder"
-    "$PROJECT_DIR_WORK/flow/coder/cases"
-    "$PROJECT_DIR_WORK/flow/coder/mcp-server"
-    "$PROJECT_DIR_WORK/flow/coder/pocs"
-)
-
 # Main script execution
 main() {
     if [[ -z "$PROJECT_DIR_WORK" ]]; then
-        print_error "PROJECT_DIR_WORK environment variable is not set. Please check your .env file."
+        print_error "PROJECT_DIR_WORK environment variable is not set. Please check your root .env file."
         exit 1
     fi
 
-    create_directories "${DIRECTORIES[@]}"
-    manage_repositories "${REPOSITORIES[@]}"
+    create_directories "${PROJECT_WORK_DIR[@]}"
+    #manage_repositories "${REPOSITORIES[@]}"
 
     print_success "Work projects setup completed successfully!"
 }
