@@ -11,11 +11,6 @@ source "$(dirname "$0")/utils/execute_script.sh"
 SCRIPT_BASE_DIR="utils"
 PROJECT_BASE_DIR="dev"
 
-# Função para selecionar o profile
-select_shell_profile() {
-  local profile_script="$SCRIPT_BASE_DIR/choose_shell_profile.sh"
-  execute_script "$profile_script" "Selecionando o profile..."
-}
 
 # Função para detectar o sistema operacional
 detect_operating_system() {
@@ -60,8 +55,9 @@ main() {
   os=$(detect_os)
   echo "Operational System: $os"
 
-  log "Iniciando o processo de setup..."
-  select_shell_profile
+  # Use the external choose_shell_profile script instead of the internal function
+  choose_shell_profile
+
   detect_operating_system
   setup_project_configuration
   setup_git_and_bitbucket
