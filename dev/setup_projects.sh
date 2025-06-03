@@ -3,43 +3,32 @@
 # Purpose: Set up and maintain work project repositories
 
 # Constants
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
+readonly SCRIPT_DIR=$(dirname "$(realpath "$0")")
 readonly ERROR_LOG="/tmp/git_error_output"
 
 # Import utilities
-source "$(dirname "$0")/../utils/colors_message.sh"
-source "$(dirname "$0")/../utils/load_env.sh"
-source "$(dirname "$0")/../utils/bash_tools.sh"
-source "$(dirname "$0")/../utils/manage_git_repo.sh"
-source "$(dirname "$0")/../utils/list_projects.sh"
-source "$(dirname "$0")/utils/load_dev_env.sh"
+source "$SCRIPT_DIR/../utils/colors_message.sh"
+source "$SCRIPT_DIR/../utils/load_env.sh"
+source "$SCRIPT_DIR/../utils/bash_tools.sh"
+source "$SCRIPT_DIR/../utils/manage_git_repo.sh"
+source "$SCRIPT_DIR/../utils/list_projects.sh"
+source "$SCRIPT_DIR/utils/load_dev_env.sh"
 
 # Load environment variables
 load_env
 
-# Main script execution
-main() {
-    # Display available projects and stop for user input
+# Function to display project selection and exit
+display_project_selection() {
     print_info "Please select a project type:"
     list_projects
-    
-    # Stop execution here to wait for user input
     print_info "Script execution paused. Please provide your selection."
     exit 0
-    
-    # The code below will not execute until the script is modified to continue past this point
-    
-    # Get user's choice between personal and work projects
-    local project_type="$1"  # This would be provided when the script is restarted
-    echo "Selected project type: $project_type"
-    echo $HOME
-    
-    # Load environment variables based on user's choice
-    load_dev_env "$project_type"
-    
-    # Now PROJECT_DIRS and PROJECT_REPOS will be set by load_dev_env
-    # based on whether personal or work was selected
-    
+}
+
+# Function to validate environment variables
+validate_env_variables() {
+    local project_type="$1"
+
     if [[ "$project_type" == "work" ]]; then
         if [[ -z "$PROJECT_WORK_DIR" || -z "$PROJECT_WORK_REPOS" ]]; then
             print_error "Work project environment variables are not set. Please check your configuration."
@@ -58,10 +47,25 @@ main() {
         print_error "Invalid project type: $project_type"
         exit 1
     fi
+}
 
-    create_directories "${!PROJECT_DIRS[@]}"  
+# Main script execution
+main() {
+    # Display project selection and exit
+    display_project_selection
 
-    # Manage repositories
+    # Get user's choice between personal and work projects
+    local project_type="$1"
+    print_info "Selected project type: $project_type"
+
+    # Load environment variables based on user's choice
+    load_dev_env "$project_type"
+
+    # Validate environment variables
+    validate_env_variables "$project_type"
+
+    # Create directories and manage repositories
+    create_directories "${!PROJECT_DIRS[@]}"
     manage_repositories "${PROJECT_REPOS[@]}"
 
     print_success "${project_type^} projects setup completed successfully!"
