@@ -7,8 +7,9 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 readonly ERROR_LOG="/tmp/git_error_output"
 
 # Import utilities
-source "$SCRIPT_DIR/../utils/colors_message.sh"
-source "$SCRIPT_DIR/../utils/load_env.sh"
+source "$SCRIPT_DIR/../../utils/colors_message.sh"
+source "$SCRIPT_DIR/../../utils/load_env.sh"
+source "$SCRIPT_DIR/../../utils/bash_tools.sh"
 
 # Load environment variables
 load_env
@@ -41,19 +42,6 @@ readonly DIRECTORIES=(
     "$PROJECT_DIR_WORK/flow/coder/pocs"
 )
 
-# Function to create directories
-create_directories() {
-    for dir in "${DIRECTORIES[@]}"; do
-        if [[ ! -d "$dir" ]]; then
-            print_info "Creating directory: $dir"
-            mkdir -p "$dir"
-            print_success "Directory created: $dir"
-        else
-            print_info "Directory already exists: $dir"
-        fi
-    done
-}
-
 # Function to manage repositories
 manage_repositories() {
     for target_dir in "${!REPOSITORIES[@]}"; do
@@ -78,10 +66,13 @@ main() {
         exit 1
     fi
 
-    create_directories
+    create_directories "${DIRECTORIES[@]}"
     manage_repositories
 
     print_success "Work projects setup completed successfully!"
 }
 
-main "$@"
+# Check if the script is being executed directly or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi
