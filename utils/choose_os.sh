@@ -1,8 +1,10 @@
 #!/bin/bash
 
+source "$(dirname "$0")/../../utils/colors_message.sh"
+
 # Function to choose the operating system
 choose_os() {
-    echo "Choose the operating system to start development applications:"
+    print_header "Choose the operating system to start development applications:"
     echo "1) macOS"
     echo "2) Linux"
     echo "3) Windows"
@@ -10,34 +12,34 @@ choose_os() {
 
     case "$os_choice" in
         1)
-            echo "macOS chosen."
+            print_success "macOS chosen."
             echo "macOS"
             ;;
         2)
-            echo "Linux chosen."
+            print_success "Linux chosen."
             echo "Linux"
             ;;
         3)
-            echo "Windows chosen."
+            print_success "Windows chosen."
             echo "Windows"
             ;;
         *)
-            echo "No valid choice made. Auto-detecting the operating system..."
+            print_alert "No valid choice made. Auto-detecting the operating system..."
             case "$(uname -s)" in
                 Darwin)
-                    echo "macOS detected."
+                    print_success "macOS detected."
                     echo "macOS"
                     ;;
                 Linux)
-                    echo "Linux detected."
+                    print_success "Linux detected."
                     echo "Linux"
                     ;;
                 CYGWIN*|MINGW32*|MSYS*|MINGW*)
-                    echo "Windows detected."
+                    print_success "Windows detected."
                     echo "Windows"
                     ;;
                 *)
-                    echo "Unsupported operating system."
+                    print_error "Unsupported operating system."
                     exit 1
                     ;;
             esac
