@@ -6,7 +6,7 @@
 # Importa o utilitário de cores
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-source "$PROJECT_ROOT/utils/colors_message.sh"
+source "./utils/colors_message.sh"
 
 # Diretório dos assets
 ASSETS_DIR="$PROJECT_ROOT/dev/assets/ssh-git"
@@ -35,6 +35,11 @@ backup_existing_config() {
 select_config_version() {
     local config_files=($(ls "$ASSETS_DIR"))
     local num_files=${#config_files[@]}
+
+    if [ $num_files -eq 0 ]; then
+        print_error "Nenhum arquivo de configuração encontrado no diretório $ASSETS_DIR."
+        exit 1
+    fi
 
     print_info "Seleção da Versão"
     echo -e "${BLUE}Selecione a versão do arquivo de configuração:${NC}"

@@ -7,8 +7,8 @@ source "$(dirname "$0")/../utils/detect_os.sh"
 source "$(dirname "$0")/../utils/colors_message.sh"
 
 # Scripts
-source "$(dirname "$0")/setup_projects.sh" 
-#source "$(dirname "$0")/setup_ssh_config.sh"
+#source "$(dirname "$0")/setup_projects.sh" 
+source "$(dirname "$0")/setup_ssh_config.sh"
 #source "$(dirname "$0")/setup_global_env.sh"
 #source "$(dirname "$0")/open_project_iterm.sh"
 
