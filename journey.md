@@ -271,9 +271,6 @@
     - setup.sh 
   - Ajustar todos scripts da pasta utils para usar o colors_message
   - Ajuste do Script - dev/project-folder/setup_work_projects.sh para funcionar corretamente
-
-
-
   - Aplique as boas práticas aplicadas no script dev/project-folder/setup_work_projects.sh para o script dev/project-folder/setup_personal_projects.sh
   - No script de dev/setup_project.sh list os projetos a partir do 
   - Ajustar os scripts: 
