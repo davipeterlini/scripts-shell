@@ -49,7 +49,8 @@ display_files_with_index() {
     local files=("$@")
     print_info "Available configuration files:"
     for i in "${!files[@]}"; do
-        print "$((i + 1))) ${files[$i]}"
+        local filename=$(basename "${files[$i]}")
+        print "$((i + 1))) $filename"
     done
 }
 
