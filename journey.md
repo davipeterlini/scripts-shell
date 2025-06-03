@@ -306,7 +306,9 @@
   - Eu preciso que ao executar o script setup_projects.sh sejam feitos os seguintes passos 
     - Abra um seletor para que o usuário escolha entre personal e work, de acordo com os arquivos de .evn da pasta assests/envs
     - Carrege as variaveis do arquivo env.xxxxx escolhido para a execução 
-    - Na sequência crie as pastas a partir da var: 
+    - Na sequência crie as pastas a partir da variável: PROJECT_DIR
+    - E depois execute o clone do repo a partir da variável: PROJECT_REPOS
+    Essa variável contem o repo e a pasta onde deve ser colocado
 
 
 
