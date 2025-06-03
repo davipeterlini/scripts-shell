@@ -1,12 +1,16 @@
 #!/bin/bash
 
+# Utils
 source "$(dirname "$0")/utils/load_env.sh"
 load_env
 source "$(dirname "$0")/utils/detect_os.sh"
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/execute_script.sh"
+
+# Scripts
 source "$(dirname "$0")/setup_projects.sh" 
 source "$(dirname "$0")/setup_ssh_config.sh"
+source "$(dirname "$0")/setup_global_env.sh"
 
 # Definir o diretório base dos scripts
 SCRIPT_BASE_DIR="utils"
@@ -85,6 +89,8 @@ main() {
   setup_git_and_bitbucket
 
   setup_ssh_config_main
+
+  setup_global_env_main
 
   # Chamada da função setup_projects_main
 
