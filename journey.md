@@ -307,8 +307,9 @@
 - Problemas extensão 
   - Locking
     - Quando estou executando algo e ele está no meu da geração de arquivo e finalizo causa um locking no vscode deixando o usuário travado em várias coisas que ele está fazendo 
-    - - Quando clico em cancel a operação realmente está parando
-
+    - Quando clico em cancel a operação realmente está parando
+  - Agent com GPT4
+    - Precisa de uma regra - sempre que for executar algo usando o modo agent com o modelo gpt-4o faça as alterações e implmentações sugeridas 
 
 
   - Ajustar o config do ssh para que possa funcionar da forma correta nos repos corretos 

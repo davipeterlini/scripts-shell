@@ -5,16 +5,11 @@ load_env
 source "$(dirname "$0")/utils/detect_os.sh"
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/execute_script.sh"
+source "$(dirname "$0")/setup_projects.sh" # Importando o script setup_projects.sh
 
 # Definir o diretório base dos scripts
 SCRIPT_BASE_DIR="utils"
 PROJECT_BASE_DIR="dev"
-
-# Função para configurar o projeto
-setup_project_configuration() {
-  local project_script="$PROJECT_BASE_DIR/project-folder/setup_project.sh"
-  execute_script "$project_script" "Executando configuração do projeto..."
-}
 
 # Função para configurar Git e Bitbucket
 setup_git_and_bitbucket() {
@@ -67,12 +62,6 @@ setup_git_and_bitbucket() {
   echo "Setup concluído com sucesso!"
 }
 
-# Função para configurar Git e Bitbucket na subpasta git
-setup_git_and_bitbucket_in_subfolder() {
-  local git_subfolder_script="$PROJECT_BASE_DIR/git/setup_git_and_bitbucket.sh"
-  execute_script "$git_subfolder_script" "Configurando Git e Bitbucket na subpasta git..."
-}
-
 # Função para configurar SSH
 setup_ssh_configuration() {
   local ssh_script="$PROJECT_BASE_DIR/git/setup_ssh_config.sh"
@@ -89,12 +78,22 @@ main() {
   # Use the external choose_shell_profile script instead of the internal function
   choose_shell_profile
 
+  # Create and config folders for work and personal
+  setup_projects_main
+
+
+
+
   execute_script "$project_script" "Executando configuração do projeto..."
 
   setup_project_configuration
   setup_git_and_bitbucket
   setup_git_and_bitbucket_in_subfolder
   setup_ssh_configuration
+
+  # Chamada da função setup_projects_main
+  
+
   log "Setup concluído com sucesso!"
 }
 
