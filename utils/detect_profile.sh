@@ -1,22 +1,27 @@
 #!/bin/bash
 
-# TODO - não está detectando o profile coerretamente
+# Importando o arquivo de mensagens com cores
+source "$(dirname "$0")/colors_message.sh"
 
 # Function to detect the shell profile being used
 detect_profile() {
   if [ -n "$ZSH_VERSION" ]; then
-    echo "$HOME/.zshrc"
+    print "$HOME/.zshrc"
   elif [ -n "$BASH_VERSION" ]; then
-    echo "$HOME/.bashrc"
+    print "$HOME/.bashrc"
   elif [ -n "$FISH_VERSION" ]; then
-    echo "$HOME/.config/fish/config.fish"
+    print "$HOME/.config/fish/config.fish"
   else
-    echo "unknown"
+    print "unknown"
   fi
 }
 
 # Main script execution
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   profile=$(detect_profile)
-  echo "Detected shell profile: $profile"
+  if [ "$profile" == "unknown" ]; then
+    print_alert "Não foi possível detectar o profile do shell."
+  else
+    print_success "Profile do shell detectado: $profile"
+  fi
 fi

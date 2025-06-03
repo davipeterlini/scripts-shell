@@ -270,7 +270,7 @@
   - Ajustar scripts de dev para seguir o padrão de clean code 
     - setup.sh 
   - Ajustar todos scripts da pasta utils para usar o colors_message
-  - 
+
 
   - No script de dev/setup_project.sh list os projetos a partir do 
   - Ajustar os scripts: 
