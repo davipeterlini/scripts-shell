@@ -26,7 +26,7 @@ setup_git_and_bitbucket() {
   check_script_existence() {
       local script_path=$1
       if [[ ! -x "$script_path" ]]; then
-          echo "Erro: O script '$script_path' não existe ou não tem permissão de execução."
+          print_error "O script '$script_path' não existe ou não tem permissão de execução."
           exit 1
       fi
   }
@@ -36,16 +36,16 @@ setup_git_and_bitbucket() {
       local script_path=$1
       local description=$2
 
-      echo "Executando: $description..."
+      print_info "Executando: $description..."
       bash "$script_path" || {
-          echo "Erro ao executar '$description'."
+          print_error "Erro ao executar '$description'."
           exit 1
       }
-      echo "Concluído: $description."
+      print_success "Concluído: $description."
   }
 
   # Início do setup
-  echo "Iniciando o setup do Git e Bitbucket..."
+  print_info "Iniciando o setup do Git e Bitbucket..."
 
   # Verificar e executar o script de configuração do GitHub
   check_script_existence "$GITHUB_SCRIPT"
@@ -60,7 +60,7 @@ setup_git_and_bitbucket() {
   execute_script "$SSH_CONFIG_SCRIPT" "Configuração do arquivo SSH"
 
   # Finalização
-  echo "Setup concluído com sucesso!"
+  print_success "Setup concluído com sucesso!"
 }
 
 # Função para configurar SSH
@@ -74,7 +74,7 @@ main() {
 
   # Detect the operating system
   os=$(detect_os)
-  echo "Operational System: $os"
+  print_info "Operational System: $os"
 
   # Use the external choose_shell_profile script instead of the internal function
   choose_shell_profile
@@ -88,7 +88,7 @@ main() {
 
   # Chamada da função setup_projects_main
 
-  log "Setup concluído com sucesso!"
+  print_success "Setup concluído com sucesso!"
 }
 
 # Executar a função principal

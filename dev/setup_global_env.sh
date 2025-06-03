@@ -124,7 +124,7 @@ reload_profile() {
 }
 
 # Main script flow
-main() {
+setup_global_env_main() {
     create_env_file
     
     # Use the external choose_shell_profile script instead of the internal function
@@ -143,4 +143,4 @@ main() {
 }
 
 # Execute the script
-main
+setup_global_env_main
