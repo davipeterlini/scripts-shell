@@ -15,22 +15,6 @@ source "$(dirname "$0")/../../utils/manage_git_repo.sh"
 # Load environment variables
 load_env
 
-# Repository configuration
-declare -A REPOSITORIES=(
-    ["$PROJECT_DIR_WORK/flow/chat"]="git@github.com:CI-T-HyperX/flow-channels-app-service.git"
-    ["$PROJECT_DIR_WORK/flow/ai-core"]="git@github.com:CI-T-HyperX/flow-core-app-llm-service.git"
-    ["$PROJECT_DIR_WORK/flow/coder"]="git@github.com:CI-T-HyperX/flow-coder-framework.git"
-    ["$PROJECT_DIR_WORK/flow/coder"]="git@github.com:CI-T-HyperX/flow-coder-service.git"
-    ["$PROJECT_DIR_WORK/flow/coder"]="git@bitbucket.org:ciandt_it/flow-coder-extension.git"
-    ["$PROJECT_DIR_WORK/flow/coder/cases"]="git@github.com:davipeterlinicit/case-end-to-end-ops.git"
-    ["$PROJECT_DIR_WORK/flow/coder/cases"]="git@github.com:laisbonafeciandt/case-end-to-end-metrics.git"
-    ["$PROJECT_DIR_WORK/flow/coder/cases"]="git@github.com:arysanchez/case-end-to-end-chat.git"
-    ["$PROJECT_DIR_WORK/flow/coder/cases"]="git@github.com:davipeterlinicit/coder-cases.git"
-    ["$PROJECT_DIR_WORK/flow/coder/cases"]="git@github.com:CI-T-HyperX/flow-core-lib-commons-py.git"
-    ["$PROJECT_DIR_WORK/flow/coder/pocs"]="git@github.com:continuedev/continue.git"
-    ["$PROJECT_DIR_WORK/flow/coder/mcp-server"]="git@github.com:CI-T-HyperX/mcp-ciandt-flow.git"
-)
-
 # Main script execution
 main() {
     if [[ -z "$PROJECT_DIR_WORK" ]]; then
@@ -38,8 +22,24 @@ main() {
         exit 1
     fi
 
-    create_directories "${PROJECT_WORK_DIR[@]}"
-    #manage_repositories "${REPOSITORIES[@]}"
+    if [[ -z "$REPOSITORIES_WORK" ]]; then
+        print_error "REPOSITORIES_WORK environment variable is not set. Please check your root .env file."
+        exit 1
+    fi
+
+    # Convert REPOSITORIES_WORK from a comma-separated string to an associative array
+    declare -A REPOSITORIES
+    IFS=',' read -ra REPO_PAIRS <<< "$REPOSITORIES_WORK"
+    for pair in "${REPO_PAIRS[@]}"; do
+        IFS='=' read -r dir repo <<< "$pair"
+        REPOSITORIES["$dir"]="$repo"
+    done
+
+    # Create directories
+    create_directories "${!REPOSITORIES[@]}"
+
+    # Manage repositories
+    manage_repositories "${REPOSITORIES[@]}"
 
     print_success "Work projects setup completed successfully!"
 }

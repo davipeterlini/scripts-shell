@@ -1,6 +1,10 @@
 
 #!/bin/bash
 
+# Get the absolute directory of the current script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$SCRIPT_DIR/colors_message.sh"
+
 # Function to execute a script with a description
 execute_script() {
   local script_path=$1

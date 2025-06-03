@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Get the absolute directory of the current script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$SCRIPT_DIR/colors_message.sh"
+
 # Function to ask the user which shell they are using and set the profile file
 choose_shell_profile() {
   print_header "Which shell are you using? (Enter the corresponding number)"

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Get the absolute directory of the current script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$SCRIPT_DIR/colors_message.sh"
+
 # Função para escolher o sistema operacional
 choose_os() {
     print_header "Escolha o sistema operacional para iniciar as aplicações de desenvolvimento:"

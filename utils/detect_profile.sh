@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Get the absolute directory of the current script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$SCRIPT_DIR/colors_message.sh"
+
 # Function to detect the shell profile being used
 detect_profile() {
   if [ -n "$ZSH_VERSION" ]; then
