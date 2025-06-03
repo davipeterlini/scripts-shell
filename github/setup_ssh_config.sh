@@ -40,8 +40,8 @@ print_info "Assets directory path: $ASSETS_DIR"
 
 # List available files in the assets folder
 print_info "Version Selection"
-echo -e "${BLUE}Available files in the assets folder:${NC}"
-FILES=($(ls -1 "$ASSETS_DIR" 2>/dev/null))
+print_info "Available files in the assets folder:"
+FILES=($(find "$ASSETS_DIR" -type f 2>/dev/null))
 
 # Debug: Display the found files
 if [ ${#FILES[@]} -eq 0 ]; then
@@ -50,19 +50,19 @@ if [ ${#FILES[@]} -eq 0 ]; then
 else
     print_info "Found files:"
     for file in "${FILES[@]}"; do
-        echo "- $file"
+        print_info "- $file"
     done
 fi
 
 # Display the files as numbered options
 i=1
 for file in "${FILES[@]}"; do
-    echo -e "${BLUE}${i})${NC} $file"
+    print_info "${i}) $file"
     ((i++))
 done
 
 # Prompt the user to choose a file
-read -p "$(echo -e ${YELLOW}"Choose a file by number: "${NC})" choice
+read -p "$(print_info "Choose a file by number: ")" choice
 
 if ! [[ "$choice" =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt ${#FILES[@]} ]; then
     print_alert "Invalid option. Operation canceled."
@@ -70,7 +70,7 @@ if ! [[ "$choice" =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt ${#FI
 fi
 
 CONFIG_FILE="${FILES[$((choice-1))]}"
-CONFIG_PATH="$ASSETS_DIR/$CONFIG_FILE"
+CONFIG_PATH="$CONFIG_FILE"
 
 if [ ! -f "$CONFIG_PATH" ]; then
     print_error "Configuration file $CONFIG_PATH not found."
@@ -96,4 +96,4 @@ print_info "The $HOME environment variable has been replaced with the actual val
 print_info "Configured File Content"
 cat "$HOME/.ssh/config"
 
-print_info "Operation Successfully Completed!"
+print_success "Operation Successfully Completed!"
