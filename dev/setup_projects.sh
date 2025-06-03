@@ -14,18 +14,10 @@ source "$PROJECT_ROOT/utils/load_env.sh"
 source "$PROJECT_ROOT/utils/bash_tools.sh"
 source "$PROJECT_ROOT/utils/manage_git_repo.sh"
 source "$PROJECT_ROOT/utils/list_projects.sh"
-source "$SCRIPT_DIR/utils/load_dev_env.sh"
+source "./dev/utils/load_dev_env.sh"
 
 # Load environment variables
 load_env
-
-# Function to display project selection and exit
-display_project_selection() {
-    print_info "Please select a project type:"
-    list_projects
-    print_info "Script execution paused. Please provide your selection."
-    exit 0
-}
 
 # Function to validate environment variables
 validate_env_variables() {
@@ -54,7 +46,9 @@ validate_env_variables() {
 # Main script execution
 setup_projects_main() {
     # Display project selection and exit
-    display_project_selection
+    list_projects
+
+    echo
 
     # Get user's choice between personal and work projects
     local project_type="$1"
