@@ -261,6 +261,12 @@
   - Criar um script para cconfigurar o setup project e solicitar ao usuário qual deve ser o script que vai ser usado abaixo a partir do utils/list_projects.sh
     - dev/setup_personal_projects.sh
     - dev/setup_work_projects.sh
+  - Ajustar os scripts: 
+    - dev/setup_personal_projects.sh
+    - dev/setup_work_projects.sh
+
+
+
 
   - Colocar a configuração do NPMTOKEN no script de trabalho 
     - Verificar como fazer no repo do llm orchastrator
