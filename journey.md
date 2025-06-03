@@ -252,8 +252,8 @@
   - Criar um script de setup de repos dentro da pasta dev
     - Esse script deve executar o setup do git e bitbucket executando na sequências os scripts
       - github/configure_multi_ssh_github_keys.sh
-      - github/setup_ssh_config.sh
       - bitbucket/configure_multi_ssh_bitbucket_keys.sh
+      - dev/setup_ssh_config.sh
 
 
   - Colocar a configuração do NPMTOKEN no script de trabalho 
