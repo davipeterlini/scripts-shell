@@ -254,6 +254,7 @@
       - github/configure_multi_ssh_github_keys.sh
       - bitbucket/configure_multi_ssh_bitbucket_keys.sh
       - dev/setup_ssh_config.sh
+  - Ajustar o config do ssh para que possa funcionar da forma correta nos repos corretos 
   - 
 
   - Colocar a configuração do NPMTOKEN no script de trabalho 
