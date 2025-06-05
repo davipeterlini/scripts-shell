@@ -35,6 +35,8 @@ main() {
 
   setup_ssh_config_main
 
+  ./dev/assets/ssh-git/test_ssh_config.sh
+
   #setup_global_env_main
 
   #open_project_iterm

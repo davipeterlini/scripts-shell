@@ -29,6 +29,47 @@ backup_existing_config() {
     fi
 }
 
+check_ssh_keys() {
+    print_info "Checking for required SSH keys..."
+    
+    local required_keys=(
+        "id_rsa_personal"
+        "id_rsa_work"
+        "id_rsa_bb_work"
+    )
+    
+    local missing_keys=()
+    
+    for key in "${required_keys[@]}"; do
+        if [ ! -f "$SSH_CONFIG_DIR/$key" ]; then
+            missing_keys+=("$key")
+        fi
+    done
+    
+    if [ ${#missing_keys[@]} -gt 0 ]; then
+        print_alert "The following SSH keys are missing:"
+        for key in "${missing_keys[@]}"; do
+            print "  - $key"
+        done
+        
+        print_info "Would you like to generate these keys now? (y/n)"
+        read -r generate_keys
+        
+        if [[ "$generate_keys" =~ ^[Yy]$ ]]; then
+            for key in "${missing_keys[@]}"; do
+                print_info "Generating $key..."
+                ssh-keygen -t rsa -b 4096 -f "$SSH_CONFIG_DIR/$key" -N ""
+                chmod 600 "$SSH_CONFIG_DIR/$key"
+                print_success "$key generated successfully!"
+            done
+        else
+            print_alert "Please make sure to create these keys manually before using git with SSH."
+        fi
+    else
+        print_success "All required SSH keys are present!"
+    fi
+}
+
 list_assets_files() {
     if [ ! -d "$ASSETS_DIR" ]; then
         print_error "Assets directory not found at $ASSETS_DIR."
@@ -84,16 +125,39 @@ configure_ssh() {
     print_success "SSH configuration updated successfully!"
 }
 
+test_ssh_connections() {
+    print_info "Testing SSH connections..."
+    
+    # Test GitHub connection
+    print_info "Testing connection to GitHub..."
+    ssh -T git@github.com -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "successfully authenticated"
+    if [ $? -eq 0 ]; then
+        print_success "GitHub connection successful!"
+    else
+        print_alert "GitHub connection failed. Please check your SSH keys and configuration."
+    fi
+    
+    # Test Bitbucket connection
+    print_info "Testing connection to Bitbucket..."
+    ssh -T git@bitbucket.org -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "logged in as"
+    if [ $? -eq 0 ]; then
+        print_success "Bitbucket connection successful!"
+    else
+        print_alert "Bitbucket connection failed. Please check your SSH keys and configuration."
+    fi
+}
+
 display_config_content() {
     print_info "Configured SSH File Content:"
     cat "$SSH_CONFIG_FILE"
 }
 
 main() {
-    print_header "Starting SSH Configuration for GitHub"
+    print_header "Starting SSH Configuration for Git Services"
 
     create_ssh_directory
     backup_existing_config
+    check_ssh_keys
 
     files=($(list_assets_files))
     display_files_with_index "${files[@]}"
@@ -103,6 +167,7 @@ main() {
     display_config_content
     
     print
+    test_ssh_connections
     print
     print_success "SSH Configuration Completed Successfully!"
 }
