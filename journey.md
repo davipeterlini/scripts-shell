@@ -309,6 +309,8 @@
   - Colocar a execução dos scripts abaixo no dev/setup.sh
     github/configure_multi_ssh_github_keys.sh
     bitbucket/configure_multi_ssh_bitbucket_keys.sh
+  - Ajustar a arquivo de configuração .ssh/config para fazer da forma correta
+  - Ajustar o scrip de ssh para configurar as coisas da forma correta 
 
   - Deixar o script bitbucket/configure_multi_ssh_bitbucket_keys.sh com a mesma estrutura do script github/configure_multi_ssh_github_keys.sh
 

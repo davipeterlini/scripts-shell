@@ -1,10 +1,20 @@
 Include $HOME/.colima/ssh_config
 
+# Default GitHub configuration
 Host github.com
   HostName github.com
   User git
   IdentitiesOnly yes
+  # Use personal key for davipeterlini, futureit, and medicalclub repositories
+  IdentityFile ~/.ssh/id_rsa_personal
+  Match exec "git remote -v 2>/dev/null | grep -E 'origin.*github.com[:/](davipeterlini|futureit|medicalclub)/' | grep -q fetch"
+  # Use work key for CI-T-HyperX and davipeterlinicit repositories
+  IdentityFile ~/.ssh/id_rsa_work
+  Match exec "git remote -v 2>/dev/null | grep -E 'origin.*github.com[:/](CI-T-HyperX|davipeterlinicit)/' | grep -q fetch"
+  # Default to work key for other repositories
+  IdentityFile ~/.ssh/id_rsa_work
 
+# These are kept for backward compatibility and specific use cases
 # Work repositories
 Host github.com-CI-T-HyperX
   HostName github.com
