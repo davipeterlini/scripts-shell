@@ -11,14 +11,14 @@ Host github.com-CI-T-HyperX
   User davipeterlinicit
   IdentityFile $HOME/.ssh/id_rsa_work
   IdentitiesOnly yes
-  Match exec "git config --get remote.origin.url 2>/dev/null | grep -qE '^git@github.com:CI-T-HyperX(/|$)'"
+  Match exec "git remote -v 2>/dev/null | grep -E 'origin.*github.com[:/]CI-T-HyperX' | grep -q fetch"
 
 Host github.com-davipeterlinicit
   HostName github.com
   User davipeterlinicit
   IdentityFile $HOME/.ssh/id_rsa_work
   IdentitiesOnly yes
-  Match exec "git config --get remote.origin.url 2>/dev/null | grep -qE '^git@github.com:davipeterlinicit(/|$)'"
+  Match exec "git remote -v 2>/dev/null | grep -E 'origin.*github.com[:/]davipeterlinicit' | grep -q fetch"
 
 # Personal repositories
 Host github.com-davipeterlini
@@ -26,21 +26,21 @@ Host github.com-davipeterlini
   User davipeterlini
   IdentityFile $HOME/.ssh/id_rsa_personal
   IdentitiesOnly yes
-  Match exec "git config --get remote.origin.url 2>/dev/null | grep -qE '^git@github.com:davipeterlini(/|$)'"
+  Match exec "git remote -v 2>/dev/null | grep -E 'origin.*github.com[:/]davipeterlini' | grep -q fetch"
 
 Host github.com-futureit
   HostName github.com
   User davipeterlini
   IdentityFile $HOME/.ssh/id_rsa_personal
   IdentitiesOnly yes
-  Match exec "git config --get remote.origin.url 2>/dev/null | grep -qE '^git@github.com:futureit(/|$)'"
+  Match exec "git remote -v 2>/dev/null | grep -E 'origin.*github.com[:/]futureit' | grep -q fetch"
 
 Host github.com-medicalclub
   HostName github.com
   User davipeterlini
   IdentityFile $HOME/.ssh/id_rsa_personal
   IdentitiesOnly yes
-  Match exec "git config --get remote.origin.url 2>/dev/null | grep -qE '^git@github.com:medicalclub(/|$)'"
+  Match exec "git remote -v 2>/dev/null | grep -E 'origin.*github.com[:/]medicalclub' | grep -q fetch"
 
 # Bitbucket configuration
 Host bitbucket.org
