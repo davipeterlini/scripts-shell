@@ -10,6 +10,8 @@ source "$(dirname "$0")/../utils/choose_shell_profile.sh"
 # Scripts
 source "$(dirname "$0")/setup_projects.sh" 
 source "$(dirname "$0")/setup_ssh_config.sh"
+source "$(dirname "$0")/../github/configure_multi_ssh_bitbucket_keys.sh"
+source "$(dirname "$0")/../bitbucket/configure_multi_ssh_bitbucket_keys.sh"
 #source "$(dirname "$0")/setup_global_env.sh"
 #source "$(dirname "$0")/open_project_iterm.sh"
 
@@ -27,7 +29,9 @@ main() {
   # Create and config folders for work and personal
   #setup_projects_main
 
-  #setup_git_and_bitbucket
+  setup_github_accounts
+
+  setup_bitbucket_accounts
 
   setup_ssh_config_main
 
