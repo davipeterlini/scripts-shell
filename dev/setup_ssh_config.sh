@@ -32,16 +32,8 @@ backup_existing_config() {
 check_ssh_keys() {
     print_info "Checking for SSH keys in $SSH_CONFIG_DIR..."
     
-    # Lista de chaves necessárias para os serviços Git
-    local required_keys=(
-        "id_rsa_personal"
-        "id_rsa_work"
-        "id_rsa_bb_work"
-    )
-    
-    # Listar todas as chaves SSH existentes
-    print_info "Existing SSH keys:"
-    local existing_keys=0
+    # Obter todas as chaves SSH existentes (apenas chaves privadas)
+    local required_keys=()
     
     # Procura por arquivos de chave privada (sem extensão .pub)
     for key_file in "$SSH_CONFIG_DIR"/id_*; do
@@ -49,53 +41,65 @@ check_ssh_keys() {
         if [[ -f "$key_file" && ! "$key_file" =~ \.pub$ ]]; then
             local key_name=$(basename "$key_file")
             local key_type=$(ssh-keygen -l -f "$key_file" 2>/dev/null | awk '{print $2}')
-            local key_fingerprint=$(ssh-keygen -l -f "$key_file" 2>/dev/null | awk '{print $2}')
             
             if [ -n "$key_type" ]; then
-                print "  - $key_name ($key_type)"
-                existing_keys=$((existing_keys + 1))
+                required_keys+=("$key_name")
             fi
         fi
     done
     
-    if [ $existing_keys -eq 0 ]; then
+    # Exibir as chaves encontradas
+    if [ ${#required_keys[@]} -eq 0 ]; then
         print_alert "No SSH keys found."
-    fi
-    
-    # Verificar chaves necessárias
-    local missing_keys=()
-    
-    for key in "${required_keys[@]}"; do
-        if [ ! -f "$SSH_CONFIG_DIR/$key" ]; then
-            missing_keys+=("$key")
-        fi
-    done
-    
-    if [ ${#missing_keys[@]} -gt 0 ]; then
-        print_alert "The following recommended SSH keys are missing:"
-        for key in "${missing_keys[@]}"; do
-            print "  - $key"
-        done
+        print_info "Would you like to generate a default SSH key? (y/n)"
+        read -r generate_key
         
-        print_info "Would you like to generate these keys now? (y/n)"
-        read -r generate_keys
-        
-        if [[ "$generate_keys" =~ ^[Yy]$ ]]; then
-            for key in "${missing_keys[@]}"; do
-                print_info "Generating $key..."
-                ssh-keygen -t rsa -b 4096 -f "$SSH_CONFIG_DIR/$key" -N ""
-                chmod 600 "$SSH_CONFIG_DIR/$key"
-                print_success "$key generated successfully!"
-                print_info "Public key (add this to your Git service):"
-                cat "$SSH_CONFIG_DIR/$key.pub"
-                print
-            done
+        if [[ "$generate_key" =~ ^[Yy]$ ]]; then
+            print_info "Generating default SSH key (id_rsa)..."
+            ssh-keygen -t rsa -b 4096 -f "$SSH_CONFIG_DIR/id_rsa" -N ""
+            chmod 600 "$SSH_CONFIG_DIR/id_rsa"
+            print_success "Default SSH key generated successfully!"
+            print_info "Public key (add this to your Git service):"
+            cat "$SSH_CONFIG_DIR/id_rsa.pub"
+            print
+            required_keys+=("id_rsa")
         else
-            print_alert "Please make sure to create these keys manually before using git with SSH."
+            print_alert "No SSH keys available. You may need to create keys manually."
         fi
     else
-        print_success "All recommended SSH keys are present!"
+        print_success "Found ${#required_keys[@]} SSH key(s)!"
+        print_info "Available SSH keys:"
+        for key in "${required_keys[@]}"; do
+            local key_type=$(ssh-keygen -l -f "$SSH_CONFIG_DIR/$key" 2>/dev/null | awk '{print $2}')
+            print "  - $key ($key_type)"
+        done
     fi
+    
+    # Perguntar se o usuário deseja gerar chaves adicionais
+    print_info "Would you like to generate additional SSH keys? (y/n)"
+    read -r generate_additional
+    
+    if [[ "$generate_additional" =~ ^[Yy]$ ]]; then
+        print_info "Enter the name for the new SSH key (e.g., id_rsa_work):"
+        read -r new_key_name
+        
+        if [[ -z "$new_key_name" ]]; then
+            print_alert "Invalid key name. Operation canceled."
+        elif [[ -f "$SSH_CONFIG_DIR/$new_key_name" ]]; then
+            print_alert "A key with this name already exists. Operation canceled."
+        else
+            print_info "Generating new SSH key $new_key_name..."
+            ssh-keygen -t rsa -b 4096 -f "$SSH_CONFIG_DIR/$new_key_name" -N ""
+            chmod 600 "$SSH_CONFIG_DIR/$new_key_name"
+            print_success "SSH key $new_key_name generated successfully!"
+            print_info "Public key (add this to your Git service):"
+            cat "$SSH_CONFIG_DIR/$new_key_name.pub"
+            print
+            required_keys+=("$new_key_name")
+        fi
+    fi
+    
+    return 0
 }
 
 list_assets_files() {
@@ -156,23 +160,41 @@ configure_ssh() {
 test_ssh_connections() {
     print_info "Testing SSH connections..."
     
-    # Test GitHub connection
-    print_info "Testing connection to GitHub..."
-    ssh -T git@github.com -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "successfully authenticated"
-    if [ $? -eq 0 ]; then
-        print_success "GitHub connection successful!"
-    else
-        print_alert "GitHub connection failed. Please check your SSH keys and configuration."
-    fi
+    # Detectar hosts configurados
+    local hosts=$(grep -E "^Host " "$SSH_CONFIG_FILE" | awk '{print $2}')
     
-    # Test Bitbucket connection
-    print_info "Testing connection to Bitbucket..."
-    ssh -T git@bitbucket.org -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "logged in as"
-    if [ $? -eq 0 ]; then
-        print_success "Bitbucket connection successful!"
-    else
-        print_alert "Bitbucket connection failed. Please check your SSH keys and configuration."
-    fi
+    for host in $hosts; do
+        # Ignorar hosts com caracteres especiais como * ou ?
+        if [[ "$host" != *"*"* && "$host" != *"?"* ]]; then
+            # Extrair o hostname real
+            local hostname=$(grep -A5 "^Host $host" "$SSH_CONFIG_FILE" | grep "HostName" | head -1 | awk '{print $2}')
+            
+            if [ -n "$hostname" ]; then
+                print_info "Testing connection to $host ($hostname)..."
+                
+                # Tentar conexão SSH
+                if [[ "$hostname" == "github.com" ]]; then
+                    echo $host
+                    ssh -T git@"$host" -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "successfully authenticated"
+                    if [ $? -eq 0 ]; then
+                        print_success "Connection to $host successful!"
+                    else
+                        print_alert "Connection to $host failed. Please check your SSH keys and configuration."
+                    fi
+                elif [[ "$hostname" == "bitbucket.org" ]]; then
+                    echo $hostname
+                    ssh -T git@"$host" -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "logged in as"
+                    if [ $? -eq 0 ]; then
+                        print_success "Connection to $host successful!"
+                    else
+                        print_alert "Connection to $host failed. Please check your SSH keys and configuration."
+                    fi
+                else
+                    print_info "Skipping test for $host (unknown service)"
+                fi
+            fi
+        fi
+    done
 }
 
 display_config_content() {
@@ -186,11 +208,11 @@ main() {
     create_ssh_directory
     backup_existing_config
     check_ssh_keys
-
+    
     files=($(list_assets_files))
     display_files_with_index "${files[@]}"
-
     selected_file=$(get_user_choice "${files[@]}")
+    
     configure_ssh "$selected_file"
     display_config_content
     
