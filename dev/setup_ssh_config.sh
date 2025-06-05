@@ -35,10 +35,10 @@ list_assets_files() {
         exit 1
     fi
 
-    local files=($(find "$ASSETS_DIR" -type f 2>/dev/null))
+    local files=($(find "$ASSETS_DIR" -type f -name "config-ssh-*" 2>/dev/null | sort))
 
     if [ ${#files[@]} -eq 0 ]; then
-        print_error "No files found in the assets directory."
+        print_error "No configuration files found in the assets directory."
         exit 1
     fi
 
@@ -56,7 +56,7 @@ display_files_with_index() {
 
 get_user_choice() {
     local files=("$@")
-    read -p "$(print_info "Choose a file by number: ")" choice
+    read -p "$(print_info "Choose a configuration file by number: ")" choice
 
     if ! [[ "$choice" =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt ${#files[@]} ]; then
         print_alert "Invalid option. Operation canceled."
@@ -75,7 +75,11 @@ configure_ssh() {
     fi
 
     print_info "Configuring SSH with $config_file..."
+    
+    # Replace $HOME with actual home directory path
     sed "s|\$HOME|$HOME|g" "$config_file" > "$SSH_CONFIG_FILE"
+    
+    # Ensure proper permissions
     chmod 600 "$SSH_CONFIG_FILE"
     print_success "SSH configuration updated successfully!"
 }
@@ -97,7 +101,9 @@ main() {
     selected_file=$(get_user_choice "${files[@]}")
     configure_ssh "$selected_file"
     display_config_content
-
+    
+    print
+    print
     print_success "SSH Configuration Completed Successfully!"
 }
 
