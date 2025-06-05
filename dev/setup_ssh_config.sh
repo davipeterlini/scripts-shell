@@ -30,14 +30,39 @@ backup_existing_config() {
 }
 
 check_ssh_keys() {
-    print_info "Checking for required SSH keys..."
+    print_info "Checking for SSH keys in $SSH_CONFIG_DIR..."
     
+    # Lista de chaves necessárias para os serviços Git
     local required_keys=(
         "id_rsa_personal"
         "id_rsa_work"
         "id_rsa_bb_work"
     )
     
+    # Listar todas as chaves SSH existentes
+    print_info "Existing SSH keys:"
+    local existing_keys=0
+    
+    # Procura por arquivos de chave privada (sem extensão .pub)
+    for key_file in "$SSH_CONFIG_DIR"/id_*; do
+        # Ignora arquivos .pub e outros que não são chaves privadas
+        if [[ -f "$key_file" && ! "$key_file" =~ \.pub$ ]]; then
+            local key_name=$(basename "$key_file")
+            local key_type=$(ssh-keygen -l -f "$key_file" 2>/dev/null | awk '{print $2}')
+            local key_fingerprint=$(ssh-keygen -l -f "$key_file" 2>/dev/null | awk '{print $2}')
+            
+            if [ -n "$key_type" ]; then
+                print "  - $key_name ($key_type)"
+                existing_keys=$((existing_keys + 1))
+            fi
+        fi
+    done
+    
+    if [ $existing_keys -eq 0 ]; then
+        print_alert "No SSH keys found."
+    fi
+    
+    # Verificar chaves necessárias
     local missing_keys=()
     
     for key in "${required_keys[@]}"; do
@@ -47,7 +72,7 @@ check_ssh_keys() {
     done
     
     if [ ${#missing_keys[@]} -gt 0 ]; then
-        print_alert "The following SSH keys are missing:"
+        print_alert "The following recommended SSH keys are missing:"
         for key in "${missing_keys[@]}"; do
             print "  - $key"
         done
@@ -61,12 +86,15 @@ check_ssh_keys() {
                 ssh-keygen -t rsa -b 4096 -f "$SSH_CONFIG_DIR/$key" -N ""
                 chmod 600 "$SSH_CONFIG_DIR/$key"
                 print_success "$key generated successfully!"
+                print_info "Public key (add this to your Git service):"
+                cat "$SSH_CONFIG_DIR/$key.pub"
+                print
             done
         else
             print_alert "Please make sure to create these keys manually before using git with SSH."
         fi
     else
-        print_success "All required SSH keys are present!"
+        print_success "All recommended SSH keys are present!"
     fi
 }
 
