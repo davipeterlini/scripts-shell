@@ -6,76 +6,58 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${YELLOW}Testando configuração SSH para diferentes repositórios${NC}"
-echo "Repositório atual:"
-git remote -v | grep origin | grep fetch
-echo ""
-
-# Função para testar um padrão específico
-test_pattern() {
-  local pattern=$1
-  local name=$2
-  
-  echo -e "${YELLOW}Testando padrão para $name:${NC}"
-  echo "git remote -v 2>/dev/null | grep -E 'origin.*github.com[:/]$pattern' | grep fetch"
-  
-  result=$(git remote -v 2>/dev/null | grep -E "origin.*github.com[:/]$pattern" | grep fetch)
-  
-  if [ -n "$result" ]; then
-    echo -e "${GREEN}✓ Padrão encontrado:${NC}"
-    echo "$result"
-    return 0
-  else
-    echo -e "${RED}✗ Padrão não encontrado${NC}"
-    return 1
-  fi
+print_info() {
+  echo -e "${YELLOW}$1${NC}"
 }
 
-# Verificar configuração do Git
-check_git_config() {
-  echo -e "${YELLOW}Verificando configuração do Git:${NC}"
-  
-  if [ -f "$HOME/.gitconfig" ]; then
-    echo -e "${GREEN}✓ Arquivo .gitconfig encontrado${NC}"
-    
-    # Verificar configurações de URL
-    url_configs=$(grep -A2 "\[url" "$HOME/.gitconfig")
-    
-    if [ -n "$url_configs" ]; then
-      echo -e "${GREEN}✓ Configurações de URL encontradas:${NC}"
-      echo "$url_configs"
-      
-      # Verificar se as configurações estão no formato correto (SSH)
-      ssh_url_count=$(grep -c "insteadOf = git@github.com:" "$HOME/.gitconfig")
-      
-      if [ "$ssh_url_count" -gt 0 ]; then
-        echo -e "${GREEN}✓ Configurações de URL SSH encontradas: $ssh_url_count${NC}"
+print_success() {
+  echo -e "${GREEN}$1${NC}"
+}
+
+print_alert() {
+  echo -e "${RED}$1${NC}"
+}
+
+# Testar conexões SSH
+print_info "Testing SSH connections..."
+
+SSH_CONFIG_FILE="$HOME/.ssh/config"
+
+if [ ! -f "$SSH_CONFIG_FILE" ]; then
+  print_alert "SSH configuration file not found at $SSH_CONFIG_FILE."
+  exit 1
+fi
+
+# Detectar hosts configurados
+hosts=$(grep -E "^Host " "$SSH_CONFIG_FILE" | awk '{print $2}')
+
+for host in $hosts; do
+  # Ignorar hosts com caracteres especiais como * ou ?
+  if [[ "$host" != *"*"* && "$host" != *"?"* ]]; then
+    # Extrair o hostname real
+    hostname=$(grep -A5 "^Host $host" "$SSH_CONFIG_FILE" | grep "HostName" | head -1 | awk '{print $2}')
+
+    if [ -n "$hostname" ]; then
+      print_info "Testing connection to $host ($hostname)..."
+
+      # Tentar conexão SSH
+      if [[ "$hostname" == "github.com" ]]; then
+        ssh -T git@"$host" -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "successfully authenticated"
+        if [ $? -eq 0 ]; then
+          print_success "Connection to $host successful!"
+        else
+          print_alert "Connection to $host failed. Please check your SSH keys and configuration."
+        fi
+      elif [[ "$hostname" == "bitbucket.org" ]]; then
+        ssh -T git@"$host" -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "logged in as"
+        if [ $? -eq 0 ]; then
+          print_success "Connection to $host successful!"
+        else
+          print_alert "Connection to $host failed. Please check your SSH keys and configuration."
+        fi
       else
-        echo -e "${RED}✗ Nenhuma configuração de URL SSH encontrada${NC}"
-        echo -e "${YELLOW}As configurações devem usar o formato:${NC}"
-        echo '[url "git@github.com-work:username/"]'
-        echo '    insteadOf = git@github.com:username/'
+        print_info "Skipping test for $host (unknown service)"
       fi
-    else
-      echo -e "${RED}✗ Nenhuma configuração de URL encontrada${NC}"
     fi
-  else
-    echo -e "${RED}✗ Arquivo .gitconfig não encontrado${NC}"
   fi
-}
-
-# Testar todos os padrões
-echo ""
-test_pattern "CI-T-HyperX" "CI-T-HyperX"
-echo ""
-test_pattern "davipeterlinicit" "davipeterlinicit"
-echo ""
-test_pattern "davipeterlini" "davipeterlini"
-echo ""
-test_pattern "futureit" "futureit"
-echo ""
-test_pattern "medicalclub" "medicalclub"
-echo ""
-
-# Verificar configuração do Git
-check_git_config
+done

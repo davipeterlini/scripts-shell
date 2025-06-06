@@ -321,9 +321,12 @@
   - Assim que concluir a execução no script setup_ssh_config.sh abra o vscode com os arquivos abertos: ~/.gitconfig e ~/.ssh/config
   - Ajutes no script setup_ssh_config.sh
     - clean code e funções 
-    - escrita do alais para o bitbucket 
+    - Escrita do alais para o bitbucket 
+    - Atualize o script de  para que tenha o mesmo comportamento da função test_ssh_connections no script  após a alteração falça o script  chamar o script  
     - Antes de escrever no .gitconfig verifique se o valor que será escrito não existe, se existir não escreva
     - o script setup_ssh_config.sh está duplicando os valores escripts no arquivo .gitconfig. antes de escrever as chaves verificar se elas não existem, se existir não escreva
+    - 
+
 
 
 

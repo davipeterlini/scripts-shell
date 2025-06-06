@@ -339,6 +339,11 @@ main() {
     print
     test_ssh_connections
     print
+
+    # Chamar o script de teste de configuração SSH
+    print_info "Running SSH configuration test script..."
+    bash "$SCRIPT_DIR/test_ssh_config.sh"
+
     print_success "SSH and Git Configuration Completed Successfully!"
 }
 
