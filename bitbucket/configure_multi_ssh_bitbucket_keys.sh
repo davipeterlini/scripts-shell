@@ -262,13 +262,16 @@ associate_ssh_key_with_bitbucket() {
     
     # Read the public key content
     local key_content=$(cat "${ssh_key_path}.pub")
+
+    # Prompt user for a name for the API key
+    read -p "Enter a name for the API key: " api_key_name
     
     # Create a JSON payload for the API request
     local temp_file=$(mktemp)
     cat > "$temp_file" << EOF
 {
     "key": "$(echo "$key_content" | tr -d '\n')",
-    "label": "SSH key for ${label}"
+    "label": "$api_key_name"
 }
 EOF
     

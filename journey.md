@@ -359,6 +359,7 @@
   - Atualizar o script do setup geral para executar a instalação e configuração do docker no Mac e no Linux
     - Atualizar script do docker para no final executar um teste em uma imagem simples do docker e assim que o teste for concluído dar down no docker e remover a imagem, lembre-se de iniciar o colima para subir o docker 
 
+  - Tratar o erro da api de cadastro de chave ssh no bitbucket quando a chave já existir para dar opção ao usuário para deletar via api e depois criar
 
 - Problemas extensão 
   - Locking
