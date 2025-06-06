@@ -31,6 +31,27 @@ test_pattern() {
   fi
 }
 
+# Verificar configuração do Git
+check_git_config() {
+  echo -e "${YELLOW}Verificando configuração do Git:${NC}"
+  
+  if [ -f "$HOME/.gitconfig" ]; then
+    echo -e "${GREEN}✓ Arquivo .gitconfig encontrado${NC}"
+    
+    # Verificar configurações de URL
+    url_configs=$(grep -A2 "\[url" "$HOME/.gitconfig")
+    
+    if [ -n "$url_configs" ]; then
+      echo -e "${GREEN}✓ Configurações de URL encontradas:${NC}"
+      echo "$url_configs"
+    else
+      echo -e "${RED}✗ Nenhuma configuração de URL encontrada${NC}"
+    fi
+  else
+    echo -e "${RED}✗ Arquivo .gitconfig não encontrado${NC}"
+  fi
+}
+
 # Testar todos os padrões
 echo ""
 test_pattern "CI-T-HyperX" "CI-T-HyperX"
@@ -42,3 +63,7 @@ echo ""
 test_pattern "futureit" "futureit"
 echo ""
 test_pattern "medicalclub" "medicalclub"
+echo ""
+
+# Verificar configuração do Git
+check_git_config

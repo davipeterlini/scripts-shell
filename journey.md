@@ -312,8 +312,8 @@
   - Ajustar a arquivo de configuração .ssh/config para fazer da forma correta
   - Ajustar o scrip de ssh para configurar as coisas da forma correta 
 - 05/06/2025
-  - [url "git@github.com-work:davipeterlinicit/"]
-	insteadOf = git@github.com:davipeterlinicit/
+  - Atualiza o script de configuração das chaves sshs do git para funcionar corretamente 
+    - Crie Alis no arquivo .gitignore
 
   - Deixar o script bitbucket/configure_multi_ssh_bitbucket_keys.sh com a mesma estrutura do script github/configure_multi_ssh_github_keys.sh
 
