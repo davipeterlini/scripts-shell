@@ -317,10 +317,13 @@
   - O que deve ser salvo no .gitconfig é a url do ssh e não http conforme exemplo abaixo
 - 06/06/2025
   - Ajustar para que o script setup_ssh_config.sh funcione salvando de forma correta no .gitconfig da raiz do profile  
-  - 
-  - 
-  - 
   - Deixar o script bitbucket/configure_multi_ssh_bitbucket_keys.sh com a mesma estrutura do script github/configure_multi_ssh_github_keys.sh
+  - Assim que concluir a execução no script setup_ssh_config.sh abra o vscode com os arquivos abertos: ~/.gitconfig e ~/.ssh/config
+  - 
+
+
+  - o script setup_ssh_config.sh está duplicando os valores dentro do .gitconfig e não deve duplicar 
+
 
   - Eu preciso que ao executar o script setup_projects.sh sejam feitos os seguintes passos 
     - Abra um seletor para que o usuário escolha entre personal e work, de acordo com os arquivos de .evn da pasta assests/envs

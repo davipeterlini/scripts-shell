@@ -32,6 +32,13 @@ add_or_update_config() {
   local ssh_key_path="$HOME/.ssh/id_rsa_bb_${label}"
   local ssh_config_path="$HOME/.ssh/config"
 
+  # Create SSH config file if it doesn't exist
+  if [ ! -f "$ssh_config_path" ]; then
+    print_info "Creating SSH config file..."
+    touch "$ssh_config_path"
+    chmod 600 "$ssh_config_path"
+  fi
+
   print_info "Checking configuration for bitbucket.org-${label}..."
   if grep -q "Host bitbucket.org-${label}" "$ssh_config_path"; then
     print_alert "Configuration for bitbucket.org-${label} already exists."
@@ -69,7 +76,7 @@ configure_git() {
     # Add the new method call here
     print_info "Associating generated SSH key with remote account"
     handle_bitbucket_auth
-    associate_ssh_key_with_bitbucket "$label"
+    associate_ssh_key_with_bitbucket "$label" "$name"
 
     print_success "Bitbucket configuration completed for username: $name email: $email."
 }
@@ -91,51 +98,231 @@ ensure_curl_installed() {
     fi
 }
 
-# Function to associate SSH key with Bitbucket
+# Function to check if jq is installed
+ensure_jq_installed() {
+    if ! command -v jq &> /dev/null; then
+        print_info "jq is not installed. Installing..."
+        if [[ "$(uname)" == "Darwin" ]]; then
+            brew install jq
+        elif [[ "$(uname)" == "Linux" ]]; then
+            sudo apt update
+            sudo apt install -y jq
+        else
+            print_error "Unsupported operating system for automatic jq installation."
+            print_info "Please install jq manually and run this script again."
+            exit 1
+        fi
+    fi
+}
+
+# Function to check if browser opener is available
+check_open_command() {
+    if [[ "$(uname)" == "Darwin" ]]; then
+        if ! command -v open &> /dev/null; then
+            print_error "The 'open' command is not available on your system."
+            return 1
+        fi
+        echo "open"
+    elif [[ "$(uname)" == "Linux" ]]; then
+        if command -v xdg-open &> /dev/null; then
+            echo "xdg-open"
+        elif command -v gnome-open &> /dev/null; then
+            echo "gnome-open"
+        else
+            print_error "No suitable command to open URLs found on your system."
+            print_info "Please install xdg-open or manually open the URL in your browser."
+            return 1
+        fi
+    else
+        print_error "Unsupported operating system."
+        return 1
+    fi
+}
+
+# Function to generate a random port number between 8000 and 9000
+generate_random_port() {
+    echo $(( RANDOM % 1000 + 8000 ))
+}
+
+# Function to start a temporary web server to receive OAuth callback
+start_oauth_server() {
+    local port=$1
+    local token_file=$2
+    
+    # Create a temporary Python script for the server
+    local server_script=$(mktemp)
+    cat > "$server_script" << 'EOF'
+#!/usr/bin/env python3
+import http.server
+import socketserver
+import urllib.parse
+import json
+import sys
+import os
+
+PORT = int(sys.argv[1])
+TOKEN_FILE = sys.argv[2]
+
+class OAuthHandler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        query = urllib.parse.urlparse(self.path).query
+        params = dict(urllib.parse.parse_qsl(query))
+        
+        if 'code' in params:
+            with open(TOKEN_FILE, 'w') as f:
+                f.write(params['code'])
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(b"""
+            <html>
+            <head><title>Authentication Successful</title></head>
+            <body>
+            <h1>Authentication Successful!</h1>
+            <p>You have successfully authenticated with Bitbucket. You can close this window and return to the terminal.</p>
+            <script>window.close();</script>
+            </body>
+            </html>
+            """)
+            print("Authentication code received. You can close this window.")
+            # Shutdown the server after handling the request
+            socketserver.TCPServer.shutdown(self.server)
+        else:
+            self.send_response(400)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(b"Error: No authentication code received")
+
+with socketserver.TCPServer(("", PORT), OAuthHandler) as httpd:
+    print(f"Server started at port {PORT}")
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        httpd.server_close()
+EOF
+
+    # Make the script executable
+    chmod +x "$server_script"
+    
+    # Start the server in the background
+    python3 "$server_script" "$port" "$token_file" &
+    
+    # Store the server PID
+    echo $!
+}
+
+# Function to associate SSH key with Bitbucket using OAuth
 associate_ssh_key_with_bitbucket() {
     local label=$1
+    local username=$2
     local ssh_key_path="$HOME/.ssh/id_rsa_bb_${label}"
 
     ensure_curl_installed
+    ensure_jq_installed
 
     print_info "Associating SSH key with Bitbucket for $label..."
     
-    # Alert the user to log in with the correct account
-    print_alert "IMPORTANT: Please ensure you have your Bitbucket App Password ready."
-    print_info "You can create an App Password at: https://bitbucket.org/account/settings/app-passwords/"
-    print_info "Make sure to grant 'Account: Write' permission to allow adding SSH keys."
+    # Bitbucket OAuth settings
+    local client_id="YOUR_CLIENT_ID"  # Replace with your OAuth consumer key
+    local client_secret="YOUR_CLIENT_SECRET"  # Replace with your OAuth consumer secret
     
+    # Ask for OAuth credentials if not provided
+    if [[ "$client_id" == "YOUR_CLIENT_ID" || "$client_secret" == "YOUR_CLIENT_SECRET" ]]; then
+        print_alert "You need to create a Bitbucket OAuth consumer to proceed."
+        print_info "1. Go to Bitbucket > Your workspace > Settings > OAuth consumers"
+        print_info "2. Click 'Add consumer' and fill in the details:"
+        print "   - Name: SSH Key Manager"
+        print "   - Permissions: Account (Read, Write)\n"
+        
+        # Get the appropriate open command for the OS
+        local open_cmd=$(check_open_command)
+        if [ $? -eq 0 ]; then
+            read -p "Press Enter to open Bitbucket OAuth settings in your browser... "
+            $open_cmd "https://bitbucket.org/account/settings/app-passwords/" &> /dev/null
+        else
+            print_info "Please manually open: https://bitbucket.org/account/settings/app-passwords/"
+        fi
+        
+        print_info "After creating the OAuth consumer, you'll need its Key and Secret."
+        #read -p "Enter the OAuth Consumer Key: " client_id
+        read -p "Enter the OAuth Consumer Key: " client_id
+        read -s -p "Enter the OAuth Consumer Secret: " client_secret
+        echo
+    fi
+    
+    # Alternative approach using App Password
+    print_info "We'll use a Bitbucket App Password to add your SSH key."
+    print_info "You need to create an App Password with 'Account: Write' permission."
+    
+    # Get the appropriate open command for the OS
+    local open_cmd=$(check_open_command)
+    if [ $? -eq 0 ]; then
+        read -p "Press Enter to open Bitbucket App Password settings in your browser... "
+        $open_cmd "https://bitbucket.org/account/settings/app-passwords/" &> /dev/null
+    else
+        print_info "Please manually open: https://bitbucket.org/account/settings/app-passwords/"
+    fi
+    
+    print_info "Create an App Password with 'Account: Write' permission."
     read -p "Enter your Bitbucket username: " bb_username
-    read -s -p "Enter your Bitbucket App Password: " bb_app_password
+    read -s -p "Enter your Bitbucket App Password: " app_password
     echo
-
+    
     # Read the public key content
     local key_content=$(cat "${ssh_key_path}.pub")
-
-    # Create a temporary file for the JSON payload
+    
+    # Create a JSON payload for the API request
     local temp_file=$(mktemp)
     cat > "$temp_file" << EOF
 {
-    "key": "$key_content",
-    "label": "SSH key for $label"
+    "key": "$(echo "$key_content" | tr -d '\n')",
+    "label": "SSH key for ${label}"
 }
 EOF
-
+    
     # Add the SSH key to Bitbucket using the REST API
-    local response=$(curl -s -u "${bb_username}:${bb_app_password}" \
+    print_info "Adding SSH key to Bitbucket..."
+    local response=$(curl -s -u "${bb_username}:${app_password}" \
          -X POST \
          -H "Content-Type: application/json" \
          -d @"$temp_file" \
          https://api.bitbucket.org/2.0/users/${bb_username}/ssh-keys)
-
+    
     # Clean up the temporary file
     rm "$temp_file"
-
-    if echo "$response" | grep -q "error"; then
-        print_error "Failed to associate SSH key with Bitbucket for $label."
-        print_error "Response: $response"
+    
+    # Check if the key was added successfully
+    if echo "$response" | grep -q "\"uuid\""; then
+        print_success "SSH key successfully added to your Bitbucket account!"
+        
+        # Extract and display the key UUID
+        local key_uuid=$(echo "$response" | grep -o '"uuid": *"[^"]*"' | cut -d'"' -f4)
+        print_info "Key UUID: $key_uuid"
+        
+        # Test the SSH connection
+        print_info "Testing SSH connection to Bitbucket..."
+        ssh -T -o StrictHostKeyChecking=no git@bitbucket.org-${label} || true
+        
+        print_info "If you see a message like 'logged in as [username]', the SSH key is working correctly."
     else
-        print_success "SSH key successfully associated with Bitbucket for $label."
+        print_error "Failed to add SSH key to Bitbucket."
+        print_error "API Response: $response"
+        
+        # Provide alternative manual instructions
+        print_alert "You may need to add the SSH key manually to your Bitbucket account."
+        print_info "1. Copy your public key:"
+        echo "$key_content"
+        print_info "2. Go to Bitbucket settings: https://bitbucket.org/account/settings/ssh-keys/"
+        print_info "3. Click 'Add key' and paste your public key"
+        
+        # Open the SSH keys page in the browser
+        if [ $? -eq 0 ]; then
+            read -p "Press Enter to open Bitbucket SSH keys page in your browser... "
+            $open_cmd "https://bitbucket.org/account/settings/ssh-keys/" &> /dev/null
+        fi
     fi
 }
 
