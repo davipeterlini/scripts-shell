@@ -242,8 +242,8 @@ EOF
                             # Adicionar configuração para este host
                             cat >> "$GIT_CONFIG_FILE" << EOF
 
-[url "git@$host:"]
-    insteadOf = https://bitbucket.org/$context/
+[url "git@$host:$contex"]
+    insteadOf = "git@bitbucket.org:$context/
 EOF
                             git_config_updated=true
                         else

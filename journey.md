@@ -322,7 +322,7 @@
   - 
 
 
-  - o script setup_ssh_config.sh está duplicando os valores dentro do .gitconfig e não deve duplicar 
+  - o script setup_ssh_config.sh está duplicando os valores escripts no arquivo .gitconfig. antes de escrever as chaves verificar se elas não existem, se existir não escreva
 
 
   - Eu preciso que ao executar o script setup_projects.sh sejam feitos os seguintes passos 
