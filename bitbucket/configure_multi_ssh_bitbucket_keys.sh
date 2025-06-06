@@ -247,6 +247,11 @@ associate_ssh_key_with_bitbucket() {
         print_info "Create an App Password with 'Account: Write' permission."
         read -s -p "Enter your Bitbucket App Password: " app_password
         echo
+
+        # Write the app password to .env.local
+        local env_file="$(dirname "$0")/../.env.local"
+        echo "BITBUCKET_APP_PASSWORD=$app_password" >> "$env_file"
+        print_success "App password saved to .env.local."
     fi
     
     # Alternative approach using App Password

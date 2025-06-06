@@ -330,27 +330,21 @@
     - Agora preciso que o alais do bitbucket seja escrito no ~/.gitconfig ajuste essa parte por que hoje não está escrevendo
     - Ajustes do script de configuração da chave ssh do bitbucket 
       - Salvar o App passwords na .env.local local na raiz do repo
-
-
-  - Eu preciso que ao executar o script setup_projects.sh sejam feitos os seguintes passos 
-    - Abra um seletor para que o usuário escolha entre personal e work, de acordo com os arquivos de .evn da pasta assests/envs
-    - Carrege as variaveis do arquivo env.xxxxx escolhido para a execução 
-    - Na sequência crie as pastas a partir da variável: PROJECT_DIR
-    - E depois execute o clone do repo a partir da variável: PROJECT_REPOS
-    Essa variável contem o repo e a pasta onde deve ser colocado
-  - 
-
-
-- Problemas extensão 
-  - Locking
-    - Quando estou executando algo e ele está no meu da geração de arquivo e finalizo causa um locking no vscode deixando o usuário travado em várias coisas que ele está fazendo 
-    - Quando clico em cancel a operação realmente está parando
-  - Agent com GPT4
-    - Precisa de uma regra - sempre que for executar algo usando o modo agent com o modelo gpt-4o faça as alterações e implmentações sugeridas 
-
-
-  - Ajustar o config do ssh para que possa funcionar da forma correta nos repos corretos 
-
+    
+    
+    - Problemas para testar o bitbucket
+      dev/test_ssh_config.sh - linha 45
+    - Necessário alterar o config para não commitar mais com o user da CI&T no git pessoal 
+    - https://github.com/davipeterlini/scripts-shell/graphs/contributors
+    - Vscode 
+      - Configurar o botão de F2 no visual code 
+      - Mudar linguagem de exibição do vscode para inglês
+    - Eu preciso que ao executar o script setup_projects.sh sejam feitos os seguintes passos 
+      - Abra um seletor para que o usuário escolha entre personal e work, de acordo com os arquivos de .evn da pasta assests/envs
+      - Carrege as variaveis do arquivo env.xxxxx escolhido para a execução 
+      - Na sequência crie as pastas a partir da variável: PROJECT_DIR
+      - E depois execute o clone do repo a partir da variável: PROJECT_REPOS
+      Essa variável contem o repo e a pasta onde deve ser colocado
   - Colocar a configuração do NPMTOKEN no script de trabalho 
     - Verificar como fazer no repo do llm orchastrator
     - Gerar o git do token via GH e gravar no .env e no .zshrc
@@ -366,6 +360,12 @@
     - Atualizar script do docker para no final executar um teste em uma imagem simples do docker e assim que o teste for concluído dar down no docker e remover a imagem, lembre-se de iniciar o colima para subir o docker 
 
 
+- Problemas extensão 
+  - Locking
+    - Quando estou executando algo e ele está no meu da geração de arquivo e finalizo causa um locking no vscode deixando o usuário travado em várias coisas que ele está fazendo 
+    - Quando clico em cancel a operação realmente está parando
+  - Agent com GPT4
+    - Precisa de uma regra - sempre que for executar algo usando o modo agent com o modelo gpt-4o faça as alterações e implmentações sugeridas 
 
 
 
@@ -374,13 +374,13 @@
 
 
 
-  - Necessário alterar o config para não commitar mais com o user da CI&T no git pessoal 
-    - https://github.com/davipeterlini/scripts-shell/graphs/contributors
 
 
-  - Vscode 
-    - Configurar o botão de F2 no visual code 
-    - Mudar linguagem de exibição do vscode para inglês
+
+
+
+
+
 
 
 
