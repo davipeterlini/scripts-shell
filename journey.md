@@ -327,7 +327,7 @@
     - o script setup_ssh_config.sh está duplicando os valores escripts no arquivo .gitconfig. antes de escrever as chaves verificar se elas não existem, se existir não escreva
     - Ajuste o script  para usar o esquema de cor do utils 
     - Arrume o script de dev/test_ssh_config.sh para rodar o clean code
-
+    - Agora preciso que o alais do bitbucket seja escrito no ~/.gitconfig ajuste essa parte por que hoje não está escrevendo
 
 
 
