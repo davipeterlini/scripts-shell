@@ -319,10 +319,12 @@
   - Ajustar para que o script setup_ssh_config.sh funcione salvando de forma correta no .gitconfig da raiz do profile  
   - Deixar o script bitbucket/configure_multi_ssh_bitbucket_keys.sh com a mesma estrutura do script github/configure_multi_ssh_github_keys.sh
   - Assim que concluir a execução no script setup_ssh_config.sh abra o vscode com os arquivos abertos: ~/.gitconfig e ~/.ssh/config
-  - 
+  - Ajutes no script setup_ssh_config.sh
+    - clean code e funções 
+    - escrita do alais para o bitbucket 
+    - Antes de escrever no .gitconfig verifique se o valor que será escrito não existe, se existir não escreva
+    - o script setup_ssh_config.sh está duplicando os valores escripts no arquivo .gitconfig. antes de escrever as chaves verificar se elas não existem, se existir não escreva
 
-
-  - o script setup_ssh_config.sh está duplicando os valores escripts no arquivo .gitconfig. antes de escrever as chaves verificar se elas não existem, se existir não escreva
 
 
   - Eu preciso que ao executar o script setup_projects.sh sejam feitos os seguintes passos 

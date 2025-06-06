@@ -9,64 +9,65 @@ source "$PROJECT_ROOT/utils/colors_message.sh"
 ASSETS_DIR="$SCRIPT_DIR/assets/ssh-git"
 SSH_CONFIG_DIR="$HOME/.ssh"
 SSH_CONFIG_FILE="$SSH_CONFIG_DIR/config"
+SSH_CONFIG_BACKUP="$SSH_CONFIG_DIR/config.bak"
 GIT_CONFIG_FILE="$HOME/.gitconfig"
 
 # Functions
 create_ssh_directory() {
     if [ ! -d "$SSH_CONFIG_DIR" ]; then
-        print_info "Creating SSH directory at $SSH_CONFIG_DIR..."
+        print_info "Creating SSH directory..."
         mkdir -p "$SSH_CONFIG_DIR"
         chmod 700 "$SSH_CONFIG_DIR"
-        print_success "SSH directory created successfully!"
+        print_success "SSH directory created at $SSH_CONFIG_DIR"
+    else
+        print_info "SSH directory already exists at $SSH_CONFIG_DIR"
     fi
 }
 
 backup_existing_config() {
     if [ -f "$SSH_CONFIG_FILE" ]; then
-        local backup_file="$SSH_CONFIG_FILE.backup.$(date +%Y%m%d%H%M%S)"
-        print_info "Backing up existing SSH config to $backup_file..."
-        cp "$SSH_CONFIG_FILE" "$backup_file"
-        print_success "Backup created: $backup_file"
-    fi
-    
-    if [ -f "$GIT_CONFIG_FILE" ]; then
-        local git_backup_file="$GIT_CONFIG_FILE.backup.$(date +%Y%m%d%H%M%S)"
-        print_info "Backing up existing Git config to $git_backup_file..."
-        cp "$GIT_CONFIG_FILE" "$git_backup_file"
-        print_success "Backup created: $git_backup_file"
+        print_info "Backing up existing SSH config..."
+        cp "$SSH_CONFIG_FILE" "$SSH_CONFIG_BACKUP"
+        print_success "Backup created at $SSH_CONFIG_BACKUP"
+    else
+        print_info "No existing SSH config found. A new one will be created."
     fi
 }
 
 check_ssh_keys() {
-    print_info "Checking for SSH keys in $SSH_CONFIG_DIR..."
+    print_info "Checking for SSH keys..."
     
-    # Obter todas as chaves SSH existentes (apenas chaves privadas)
+    # Lista de chaves SSH comuns
     local required_keys=()
     
-    # Procura por arquivos de chave privada (sem extensão .pub)
+    # Verificar chaves existentes
+    for key_type in id_rsa id_ed25519 id_ecdsa; do
+        if [ -f "$SSH_CONFIG_DIR/$key_type" ]; then
+            required_keys+=("$key_type")
+        fi
+    done
+    
+    # Verificar outras chaves personalizadas
     for key_file in "$SSH_CONFIG_DIR"/id_*; do
-        # Ignora arquivos .pub e outros que não são chaves privadas
-        if [[ -f "$key_file" && ! "$key_file" =~ \.pub$ ]]; then
+        if [ -f "$key_file" ] && [[ ! "$key_file" =~ \.pub$ ]]; then
             local key_name=$(basename "$key_file")
-            local key_type=$(ssh-keygen -l -f "$key_file" 2>/dev/null | awk '{print $2}')
-            
-            if [ -n "$key_type" ]; then
+            if [[ ! " ${required_keys[@]} " =~ " ${key_name} " ]]; then
                 required_keys+=("$key_name")
             fi
         fi
     done
     
-    # Exibir as chaves encontradas
+    # Verificar se há chaves disponíveis
     if [ ${#required_keys[@]} -eq 0 ]; then
-        print_alert "No SSH keys found."
+        print_alert "No SSH keys found!"
         print_info "Would you like to generate a default SSH key? (y/n)"
         read -r generate_key
         
         if [[ "$generate_key" =~ ^[Yy]$ ]]; then
-            print_info "Generating default SSH key (id_rsa)..."
+            print_info "Generating default SSH key..."
             ssh-keygen -t rsa -b 4096 -f "$SSH_CONFIG_DIR/id_rsa" -N ""
             chmod 600 "$SSH_CONFIG_DIR/id_rsa"
-            print_success "Default SSH key generated successfully!"
+            print_success "SSH key generated successfully!"
             print_info "Public key (add this to your Git service):"
             cat "$SSH_CONFIG_DIR/id_rsa.pub"
             print
@@ -165,12 +166,75 @@ configure_ssh() {
     print_success "SSH configuration updated successfully!"
 }
 
+# Nova função separada para configurar URLs do Git
+configure_git_urls() {
+    local hosts=$1
+    local git_config_updated=false
+    
+    # Adicionar configurações de URL para cada host SSH
+    for host in $hosts; do
+        # Ignorar hosts com caracteres especiais como * ou ?
+        if [[ "$host" != *"*"* && "$host" != *"?"* ]]; then
+            # Extrair o hostname real
+            local hostname=$(grep -A5 "^Host $host" "$SSH_CONFIG_FILE" | grep "HostName" | head -1 | awk '{print $2}')
+            
+            if [ -n "$hostname" ]; then
+                # Determinar o tipo de serviço (github, bitbucket, etc.)
+                if [[ "$hostname" == "github.com" ]]; then
+                    # Determinar o contexto (work, personal, etc.) do nome do host
+                    local context=$(echo "$host" | sed -E 's/github\.com-?//')
+                    if [ -n "$context" ]; then
+                        print_info "Configuring Git for GitHub ($context)..."
+                        
+                        # Verificar se já existe uma configuração para este host e contexto
+                        if ! grep -q "\[url \"git@$host:$context/\"\]" "$GIT_CONFIG_FILE"; then
+                            # Adicionar configuração para este host
+                            cat >> "$GIT_CONFIG_FILE" << EOF
+
+[url "git@$host:$context/"]
+    insteadOf = git@github.com:$context/
+EOF
+                            git_config_updated=true
+                        else
+                            print_info "Git configuration for $host with context $context already exists."
+                        fi
+                    fi
+                elif [[ "$hostname" == "bitbucket.org" ]]; then
+                    # Determinar o contexto (work, personal, etc.) do nome do host
+                    local context=$(echo "$host" | sed -E 's/bitbucket\.org-?//')
+                    if [ -n "$context" ]; then
+                        print_info "Configuring Git for Bitbucket ($context)..."
+                        
+                        # Verificar se já existe uma configuração para este host e contexto
+                        if ! grep -q "\[url \"git@$host:$context/\"\]" "$GIT_CONFIG_FILE"; then
+                            # Adicionar configuração para este host
+                            cat >> "$GIT_CONFIG_FILE" << EOF
+
+[url "git@$host:$context/"]
+insteadOf = https://bitbucket.org/$context/
+EOF
+                            git_config_updated=true
+                        else
+                            print_info "Git configuration for $host with context $context already exists."
+                        fi
+                    fi
+                fi
+            fi
+        fi
+    done
+    
+    if [ "$git_config_updated" = true ]; then
+        print_success "Git configuration updated successfully!"
+    else
+        print_info "No changes were made to Git configuration."
+    fi
+}
+
 configure_git() {
     print_info "Configuring Git for SSH hosts..."
     
     # Detectar hosts configurados
     local hosts=$(grep -E "^Host " "$SSH_CONFIG_FILE" | awk '{print $2}')
-    local git_config_updated=false
     
     # Verificar se o usuário deseja configurar o Git
     print_info "Would you like to configure Git to use these SSH settings? (y/n)"
@@ -203,63 +267,8 @@ EOF
         print_success "Basic Git configuration created."
     fi
     
-    # Adicionar configurações de URL para cada host SSH
-    for host in $hosts; do
-        # Ignorar hosts com caracteres especiais como * ou ?
-        if [[ "$host" != *"*"* && "$host" != *"?"* ]]; then
-            # Extrair o hostname real
-            local hostname=$(grep -A5 "^Host $host" "$SSH_CONFIG_FILE" | grep "HostName" | head -1 | awk '{print $2}')
-            
-            if [ -n "$hostname" ]; then
-                # Determinar o tipo de serviço (github, bitbucket, etc.)
-                if [[ "$hostname" == "github.com" ]]; then
-                    # Determinar o contexto (work, personal, etc.) do nome do host
-                    local context=$(echo "$host" | sed -E 's/github\.com-?//')
-                    if [ -n "$context" ]; then
-                        print_info "Configuring Git for GitHub ($context)..."
-                        
-                        # Verificar se já existe uma configuração para este host
-                        if ! grep -q "\[url \"git@$host:\"\]" "$GIT_CONFIG_FILE"; then
-                            # Adicionar configuração para este host
-                            cat >> "$GIT_CONFIG_FILE" << EOF
-
-[url "git@$host:$context/"]
-    insteadOf = git@github.com:$context/
-EOF
-                            git_config_updated=true
-                        else
-                            print_info "Git configuration for $host already exists."
-                        fi
-                    fi
-                elif [[ "$hostname" == "bitbucket.org" ]]; then
-                    # Determinar o contexto (work, personal, etc.) do nome do host
-                    local context=$(echo "$host" | sed -E 's/bitbucket\.org-?//')
-                    if [ -n "$context" ]; then
-                        print_info "Configuring Git for Bitbucket ($context)..."
-                        
-                        # Verificar se já existe uma configuração para este host
-                        if ! grep -q "\[url \"git@$host:\"\]" "$GIT_CONFIG_FILE"; then
-                            # Adicionar configuração para este host
-                            cat >> "$GIT_CONFIG_FILE" << EOF
-
-[url "git@$host:$contex"]
-    insteadOf = "git@bitbucket.org:$context/
-EOF
-                            git_config_updated=true
-                        else
-                            print_info "Git configuration for $host already exists."
-                        fi
-                    fi
-                fi
-            fi
-        fi
-    done
-    
-    if [ "$git_config_updated" = true ]; then
-        print_success "Git configuration updated successfully!"
-    else
-        print_info "No changes were made to Git configuration."
-    fi
+    # Chamar a função separada para configurar URLs do Git
+    configure_git_urls "$hosts"
 }
 
 test_ssh_connections() {
