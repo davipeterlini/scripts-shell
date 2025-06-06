@@ -43,7 +43,7 @@ function test_connection() {
       ssh -T git@"$host" -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "successfully authenticated"
       ;;
     "bitbucket.org")
-      ssh -T git@"$host" -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "logged in as"
+      ssh -T git@"$host" -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "successfully authenticated"
       ;;
     *)
       print_info "Skipping test for $host (unknown service)"
