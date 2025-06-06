@@ -34,7 +34,7 @@ function test_ssh_connections() {
 }
 
 # Function to test connection based on hostname
-function test_connection() {
+function test_ssh_connections_main() {
   local host="$1"
   local hostname="$2"
 
@@ -59,4 +59,4 @@ function test_connection() {
 }
 
 # Run the SSH connection tests
-test_ssh_connections
+test_ssh_connections_main

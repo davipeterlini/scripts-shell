@@ -5,6 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$PROJECT_ROOT/utils/colors_message.sh"
 
+source "$(dirname "$0")/test_ssh_config.sh"
+
 # Constants
 ASSETS_DIR="$SCRIPT_DIR/assets/ssh-git"
 SSH_CONFIG_DIR="$HOME/.ssh"
@@ -281,7 +283,7 @@ display_config_content() {
     fi
 }
 
-main() {
+setup_ssh_config_main() {
     print_header "Starting SSH Configuration for Git Services"
 
     create_ssh_directory
@@ -296,12 +298,10 @@ main() {
     configure_git
     display_config_content
 
-    # Chamar o script de teste de configuração SSH
-    print_info "Running SSH configuration test script..."
-    bash "$SCRIPT_DIR/test_ssh_config.sh"
+    test_ssh_connections_main
 
-    print_success "SSH and Git Configuration Completed Successfully!"
+    print_success "\nSSH and Git Configuration Completed Successfully!"
 }
 
 # Execute main function
-main
+setup_ssh_config_main
