@@ -44,6 +44,18 @@ check_git_config() {
     if [ -n "$url_configs" ]; then
       echo -e "${GREEN}✓ Configurações de URL encontradas:${NC}"
       echo "$url_configs"
+      
+      # Verificar se as configurações estão no formato correto (SSH)
+      ssh_url_count=$(grep -c "insteadOf = git@github.com:" "$HOME/.gitconfig")
+      
+      if [ "$ssh_url_count" -gt 0 ]; then
+        echo -e "${GREEN}✓ Configurações de URL SSH encontradas: $ssh_url_count${NC}"
+      else
+        echo -e "${RED}✗ Nenhuma configuração de URL SSH encontrada${NC}"
+        echo -e "${YELLOW}As configurações devem usar o formato:${NC}"
+        echo '[url "git@github.com-work:username/"]'
+        echo '    insteadOf = git@github.com:username/'
+      fi
     else
       echo -e "${RED}✗ Nenhuma configuração de URL encontrada${NC}"
     fi

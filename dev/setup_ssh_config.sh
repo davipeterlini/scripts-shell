@@ -223,8 +223,8 @@ EOF
                             # Adicionar configuração para este host
                             cat >> "$GIT_CONFIG_FILE" << EOF
 
-[url "git@$host:"]
-    insteadOf = https://github.com/$context/
+[url "git@$host:$context/"]
+    insteadOf = git@github.com:$context/
 EOF
                             git_config_updated=true
                         else

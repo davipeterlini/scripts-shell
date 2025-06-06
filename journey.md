@@ -313,8 +313,13 @@
   - Ajustar o scrip de ssh para configurar as coisas da forma correta 
 - 05/06/2025
   - Atualiza o script de configuração das chaves sshs do git para funcionar corretamente 
-    - Crie Alis no arquivo .gitignore
-
+    - Crie Alis no arquivo .gitconfig
+  - O que deve ser salvo no .gitconfig é a url do ssh e não http conforme exemplo abaixo
+- 06/06/2025
+  - Ajustar para que o script setup_ssh_config.sh funcione salvando de forma correta no .gitconfig da raiz do profile  
+  - 
+  - 
+  - 
   - Deixar o script bitbucket/configure_multi_ssh_bitbucket_keys.sh com a mesma estrutura do script github/configure_multi_ssh_github_keys.sh
 
   - Eu preciso que ao executar o script setup_projects.sh sejam feitos os seguintes passos 
@@ -323,7 +328,7 @@
     - Na sequência crie as pastas a partir da variável: PROJECT_DIR
     - E depois execute o clone do repo a partir da variável: PROJECT_REPOS
     Essa variável contem o repo e a pasta onde deve ser colocado
-
+  - 
 
 
 - Problemas extensão 

@@ -1,9 +1,6 @@
 #!/bin/bash
 
 # Script to configure multiple SSH keys for Bitbucket accounts
-# TODO - esse script precisa fazer como é feito no script do github 
-# e abrir o terminal e depois salvar a chave no https://bitbucket.org/account/settings/ssh-keys/
-# TODO - não está gerando o token da forma correta
 
 # Load environment variables and utility functions
 source "$(dirname "$0")/../utils/load_env.sh"
@@ -69,8 +66,10 @@ configure_git() {
     local email=$2
     local name=$3
 
+    # Add the new method call here
     print_info "Associating generated SSH key with remote account"
-    associate_ssh_key_with_bitbucket "$label" "$email"
+    handle_bitbucket_auth
+    associate_ssh_key_with_bitbucket "$label"
 
     print_success "Bitbucket configuration completed for username: $name email: $email."
 }
@@ -95,15 +94,16 @@ ensure_curl_installed() {
 # Function to associate SSH key with Bitbucket
 associate_ssh_key_with_bitbucket() {
     local label=$1
-    local email=$2
     local ssh_key_path="$HOME/.ssh/id_rsa_bb_${label}"
 
     ensure_curl_installed
 
     print_info "Associating SSH key with Bitbucket for $label..."
     
+    # Alert the user to log in with the correct account
     print_alert "IMPORTANT: Please ensure you have your Bitbucket App Password ready."
     print_info "You can create an App Password at: https://bitbucket.org/account/settings/app-passwords/"
+    print_info "Make sure to grant 'Account: Write' permission to allow adding SSH keys."
     
     read -p "Enter your Bitbucket username: " bb_username
     read -s -p "Enter your Bitbucket App Password: " bb_app_password
@@ -139,6 +139,23 @@ EOF
     fi
 }
 
+# Function to handle Bitbucket authentication
+handle_bitbucket_auth() {
+    if [ -n "$BITBUCKET_APP_PASSWORD" ]; then
+        print_info "BITBUCKET_APP_PASSWORD environment variable detected."
+        print_info "To manually enter credentials, you need to clear this variable."
+        read -p "Do you want to clear BITBUCKET_APP_PASSWORD and enter credentials manually? (y/n): " clear_token
+        if [ "$clear_token" = "y" ]; then
+            unset BITBUCKET_APP_PASSWORD
+            print_success "BITBUCKET_APP_PASSWORD has been cleared. You will be prompted for credentials."
+        else
+            print_info "BITBUCKET_APP_PASSWORD remains set. This will be used for authentication."
+        fi
+    else
+        print_info "No BITBUCKET_APP_PASSWORD detected. You will be prompted for credentials."
+    fi
+}
+
 # Main function to configure multiple Bitbucket accounts
 setup_bitbucket_accounts() {
   print_info "Setting up multiple Bitbucket accounts..."
@@ -147,13 +164,13 @@ setup_bitbucket_accounts() {
     # Account
     read -p "Enter email for Bitbucket account: " email
     read -p "Enter label for Bitbucket account (e.g., work, personal, ...): " label
-    read -p "Enter username for Bitbucket account: " name
+    read -p "Enter username for Bitbucket account (e.g., username): " name
 
     generate_ssh_key "$email" "$label"
     add_or_update_config "$label"
     configure_git "$label" "$email" "$name"
 
-    print_success "Setup completed for $label."
+    print_success "Setup completed for $label. Please verify the SSH key was added to your Bitbucket account."
 
     # Ask if the user wants to configure another Bitbucket account
     read -p "Do you want to configure another Bitbucket account? (Y/N): " choice
