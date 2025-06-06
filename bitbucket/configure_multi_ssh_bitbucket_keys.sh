@@ -225,7 +225,7 @@ associate_ssh_key_with_bitbucket() {
 
     print_info "Associating SSH key with Bitbucket for $label..."
     
-    local app_password="APP_PASSWORD"  # Replace with your OAuth consumer key
+    local app_password="${BITBUCKET_APP_PASSWORD:-APP_PASSWORD}"  # Load from environment or use placeholder
 
     # Ask for OAuth credentials if not provided
     if [[ "$app_password" == "APP_PASSWORD" ]]; then
@@ -248,8 +248,11 @@ associate_ssh_key_with_bitbucket() {
         read -s -p "Enter your Bitbucket App Password: " app_password
         echo
 
-        # Write the app password to .env.local
+        # Write the app password to .env.local, overwriting if it exists
         local env_file="$(dirname "$0")/../.env.local"
+        if grep -q "^BITBUCKET_APP_PASSWORD=" "$env_file"; then
+            sed -i.bak "/^BITBUCKET_APP_PASSWORD=/d" "$env_file"
+        fi
         echo "BITBUCKET_APP_PASSWORD=$app_password" >> "$env_file"
         print_success "App password saved to .env.local."
     fi
@@ -316,8 +319,8 @@ EOF
 handle_bitbucket_auth() {
     if [ -n "$BITBUCKET_APP_PASSWORD" ]; then
         print_info "BITBUCKET_APP_PASSWORD environment variable detected."
-        print_info "To manually enter credentials, you need to clear this variable."
-        read -p "Do you want to clear BITBUCKET_APP_PASSWORD and enter credentials manually? (y/n): " clear_token
+        print_info "BITBUCKET_APP_PASSWORD=$BITBUCKET_APP_PASSWORD"
+        read -p "\nDo you want to clear BITBUCKET_APP_PASSWORD and enter credentials manually? (y/n): " clear_token
         if [ "$clear_token" = "y" ]; then
             unset BITBUCKET_APP_PASSWORD
             print_success "BITBUCKET_APP_PASSWORD has been cleared. You will be prompted for credentials."
@@ -337,7 +340,7 @@ setup_bitbucket_accounts() {
     # Account
     read -p "Enter email for Bitbucket account: " email
     read -p "Enter label for Bitbucket account (e.g., work, personal, ...): " label
-    read -p "Enter username for Bitbucket account (e.g., username): " name
+    read -p "Enter username for Bitbucket account (e.g., username): " username
 
     generate_ssh_key "$email" "$label"
     add_or_update_config "$label"
