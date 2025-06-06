@@ -71,14 +71,14 @@ add_or_update_config() {
 configure_git() {
     local label=$1
     local email=$2
-    local name=$3
+    local username=$3
 
     # Add the new method call here
     print_info "Associating generated SSH key with remote account"
     handle_bitbucket_auth
-    associate_ssh_key_with_bitbucket "$label" "$name"
+    associate_ssh_key_with_bitbucket "$label" "$username"
 
-    print_success "Bitbucket configuration completed for username: $name email: $email."
+    print_success "Bitbucket configuration completed for username: $username email: $email."
 }
 
 # Function to check if curl is installed
@@ -225,12 +225,10 @@ associate_ssh_key_with_bitbucket() {
 
     print_info "Associating SSH key with Bitbucket for $label..."
     
-    # Bitbucket OAuth settings
-    local client_id="YOUR_CLIENT_ID"  # Replace with your OAuth consumer key
-    local client_secret="YOUR_CLIENT_SECRET"  # Replace with your OAuth consumer secret
-    
+    local app_password="APP_PASSWORD"  # Replace with your OAuth consumer key
+
     # Ask for OAuth credentials if not provided
-    if [[ "$client_id" == "YOUR_CLIENT_ID" || "$client_secret" == "YOUR_CLIENT_SECRET" ]]; then
+    if [[ "$app_password" == "APP_PASSWORD" ]]; then
         print_alert "You need to create a Bitbucket OAuth consumer to proceed."
         print_info "1. Go to Bitbucket > Your workspace > Settings > OAuth consumers"
         print_info "2. Click 'Add consumer' and fill in the details:"
@@ -246,30 +244,13 @@ associate_ssh_key_with_bitbucket() {
             print_info "Please manually open: https://bitbucket.org/account/settings/app-passwords/"
         fi
         
-        print_info "After creating the OAuth consumer, you'll need its Key and Secret."
-        #read -p "Enter the OAuth Consumer Key: " client_id
-        read -p "Enter the OAuth Consumer Key: " client_id
-        read -s -p "Enter the OAuth Consumer Secret: " client_secret
+        print_info "Create an App Password with 'Account: Write' permission."
+        read -s -p "Enter your Bitbucket App Password: " app_password
         echo
     fi
     
     # Alternative approach using App Password
     print_info "We'll use a Bitbucket App Password to add your SSH key."
-    print_info "You need to create an App Password with 'Account: Write' permission."
-    
-    # Get the appropriate open command for the OS
-    local open_cmd=$(check_open_command)
-    if [ $? -eq 0 ]; then
-        read -p "Press Enter to open Bitbucket App Password settings in your browser... "
-        $open_cmd "https://bitbucket.org/account/settings/app-passwords/" &> /dev/null
-    else
-        print_info "Please manually open: https://bitbucket.org/account/settings/app-passwords/"
-    fi
-    
-    print_info "Create an App Password with 'Account: Write' permission."
-    read -p "Enter your Bitbucket username: " bb_username
-    read -s -p "Enter your Bitbucket App Password: " app_password
-    echo
     
     # Read the public key content
     local key_content=$(cat "${ssh_key_path}.pub")
@@ -285,11 +266,11 @@ EOF
     
     # Add the SSH key to Bitbucket using the REST API
     print_info "Adding SSH key to Bitbucket..."
-    local response=$(curl -s -u "${bb_username}:${app_password}" \
+    local response=$(curl -s -u "${username}:${app_password}" \
          -X POST \
          -H "Content-Type: application/json" \
          -d @"$temp_file" \
-         https://api.bitbucket.org/2.0/users/${bb_username}/ssh-keys)
+         https://api.bitbucket.org/2.0/users/${username}/ssh-keys)
     
     # Clean up the temporary file
     rm "$temp_file"
@@ -355,7 +336,7 @@ setup_bitbucket_accounts() {
 
     generate_ssh_key "$email" "$label"
     add_or_update_config "$label"
-    configure_git "$label" "$email" "$name"
+    configure_git "$label" "$email" "$username"
 
     print_success "Setup completed for $label. Please verify the SSH key was added to your Bitbucket account."
 
