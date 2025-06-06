@@ -299,8 +299,9 @@ setup_ssh_config_main() {
     display_config_content
 
     test_ssh_connections_main
-
-    print_success "\nSSH and Git Configuration Completed Successfully!"
+    
+    print
+    print_success "SSH and Git Configuration Completed Successfully!"
 }
 
 # Execute main function
