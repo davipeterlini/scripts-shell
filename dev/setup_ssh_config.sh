@@ -290,5 +290,6 @@ setup_ssh_config_main() {
     print_success "SSH and Git Configuration Completed Successfully!"
 }
 
-# Execute main function
-setup_ssh_config_main
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    setup_ssh_config_main "$@"
+fi

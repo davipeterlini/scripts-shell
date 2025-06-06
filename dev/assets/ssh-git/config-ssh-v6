@@ -47,7 +47,7 @@ Host github.com-medicalclub
   IdentitiesOnly yes
 
 # Bitbucket configuration
-Host bitbucket.org-davipeterlinicit
+Host bitbucket.org-work
   HostName bitbucket.org
   User git
   IdentityFile ~/.ssh/id_rsa_bb_work

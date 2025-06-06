@@ -328,7 +328,8 @@
     - Ajuste o script  para usar o esquema de cor do utils 
     - Arrume o script de dev/test_ssh_config.sh para rodar o clean code
     - Agora preciso que o alais do bitbucket seja escrito no ~/.gitconfig ajuste essa parte por que hoje não está escrevendo
-
+    - Ajustes do script de configuração da chave ssh do bitbucket 
+      - Salvar o App passwords na .env.local local na raiz do repo
 
 
   - Eu preciso que ao executar o script setup_projects.sh sejam feitos os seguintes passos 

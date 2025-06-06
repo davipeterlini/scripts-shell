@@ -62,3 +62,7 @@ function test_connection() {
 function test_ssh_connections_main() {
   test_ssh_connections
 }
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    test_ssh_connections_main "$@"
+fi
