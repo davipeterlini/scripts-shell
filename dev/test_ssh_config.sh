@@ -1,22 +1,7 @@
 #!/bin/bash
 
-# Cores para melhor visualização
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-print_info() {
-  echo -e "${YELLOW}$1${NC}"
-}
-
-print_success() {
-  echo -e "${GREEN}$1${NC}"
-}
-
-print_alert() {
-  echo -e "${RED}$1${NC}"
-}
+# Import color functions
+source ../utils/colors_message.sh
 
 # Testar conexões SSH
 print_info "Testing SSH connections..."

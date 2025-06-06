@@ -325,7 +325,8 @@
     - Atualize o script de  para que tenha o mesmo comportamento da função test_ssh_connections no script  após a alteração falça o script  chamar o script  
     - Antes de escrever no .gitconfig verifique se o valor que será escrito não existe, se existir não escreva
     - o script setup_ssh_config.sh está duplicando os valores escripts no arquivo .gitconfig. antes de escrever as chaves verificar se elas não existem, se existir não escreva
-    - 
+    - Ajuste o script  para usar o esquema de cor do utils 
+    - Arrume o script de dev/test_ssh_config.sh para rodar o clean code
 
 
 
