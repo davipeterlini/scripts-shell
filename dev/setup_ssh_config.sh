@@ -278,7 +278,7 @@ display_config_content() {
     cat "$SSH_CONFIG_FILE"
     
     if [ -f "$GIT_CONFIG_FILE" ]; then
-        print_info "Configured Git File Content:"
+        print_info "\nConfigured Git File Content:"
         cat "$GIT_CONFIG_FILE"
     fi
 }
@@ -299,7 +299,7 @@ setup_ssh_config_main() {
     display_config_content
 
     test_ssh_connections_main
-    
+
     print
     print_success "SSH and Git Configuration Completed Successfully!"
 }

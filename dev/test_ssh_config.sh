@@ -62,6 +62,3 @@ function test_connection() {
 function test_ssh_connections_main() {
   test_ssh_connections
 }
-
-# Run the main function
-test_ssh_connections_main
