@@ -271,46 +271,6 @@ EOF
     configure_git_urls "$hosts"
 }
 
-test_ssh_connections() {
-    print_info "Testing SSH connections..."
-    
-    # Detectar hosts configurados
-    local hosts=$(grep -E "^Host " "$SSH_CONFIG_FILE" | awk '{print $2}')
-    
-    for host in $hosts; do
-        # Ignorar hosts com caracteres especiais como * ou ?
-        if [[ "$host" != *"*"* && "$host" != *"?"* ]]; then
-            # Extrair o hostname real
-            local hostname=$(grep -A5 "^Host $host" "$SSH_CONFIG_FILE" | grep "HostName" | head -1 | awk '{print $2}')
-            
-            if [ -n "$hostname" ]; then
-                print_info "Testing connection to $host ($hostname)..."
-                
-                # Tentar conexão SSH
-                if [[ "$hostname" == "github.com" ]]; then
-                    echo $host
-                    ssh -T git@"$host" -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "successfully authenticated"
-                    if [ $? -eq 0 ]; then
-                        print_success "Connection to $host successful!"
-                    else
-                        print_alert "Connection to $host failed. Please check your SSH keys and configuration."
-                    fi
-                elif [[ "$hostname" == "bitbucket.org" ]]; then
-                    echo $hostname
-                    ssh -T git@"$host" -o BatchMode=yes -o ConnectTimeout=5 2>&1 | grep -q "logged in as"
-                    if [ $? -eq 0 ]; then
-                        print_success "Connection to $host successful!"
-                    else
-                        print_alert "Connection to $host failed. Please check your SSH keys and configuration."
-                    fi
-                else
-                    print_info "Skipping test for $host (unknown service)"
-                fi
-            fi
-        fi
-    done
-}
-
 display_config_content() {
     print_info "Configured SSH File Content:"
     cat "$SSH_CONFIG_FILE"
@@ -335,10 +295,6 @@ main() {
     configure_ssh "$selected_file"
     configure_git
     display_config_content
-    
-    print
-    test_ssh_connections
-    print
 
     # Chamar o script de teste de configuração SSH
     print_info "Running SSH configuration test script..."
