@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$PROJECT_ROOT/utils/colors_message.sh"
 
-source "$(dirname "$0")/test_ssh_config.sh"
+source "$(dirname "$0")/utils/test_ssh_config.sh"
 
 # Constants
 ASSETS_DIR="$SCRIPT_DIR/assets/ssh-git"
