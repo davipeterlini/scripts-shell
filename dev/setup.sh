@@ -27,7 +27,7 @@ main() {
   choose_shell_profile
 
   # Create and config folders for work and personal
-  setup_projects_main
+  setup_projects
 
   # Config SSH key for github
   setup_github_accounts
