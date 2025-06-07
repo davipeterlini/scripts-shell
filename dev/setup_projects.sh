@@ -60,7 +60,7 @@ setup_projects() {
         print "$repo"
     done
 
-    #manage_repositories "${PROJECT_REPOS[@]}"
+    manage_repositories "${PROJECT_REPOS[@]}"
 
     print_success "Project setup completed successfully!"
 }
