@@ -247,7 +247,7 @@ verify_setup() {
 }
 
 # Função principal
-main() {
+sync_drive_folders() {
     log "Starting Google Drive folder sync setup..."
     
     detect_os
@@ -267,4 +267,4 @@ main() {
 }
 
 # Executar o script
-main
+sync_drive_folders

@@ -8,10 +8,11 @@ source "$(dirname "$0")/../utils/detect_os.sh"
 source "$(dirname "$0")/../utils/choose_shell_profile.sh"
 
 # Scripts
-source "$(dirname "$0")/setup_projects.sh" 
 source "$(dirname "$0")/../github/configure_multi_ssh_bitbucket_keys.sh"
 source "$(dirname "$0")/../bitbucket/configure_multi_ssh_bitbucket_keys.sh"
 source "$(dirname "$0")/setup_ssh_config.sh"
+source "$(dirname "$0")/setup_projects.sh"
+source "$(dirname "$0")/sync_drive_folders.sh"
 #source "$(dirname "$0")/setup_global_env.sh"
 #source "$(dirname "$0")/open_project_iterm.sh"
 
@@ -26,9 +27,6 @@ main() {
   # Use the external choose_shell_profile script instead of the internal function
   choose_shell_profile
 
-  # Create and config folders for work and personal
-  setup_projects
-
   # Config SSH key for github
   setup_github_accounts
 
@@ -37,6 +35,12 @@ main() {
 
   # Config Multi account with git
   setup_ssh_config
+
+  # Create and config folders for work and personal
+  setup_projects
+
+  # Create and Sync folder for google drive
+  sync_drive_folders
 
   #setup_global_env_main
 
