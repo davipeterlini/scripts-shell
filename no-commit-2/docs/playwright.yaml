@@ -1,8 +1,0 @@
-name: Playwright docs
-version: 0.0.1
-schema: v1
-docs:
-  - name: Playwright docs
-    startUrl: https://playwright.dev/
-  - name: Playwright MCP Git
-    startUrl: https://github.com/microsoft/playwright-mcp

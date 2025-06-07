@@ -3,15 +3,15 @@
 # Utils
 source "$(dirname "$0")/../utils/load_env.sh"
 load_env
-source "$(dirname "$0")/../utils/detect_os.sh"
 source "$(dirname "$0")/../utils/colors_message.sh"
+source "$(dirname "$0")/../utils/detect_os.sh"
 source "$(dirname "$0")/../utils/choose_shell_profile.sh"
 
 # Scripts
 source "$(dirname "$0")/setup_projects.sh" 
-source "$(dirname "$0")/setup_ssh_config.sh"
 source "$(dirname "$0")/../github/configure_multi_ssh_bitbucket_keys.sh"
 source "$(dirname "$0")/../bitbucket/configure_multi_ssh_bitbucket_keys.sh"
+source "$(dirname "$0")/setup_ssh_config.sh"
 #source "$(dirname "$0")/setup_global_env.sh"
 #source "$(dirname "$0")/open_project_iterm.sh"
 
@@ -27,13 +27,16 @@ main() {
   choose_shell_profile
 
   # Create and config folders for work and personal
-  #setup_projects_main
+  setup_projects_main
 
+  # Config SSH key for github
   setup_github_accounts
 
+  # Config SSH key for bitbucket
   setup_bitbucket_accounts
 
-  setup_ssh_config_main
+  # Config Multi account with git
+  setup_ssh_config
 
   #setup_global_env_main
 

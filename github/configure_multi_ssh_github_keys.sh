@@ -191,5 +191,6 @@ setup_github_accounts() {
 
 }
 
-# Execute the main function
-setup_github_accounts
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    setup_github_accounts "$@"
+fi

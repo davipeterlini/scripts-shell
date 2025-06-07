@@ -269,7 +269,7 @@ display_config_content() {
     fi
 }
 
-setup_ssh_config_main() {
+setup_ssh_config() {
     print_header "Starting SSH Configuration for Git Services"
 
     create_ssh_directory
@@ -291,5 +291,5 @@ setup_ssh_config_main() {
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    setup_ssh_config_main "$@"
+    setup_ssh_config "$@"
 fi

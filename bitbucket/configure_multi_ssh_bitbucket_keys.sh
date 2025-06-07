@@ -363,5 +363,6 @@ setup_bitbucket_accounts() {
   print_success "Multiple Bitbucket accounts configuration completed!"
 }
 
-# Execute the main function
-setup_bitbucket_accounts
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    setup_bitbucket_accounts "$@"
+fi

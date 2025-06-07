@@ -26,7 +26,7 @@ select_environment() {
 }
 
 # Main script execution
-setup_projects_main() {
+setup_projects() {
     # Select environment
     select_environment
     selected_env=$env_file
@@ -60,5 +60,5 @@ setup_projects_main() {
 
 # Check if the script is being executed directly or sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    setup_projects_main "$@"
+    setup_projects "$@"
 fi
