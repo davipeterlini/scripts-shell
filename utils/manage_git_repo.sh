@@ -6,8 +6,8 @@ source "$SCRIPT_DIR/colors_message.sh"
 
 # Function to clone a repository
 clone_repository() {
-    local repo_url="$1"
-    local repo_path="$2"
+    local repo_path="$1"
+    local repo_url="$2"
 
     print_info "Cloning repository: $(basename "$repo_url" .git)"
     git clone "$repo_url" "$repo_path"

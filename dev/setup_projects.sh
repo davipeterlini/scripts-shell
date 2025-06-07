@@ -50,15 +50,9 @@ setup_projects() {
     # Create directories
     create_directories "${PROJECT_DIR[@]}"
 
-    for dir in "${PROJECT_DIR[@]}"; do
-        print "$dir"
-    done
-
-    print_header "TESTE"
-
-    for repo in "${PROJECT_REPOS[@]}"; do
-        print "$repo"
-    done
+    # for repo in "${PROJECT_REPOS[@]}"; do
+    #     print "$repo"
+    # done
 
     manage_repositories "${PROJECT_REPOS[@]}"
 
