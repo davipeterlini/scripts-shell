@@ -1,0 +1,10 @@
+name: Semver
+version: 0.0.1
+schema: v1
+docs:
+  - name: Semver
+    startUrl: https://semver.org/
+  - name: Sem Ver
+    startUrl: https://semver.org/lang/pt-BR/
+  - name: Sem Ver Official Documentation
+    startUrl: https://devhints.io/semver

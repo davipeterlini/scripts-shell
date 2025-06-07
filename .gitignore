@@ -14,3 +14,4 @@ coder_env/
 chatHistory.json
 no-commit/
 .env.local.bak
+no-commit

@@ -31,6 +31,43 @@ choose_identity() {
   fi
 }
 
+# Function to interact with Bitbucket API
+manage_ssh_key() {
+  local ssh_key_title=$1
+  local public_key=$2
+
+  # Check if the key already exists
+  existing_key_id=$(curl -s -u "$BITBUCKET_USERNAME:$BITBUCKET_APP_PASSWORD" \
+    https://api.bitbucket.org/2.0/user/ssh-keys | jq -r \
+    ".values[] | select(.label == \"$ssh_key_title\") | .uuid")
+
+  if [ -n "$existing_key_id" ]; then
+    echo "SSH key with title '$ssh_key_title' already exists."
+    read -p "Do you want to delete the existing key? (y/n): " DELETE_KEY
+    if [[ "$DELETE_KEY" =~ ^[Yy]$ ]]; then
+      curl -X DELETE -u "$BITBUCKET_USERNAME:$BITBUCKET_APP_PASSWORD" \
+        https://api.bitbucket.org/2.0/user/ssh-keys/$existing_key_id
+      echo "Existing key deleted."
+    else
+      echo "Operation cancelled. Exiting..."
+      exit 0
+    fi
+  fi
+
+  # Add the new SSH key
+  response=$(curl -s -X POST -u "$BITBUCKET_USERNAME:$BITBUCKET_APP_PASSWORD" \
+    -H "Content-Type: application/json" \
+    -d "{\"key\": \"$public_key\", \"label\": \"$ssh_key_title\"}" \
+    https://api.bitbucket.org/2.0/user/ssh-keys)
+
+  if echo "$response" | grep -q 'error'; then
+    echo "Failed to add SSH key: $(echo "$response" | jq -r '.error.message')"
+    exit 1
+  else
+    echo "SSH key added successfully."
+  fi
+}
+
 # Function to add identity
 add_identity() {
   local identity=$1
@@ -38,6 +75,7 @@ add_identity() {
   local project_dir_var="PROJECT_DIR_${identity_upper}"
 
   local ssh_key="$HOME/.ssh/id_rsa_bb_$identity"
+  local ssh_key_pub="$ssh_key.pub"
   local project_dir=$(eval echo \$$project_dir_var)
 
   if [ -z "$project_dir" ]; then
@@ -45,38 +83,22 @@ add_identity() {
     exit 1
   fi
 
-  if [ ! -f "$ssh_key" ]; then
-    echo "SSH key file $ssh_key does not exist. Exiting..."
+  if [ ! -f "$ssh_key" ] || [ ! -f "$ssh_key_pub" ]; then
+    echo "SSH key files $ssh_key or $ssh_key_pub do not exist. Exiting..."
     exit 1
   fi
 
   cd "$project_dir" || exit
 
-  # Ask the user if they want to remove the current identity
-  while true; do
-    read -p "Do you want to remove the current identity? (y/n): " REMOVE_IDENTITY
-    case $REMOVE_IDENTITY in
-      [Yy]* )
-        ssh-add -D
-        echo "Current identity removed."
-        break
-        ;;
-      [Nn]* )
-        echo "Adding new identity without removing the current one."
-        break
-        ;;
-      * )
-        echo "Please answer y or n."
-        ;;
-    esac
-  done
+  # Add the SSH key to Bitbucket
+  manage_ssh_key "$identity" "$(cat $ssh_key_pub)"
 
   echo "Adding $identity identity"
   ssh-add "$ssh_key"
   echo "Check the $identity key stay in ssh-agent"
   ssh-add -l
   echo "Test Connection"
-    ssh -T git@bitbucket.org
+  ssh -T git@bitbucket.org
 }
 
 # Load environment variables
