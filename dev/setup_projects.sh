@@ -26,7 +26,7 @@ select_environment() {
 }
 
 # Main script execution
-setup_projects_main() {
+setup_projects() {
     # Select environment
     select_environment
     selected_env=$env_file
@@ -50,15 +50,16 @@ setup_projects_main() {
     # Create directories
     create_directories "${PROJECT_DIR[@]}"
 
+    # for repo in "${PROJECT_REPOS[@]}"; do
+    #     print "$repo"
+    # done
 
-    print $PROJECT_REPOS
-    # Clone or update repositories
-    #manage_repositories "${PROJECT_REPOS[@]}"
+    manage_repositories "${PROJECT_REPOS[@]}"
 
     print_success "Project setup completed successfully!"
 }
 
 # Check if the script is being executed directly or sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    setup_projects_main "$@"
+    setup_projects "$@"
 fi

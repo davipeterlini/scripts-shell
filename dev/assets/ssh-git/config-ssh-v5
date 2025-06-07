@@ -58,3 +58,5 @@ Host bitbucket.org
   User git
   IdentityFile ~/.ssh/id_rsa_bb_work
   IdentitiesOnly yes
+  PubkeyAcceptedKeyTypes +ssh-rsa
+  HostKeyAlgorithms +ssh-rsa

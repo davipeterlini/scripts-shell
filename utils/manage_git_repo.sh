@@ -10,7 +10,7 @@ clone_repository() {
     local repo_path="$2"
 
     print_info "Cloning repository: $(basename "$repo_url" .git)"
-    git clone "$repo_url" "$repo_path"
+    #git clone "$repo_url" "$repo_path"
 }
 
 # Function to update a repository
@@ -31,13 +31,14 @@ merge_back_repository() {
 }
 
 # Function to manage repositories - Update or Clone repo
-# Modified to work with Bash 3.2 (no associative arrays)
 manage_repositories() {
     # Process arguments in pairs (target_dir and repo_url)
     while [[ $# -ge 2 ]]; do
-        local target_dir="$1"
-        local repo_url="$2"
+        local repo_url="$1"
+        local target_dir="$2"
         shift 2
+
+        print_header $target_dir
         
         local repo_name=$(basename "$repo_url" .git)
         local repo_path="$target_dir/$repo_name"
@@ -49,3 +50,11 @@ manage_repositories() {
         fi
     done
 }
+
+# Main function
+main() {
+    manage_repositories "$@"
+}
+
+# Execute main function
+main "$@"
