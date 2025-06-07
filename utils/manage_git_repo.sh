@@ -9,14 +9,11 @@ clone_repository() {
     local repo_url="$1"
     local repo_path="$2"
 
-    print_header "git clone $repo_url $repo_path"
-
     print_info "Cloning repository: $(basename "$repo_url" .git)"
     #git clone "$repo_url" "$repo_path"
 }
 
 # Function to update a repository
-# TODO - o nome do path precisa estar completo com o nome da pasta do repo
 update_repository() {
     local repo_path="$1"
 
