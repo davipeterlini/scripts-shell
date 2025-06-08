@@ -10,7 +10,7 @@ clone_repository() {
     local repo_path="$2"
 
     print_info "Cloning repository: $(basename "$repo_url" .git)"
-    #git clone "$repo_url" "$repo_path"
+    git clone "$repo_url" "$repo_path"
 }
 
 # Function to update a repository
@@ -32,23 +32,22 @@ merge_back_repository() {
 
 # Function to manage repositories - Update or Clone repo
 manage_repositories() {
-    # Process arguments in pairs (target_dir and repo_url)
-    while [[ $# -ge 2 ]]; do
-        local repo_url="$1"
-        local target_dir="$2"
-        shift 2
+   # Process arguments in pairs (target_dir and repo_url)
+   while [[ $# -ge 2 ]]; do
+       local repo_url="$1"
+       local target_dir="$2"
+       shift 2
 
-        print_header $target_dir
-        
-        local repo_name=$(basename "$repo_url" .git)
-        local repo_path="$target_dir/$repo_name"
+       local repo_name=$(basename "$repo_url" .git)
+       local project_root="$(dirname "$target_dir")"
+       local repo_path="$target_dir/$repo_name"
 
-        if [[ -d "$repo_path" ]]; then
-            update_repository "$repo_path"
-        else
-            clone_repository "$repo_url" "$repo_path"
-        fi
-    done
+       if [[ -d "$repo_path" ]]; then
+           update_repository "$repo_path"
+       else
+           clone_repository "$repo_url" "$target_dir"
+       fi
+   done
 }
 
 # Main function
