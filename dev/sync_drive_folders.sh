@@ -197,11 +197,13 @@ setup_symlinks() {
     selected_env=$env_file
 
     # TODO - criar uma função no script utils/bash_tools.sh para consultar os dirs do Env
+    # load_environment "$OLDPWD/.env.${SELECTED_ENV}"
     # Verificar se os diretórios de destino existem, se não, criar
     mkdir -p "$HOME/projects-cit/flow/coder-assistants" 2>/dev/null
     mkdir -p "$HOME/projects-personal" 2>/dev/null
     
-    # Criar links simbólicos para os projetos
+    # TODO - Criar links simbólicos para todos os projetos 
+    # TODO - Em todos os projetos criados adicionar no .gitignore de cada um a opção de ignorar o arquivo no-commit
     ln -sf "$HOME/.coder-ide/no-commit" "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension"
     ln -sf "$HOME/.coder-ide/no-commit" "$HOME/projects-personal/scripts-shell"
     
@@ -218,6 +220,7 @@ verify_setup() {
         warning "Main symbolic link was not created correctly"
     fi
     
+    # TODO - ajuste de acordo com o que foi ajsutado na função setup_symlinks
     if [ -L "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension" ] && \
        [ -L "$HOME/projects-personal/scripts-shell" ]; then
         success "Project symbolic links are correctly set up"
