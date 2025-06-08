@@ -4,13 +4,13 @@
 source ./utils/colors_message.sh
 source ./utils/choose_shell_profile.sh
 ENV_EXAMPLE="./dev/.env.example"
+ENV_DIR="$HOME/.coder-ide"
 
 # TODO - ajustar para que o script use os prints do colors_message.sh
 
 create_env_file() {
-    local user_profile_dir="$HOME"
     local env_example_path="$ENV_EXAMPLE"
-    local env_target_path="$user_profile_dir/.env"
+    local env_target_path="$ENV_DIR/.env"
 
     if [ -f "$env_example_path" ]; then
         cp "$env_example_path" "$env_target_path"

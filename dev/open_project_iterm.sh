@@ -7,6 +7,8 @@ source "$SCRIPT_DIR/../utils/list_projects.sh"
 source "$SCRIPT_DIR/../utils/load_env.sh"
 source "$SCRIPT_DIR/../utils/display_menu.sh"
 
+source "$(dirname "$0")/utils/load_dev_env.sh"
+
 load_env
 
 # Check if iTerm2 is installed
@@ -94,6 +96,26 @@ EOF
 # Main script execution
 open_project_iterm_main() {
     ensure_iterm_installed
+
+    # Select environment
+    select_environment
+    selected_env=$env_file
+
+    # Load the selected environment variables
+    if [ -f "$selected_env" ]; then
+        set -a
+        source "$selected_env"
+        set +a
+    else
+        print_error "Environment file not found: $selected_env"
+        exit 1
+    fi
+
+    # Validate required variables
+    if [ -z "$PROJECT_DIR" ] || [ -z "$PROJECT_REPOS" ]; then
+        print_error "PROJECT_DIR or PROJECT_REPOS is not defined in the selected .env file. Exiting."
+        exit 1
+    fi
 
     local repo_type
     if [ "$#" -eq 0 ]; then
