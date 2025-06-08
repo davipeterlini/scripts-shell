@@ -5,6 +5,8 @@ source ./utils/colors_message.sh
 source ./utils/choose_shell_profile.sh
 ENV_EXAMPLE="./dev/.env.example"
 
+# TODO - ajustar para que o script use os prints do colors_message.sh
+
 create_env_file() {
     local user_profile_dir="$HOME"
     local env_example_path="$ENV_EXAMPLE"
@@ -124,7 +126,7 @@ reload_profile() {
 }
 
 # Main script flow
-setup_global_env_main() {
+setup_global_env() {
     create_env_file
     
     # Use the external choose_shell_profile script instead of the internal function
@@ -142,5 +144,7 @@ setup_global_env_main() {
     print_env_variables
 }
 
-# Execute the script
-setup_global_env_main
+# Check if the script is being executed directly or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    setup_global_env "$@"
+fi

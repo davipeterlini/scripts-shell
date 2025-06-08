@@ -112,4 +112,4 @@ open_project_iterm_main() {
     open_repositories_in_iterm "${repos[@]}"
 }
 
-open_project_iterm "$@"
+open_project_iterm_main "$@"

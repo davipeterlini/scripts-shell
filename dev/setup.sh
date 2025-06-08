@@ -40,13 +40,13 @@ main() {
   setup_projects
 
   # Create and Sync folder for google drive
-  sync_drive_folders
+  #sync_drive_folders
 
-  #setup_global_env_main
+  # TODO - ajustar script para que grave o .env na pasta sincronizada do drive 
+  #setup_global_env
 
+  # TODO - Ajustar para abrir as pastas desejadas no terminal 
   #open_project_iterm
-
-  # Chamada da função setup_projects_main
 
   print_success "Setup concluído com sucesso!"
 }
