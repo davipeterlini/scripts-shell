@@ -11,9 +11,7 @@ create_directories() {
    local directories=("$@")
    for dir in "${directories[@]}"; do
        if [[ "$dir" != "$ROOT_DIR" ]]; then
-           print_header $dir
            full_dir="${ROOT_DIR}/${dir}"
-           print_header $full_dir
            if [[ ! -d "$full_dir" ]]; then
                print_info "Creating directory: $full_dir"
                mkdir -p "$full_dir"
