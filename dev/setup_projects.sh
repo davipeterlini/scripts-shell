@@ -10,20 +10,7 @@ source "$PROJECT_ROOT/utils/load_env.sh"
 source "$PROJECT_ROOT/utils/bash_tools.sh"
 source "$PROJECT_ROOT/utils/manage_git_repo.sh"
 
-# Function to display environment options and let the user choose
-select_environment() {
-    env_dir="$PROJECT_ROOT/dev/assets"
-    env_files=("$env_dir/.env.personal" "$env_dir/.env.work")
-    print_info "Select an environment:"
-    select env_file in "${env_files[@]}"; do
-        if [ -n "$env_file" ]; then
-            print_success "You selected $env_file"
-            return 
-        else
-            print_error "Invalid selection. Try again."
-        fi
-    done
-}
+source "$(dirname "$0")/utils/load_dev_env.sh"
 
 # Main script execution
 setup_projects() {

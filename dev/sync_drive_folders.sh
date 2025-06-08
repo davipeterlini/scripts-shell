@@ -1,42 +1,14 @@
 #!/bin/bash
 
-# Cores para melhor visualização
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$PROJECT_ROOT/utils/colors_message.sh"
+source "$PROJECT_ROOT/utils/detect_os.sh"
 
-# Função para exibir mensagens de log
-log() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
+source "$(dirname "$0")/utils/load_dev_env.sh"
 
-success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-    exit 1
-}
-
-# Detectar o sistema operacional
-detect_os() {
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        OS="macos"
-        log "macOS detected"
-    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        OS="linux"
-        log "Linux detected"
-    else
-        error "Unsupported operating system: $OSTYPE"
-    fi
-}
+# TODO - use o esquema de cor na aplicação 
+# TODO - coloque todos os comentários em inglês
 
 # Verificar se o Google Drive está instalado
 check_drive_installed() {
@@ -119,6 +91,7 @@ configure_drive_login() {
     
     if [[ "$OS" == "macos" ]]; then
         # No macOS, apenas abrimos o aplicativo e o usuário faz login manualmente
+        # TODO abra o aplicativo do google drive e depois retorne a aplicação
         log "Opening Google Drive application..."
         open -a "Google Drive"
         echo -e "${YELLOW}Please login with your $ACCOUNT_TYPE Google account in the opened window.${NC}"
@@ -196,6 +169,10 @@ find_drive_path() {
 create_folder_structure() {
     log "Creating folder structure..."
     
+    # TODO - aqui primeiro precisa verificar se a pasta ja existe 
+    # TODO - comente a estrtura abaixo e depois peça o nome ao usuário, 
+    # TODO - na sequencia peça se ele quer criar mais pastas de sync e se no 
+    # TODO - mesmo dir já criado
     # Criar pasta de sincronização no Google Drive
     SYNC_FOLDER="$DRIVE_PATH/Meu Drive/coder-ide-sync"
     mkdir -p "$SYNC_FOLDER"
@@ -215,6 +192,11 @@ setup_symlinks() {
     ln -sf "$SYNC_FOLDER" "$HOME/.coder-ide"
     success "Created main symbolic link: $HOME/.coder-ide -> $SYNC_FOLDER"
     
+    # Select environment
+    select_environment
+    selected_env=$env_file
+
+    # TODO - criar uma função no script utils/bash_tools.sh para consultar os dirs do Env
     # Verificar se os diretórios de destino existem, se não, criar
     mkdir -p "$HOME/projects-cit/flow/coder-assistants" 2>/dev/null
     mkdir -p "$HOME/projects-personal" 2>/dev/null
