@@ -6,17 +6,15 @@ source ./utils/choose_shell_profile.sh
 ENV_EXAMPLE="./dev/.env.example"
 ENV_DIR="$HOME/.coder-ide"
 
-# TODO - ajustar para que o script use os prints do colors_message.sh
-
 create_env_file() {
     local env_example_path="$ENV_EXAMPLE"
     local env_target_path="$ENV_DIR/.env"
 
     if [ -f "$env_example_path" ]; then
         cp "$env_example_path" "$env_target_path"
-        echo -e "${GREEN}.env file created at $env_target_path${NC}"
+        print_success ".env file created at $env_target_path"
     else
-        echo -e "${RED}Error: $env_example_path does not exist.${NC}"
+        print_error "$env_example_path does not exist."
         exit 1
     fi
 }
@@ -28,21 +26,21 @@ add_export_to_profile() {
   
   if [ -f "$profile_path" ]; then
     if ! grep -q "$export_line" "$profile_path"; then
-      echo -e "${YELLOW}Adding export line to $1...${NC}"
+      print_alert "Adding export line to $1..."
       echo "$export_line" >> "$profile_path"
     else
-      echo -e "${GREEN}The export line already exists in $1.${NC}"
+      print_success "The export line already exists in $1."
     fi
   else
-    echo -e "${RED}The file $1 does not exist. Make sure the correct shell is configured.${NC}"
+    print_error "The file $1 does not exist. Make sure the correct shell is configured."
     exit 1
   fi
 }
 
 # Function to print the saved variables in the terminal
 print_env_variables() {
-  echo -e "${BLUE}Variables saved in the .env file:${NC}"
-  cat "$HOME/.env"
+  print_info "Variables saved in the .env file:"
+  print "$(cat "$HOME/.env")"
 }
 
 # Function to update a specific key in the .env file (macOS compatible)
@@ -75,11 +73,11 @@ setup_variables() {
   
   # Check if .env file exists
   if [ ! -f "$env_file" ]; then
-    echo -e "${RED}Error: $env_file does not exist.${NC}"
+    print_error "$env_file does not exist."
     return 1
   fi
   
-  echo -e "${GREEN}Setting up environment variables:${NC}"
+  print_header "Setting up environment variables"
   
   # First, collect all the variable keys from the .env file
   while IFS= read -r line; do
@@ -109,7 +107,7 @@ setup_variables() {
   done
   
   # Simple completion message
-  echo -e "${GREEN}Updated $variables_updated environment variables.${NC}"
+  print_success "Updated $variables_updated environment variables."
 }
 
 # Function to reload the profile
@@ -117,16 +115,18 @@ reload_profile() {
   local profile="$1"
   
   if [ -f "$profile" ]; then
-    echo -e "${YELLOW}Reloading the profile file $(basename $profile)...${NC}"
+    print_alert "Reloading the profile file $(basename $profile)..."
     source "$profile"
   else
-    echo -e "${RED}Could not reload the profile file $(basename $profile) because it does not exist.${NC}"
+    print_error "Could not reload the profile file $(basename $profile) because it does not exist."
     exit 1
   fi
 }
 
 # Main script flow
 setup_global_env() {
+    print_header "Setting up global environment"
+    
     create_env_file
     
     # Use the external choose_shell_profile script instead of the internal function
@@ -142,6 +142,8 @@ setup_global_env() {
     
     # Print all environment variables
     print_env_variables
+    
+    print_success "Global environment setup completed!"
 }
 
 # Check if the script is being executed directly or sourced
