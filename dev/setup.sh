@@ -43,7 +43,7 @@ main() {
   #sync_drive_folders
 
   # TODO - ajustar script para que grave o .env na pasta sincronizada do drive 
-  #setup_global_env
+  setup_global_env
 
   # TODO - Ajustar para abrir as pastas desejadas no terminal 
   #open_project_iterm
