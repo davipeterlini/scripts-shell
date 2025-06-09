@@ -7,23 +7,20 @@ source "$PROJECT_ROOT/utils/detect_os.sh"
 
 source "$(dirname "$0")/utils/load_dev_env.sh"
 
-# TODO - use o esquema de cor na aplicação 
-# TODO - coloque todos os comentários em inglês
-
-# Verificar se o Google Drive está instalado
+# Check if Google Drive is installed
 check_drive_installed() {
-    log "Checking if Google Drive is installed..."
+    print_info "Checking if Google Drive is installed..."
     
     if [[ "$OS" == "macos" ]]; then
         if [ -d "/Applications/Google Drive.app" ]; then
-            success "Google Drive is already installed"
+            print_success "Google Drive is already installed"
             return 0
         else
             return 1
         fi
     elif [[ "$OS" == "linux" ]]; then
         if command -v google-drive-ocamlfuse &> /dev/null; then
-            success "Google Drive is already installed"
+            print_success "Google Drive is already installed"
             return 0
         else
             return 1
@@ -31,25 +28,25 @@ check_drive_installed() {
     fi
 }
 
-# Instalar o Google Drive
+# Install Google Drive
 install_drive() {
-    log "Installing Google Drive..."
+    print_info "Installing Google Drive..."
     
     if [[ "$OS" == "macos" ]]; then
-        log "Downloading Google Drive for macOS..."
-        # Verificar se o Homebrew está instalado
+        print_info "Downloading Google Drive for macOS..."
+        # Check if Homebrew is installed
         if ! command -v brew &> /dev/null; then
-            log "Installing Homebrew..."
+            print_info "Installing Homebrew..."
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         fi
         
-        log "Installing Google Drive via Homebrew..."
+        print_info "Installing Google Drive via Homebrew..."
         brew install --cask google-drive
         
     elif [[ "$OS" == "linux" ]]; then
-        log "Installing Google Drive for Linux (using google-drive-ocamlfuse)..."
+        print_info "Installing Google Drive for Linux (using google-drive-ocamlfuse)..."
         
-        # Verificar a distribuição Linux
+        # Check Linux distribution
         if command -v apt-get &> /dev/null; then
             # Debian/Ubuntu
             sudo add-apt-repository ppa:alessandro-strada/ppa -y
@@ -62,18 +59,18 @@ install_drive() {
             # Arch Linux
             sudo pacman -S google-drive-ocamlfuse
         else
-            error "Unsupported Linux distribution. Please install google-drive-ocamlfuse manually."
+            print_error "Unsupported Linux distribution. Please install google-drive-ocamlfuse manually."
         fi
     fi
     
-    success "Google Drive installed successfully"
+    print_success "Google Drive installed successfully"
 }
 
-# Configurar o login no Google Drive
+# Configure Google Drive login
 configure_drive_login() {
-    log "Configuring Google Drive login..."
+    print_info "Configuring Google Drive login..."
     
-    # Perguntar qual conta usar
+    # Ask which account to use
     echo -e "${YELLOW}Which Google account do you want to use?${NC}"
     echo "1. Work account"
     echo "2. Personal account"
@@ -84,33 +81,32 @@ configure_drive_login() {
     elif [[ "$account_choice" == "2" ]]; then
         ACCOUNT_TYPE="personal"
     else
-        error "Invalid choice. Please select 1 for Work or 2 for Personal."
+        print_error "Invalid choice. Please select 1 for Work or 2 for Personal."
     fi
     
-    log "You selected: $ACCOUNT_TYPE account"
+    print_info "You selected: $ACCOUNT_TYPE account"
     
     if [[ "$OS" == "macos" ]]; then
-        # No macOS, apenas abrimos o aplicativo e o usuário faz login manualmente
-        # TODO abra o aplicativo do google drive e depois retorne a aplicação
-        log "Opening Google Drive application..."
+        # On macOS, open the app and return to the script after login
+        print_info "Opening Google Drive application..."
         open -a "Google Drive"
         echo -e "${YELLOW}Please login with your $ACCOUNT_TYPE Google account in the opened window.${NC}"
         echo -e "${YELLOW}After login, press Enter to continue...${NC}"
         read -p ""
         
     elif [[ "$OS" == "linux" ]]; then
-        # No Linux, configuramos o google-drive-ocamlfuse
+        # On Linux, configure google-drive-ocamlfuse
         if [[ "$ACCOUNT_TYPE" == "work" ]]; then
             google-drive-ocamlfuse -label work
         else
             google-drive-ocamlfuse -label personal
         fi
         
-        # Criar ponto de montagem
+        # Create mount point
         MOUNT_POINT="$HOME/GoogleDrive-$ACCOUNT_TYPE"
         mkdir -p "$MOUNT_POINT"
         
-        # Montar o Google Drive
+        # Mount Google Drive
         if [[ "$ACCOUNT_TYPE" == "work" ]]; then
             google-drive-ocamlfuse -label work "$MOUNT_POINT"
         else
@@ -120,15 +116,15 @@ configure_drive_login() {
         DRIVE_PATH="$MOUNT_POINT"
     fi
     
-    success "Google Drive login configured"
+    print_success "Google Drive login configured"
 }
 
-# Encontrar o caminho do Google Drive
+# Find Google Drive path
 find_drive_path() {
-    log "Finding Google Drive path..."
+    print_info "Finding Google Drive path..."
     
     if [[ "$OS" == "macos" ]]; then
-        # No macOS, procurar pelo diretório do Google Drive
+        # On macOS, search for Google Drive directory
         POSSIBLE_PATHS=(
             "$HOME/Google Drive"
             "$HOME/Google Drive File Stream"
@@ -139,9 +135,9 @@ find_drive_path() {
             for path in $path_pattern; do
                 if [ -d "$path" ]; then
                     DRIVE_PATH="$path"
-                    log "Found Google Drive at: $DRIVE_PATH"
+                    print_info "Found Google Drive at: $DRIVE_PATH"
                     
-                    # Verificar se é o diretório correto
+                    # Verify if it's the correct directory
                     echo -e "${YELLOW}Is this the correct Google Drive path? $DRIVE_PATH (y/n)${NC}"
                     read -p "" confirm
                     if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
@@ -151,89 +147,201 @@ find_drive_path() {
             done
         done
         
-        # Se não encontrou automaticamente, pedir ao usuário
+        # If not found automatically, ask the user
         if [ -z "$DRIVE_PATH" ]; then
-            echo -e "${YELLOW}Could not automatically find Google Drive path.${NC}"
+            print_alert "Could not automatically find Google Drive path"
             read -p "Please enter the full path to your Google Drive folder: " DRIVE_PATH
             
             if [ ! -d "$DRIVE_PATH" ]; then
-                error "The provided path does not exist: $DRIVE_PATH"
+                print_error "The provided path does not exist: $DRIVE_PATH"
             fi
         fi
     fi
     
-    success "Google Drive path set to: $DRIVE_PATH"
+    print_success "Google Drive path set to: $DRIVE_PATH"
 }
 
-# Criar estrutura de pastas
+# Create folder structure
 create_folder_structure() {
-    log "Creating folder structure..."
+    print_info "Creating folder structure..."
     
-    # TODO - aqui primeiro precisa verificar se a pasta ja existe 
-    # TODO - comente a estrtura abaixo e depois peça o nome ao usuário, 
-    # TODO - na sequencia peça se ele quer criar mais pastas de sync e se no 
-    # TODO - mesmo dir já criado
-    # Criar pasta de sincronização no Google Drive
-    SYNC_FOLDER="$DRIVE_PATH/Meu Drive/coder-ide-sync"
-    mkdir -p "$SYNC_FOLDER"
-    success "Created sync folder: $SYNC_FOLDER"
+    # Ask for sync folder name
+    print_alert "What name would you like to use for your sync folder?"
+    print "Default: coder-ide-sync"
+    read -p "Enter folder name (or press Enter for default): " folder_name
     
-    # Criar pasta no-commit
+    if [ -z "$folder_name" ]; then
+        folder_name="coder-ide-sync"
+    fi
+    
+    # Check if the folder already exists
+    SYNC_FOLDER="$DRIVE_PATH/Meu Drive/$folder_name"
+    if [ -d "$SYNC_FOLDER" ]; then
+        print_info "Sync folder already exists: $SYNC_FOLDER"
+    else
+        mkdir -p "$SYNC_FOLDER"
+        print_success "Created sync folder: $SYNC_FOLDER"
+    fi
+    
+    # Check if no-commit folder exists
     NO_COMMIT_FOLDER="$SYNC_FOLDER/no-commit"
-    mkdir -p "$NO_COMMIT_FOLDER"
-    success "Created no-commit folder: $NO_COMMIT_FOLDER"
+    if [ -d "$NO_COMMIT_FOLDER" ]; then
+        print_info "No-commit folder already exists: $NO_COMMIT_FOLDER"
+    else
+        mkdir -p "$NO_COMMIT_FOLDER"
+        print_success "Created no-commit folder: $NO_COMMIT_FOLDER"
+    fi
+    
+    # Ask if user wants to create more sync folders
+    echo -e "${YELLOW}Do you want to create additional sync folders? (y/n)${NC}"
+    read -p "" create_more
+    
+    while [[ "$create_more" == "y" || "$create_more" == "Y" ]]; do
+        echo -e "${YELLOW}Enter name for additional sync folder:${NC}"
+        read -p "" additional_folder
+        
+        if [ -n "$additional_folder" ]; then
+            # Check if folder should be created in the same parent directory
+            echo -e "${YELLOW}Create this folder inside $SYNC_FOLDER? (y/n)${NC}"
+            read -p "" same_parent
+            
+            if [[ "$same_parent" == "y" || "$same_parent" == "Y" ]]; then
+                ADDITIONAL_SYNC_FOLDER="$SYNC_FOLDER/$additional_folder"
+            else
+                ADDITIONAL_SYNC_FOLDER="$DRIVE_PATH/Meu Drive/$additional_folder"
+            fi
+            
+            if [ -d "$ADDITIONAL_SYNC_FOLDER" ]; then
+                print_info "Folder already exists: $ADDITIONAL_SYNC_FOLDER"
+            else
+                mkdir -p "$ADDITIONAL_SYNC_FOLDER"
+                print_success "Created additional folder: $ADDITIONAL_SYNC_FOLDER"
+            fi
+        fi
+        
+        echo -e "${YELLOW}Create more sync folders? (y/n)${NC}"
+        read -p "" create_more
+    done
 }
 
-# Configurar links simbólicos
-setup_symlinks() {
-    log "Setting up symbolic links..."
+# Function to get environment directories
+get_env_directories() {
+    local env_file="$1"
+    print_info "Loading directories from environment file: $env_file"
     
-    # Criar link simbólico principal
+    # Load environment variables
+    if [ -f "$env_file" ]; then
+        source "$env_file"
+        
+        # Extract directory paths from environment variables
+        # This is a simplified example - adjust according to your actual env file structure
+        local dirs=()
+        
+        # Check for PROJECT_DIRS variable or similar in your env file
+        if [ -n "$PROJECT_DIRS" ]; then
+            IFS=',' read -ra dirs <<< "$PROJECT_DIRS"
+            print_success "Found directories in environment: ${dirs[*]}"
+            echo "${dirs[@]}"
+        else
+            print_info "No project directories found in environment file"
+            echo ""
+        fi
+    else
+        print_error "Environment file not found: $env_file"
+        echo ""
+    fi
+}
+
+# Setup symbolic links
+setup_symlinks() {
+    print_info "Setting up symbolic links..."
+    
+    # Create main symbolic link
     ln -sf "$SYNC_FOLDER" "$HOME/.coder-ide"
-    success "Created main symbolic link: $HOME/.coder-ide -> $SYNC_FOLDER"
+    print_success "Created main symbolic link: $HOME/.coder-ide -> $SYNC_FOLDER"
     
     # Select environment
     select_environment
     selected_env=$env_file
-
-    # TODO - criar uma função no script utils/bash_tools.sh para consultar os dirs do Env
-    # load_environment "$OLDPWD/.env.${SELECTED_ENV}"
-    # Verificar se os diretórios de destino existem, se não, criar
-    mkdir -p "$HOME/projects-cit/flow/coder-assistants" 2>/dev/null
-    mkdir -p "$HOME/projects-personal" 2>/dev/null
     
-    # TODO - Criar links simbólicos para todos os projetos 
-    # TODO - Em todos os projetos criados adicionar no .gitignore de cada um a opção de ignorar o arquivo no-commit
-    ln -sf "$HOME/.coder-ide/no-commit" "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension"
-    ln -sf "$HOME/.coder-ide/no-commit" "$HOME/projects-personal/scripts-shell"
+    # Get directories from environment file
+    project_dirs=$(get_env_directories "$selected_env")
     
-    success "Created project symbolic links"
+    # If no directories found in env file, use default directories
+    if [ -z "$project_dirs" ]; then
+        print_info "Using default project directories"
+        mkdir -p "$HOME/projects-cit/flow/coder-assistants" 2>/dev/null
+        mkdir -p "$HOME/projects-personal" 2>/dev/null
+        
+        # Create symbolic links for default projects
+        ln -sf "$HOME/.coder-ide/no-commit" "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension"
+        ln -sf "$HOME/.coder-ide/no-commit" "$HOME/projects-personal/scripts-shell"
+        
+        # Add no-commit to .gitignore in each project
+        echo "no-commit/" >> "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension/.gitignore" 2>/dev/null
+        echo "no-commit/" >> "$HOME/projects-personal/scripts-shell/.gitignore" 2>/dev/null
+    else
+        # Create symbolic links for projects from environment
+        for dir in $project_dirs; do
+            if [ -d "$dir" ]; then
+                print_info "Creating symbolic link for $dir"
+                ln -sf "$HOME/.coder-ide/no-commit" "$dir"
+                
+                # Add no-commit to .gitignore
+                echo "no-commit/" >> "$dir/.gitignore" 2>/dev/null
+                print_success "Added no-commit to .gitignore in $dir"
+            else
+                print_info "Creating directory: $dir"
+                mkdir -p "$dir"
+                ln -sf "$HOME/.coder-ide/no-commit" "$dir"
+                echo "no-commit/" >> "$dir/.gitignore" 2>/dev/null
+            fi
+        done
+    fi
+    
+    print_success "Created project symbolic links"
 }
 
-# Verificar a configuração
+# Verify setup
 verify_setup() {
-    log "Verifying setup..."
+    print_info "Verifying setup..."
     
     if [ -L "$HOME/.coder-ide" ]; then
-        success "Main symbolic link is correctly set up"
+        print_success "Main symbolic link is correctly set up"
     else
-        warning "Main symbolic link was not created correctly"
+        print_alert "Main symbolic link was not created correctly"
     fi
     
-    # TODO - ajuste de acordo com o que foi ajsutado na função setup_symlinks
-    if [ -L "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension" ] && \
-       [ -L "$HOME/projects-personal/scripts-shell" ]; then
-        success "Project symbolic links are correctly set up"
+    # Check project symlinks based on environment or default paths
+    local symlinks_ok=true
+    
+    if [ -n "$project_dirs" ]; then
+        # Check symlinks for environment-defined projects
+        for dir in $project_dirs; do
+            if [ ! -L "$dir/no-commit" ]; then
+                print_alert "Symbolic link not correctly set up for: $dir/no-commit"
+                symlinks_ok=false
+            fi
+        done
     else
-        warning "Some project symbolic links may not be correctly set up"
+        # Check default symlinks
+        if [ ! -L "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension/no-commit" ] || \
+           [ ! -L "$HOME/projects-personal/scripts-shell/no-commit" ]; then
+            print_alert "Some project symbolic links may not be correctly set up"
+            symlinks_ok=false
+        fi
     fi
     
-    log "Setup verification complete"
+    if $symlinks_ok; then
+        print_success "Project symbolic links are correctly set up"
+    fi
+    
+    print_info "Setup verification complete"
 }
 
-# Função principal
+# Main function
 sync_drive_folders() {
-    log "Starting Google Drive folder sync setup..."
+    print_header "Starting Google Drive folder sync setup..."
     
     detect_os
     
@@ -247,9 +355,9 @@ sync_drive_folders() {
     setup_symlinks
     verify_setup
     
-    success "Google Drive folder sync setup completed successfully!"
-    log "Your folders are now syncing with Google Drive at: $SYNC_FOLDER"
+    print_success "Google Drive folder sync setup completed successfully!"
+    print_info "Your folders are now syncing with Google Drive at: $SYNC_FOLDER"
 }
 
-# Executar o script
+# Execute the script
 sync_drive_folders
