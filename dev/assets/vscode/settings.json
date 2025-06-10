@@ -9,7 +9,7 @@
         "editor.insertSpaces": true
     },
     // Configurações para a extensão Shell Format
-    "shellformat.path": "/caminho/completo/para/shfmt",
+    "shellformat.path": "/opt/homebrew/bin/shfmt",
     "shellformat.flag": "-i 2 -ci -bn -sr",
     "shellformat.effectLanguages": [
         "shellscript",
