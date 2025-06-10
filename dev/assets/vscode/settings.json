@@ -1,0 +1,10 @@
+{
+    "git.openRepositoryInParentFolders": "never",
+    "files.autoSave": "onFocusChange",
+    "[shellscript]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format",
+        "editor.formatOnSave": true
+    },
+    "shellformat.path": "/opt/homebrew/bin/shfmt",
+    "shellformat.flag": "-i 2 -ci -bn"
+}
