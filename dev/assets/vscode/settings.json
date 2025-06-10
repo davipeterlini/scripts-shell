@@ -1,10 +1,27 @@
 {
     "git.openRepositoryInParentFolders": "never",
     "files.autoSave": "onFocusChange",
+    // Configurações para arquivos shell script
     "[shellscript]": {
         "editor.defaultFormatter": "foxundermoon.shell-format",
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
     },
-    "shellformat.path": "/opt/homebrew/bin/shfmt",
-    "shellformat.flag": "-i 2 -ci -bn"
+    
+    // Configurações para a extensão Shell Format
+    "shellformat.path": "/caminho/completo/para/shfmt",
+    "shellformat.flag": "-i 2 -ci -bn -sr",
+    "shellformat.effectLanguages": [
+        "shellscript",
+        "dockerfile",
+        "dotenv",
+        "hosts",
+        "jvmoptions",
+        "ignore",
+        "gitignore",
+        "properties",
+        "spring-boot-properties",
+        "azcli"
+    ]
 }
