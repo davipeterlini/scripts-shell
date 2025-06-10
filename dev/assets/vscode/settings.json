@@ -8,7 +8,6 @@
         "editor.tabSize": 2,
         "editor.insertSpaces": true
     },
-    
     // Configurações para a extensão Shell Format
     "shellformat.path": "/caminho/completo/para/shfmt",
     "shellformat.flag": "-i 2 -ci -bn -sr",
@@ -23,5 +22,33 @@
         "properties",
         "spring-boot-properties",
         "azcli"
-    ]
+    ],
+    // Configurações para arquivos JSON
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.quickSuggestions": {
+            "strings": true
+        },
+        "editor.suggest.insertMode": "replace"
+    },
+    // Configurações para arquivos JSON com comentários (jsonc)
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.quickSuggestions": {
+            "strings": true
+        },
+        "editor.suggest.insertMode": "replace"
+    },
+    // Configurações gerais para JSON
+    "json.format.keepLines": false,
+    "json.validate.enable": true,
+    "json.schemas": [],
+    // Opcional: Ordenar propriedades JSON alfabeticamente
+    "json.format.enable": true
 }
