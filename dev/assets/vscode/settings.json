@@ -50,5 +50,13 @@
     "json.validate.enable": true,
     "json.schemas": [],
     // Opcional: Ordenar propriedades JSON alfabeticamente
-    "json.format.enable": true
+    "json.format.enable": true,
+    "redhat.telemetry.enabled": true,
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
+    "terminal.integrated.tabs.enabled": true,
+    "terminal.integrated.enablePersistentSessions": true
 }
