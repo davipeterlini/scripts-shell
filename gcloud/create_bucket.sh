@@ -34,7 +34,7 @@ if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" &> /dev/n
 fi
 
 # Criar o bucket
-print_header_info "Criando bucket '$BUCKET_NAME'..."
+print_header "Criando bucket '$BUCKET_NAME'..."
 if gcloud storage buckets create gs://$BUCKET_NAME --location=us-central1; then
   print_success "Bucket '$BUCKET_NAME' criado com sucesso!"
 else
@@ -42,14 +42,23 @@ else
   exit 1
 fi
 
-# Criar as subpastas (no GCS, as pastas são simuladas com objetos vazios com nomes terminados em /)
+# Criar as subpastas usando o comando correto
+# No Google Cloud Storage, as "pastas" são simuladas criando objetos vazios com nomes terminados em "/"
 for folder in "${FOLDERS[@]}"; do
   print_info "Criando pasta '$folder'..."
-  if gcloud storage objects create gs://$BUCKET_NAME/$folder --content-type="application/x-directory" < /dev/null; then
+
+  # Criando um arquivo temporário vazio
+  TEMP_FILE=$(mktemp)
+
+  # Usando gsutil para criar as "pastas" (objetos vazios com nomes terminados em /)
+  if gsutil cp $TEMP_FILE gs://$BUCKET_NAME/$folder; then
     print_success "Pasta '$folder' criada com sucesso!"
   else
     print_error "Erro ao criar a pasta '$folder'."
   fi
+
+  # Removendo o arquivo temporário
+  rm $TEMP_FILE
 done
 
 print_header "Processo concluído! Bucket '$BUCKET_NAME' criado com todas as subpastas necessárias."
