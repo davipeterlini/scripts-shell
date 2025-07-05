@@ -78,17 +78,17 @@ setup_enviroment() {
 
     detect_os
     grant_permissions
-    #install_apps "$os"
+    install_apps "$os"
 
     
-    # if [[ "$os" == "mac" ]]; then
-    #     setup_mac
-    # elif [[ "$os" == "linux" ]]; then
-    #     # _setup_linux
-    #     print_info "Linux setup not implemented yet"
-    # else
-    #     print_warning "Unsupported OS: $os"
-    # fi
+    if [[ "$os" == "macOS" ]]; then
+        setup_mac
+    elif [[ "$os" == "linux" ]]; then
+        # _setup_linux
+        print_info "Linux setup not implemented yet"
+    else
+        print_alert "Unsupported OS: $os"
+    fi
 
     # _setup_github
     # _setup_bitbucket

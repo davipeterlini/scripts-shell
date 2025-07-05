@@ -16,11 +16,12 @@ source "$(dirname "$0")/dev/setup_global_env.sh"
 
 # Função principal
 setup_dev() {
-    print_info "Start Setup for Development Enviroment"
+    print_header "Start Setup for Development Enviroment"
     load_env
 
     detect_os
-    grant_permissions
+    # TODO - arrumar para que seja chamado apenas quando o script for chamado diretamente
+    #grant_permissions
 
     setup_projects
 

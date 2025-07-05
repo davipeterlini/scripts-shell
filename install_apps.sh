@@ -10,6 +10,7 @@ source "${UTILS_DIR}/load_env.sh"
 source "${UTILS_DIR}/detect_os.sh"
 source "${UTILS_DIR}/colors_message.sh"
 source "${UTILS_DIR}/display_menu.sh"
+source "${UTILS_DIR}//bash_tools.sh"
 
 source "$(dirname "$0")/mac/install_homebrew.sh"
 source "$(dirname "$0")/mac/install_brew_apps.sh"
@@ -67,6 +68,13 @@ handle_linux_installation() {
 # TODO - colocar verificação do Windows para instalar os scripts do windows
 # Main function named after the script for reusability
 install_apps() {
+    print_header "Install Apps on OS"
+
+    if ! confirm_action "Install Apps on OS?"; then
+        print_info "Skipping install"
+        return 0
+    fi
+
     load_env .env.global
     local os="$1"
 

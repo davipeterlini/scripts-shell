@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # Utils
-source "$(dirname "$0")/../utils/colors_message.sh"
-source "$(dirname "$0")/../utils/load_env.sh"
-source "$(dirname "$0")/../utils/detect_os.sh"
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/load_env.sh"
+source "$(dirname "$0")/utils/detect_os.sh"
 
 # Scripts Mac Setup
-source "$(dirname "$0")/setup/setup_basic_config.sh"
-source "$(dirname "$0")/setup/setup_iterm.sh"
-source "$(dirname "$0")/setup/setup_terminal.sh"
-source "$(dirname "$0")/setup/setup_abnt2_keyboard.sh"
-source "$(dirname "$0")/setup/enable_touchid_sudo.sh"
+source "$(dirname "$0")/mac/setup/setup_basic_config.sh"
+source "$(dirname "$0")/mac/setup/setup_iterm.sh"
+source "$(dirname "$0")/mac/setup/setup_terminal.sh"
+source "$(dirname "$0")/mac/setup/setup_abnt2_keyboard.sh"
+source "$(dirname "$0")/mac/setup/enable_touchid_sudo.sh"
 
 # Função principal
 setup_mac() {
@@ -20,7 +20,7 @@ setup_mac() {
     detect_os
     
     # Verificar se estamos em um sistema Mac
-    if [[ "$os" != "mac" ]]; then
+    if [[ "$os" != "macOS" ]]; then
         print_error "This script should only be run on macOS systems"
         exit 1
     fi

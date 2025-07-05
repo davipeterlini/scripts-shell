@@ -192,7 +192,7 @@ open_utilities() {
 
 # Função principal
 setup_basic_config() {
-    print_header "Basic Setup for MAC"
+    print_header_info "Basic Setup for MAC"
 
     if ! confirm_action "Do you want Setup Basic Mac ?"; then
         print_info "Skipping configuration"

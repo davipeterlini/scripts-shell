@@ -204,7 +204,7 @@ change_theme() {
 
 # Main script execution
 setup_terminal() {
-    print_header "Terminal Setup"
+    print_header_info "Terminal Setup"
 
     if ! confirm_action "Do you want Setup Iterm2 ?"; then
         print_info "Skipping configuration"
