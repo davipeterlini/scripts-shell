@@ -14,11 +14,8 @@ source "${UTILS_DIR}/colors_message.sh"
 source "${SCRIPTS_DIR}/grant_permissions.sh"
 source "${SCRIPTS_DIR}/install_apps.sh"
 
-source "$(dirname "$0")/mac/setup/setup_basic_config.sh"
-source "$(dirname "$0")/mac/setup/setup_iterm.sh"
-source "$(dirname "$0")/mac/setup/setup_terminal.sh"
-source "$(dirname "$0")/mac/setup/setup_abnt2_keyboard.sh"
-source "$(dirname "$0")/mac/setup/enable_touchid_sudo.sh"
+# Importar o script de setup do Mac
+source "${SCRIPTS_DIR}/mac/setup_mac.sh"
 
 source "$(dirname "$0")/github/setup_github_accounts.sh"
 #source "$(dirname "$0")/github/connect_git_ssh_account.sh"
@@ -53,21 +50,6 @@ _setup_bitbucket () {
     #generate-classic-token-bb-local.sh
 }
 
-_setup_mac() {
-    setup_basic_config
-    setup_iterm
-    # TODO - erro ao configurar       
-        #- Failed to load settings from custom directory. Falling back to local copy.
-        #- Missing or malformed file at "~/.iterm2"
-    # TODO - não carrega o que foi carregado anteriormente 
-    setup_terminal
-    
-    # Configuração do teclado ABNT2
-    setup_abnt2_keyboard
-
-    enable_touchid_sudo
-}
-
 # TODO - ajustar após ajustar scripts do mac e criar os do linux
 # _setup_linux() {
 #     print_info "Setting up terminal configurations..."
@@ -99,8 +81,14 @@ setup_enviroment() {
     #install_apps "$os"
 
     
-    # _setup_mac
-    # #_setup_linux
+    # if [[ "$os" == "mac" ]]; then
+    #     setup_mac
+    # elif [[ "$os" == "linux" ]]; then
+    #     # _setup_linux
+    #     print_info "Linux setup not implemented yet"
+    # else
+    #     print_warning "Unsupported OS: $os"
+    # fi
 
     # _setup_github
     # _setup_bitbucket
