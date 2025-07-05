@@ -8,11 +8,11 @@ source "$(dirname "$0")/utils/bash_tools.sh"
 install_iterm2() {
     if ! brew list --cask iterm2 >/dev/null 2>&1; then
         print_info "Installing iTerm2..."
-        brew install --cask iterm2
+        brew install --cask --force iterm2
         print_success "iTerm2 has been installed successfully."
     else
         print_info "Updating iTerm2..."
-        brew upgrade --cask iterm2
+        brew upgrade --cask --force iterm2
         print_info "iTerm2 is already installed."
     fi
 }
