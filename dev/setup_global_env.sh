@@ -3,7 +3,8 @@
 # Import color scheme and profile selection script
 source ./utils/colors_message.sh
 source ./utils/choose_shell_profile.sh
-ENV_EXAMPLE="./dev/.env.example"
+# TODO - pode ser usado o  load_env .env.example
+ENV_EXAMPLE="./assets/.env.credential"
 ENV_DIR="$HOME/.coder-ide"
 
 create_env_file() {
@@ -71,10 +72,23 @@ setup_variables() {
   local variables_updated=0
   local keys=()
   
-  # Check if .env file exists
+  # Check if .env file exists, create it if it doesn't
   if [ ! -f "$env_file" ]; then
-    print_error "$env_file does not exist."
-    return 1
+    print_alert "$env_file does not exist. Creating it from template..."
+    
+    # Check if the example file exists
+    if [ -f "$ENV_EXAMPLE" ]; then
+      # Create directory if it doesn't exist
+      mkdir -p "$(dirname "$env_file")"
+      
+      # Copy the example file to the home directory
+      cp "$ENV_EXAMPLE" "$env_file"
+      print_success "Created $env_file from template."
+    else
+      # If no template exists, create an empty file
+      touch "$env_file"
+      print_success "Created empty $env_file file."
+    fi
   fi
   
   print_header "Setting up environment variables"

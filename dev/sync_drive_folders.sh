@@ -1,24 +1,21 @@
 #!/bin/bash
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-source "$PROJECT_ROOT/utils/colors_message.sh"
-source "$PROJECT_ROOT/utils/detect_os.sh"
-
-source "$(dirname "$0")/utils/load_dev_env.sh"
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/load_env.sh"
+source "$(dirname "$0")/utils/detect_os.sh"
 
 # Check if Google Drive is installed
 check_drive_installed() {
     print_info "Checking if Google Drive is installed..."
-    
-    if [[ "$OS" == "macos" ]]; then
-        if [ -d "/Applications/Google Drive.app" ]; then
+    if [[ "$os" == "macOS" ]]; then
+
+        if [ -d "/Applications/Google\ Drive.app" ]; then
             print_success "Google Drive is already installed"
             return 0
         else
             return 1
         fi
-    elif [[ "$OS" == "linux" ]]; then
+    elif [[ "$os" == "linux" ]]; then
         if command -v google-drive-ocamlfuse &> /dev/null; then
             print_success "Google Drive is already installed"
             return 0
@@ -32,7 +29,7 @@ check_drive_installed() {
 install_drive() {
     print_info "Installing Google Drive..."
     
-    if [[ "$OS" == "macos" ]]; then
+    if [[ "$os" == "macOS" ]]; then
         print_info "Downloading Google Drive for macOS..."
         # Check if Homebrew is installed
         if ! command -v brew &> /dev/null; then
@@ -43,7 +40,7 @@ install_drive() {
         print_info "Installing Google Drive via Homebrew..."
         brew install --cask google-drive
         
-    elif [[ "$OS" == "linux" ]]; then
+    elif [[ "$os" == "linux" ]]; then
         print_info "Installing Google Drive for Linux (using google-drive-ocamlfuse)..."
         
         # Check Linux distribution
@@ -86,7 +83,7 @@ configure_drive_login() {
     
     print_info "You selected: $ACCOUNT_TYPE account"
     
-    if [[ "$OS" == "macos" ]]; then
+    if [[ "$os" == "macOS" ]]; then
         # On macOS, open the app and return to the script after login
         print_info "Opening Google Drive application..."
         open -a "Google Drive"
@@ -94,7 +91,7 @@ configure_drive_login() {
         echo -e "${YELLOW}After login, press Enter to continue...${NC}"
         read -p ""
         
-    elif [[ "$OS" == "linux" ]]; then
+    elif [[ "$os" == "linux" ]]; then
         # On Linux, configure google-drive-ocamlfuse
         if [[ "$ACCOUNT_TYPE" == "work" ]]; then
             google-drive-ocamlfuse -label work
@@ -123,15 +120,15 @@ configure_drive_login() {
 find_drive_path() {
     print_info "Finding Google Drive path..."
     
-    if [[ "$OS" == "macos" ]]; then
+    if [[ "$os" == "macOS" ]]; then
         # On macOS, search for Google Drive directory
-        POSSIBLE_PATHS=(
+        PosSIBLE_PATHS=(
             "$HOME/Google Drive"
             "$HOME/Google Drive File Stream"
             "$HOME/Library/CloudStorage/GoogleDrive-*"
         )
         
-        for path_pattern in "${POSSIBLE_PATHS[@]}"; do
+        for path_pattern in "${PosSIBLE_PATHS[@]}"; do
             for path in $path_pattern; do
                 if [ -d "$path" ]; then
                     DRIVE_PATH="$path"
@@ -179,6 +176,7 @@ create_folder_structure() {
     if [ -d "$SYNC_FOLDER" ]; then
         print_info "Sync folder already exists: $SYNC_FOLDER"
     else
+        print_error "$SYNC_FOLDER"
         mkdir -p "$SYNC_FOLDER"
         print_success "Created sync folder: $SYNC_FOLDER"
     fi
@@ -342,6 +340,14 @@ verify_setup() {
 # Main function
 sync_drive_folders() {
     print_header "Starting Google Drive folder sync setup..."
+
+    if ! confirm_action "Do you want Google Drive Configuration ?"; then
+        print_info "Skipping configuration"
+        return 0
+    fi
+    
+    load_env .env.personal
+    load_env .env.work
     
     detect_os
     
@@ -359,5 +365,7 @@ sync_drive_folders() {
     print_info "Your folders are now syncing with Google Drive at: $SYNC_FOLDER"
 }
 
-# Execute the script
-sync_drive_folders
+# Check if the script is being executed directly or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    sync_drive_folders "$@"
+fi

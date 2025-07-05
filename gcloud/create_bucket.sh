@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# Script para criar um bucket no Google Cloud Storage com subpastas específicas
-# Este script cria um bucket chamado "flow-coder" e as seguintes subpastas:
+# Script to create a bucket in Google Cloud Storage with specific subfolders
+# This script creates a bucket called "flow-coder" and the following subfolders:
 # - flow-coder-ide/vscode
 # - flow-coder-ide/jetbrains
 # - flow-coder-cli
 # - flow-coder-mcp
 
-# Importando funções de cores para mensagens
+# Importing color functions for messages
 source "$(dirname "$0")/../utils/colors_message.sh"
 
-# Importando funções de instalação do gcloud e gsutil
+# Importing gcloud and gsutil installation functions
 source "$(dirname "$0")/install_gcloud_tools.sh"
 
-# Definindo variáveis
+# Defining variables
 BUCKET_NAME="flow_coder"
 FOLDERS=(
   "flow_coder_ide/vscode/"
@@ -22,123 +22,123 @@ FOLDERS=(
   "flow_coder_mcp/"
 )
 
-# Função para verificar se as ferramentas necessárias estão instaladas
+# Function to check if the necessary tools are installed
 check_required_tools() {
-  print_header "Verificando ferramentas necessárias..."
+  print_header "Checking required tools..."
 
   local tools_missing=false
 
-  # Verificar se o gcloud está instalado
+  # Check if gcloud is installed
   if ! command -v gcloud &> /dev/null; then
-    print_alert "Google Cloud SDK (gcloud) não está instalado."
+    print_alert "Google Cloud SDK (gcloud) is not installed."
     tools_missing=true
   fi
 
-  # Verificar se o gsutil está instalado
+  # Check if gsutil is installed
   if ! command -v gsutil &> /dev/null; then
-    print_alert "gsutil não está instalado."
+    print_alert "gsutil is not installed."
     tools_missing=true
   fi
 
-  # Se alguma ferramenta estiver faltando, instalar
+  # If any tool is missing, install it
   if [ "$tools_missing" = true ]; then
-    print_yellow "Algumas ferramentas necessárias não estão instaladas."
-    read -p "Deseja instalar as ferramentas faltantes agora? (s/n): " choice
+    print_yellow "Some required tools are not installed."
+    read -p "Do you want to install the missing tools now? (y/n): " choice
 
-    if [[ "$choice" =~ ^[Ss]$ ]]; then
+    if [[ "$choice" =~ ^[Yy]$ ]]; then
       install_all_cloud_tools
     else
-      print_error "As ferramentas necessárias não estão instaladas. Abortando."
+      print_error "Required tools are not installed. Aborting."
       exit 1
     fi
   else
-    print_success "Todas as ferramentas necessárias estão instaladas!"
+    print_success "All required tools are installed!"
   fi
 }
 
-# Função para autenticar no Google Cloud
+# Function to authenticate with Google Cloud
 authenticate_gcloud() {
-  print_header "Verificando autenticação no Google Cloud..."
+  print_header "Checking Google Cloud authentication..."
 
-  # Verificar se o usuário está autenticado no gcloud
+  # Check if the user is authenticated in gcloud
   if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" &> /dev/null; then
-    print_alert "Você precisa estar autenticado no Google Cloud para continuar."
-    print_yellow "Executando autenticação..."
+    print_alert "You need to be authenticated in Google Cloud to continue."
+    print_yellow "Running authentication..."
     gcloud auth login
 
-    # Verificar se a autenticação foi bem-sucedida
+    # Check if authentication was successful
     if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" &> /dev/null; then
-      print_error "Falha na autenticação. Abortando."
+      print_error "Authentication failed. Aborting."
       exit 1
     fi
   else
     local account=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
-    print_success "Autenticado como: $account"
+    print_success "Authenticated as: $account"
   fi
 }
 
-# Função para criar o bucket
+# Function to create the bucket
 create_bucket() {
-  print_header "Criando bucket '$BUCKET_NAME'..."
+  print_header "Creating bucket '$BUCKET_NAME'..."
 
   if gcloud storage buckets create gs://$BUCKET_NAME --location=us-central1; then
-    print_success "Bucket '$BUCKET_NAME' criado com sucesso!"
+    print_success "Bucket '$BUCKET_NAME' created successfully!"
   else
-    print_error "Erro ao criar o bucket '$BUCKET_NAME'. Verifique se o nome já está em uso ou se você tem permissões suficientes."
+    print_error "Error creating bucket '$BUCKET_NAME'. Check if the name is already in use or if you have sufficient permissions."
     exit 1
   fi
 }
 
-# Função para criar as subpastas no bucket
+# Function to create subfolders in the bucket
 create_folders() {
-  print_header "Criando estrutura de pastas..."
+  print_header "Creating folder structure..."
 
-  # No Google Cloud Storage, as "pastas" são simuladas criando objetos vazios com nomes terminados em "/"
+  # In Google Cloud Storage, "folders" are simulated by creating empty objects with names ending in "/"
   for folder in "${FOLDERS[@]}"; do
-    print_info "Criando pasta '$folder'..."
+    print_info "Creating folder '$folder'..."
 
-    # Criando um arquivo temporário vazio
+    # Creating an empty temporary file
     TEMP_FILE=$(mktemp)
 
-    # Usando gcloud storage em vez de gsutil
+    # Using gcloud storage instead of gsutil
     if gcloud storage cp $TEMP_FILE gs://$BUCKET_NAME/$folder; then
-      print_success "Pasta '$folder' criada com sucesso!"
+      print_success "Folder '$folder' created successfully!"
     else
-      print_error "Erro ao criar a pasta '$folder'."
+      print_error "Error creating folder '$folder'."
     fi
 
-    # Removendo o arquivo temporário
+    # Removing the temporary file
     rm $TEMP_FILE
   done
 }
 
-# Função para exibir o resumo da operação
+# Function to display operation summary
 show_summary() {
-  print_header "Processo concluído! Bucket '$BUCKET_NAME' criado com todas as subpastas necessárias."
-  print_yellow "Estrutura criada:"
+  print_header "Process completed! Bucket '$BUCKET_NAME' created with all necessary subfolders."
+  print_yellow "Created structure:"
   print "gs://$BUCKET_NAME/"
   for folder in "${FOLDERS[@]}"; do
     print "└── gs://$BUCKET_NAME/$folder"
   done
 }
 
-# Função principal
+# Main function
 main() {
-  # Verificar ferramentas necessárias
+  # Check required tools
   check_required_tools
 
-  # Autenticar no Google Cloud
+  # Authenticate with Google Cloud
   authenticate_gcloud
 
-  # Criar o bucket
+  # Create the bucket
   create_bucket
 
-  # Criar as subpastas
+  # Create subfolders
   create_folders
 
-  # Mostrar resumo
+  # Show summary
   show_summary
 }
 
-# Executar a função principal
+# Run the main function
 main

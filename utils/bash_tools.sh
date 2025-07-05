@@ -71,3 +71,19 @@ get_user_confirmation() {
     return 1
   fi
 }
+
+cleanup_temp_files() {
+    local temp_dir="$1"
+    rm -rf "$temp_dir"
+}
+
+confirm_action() {
+  local prompt="$1"
+  local choice
+  
+  read -p "$prompt (y/n): " choice
+  case "$choice" in
+    [Yy]* ) return 0 ;;
+    * ) return 1 ;;
+  esac
+}

@@ -9,11 +9,6 @@ install_apt_get_apps() {
     done
 }
 
-# Main script execution
-main() 
-
-    # Install the provided apps
-    install_apt_get_apps "$@"
-}
-
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  install_apt_get_apps "$@"
+fi

@@ -1,100 +1,105 @@
 #!/bin/bash
 
-# Script para instalação do Google Cloud SDK (gcloud) e gsutil
-# Este script fornece funções para verificar e instalar as ferramentas do Google Cloud
+# Script for installing Google Cloud SDK (gcloud) and gsutil
+# This script provides functions to check and install Google Cloud tools
 
-# Importando funções de cores para mensagens
-source "$(dirname "$0")/../utils/colors_message.sh"
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/bash_tools.sh"
 
-# Função para instalar o Google Cloud SDK (gcloud)
+# Function to install Google Cloud SDK (gcloud)
 install_gcloud() {
-  print_header "Instalando Google Cloud SDK (gcloud)..."
+  print_header "Installing Google Cloud SDK (gcloud)..."
   
-  # Verificar o sistema operacional
+  # Check the operating system
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Linux
-    print_info "Detectado sistema Linux. Instalando gcloud..."
+    print_info "Linux system detected. Installing gcloud..."
     
-    # Adicionar o repositório do Cloud SDK e instalar
+    # Add Cloud SDK repository and install
     echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
     sudo apt-get update && sudo apt-get install -y google-cloud-sdk
     
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS
-    print_info "Detectado sistema macOS. Instalando gcloud..."
+    print_info "macOS system detected. Installing gcloud..."
     
-    # Verificar se o Homebrew está instalado
+    # Check if Homebrew is installed
     if ! command -v brew &> /dev/null; then
-      print_alert "Homebrew não está instalado. Instalando Homebrew primeiro..."
+      print_alert "Homebrew is not installed. Installing Homebrew first..."
       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
     
-    # Instalar gcloud via Homebrew
+    # Install gcloud via Homebrew
     brew install --cask google-cloud-sdk
     
   elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
     # Windows
-    print_info "Detectado sistema Windows. Por favor, baixe e instale o Google Cloud SDK manualmente:"
+    print_info "Windows system detected. Please download and install Google Cloud SDK manually:"
     print_yellow "https://cloud.google.com/sdk/docs/install-sdk#windows"
-    print_yellow "Após a instalação, reinicie este script."
+    print_yellow "After installation, restart this script."
     return 1
   else
-    print_error "Sistema operacional não suportado: $OSTYPE"
-    print_yellow "Por favor, instale o Google Cloud SDK manualmente: https://cloud.google.com/sdk/docs/install"
+    print_error "Unsupported operating system: $OSTYPE"
+    print_yellow "Please install Google Cloud SDK manually: https://cloud.google.com/sdk/docs/install"
     return 1
   fi
   
-  print_success "Google Cloud SDK (gcloud) instalado com sucesso!"
+  print_success "Google Cloud SDK (gcloud) installed successfully!"
   return 0
 }
 
-# Função para instalar o gsutil
-# Nota: gsutil geralmente é instalado como parte do Google Cloud SDK
+# Function to install gsutil
+# Note: gsutil is usually installed as part of Google Cloud SDK
 install_gsutil() {
-  print_header "Verificando instalação do gsutil..."
+  print_header "Checking gsutil installation..."
   
-  # Verificar se o gcloud está instalado primeiro
+  # Check if gcloud is installed first
   if ! command -v gcloud &> /dev/null; then
-    print_alert "Google Cloud SDK (gcloud) não está instalado. O gsutil é parte do SDK."
+    print_alert "Google Cloud SDK (gcloud) is not installed. gsutil is part of the SDK."
     install_gcloud
   fi
   
-  # Verificar se o gsutil está disponível
+  # Check if gsutil is available
   if ! command -v gsutil &> /dev/null; then
-    print_info "Instalando componentes adicionais do Google Cloud SDK..."
+    print_info "Installing additional Google Cloud SDK components..."
     gcloud components install gsutil
   else
-    print_info "gsutil já está instalado."
+    print_info "gsutil is already installed."
   fi
   
-  print_success "gsutil está pronto para uso!"
+  print_success "gsutil is ready to use!"
   return 0
 }
 
-# Função para verificar e instalar todas as ferramentas necessárias
-install_all_cloud_tools() {
-  print_header "Verificando e instalando ferramentas do Google Cloud..."
+# Function to check and install all necessary tools
+install_gcloud_tools() {
+  print_header "Checking and installing Google Cloud tools..."
+
+  if ! confirm_action "Do you want installing Google Cloud tools ?"; then
+    print_info "Skipping install"
+    return 0
+  fi
   
-  # Instalar gcloud se necessário
+  # Install gcloud if necessary
   if ! command -v gcloud &> /dev/null; then
     install_gcloud
   else
-    print_success "Google Cloud SDK (gcloud) já está instalado."
+    print_success "Google Cloud SDK (gcloud) is already installed."
   fi
   
-  # Instalar gsutil se necessário
+  # Install gsutil if necessary
   if ! command -v gsutil &> /dev/null; then
     install_gsutil
   else
-    print_success "gsutil já está instalado."
+    print_success "gsutil is already installed."
   fi
   
-  print_success "Todas as ferramentas do Google Cloud estão instaladas e prontas para uso!"
+  print_success "All Google Cloud tools are installed and ready to use!"
   return 0
 }
 
-# Se o script for executado diretamente (não importado como fonte)
+# If the script is run directly (not imported as source)
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  install_all_cloud_tools
+  install_gcloud_tools
 fi

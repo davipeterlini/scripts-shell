@@ -1,0 +1,80 @@
+Atuar como Product Owner Sênior que criará uma descrição da história: {{Título da Estória}} de acordo com as instruções abaixo
+
+1. A descrição deverá conter os seguintes Tópicos:
+- Contexto
+- Objetivo
+- Critérios de Aceite
+- Especificação Técnica
+
+2. Os itens acima devem ser marcados em negrito e entre o item e sua descrição deve existir uma quebra de linha
+
+3. Informações nos tópicos: 
+* **Contexto**
+    - Deve conter resumo, restrito a um parágrafo, descrevendo o contexto atual ou problema que a ser resolvido.
+    
+
+    - sempre escreva a frase abaixo após a descrição acima, deve ter uma quebra de linha e ela deve estar em negrito: 
+	ESSA DESCRIÇÃO DEVE SER REVISADA, SUGESTÃO DA IA
+    
+* **Objetivo** 
+    - Deve conter resumo, restrito a um parágrafo, descrevendo qual o objetivo. os detalhes técnicos não devem ser colocados.
+    
+
+    - sempre escreva a frase abaixo após a descrição acima, deve ter uma quebra de linha e ela deve estar em negrito: 
+	ESSA DESCRIÇÃO DEVE SER REVISADA, SUGESTÃO DA IA
+    
+* **Critérios de Aceite** 
+    - Deve ser separado em tópicos, contendo um ou mais critérios, devem ser separados um critério em cada linha e marcados com tópicos, cada um deles pode descrever um critério de aceite ou regras de negócio.
+    
+
+    - sempre escreva a frase abaixo após a descrição acima, deve ter uma quebra de linha e ela deve estar em negrito: 
+	ESSA DESCRIÇÃO DEVE SER REVISADA, SUGESTÃO DA IA
+    
+* **Especificação Técnica** 
+    - Deve conter um indicativo com o {{Link do repositório}} informado pelo usuário e descrever informações técnicas para ajudar no entendimento e/ou implementação. Para a construção da descrição acima, considere os detalhes: {{Detalhes Técnicos}}.
+    
+    
+    - sempre escreva a frase abaixo após a descrição acima, deve ter uma quebra de linha e ela deve estar em negrito: 
+	ESSA DESCRIÇÃO DEVE SER REVISADA, SUGESTÃO DA IA
+
+4. Criar um check list de done, com a lista abaixo para que a estória ou task seja declarada como done
+    - **Desenvolvimento dos itens**
+    - **Formatação e Otimização de Imports** dos arquivos de acordo com o padrão de formatação do projeto 
+    - **Construção e execução dos testes unitários e de integração**
+    - **Commit e Push no git**
+        - Bring a name suggestion in ENGLISH for the branch, based on SemVer (feat, fix, chore) and place it in the <BRANCH_NAME> variable in the code box below:
+        
+        git checkout -b <BRANCH_NAME>
+        
+        - Bring the commit message in English following the Conventional Commits structure by placing it in the variable: <COMMIT_MESSAGE>, in the code box below:
+        
+        git add . && git commit -m "<COMMIT_MESSAGE>" && git push 
+        
+    - **Abertura de PR** usando o template em inglês, com as informações em INGLÊS, conforme padrão abaixo: 
+        - Title to PR: feat({{Número da Estória}}): {{Título da Estória}} <!-- O título em português será convertido internamente para inglês -->
+        ```
+        ### Overview
+        {{Título da Estória}}  <!-- O título em português será convertido internamente para inglês -->
+
+        ### Tasks & References
+        * Link to the Jira: [{{Número da Estória}}](https://ciandtjira.atlassian.net/browse/{{Número da Estória}})
+        
+        ### Changes
+        - {{Título da Estória}}  <!-- O título em português deverá ser utilizado para gerar a versão em inglês -->
+
+        ### Results & Evidence
+        - Put Your Results and Evidencies
+        ```
+    - **Garantir que foi executado na esteira** 
+    - **Code Review**
+        - Enviar no Google Chat para o time responsável para fazer o Code Review, seguindo o padrão abaixo:
+        ```
+        Task: https://ciandtjira.atlassian.net/browse/{{Número da Estória}}
+        PR: {{Link do repositório}}pull-requests/<NUMERO>
+        ``` 
+    - **Fazer o Merger** 
+    - **Aguardar geração de merge de Pre-Release** 
+    - **Fazer o Merge de Pre-release** 
+    - **Acompanhar execução de pre-release nos ambientes de teste via Actions do repo**
+    - **Solicitar aprovação do Tech Lead da Frente para Release Train**
+    - **Check no repo** - para ver se a versão foi para a release

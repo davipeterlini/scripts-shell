@@ -1,32 +1,134 @@
 #!/bin/zsh
 
+source "$(dirname "$0")/mac/install_homebrew.sh"
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/bash_tools.sh"
+
 # Function to install Oh My Zsh
 install_oh_my_zsh() {
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    echo "Installing Oh My Zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+        print_info "Installing Oh My Zsh..."
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     else
-        echo "Oh My Zsh aready install"
-fi
+        print_info "Oh My Zsh already installed"
+    fi
 }
 
+# Function to set zsh as default shell
+set_zsh_as_default() {
+    print_header_info "Setting zsh as default shell..."
+    
+    # Check if zsh is in the list of allowed shells
+    if ! grep -q "$(which zsh)" /etc/shells; then
+        print_info "Adding zsh to /etc/shells..."
+        echo "$(which zsh)" | sudo tee -a /etc/shells
+    fi
+    
+    # Change the default shell for the current user
+    if [[ "$SHELL" != "$(which zsh)" ]]; then
+        print_info "Changing default shell to zsh..."
+        #chsh -s "$(which zsh)"
+        chsh -s /bin/zsh
+    else
+        print_success "zsh is already the default shell"
+    fi
+    
+    # Configure iTerm2 to use zsh if it's installed
+    if [ -d "/Applications/iTerm.app" ]; then
+        print_info "Configuring iTerm2 to use zsh..."
+        # Create or update iTerm2 preferences
+        defaults write com.googlecode.iterm2 DefaultBookmark -string "zsh"
+        defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string "zsh"
+        
+        # Set the default command for new sessions
+        /usr/libexec/PlistBuddy -c "Set :New\ Bookmarks:0:Command /bin/zsh" ~/Library/Preferences/com.googlecode.iterm2.plist 2>/dev/null || true
+        
+        print_success "iTerm2 configured to use zsh"
+    else
+        print_alert "iTerm2 not found. Skipping iTerm2 configuration."
+    fi
+}
+
+# TODO - Garantir que isso está funcionando
 # Function to install Powerlevel10k theme
 install_powerlevel10k() {
-    echo "Installing Powerlevel10k theme..."
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-    sed -i '' 's/ZSH_THEME=".*"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' ~/.zshrc
+    print_header_info "Installing Powerlevel10k theme..."
+    
+    # Define the theme directory - explicitly use HOME
+    local theme_dir="$HOME/.oh-my-zsh/custom/themes/powerlevel10k"
+    
+    # Check if the theme directory already exists
+    if [ -d "$theme_dir" ]; then
+        print_info "Powerlevel10k theme directory already exists"
+        
+        # Check if it's a git repository and update it
+        if [ -d "$theme_dir/.git" ]; then
+            print_info "Updating existing Powerlevel10k installation..."
+            (cd "$theme_dir" && git pull)
+        else
+            print_alert "Directory exists but is not a git repository. Skipping installation."
+        fi
+    else
+        # Clone the repository if it doesn't exist
+        print_info "Cloning Powerlevel10k repository to $theme_dir"
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$theme_dir"
+    fi
+    
+    # Update .zshrc to use the theme
+    if grep -q 'ZSH_THEME=' ~/.zshrc; then
+        sed -i '' 's/ZSH_THEME=".*"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' ~/.zshrc
+    else
+        echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> ~/.zshrc
+    fi
+    
+    print_success "Powerlevel10k theme installed/updated successfully"
 }
 
 # Function to install recommended plugins
 install_plugins() {
-    echo "Installing recommended plugins..."
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-    sed -i '' 's/plugins=(/plugins=(zsh-syntax-highlighting zsh-autosuggestions /' ~/.zshrc
+    print_header_info "Installing recommended plugins..."
+    
+    # Define plugin directories - explicitly use HOME
+    local syntax_dir="$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+    local autosuggestions_dir="$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+    
+    # Install zsh-syntax-highlighting if not already installed
+    if [ ! -d "$syntax_dir" ]; then
+        print_info "Installing zsh-syntax-highlighting to $syntax_dir"
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$syntax_dir"
+    else
+        print_info "zsh-syntax-highlighting already installed"
+        # Update if it's a git repository
+        if [ -d "$syntax_dir/.git" ]; then
+            print_info "Updating zsh-syntax-highlighting..."
+            (cd "$syntax_dir" && git pull)
+        fi
+    fi
+    
+    # Install zsh-autosuggestions if not already installed
+    if [ ! -d "$autosuggestions_dir" ]; then
+        print_info "Installing zsh-autosuggestions to $autosuggestions_dir"
+        git clone https://github.com/zsh-users/zsh-autosuggestions "$autosuggestions_dir"
+    else
+        print_info "zsh-autosuggestions already installed"
+        # Update if it's a git repository
+        if [ -d "$autosuggestions_dir/.git" ]; then
+            print_info "Updating zsh-autosuggestions..."
+            (cd "$autosuggestions_dir" && git pull)
+        fi
+    fi
+    
+    # Update plugins in .zshrc if not already added
+    if ! grep -q "plugins=(.*zsh-syntax-highlighting.*zsh-autosuggestions.*)" ~/.zshrc; then
+        sed -i '' 's/plugins=(/plugins=(zsh-syntax-highlighting zsh-autosuggestions /' ~/.zshrc
+    fi
+    
+    print_success "Plugins installed successfully"
 }
 
 # Function to add custom prompt to .zshrc
 add_custom_prompt() {
+    print_header_info "Adding custom prompt to .zshrc..."
     if ! grep -q "autoload -Uz vcs_info" ~/.zshrc; then
         echo "" >> ~/.zshrc
         cat << 'EOF' >> ~/.zshrc
@@ -82,30 +184,50 @@ PROMPT='$(git_prompt_dir)$(get_branch_color)$(get_branch_name)${RESET_COLOR} →
 
 plugins=(git)
 EOF
+        print_success "Custom prompt added to .zshrc"
+    else
+        print_info "Custom prompt already exists in .zshrc"
     fi
 }
 
 # Function to change the theme to 'agnoster'
 change_theme() {
-    echo "Modifying the .zshrc file to use the 'agnoster' theme"
+    print_header_info "Modifying the .zshrc file to use the 'agnoster' theme"
     if grep -q 'ZSH_THEME=' ~/.zshrc; then
         sed -i '' 's/ZSH_THEME=".*"/ZSH_THEME="agnoster"/' ~/.zshrc
+        print_success "Theme changed to 'agnoster'"
     else
         echo 'ZSH_THEME="agnoster"' >> ~/.zshrc
+        print_success "Theme 'agnoster' added to .zshrc"
     fi
 }
 
 # Main script execution
-main() {
+setup_terminal() {
+    print_header "Terminal Setup"
+
+    if ! confirm_action "Do you want Setup Iterm2 ?"; then
+        print_info "Skipping configuration"
+        return 0
+    fi
+
+    # Then proceed with other configurations
     install_oh_my_zsh
+    set_zsh_as_default
     install_powerlevel10k
     install_plugins
     add_custom_prompt
-    change_theme
-    echo "Terminal setup completed. Please restart your terminal."
-    echo "Notes:"
-    echo " - After installation, you need to manually set the font in your terminal to 'Meslo LG L for Powerline'."
-    echo " - You may need to restart your terminal for all changes to take effect."
+    # TODO - alterar essa função para dar ao usuário a possibilida de escolher o tema
+    #change_theme
+    
+    print_header_info "Terminal setup completed. Please restart your terminal."
+    print_info "Notes:"
+    print_yellow " - After installation, you need to manually set the font in your terminal to 'Meslo LG L for Powerline'."
+    print_yellow " - You may need to restart your terminal for all changes to take effect."
+    print_success "Terminal setup completed successfully!"
 }
 
-main
+# Executar o script apenas se não estiver sendo importado
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    setup_terminal "$@"
+fi

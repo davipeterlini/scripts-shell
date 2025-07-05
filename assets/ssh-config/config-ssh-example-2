@@ -1,0 +1,52 @@
+# Default GitHub configuration
+Host github.com
+  HostName github.com
+  User git
+  IdentitiesOnly yes
+  IdentityFile ~/.ssh/id_rsa_personal
+
+# Work repositories
+Host github.com-work
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_rsa_work
+  IdentitiesOnly yes
+
+# Specific work organization hosts
+Host github.com-CI-T-HyperX
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_rsa_work
+  IdentitiesOnly yes
+
+Host github.com-davipeterlinicit
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_rsa_work
+  IdentitiesOnly yes
+
+# Personal repositories
+Host github.com-davipeterlini
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_rsa_personal
+  IdentitiesOnly yes
+
+Host github.com-futureit
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_rsa_personal
+  IdentitiesOnly yes
+
+Host github.com-medicalclub
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_rsa_personal
+  IdentitiesOnly yes
+
+# Bitbucket configuration
+Host bitbucket.org-ciandt_it
+  HostName bitbucket.org
+  User git
+  IdentityFile ~/.ssh/id_rsa_bb_work
+  IdentitiesOnly yes
