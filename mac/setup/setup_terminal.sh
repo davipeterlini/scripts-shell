@@ -217,8 +217,8 @@ setup_terminal() {
     install_powerlevel10k
     install_plugins
     add_custom_prompt
-    # TODO - alterar essa função para dar ao usuário a possibilida de escolher o tema
-    #change_theme
+    # Return the default theme
+    change_theme
     
     print_header_info "Terminal setup completed. Please restart your terminal."
     print_info "Notes:"

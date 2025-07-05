@@ -187,7 +187,7 @@
     - Configurar o terminal para abrir o finger print quando pedir a senha no mac
     - crie um script de setup_mac na raiz da pasta mac ele deve ser semelhante ao @setup_dev.sh porém chamar todos os scripts de setup do mac como é chamado no @setup_enviroment.sh  na função _setup_mac
     - agora subistitua no @setup_enviroment.sh a funão setup_mac pela chamada desse script 
-
+    - Corrigir problemas do iterm2
 
     
     - Instalação do Python na versão correta 
