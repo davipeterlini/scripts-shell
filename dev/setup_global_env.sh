@@ -139,7 +139,12 @@ reload_profile() {
 
 # Main script flow
 setup_global_env() {
-    print_header "Setting up global environment"
+    print_header_info "Setting up global environment"
+
+    if ! confirm_action "Do you want Setting up global environment ?"; then
+        print_info "Skipping configuration"
+        return 0
+    fi
     
     create_env_file
     

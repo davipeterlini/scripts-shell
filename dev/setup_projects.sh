@@ -30,7 +30,7 @@ select_environment_with_exit() {
 
 # Main script execution
 setup_projects() {
-    print_header "Starting Project Configuration"
+    print_header_info "Starting Project Configuration"
 
     if ! confirm_action "Do you want Project Configuration ?"; then
         print_info "Skipping configuration"

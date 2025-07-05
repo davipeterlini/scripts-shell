@@ -339,7 +339,7 @@ verify_setup() {
 
 # Main function
 sync_drive_folders() {
-    print_header "Starting Google Drive folder sync setup..."
+    print_header_info "Starting Google Drive folder sync setup..."
 
     if ! confirm_action "Do you want Google Drive Configuration ?"; then
         print_info "Skipping configuration"
