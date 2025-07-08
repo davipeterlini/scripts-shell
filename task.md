@@ -188,7 +188,10 @@
     - crie um script de setup_mac na raiz da pasta mac ele deve ser semelhante ao @setup_dev.sh porém chamar todos os scripts de setup do mac como é chamado no @setup_enviroment.sh  na função _setup_mac
     - agora subistitua no @setup_enviroment.sh a funão setup_mac pela chamada desse script 
     - Corrigir problemas do iterm2
-
+- 08/07/2025
+  - Ajuste no script de sync_drive_folders
+    -  Remover a parte de criar o link simbólico para os repos da pasta ~/.coder-ide/no-commit
+      - 
     
     - Instalação do Python na versão correta 
     - Instalação do coder-cli
@@ -203,6 +206,71 @@
 
 
 
+
+
+    # Select environment
+    select_environment
+    selected_env=$env_file
+    
+    # Get directories from environment file
+    project_dirs=$(get_env_directories "$selected_env")
+    
+    # If no directories found in env file, use default directories
+    if [ -z "$project_dirs" ]; then
+        print_info "Using default project directories"
+        
+        # Check if PROJECT_REPOS is defined
+        if [ -n "$PROJECT_REPOS" ]; then
+            print_info "Using repositories from PROJECT_REPOS variable"
+            
+            # Process each repository in PROJECT_REPOS
+            IFS=',' read -ra repos <<< "$PROJECT_REPOS"
+            for repo in "${repos[@]}"; do
+                # Extract directory and repo name (format: "directory:repo_name")
+                IFS=':' read -r dir repo_name <<< "$repo"
+                
+                # Create directory if it doesn't exist
+                mkdir -p "$HOME/$dir" 2>/dev/null
+                
+                # Create symbolic link for this repository
+                ln -sf "$HOME/.coder-ide/no-commit" "$HOME/$dir/$repo_name"
+                
+                # Add no-commit to .gitignore in the repository
+                echo "no-commit/" >> "$HOME/$dir/$repo_name/.gitignore" 2>/dev/null
+                
+                print_success "Set up repository: $HOME/$dir/$repo_name"
+            done
+        else
+            # Fallback to default directories if PROJECT_REPOS is not defined
+            mkdir -p "$HOME/projects-cit/flow/coder-assistants" 2>/dev/null
+            mkdir -p "$HOME/projects-personal" 2>/dev/null
+            
+            # Create symbolic links for default projects
+            ln -sf "$HOME/.coder-ide/no-commit" "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension"
+            ln -sf "$HOME/.coder-ide/no-commit" "$HOME/projects-personal/scripts-shell"
+            
+            # Add no-commit to .gitignore in each project
+            echo "no-commit/" >> "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension/.gitignore" 2>/dev/null
+            echo "no-commit/" >> "$HOME/projects-personal/scripts-shell/.gitignore" 2>/dev/null
+        fi
+    else
+        # Create symbolic links for projects from environment
+        for dir in $project_dirs; do
+            if [ -d "$dir" ]; then
+                print_info "Creating symbolic link for $dir"
+                ln -sf "$HOME/.coder-ide/no-commit" "$dir"
+                
+                # Add no-commit to .gitignore
+                echo "no-commit/" >> "$dir/.gitignore" 2>/dev/null
+                print_success "Added no-commit to .gitignore in $dir"
+            else
+                print_info "Creating directory: $dir"
+                mkdir -p "$dir"
+                ln -sf "$HOME/.coder-ide/no-commit" "$dir"
+                echo "no-commit/" >> "$dir/.gitignore" 2>/dev/null
+            fi
+        done
+    fi
 
 
 

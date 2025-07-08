@@ -28,6 +28,26 @@ select_environment_with_exit() {
     done
 }
 
+# Function to manage repositories - Update or Clone repo
+symbolic_link() {
+   # Process arguments in pairs (target_dir and repo_url)
+   while [[ $# -ge 2 ]]; do
+       local repo_url="$1"
+       local target_dir="$2"
+       shift 2
+
+       local repo_name=$(basename "$repo_url" .git)
+       local project_root="$(dirname "$target_dir")"
+       local repo_path="$target_dir/$repo_name"
+
+       if [[ -d "$repo_path" ]]; then
+           update_repository "$repo_path"
+       else
+           clone_repository "$repo_url" "$target_dir"
+       fi
+   done
+}
+
 # Main script execution
 setup_projects() {
     print_header_info "Starting Project Configuration"
@@ -74,6 +94,8 @@ setup_projects() {
         # Manage repositories
         manage_repositories "${PROJECT_REPOS[@]}"
 
+        symbolic_link "${PROJECT_REPOS[@]}"
+
         print_success "Project setup completed successfully!"
         
         # Ask if user wants to continue with another environment
@@ -84,6 +106,19 @@ setup_projects() {
     
     print_info "Continuing with the rest of the setup..."
     return 1
+}
+
+# Function to update a repository
+update_repository() {
+    local repo_path="$1"
+    local repo_name=$(basename "$repo_path")
+
+    print_info "Updating repository: $repo_name"
+    if (cd "$repo_path" && git pull origin main); then
+        print_success "Repository updated successfully: $repo_name"
+    else
+        print_warning "Failed to update repository: $repo_name. Continuing with next repository."
+    fi
 }
 
 # Check if the script is being executed directly or sourced

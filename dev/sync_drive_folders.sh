@@ -274,47 +274,6 @@ setup_symlinks() {
     # Create main symbolic link
     ln -sf "$SYNC_FOLDER" "$HOME/.coder-ide"
     print_success "Created main symbolic link: $HOME/.coder-ide -> $SYNC_FOLDER"
-    
-    # Select environment
-    select_environment
-    selected_env=$env_file
-    
-    # Get directories from environment file
-    project_dirs=$(get_env_directories "$selected_env")
-    
-    # If no directories found in env file, use default directories
-    if [ -z "$project_dirs" ]; then
-        print_info "Using default project directories"
-        mkdir -p "$HOME/projects-cit/flow/coder-assistants" 2>/dev/null
-        mkdir -p "$HOME/projects-personal" 2>/dev/null
-        
-        # Create symbolic links for default projects
-        ln -sf "$HOME/.coder-ide/no-commit" "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension"
-        ln -sf "$HOME/.coder-ide/no-commit" "$HOME/projects-personal/scripts-shell"
-        
-        # Add no-commit to .gitignore in each project
-        echo "no-commit/" >> "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension/.gitignore" 2>/dev/null
-        echo "no-commit/" >> "$HOME/projects-personal/scripts-shell/.gitignore" 2>/dev/null
-    else
-        # Create symbolic links for projects from environment
-        for dir in $project_dirs; do
-            if [ -d "$dir" ]; then
-                print_info "Creating symbolic link for $dir"
-                ln -sf "$HOME/.coder-ide/no-commit" "$dir"
-                
-                # Add no-commit to .gitignore
-                echo "no-commit/" >> "$dir/.gitignore" 2>/dev/null
-                print_success "Added no-commit to .gitignore in $dir"
-            else
-                print_info "Creating directory: $dir"
-                mkdir -p "$dir"
-                ln -sf "$HOME/.coder-ide/no-commit" "$dir"
-                echo "no-commit/" >> "$dir/.gitignore" 2>/dev/null
-            fi
-        done
-    fi
-    
-    print_success "Created project symbolic links"
 }
 
 # Verify setup
@@ -339,11 +298,24 @@ verify_setup() {
             fi
         done
     else
-        # Check default symlinks
-        if [ ! -L "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension/no-commit" ] || \
-           [ ! -L "$HOME/projects-personal/scripts-shell/no-commit" ]; then
-            print_alert "Some project symbolic links may not be correctly set up"
-            symlinks_ok=false
+        # Check if PROJECT_REPOS is defined
+        if [ -n "$PROJECT_REPOS" ]; then
+            # Check symlinks for repositories defined in PROJECT_REPOS
+            IFS=',' read -ra repos <<< "$PROJECT_REPOS"
+            for repo in "${repos[@]}"; do
+                IFS=':' read -r dir repo_name <<< "$repo"
+                if [ ! -L "$HOME/$dir/$repo_name/no-commit" ]; then
+                    print_alert "Symbolic link not correctly set up for: $HOME/$dir/$repo_name/no-commit"
+                    symlinks_ok=false
+                fi
+            done
+        else
+            # Check default symlinks
+            if [ ! -L "$HOME/projects-cit/flow/coder-assistants/flow-coder-extension/no-commit" ] || \
+               [ ! -L "$HOME/projects-personal/scripts-shell/no-commit" ]; then
+                print_alert "Some project symbolic links may not be correctly set up"
+                symlinks_ok=false
+            fi
         fi
     fi
     
