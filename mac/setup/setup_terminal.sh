@@ -130,7 +130,7 @@ add_custom_prompt() {
     print_header_info "Adding custom prompt to .zshrc..."
     if ! grep -q "autoload -Uz vcs_info" ~/.zshrc; then
         echo "" >> ~/.zshrc
-        cat << 'EOF' >> ~/.zshrc
+        cat "$(dirname "$0")/.zshrc.example" >> ~/.zshrc
         print_success "Custom prompt added to .zshrc"
     else
         print_info "Custom prompt already exists in .zshrc"
@@ -161,7 +161,7 @@ setup_terminal() {
     # Then proceed with other configurations
     install_oh_my_zsh
     set_zsh_as_default
-    install_powerlevel10k
+    #install_powerlevel10k
     install_plugins
     add_custom_prompt
     # Return the default theme
