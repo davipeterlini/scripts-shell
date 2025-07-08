@@ -126,9 +126,9 @@ find_drive_path() {
             "$HOME/Google Drive"
             "$HOME/Google Drive File Stream"
             "$HOME/Library/CloudStorage/GoogleDrive-*"
-            "$HOME/Insync/davi.peterlini@ciandt.com/Google Drive"
+            "$HOME/Insync/davi.peterlini@ciandt.com/Google\ Drive"
         )
-        
+        print_error "$PosSIBLE_PATHS"
         for path_pattern in "${PosSIBLE_PATHS[@]}"; do
             for path in $path_pattern; do
                 if [ -d "$path" ]; then
@@ -256,6 +256,21 @@ get_env_directories() {
 # Setup symbolic links
 setup_symlinks() {
     print_info "Setting up symbolic links..."
+    
+    # Check if .coder-ide already exists and create backup if needed
+    if [ -e "$HOME/.coder-ide" ]; then
+        if [ -L "$HOME/.coder-ide" ]; then
+            print_info "Removing existing symbolic link at $HOME/.coder-ide"
+            rm "$HOME/.coder-ide"
+        else
+            print_info "Backing up existing directory $HOME/.coder-ide to $HOME/.coder-ide.bkp"
+            # Remove old backup if it exists
+            if [ -e "$HOME/.coder-ide.bkp" ]; then
+                rm -rf "$HOME/.coder-ide.bkp"
+            fi
+            mv "$HOME/.coder-ide" "$HOME/.coder-ide.bkp"
+        fi
+    fi
     
     # Create main symbolic link
     ln -sf "$SYNC_FOLDER" "$HOME/.coder-ide"
