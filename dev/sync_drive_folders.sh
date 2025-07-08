@@ -126,6 +126,7 @@ find_drive_path() {
             "$HOME/Google Drive"
             "$HOME/Google Drive File Stream"
             "$HOME/Library/CloudStorage/GoogleDrive-*"
+            "$HOME/Insync/davi.peterlini@ciandt.com/Google\ Drive"
         )
         
         for path_pattern in "${PosSIBLE_PATHS[@]}"; do
