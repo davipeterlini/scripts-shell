@@ -209,6 +209,8 @@
       claude 
       codex
       gemini
+  - aplique o clean code nesse codigoe crie um main 
+  - 
 
 
 

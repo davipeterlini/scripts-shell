@@ -5,94 +5,148 @@
 # - OpenAI Codex
 # - Google Gemini CLI
 
-echo "=== Iniciando instalação das ferramentas de IA ==="
+# Importar utilitários de cores para mensagens
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$ROOT_DIR/utils/colors_message.sh"
 
-# Verificar se o Node.js e npm estão instalados
-if ! command -v node &> /dev/null || ! command -v npm &> /dev/null; then
-    echo "Node.js ou npm não encontrados. Por favor, instale-os primeiro."
-    echo "Você pode instalá-los com: sudo apt install nodejs npm (Ubuntu/Debian)"
-    exit 1
-fi
+# Constantes
+CLAUDE_PACKAGE="@anthropic-ai/claude-code"
+CODEX_PACKAGE="@openai/codex"
+GEMINI_PACKAGE="@google/gemini-cli"
 
-# Função para verificar se a instalação foi bem-sucedida
-check_installation() {
+# Verifica os requisitos do sistema
+check_requirements() {
+    print_info "Checking system requirements"
+    
+    if ! command -v node &> /dev/null; then
+        print_error "Node.js not found. Please install it first."
+        print "You can install it with: sudo apt install nodejs (Ubuntu/Debian)"
+        return 1
+    fi
+    
+    if ! command -v npm &> /dev/null; then
+        print_error "npm not found. Please install it first."
+        print "You can install it with: sudo apt install npm (Ubuntu/Debian)"
+        return 1
+    fi
+    
+    print_success "All requirements satisfied"
+    return 0
+}
+
+# Instala um pacote npm global
+install_npm_package() {
+    local package_name="$1"
+    local display_name="$2"
+    
+    print_header_info "Installing $display_name"
+    npm install -g "$package_name"
+    
     if [ $? -eq 0 ]; then
-        echo "✅ $1 instalado com sucesso!"
+        print_success "$display_name installed successfully!"
+        return 0
     else
-        echo "❌ Falha ao instalar $1. Verifique os erros acima."
-        exit 1
+        print_error "Failed to install $display_name. Check the errors above."
+        return 1
     fi
 }
 
-# Instalação do Claude Code
-echo -e "\n=== Instalando Claude Code ==="
-npm install -g @anthropic-ai/claude-code
-check_installation "Claude Code"
+# Configura as chaves de API
+configure_api_keys() {
+    print_header_info "API Key Configuration"
+    print_info "Please provide your API keys:"
+    
+    # OpenAI API Key
+    print_yellow "OpenAI API Key (leave blank to skip): "
+    read openai_key
+    if [ ! -z "$openai_key" ]; then
+        echo "export OPENAI_API_KEY=\"$openai_key\"" >> ~/.bashrc
+        export OPENAI_API_KEY="$openai_key"
+        print_success "OpenAI API key configured"
+    else
+        print_alert "OpenAI API key not configured. Configure manually with: export OPENAI_API_KEY=\"your-api-key-here\""
+    fi
+    
+    # Gemini API Key
+    print_yellow "Gemini API Key (leave blank to skip): "
+    read gemini_key
+    if [ ! -z "$gemini_key" ]; then
+        echo "export GEMINI_API_KEY=\"$gemini_key\"" >> ~/.bashrc
+        export GEMINI_API_KEY="$gemini_key"
+        print_success "Gemini API key configured"
+    else
+        print_alert "Gemini API key not configured. Configure manually with: export GEMINI_API_KEY=\"your-api-key-here\""
+    fi
+    
+    # Recarregar o .bashrc para aplicar as variáveis de ambiente
+    source ~/.bashrc
+}
 
-# Instalação do OpenAI Codex
-echo -e "\n=== Instalando OpenAI Codex ==="
-npm install -g @openai/codex
-check_installation "OpenAI Codex"
+# Testa se um comando está disponível
+test_command() {
+    local command_name="$1"
+    local display_name="$2"
+    local usage_example="$3"
+    
+    print_info "Testing $display_name"
+    if command -v "$command_name" &> /dev/null; then
+        print_success "The '$command_name' command is available."
+        print "To use $display_name, run: $usage_example"
+        return 0
+    else
+        print_error "The '$command_name' command is not available. Check the installation."
+        return 1
+    fi
+}
 
-# Instalação do Google Gemini CLI
-echo -e "\n=== Instalando Google Gemini CLI ==="
-npm install -g @google/gemini-cli
-check_installation "Google Gemini CLI"
+# Testa todas as ferramentas instaladas
+test_installed_tools() {
+    print_header_info "Testing installed tools"
+    
+    local success=0
+    
+    test_command "claude" "Claude Code" "claude <command>" || ((success++))
+    test_command "codex" "OpenAI Codex" "codex <command>" || ((success++))
+    test_command "gemini" "Google Gemini CLI" "gemini <command>" || ((success++))
+    
+    return $success
+}
 
-# Configuração das chaves de API
-echo -e "\n=== Configuração das chaves de API ==="
-echo "Por favor, forneça suas chaves de API:"
+# Função principal
+install_ai_tools() {
+    print_header "AI Tools Installation"
+    print_info "Starting installation of AI development tools"
+    
+    # Verificar requisitos
+    check_requirements || exit 1
+    
+    # Instalar pacotes
+    install_npm_package "$CLAUDE_PACKAGE" "Claude Code" || exit 1
+    install_npm_package "$CODEX_PACKAGE" "OpenAI Codex" || exit 1
+    install_npm_package "$GEMINI_PACKAGE" "Google Gemini CLI" || exit 1
+    
+    # Configurar chaves de API
+    configure_api_keys
+    
+    # Testar ferramentas instaladas
+    test_installed_tools
+    local test_result=$?
+    
+    # Mensagem final
+    print_header "Installation Complete"
+    
+    if [ $test_result -eq 0 ]; then
+        print_success "All tools were installed and are available."
+    else
+        print_alert "Some tools may not be available. Check the messages above."
+    fi
+    
+    print_info "Remember to configure your API keys if you haven't done so yet."
+    print_alert "You may need to restart your terminal for all changes to take effect."
+}
 
-echo -n "OpenAI API Key (deixe em branco para pular): "
-read openai_key
-if [ ! -z "$openai_key" ]; then
-    echo "export OPENAI_API_KEY=\"$openai_key\"" >> ~/.bashrc
-    export OPENAI_API_KEY="$openai_key"
-    echo "✅ Chave da OpenAI configurada"
-else
-    echo "⚠️ Chave da OpenAI não configurada. Configure manualmente com: export OPENAI_API_KEY=\"your-api-key-here\""
+# Check if the script is being executed directly or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    install_ai_tools "$@"
 fi
-
-echo -n "Gemini API Key (deixe em branco para pular): "
-read gemini_key
-if [ ! -z "$gemini_key" ]; then
-    echo "export GEMINI_API_KEY=\"$gemini_key\"" >> ~/.bashrc
-    export GEMINI_API_KEY="$gemini_key"
-    echo "✅ Chave do Gemini configurada"
-else
-    echo "⚠️ Chave do Gemini não configurada. Configure manualmente com: export GEMINI_API_KEY=\"your-api-key-here\""
-fi
-
-# Recarregar o .bashrc para aplicar as variáveis de ambiente
-source ~/.bashrc
-
-# Teste das ferramentas
-echo -e "\n=== Testando as ferramentas instaladas ==="
-
-echo -e "\n--- Testando Claude Code ---"
-if command -v claude &> /dev/null; then
-    echo "O comando 'claude' está disponível."
-    echo "Para usar o Claude Code, execute: claude <comando>"
-else
-    echo "❌ O comando 'claude' não está disponível. Verifique a instalação."
-fi
-
-echo -e "\n--- Testando OpenAI Codex ---"
-if command -v codex &> /dev/null; then
-    echo "O comando 'codex' está disponível."
-    echo "Para usar o OpenAI Codex, execute: codex <comando>"
-else
-    echo "❌ O comando 'codex' não está disponível. Verifique a instalação."
-fi
-
-echo -e "\n--- Testando Google Gemini CLI ---"
-if command -v gemini &> /dev/null; then
-    echo "O comando 'gemini' está disponível."
-    echo "Para usar o Google Gemini CLI, execute: gemini <comando>"
-else
-    echo "❌ O comando 'gemini' não está disponível. Verifique a instalação."
-fi
-
-echo -e "\n=== Instalação concluída ==="
-echo "Lembre-se de configurar suas chaves de API se ainda não o fez."
-echo "Você pode precisar reiniciar seu terminal para que todas as alterações tenham efeito."

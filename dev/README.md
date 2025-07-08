@@ -6,11 +6,21 @@ Este diretório contém um script para instalar e configurar ferramentas de IA p
 - OpenAI Codex
 - Google Gemini CLI
 
+## Estrutura do Script
+
+O script foi desenvolvido seguindo princípios de Clean Code:
+
+- **Modularidade**: Funções pequenas com responsabilidades únicas
+- **Legibilidade**: Nomes descritivos e comentários explicativos
+- **Tratamento de erros**: Verificação de requisitos e resultados de instalação
+- **Manutenibilidade**: Constantes para nomes de pacotes e estrutura lógica clara
+
 ## Requisitos
 
 - Node.js e npm instalados
 - Acesso à internet
 - Chaves de API para os serviços (opcional durante a instalação, mas necessário para uso)
+- Utilitário `colors_message.sh` do diretório utils (já incluído no script)
 
 ## Como usar
 
@@ -49,6 +59,8 @@ Após a instalação, você pode usar as ferramentas com os seguintes comandos:
 - Claude Code: `claude <comando>`
 - OpenAI Codex: `codex <comando>`
 - Google Gemini CLI: `gemini <comando>`
+
+## Documentação oficial
 
 Consulte a documentação oficial de cada ferramenta para obter instruções detalhadas:
 

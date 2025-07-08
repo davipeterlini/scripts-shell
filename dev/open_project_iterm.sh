@@ -140,4 +140,7 @@ open_project_iterm_main() {
     open_repositories_in_iterm "${repos[@]}"
 }
 
-open_project_iterm_main "$@"
+# Check if the script is being executed directly or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    open_project_iterm_main "$@"
+fi
