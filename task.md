@@ -191,6 +191,8 @@
 - 08/07/2025
   - Ajuste no script de sync_drive_folders
     -  Remover a parte de criar o link simbólico para os repos da pasta ~/.coder-ide/no-commit
+  - Adicionar o screen studio via brew e colocar isso no env 
+
     - Criar script para instalção de aplicativos de IA 
       - flow-coder 
       - claude 
