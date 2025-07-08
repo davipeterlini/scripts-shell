@@ -146,20 +146,17 @@ setup_global_env() {
         return 0
     fi
     
+    # TODO - alterar para criar ou alterar as variávis no ~/.coder-ide/.env
     create_env_file
     
-    # Use the external choose_shell_profile script instead of the internal function
     choose_shell_profile
     
     add_export_to_profile "$PROFILE_FILE"
     
-    # Setup variables - will prompt for each variable one by one with proper waiting
     setup_variables
     
-    # Reload the profile to apply changes
     reload_profile "$PROFILE_FILE"
     
-    # Print all environment variables
     print_env_variables
     
     print_success "Global environment setup completed!"

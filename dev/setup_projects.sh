@@ -29,6 +29,7 @@ select_environment_with_exit() {
 }
 
 # Function to manage repositories - Update or Clone repo
+# TODO - ajustar a lsita das patas que são repos para criação dos links simbólicos 
 symbolic_link() {
     print_alert "Create Simbolic link"
    # Process arguments in pairs (target_dir and repo_url)
@@ -106,11 +107,9 @@ setup_projects() {
             continue
         fi
 
-        # Create directories
         create_directories "$PROJECT_DIR" "${PROJECT_DIRS[@]}"
 
-        # Manage repositories
-        #manage_repositories "${PROJECT_REPOS[@]}"
+        manage_repositories "${PROJECT_REPOS[@]}"
 
         symbolic_link "${PROJECT_REPOS[@]}"
 

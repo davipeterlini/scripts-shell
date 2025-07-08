@@ -193,7 +193,24 @@
     -  Remover a parte de criar o link simbólico para os repos da pasta ~/.coder-ide/no-commit
   - Adicionar o screen studio via brew e colocar isso no env 
   - Adicionando no script de install_homebrew e remover o brew analytics off
-  
+  - crie um script para a instalação das seguintes aplicações 
+    - code claude - npm install -g @anthropic-ai/claude-code
+    (https://docs.anthropic.com/en/docs/claude-code/overview)
+    - codex - npm install -g @openai/codex
+    configs - export OPENAI_API_KEY="your-api-key-here"
+    (https://github.com/openai/codex)
+    - npm install -g @google/gemini-cli
+    (https://github.com/google-gemini/gemini-cli)
+    config 
+    export GEMINI_API_KEY="YOUR_API_KEY"
+
+    Após instalar teste as aplicações 
+    comandos de teste: 
+      claude 
+      codex
+      gemini
+
+
 
     - Criar script para instalção de aplicativos de IA 
       - flow-coder 
