@@ -49,7 +49,6 @@ set_zsh_as_default() {
     fi
 }
 
-# TODO - Garantir que isso está funcionando
 # Function to install Powerlevel10k theme
 install_powerlevel10k() {
     print_header_info "Installing Powerlevel10k theme..."
