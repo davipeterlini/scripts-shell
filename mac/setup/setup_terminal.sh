@@ -161,11 +161,13 @@ setup_terminal() {
     # Then proceed with other configurations
     install_oh_my_zsh
     set_zsh_as_default
+    #TODO - não está fazendo mais sentido por hora 
     #install_powerlevel10k
     install_plugins
     add_custom_prompt
     # Return the default theme
-    change_theme
+    # TODO - não está mais fazendo sentido por hora
+    #change_theme
     
     print_header_info "Terminal setup completed. Please restart your terminal."
     print_info "Notes:"

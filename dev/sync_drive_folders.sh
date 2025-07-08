@@ -126,7 +126,7 @@ find_drive_path() {
             "$HOME/Google Drive"
             "$HOME/Google Drive File Stream"
             "$HOME/Library/CloudStorage/GoogleDrive-*"
-            "$HOME/Insync/davi.peterlini@ciandt.com/Google\ Drive"
+            "$HOME/Insync/davi.peterlini@ciandt.com/Google Drive"
         )
         
         for path_pattern in "${PosSIBLE_PATHS[@]}"; do
@@ -175,7 +175,7 @@ create_folder_structure() {
     # Check if the folder already exists
     # TODO - Quando voltar a funcionar o app do drives
     #SYNC_FOLDER="$DRIVE_PATH/Meu Drive/$folder_name"
-    SYNC_FOLDER="$DRIVE_PATH/$folder_name"
+    SYNC_FOLDER="$DRIVE_PATH$folder_name"
     if [ -d "$SYNC_FOLDER" ]; then
         print_info "Sync folder already exists: $SYNC_FOLDER"
     else
@@ -349,10 +349,11 @@ sync_drive_folders() {
         return 0
     fi
     
-    load_env .env.personal
-    load_env .env.work
+    # TODO - só deve ser carregado se não for chamado por outro script
+    #load_env .env.personal
+    #load_env .env.work
     
-    detect_os
+    #detect_os
     
     if ! check_drive_installed; then
         install_drive
