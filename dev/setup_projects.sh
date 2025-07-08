@@ -30,6 +30,7 @@ select_environment_with_exit() {
 
 # Function to manage repositories - Update or Clone repo
 symbolic_link() {
+    print_alert "Create Simbolic link"
    # Process arguments in pairs (target_dir and repo_url)
    while [[ $# -ge 2 ]]; do
        local repo_url="$1"
@@ -40,22 +41,25 @@ symbolic_link() {
        local project_root="$(dirname "$target_dir")"
        local repo_path="$target_dir/$repo_name"
 
+
        if [[ -d "$repo_path" ]]; then
-           no_commit_symbolic_link "$repo_path"
+           set_symbolic_link_no_commit "$repo_path"
        else
            print_error "no repo found $repo_path"
        fi
    done
 }
 
-# Function to update a repository
-update_rno_commit_symbolic_linkepository() {
-    local repo_path="$1"
-    local repo_name=$(basename "$repo_path")
+# Function to update a repositor
+set_symbolic_link_no_commit() {
+    local target_dir="$1"
+    #local repo_name=$(basename "$repo_path")
 
     print_info "Create Symbolyc Link Inside of repository: $repo_name"
-    if (cd "$repo_path"); then
-        
+    if (cd "$target_dir"); then
+        print_alert "$target_dir"
+        exit 1
+        ln -s $HOME/.coder-ide/no-commit $repo_name
         print_success "Repository updated successfully: $repo_name"
     else
         print_warning "Failed to update repository: $repo_name. Continuing with next repository."
@@ -106,7 +110,7 @@ setup_projects() {
         create_directories "$PROJECT_DIR" "${PROJECT_DIRS[@]}"
 
         # Manage repositories
-        manage_repositories "${PROJECT_REPOS[@]}"
+        #manage_repositories "${PROJECT_REPOS[@]}"
 
         symbolic_link "${PROJECT_REPOS[@]}"
 
