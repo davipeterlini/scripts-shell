@@ -11,6 +11,9 @@ install_homebrew() {
         print_success "Instalando o Homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
+        # Desabilitando o Analytics
+        brew analytics off
+
         # Adiciona o Homebrew ao PATH
         print_success "Adicionando o Homebrew ao PATH..."
         echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
