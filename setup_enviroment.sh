@@ -90,10 +90,10 @@ setup_enviroment() {
         print_alert "Unsupported OS: $os"
     fi
 
-    # _setup_github
-    # _setup_bitbucket
-    # setup_ssh_config
-    #setup_gcloud
+    _setup_github
+    _setup_bitbucket
+    setup_ssh_config
+    setup_gcloud
 
     setup_dev
 

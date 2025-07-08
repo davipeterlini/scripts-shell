@@ -1,0 +1,51 @@
+autoload -Uz vcs_info
+precmd() { vcs_info }
+
+# Function to get the root directory name of the Git repository
+function git_prompt_dir() {
+    local dir
+    dir=$(git rev-parse --show-toplevel 2> /dev/null)
+    if [ $? -eq 0 ]; then
+        local repo_name=$(basename "$dir")
+        local relative_path=${PWD#$dir/}
+
+        # If in the root of the repository, do not display the repository name
+        if [ -z "$relative_path" ]; then
+            echo "→ "
+        else
+            # Otherwise, display the root folder and the relevant part of the path
+            local current_dir=$(basename "$relative_path")
+            echo "%F{blue}${repo_name}%f → %F{red}${current_dir}%f → "
+        fi
+    else
+        # If not in a Git repository, display the full path
+        echo "$PWD"
+    fi
+}
+
+# Function to get only the branch name
+function get_branch_name() {
+    local branch_name
+    branch_name=$(git symbolic-ref --short HEAD 2> /dev/null)
+    echo "$branch_name"
+}
+
+# Define colors
+RESET_COLOR="%f"  # Reset color
+BRANCH_COLOR_GREEN="%F{green}"  # Branch color if no changes
+BRANCH_COLOR_YELLOW="%F{yellow}"  # Branch color if there are changes
+
+# Function to determine the branch color
+function get_branch_color() {
+    local git_status
+    git_status=$(git status --porcelain 2> /dev/null)
+    if [ -n "$git_status" ]; then
+        echo "${BRANCH_COLOR_YELLOW}"  # If there are changes, yellow
+    else
+        echo "${BRANCH_COLOR_GREEN}"  # If no changes, green
+    fi
+}
+
+PROMPT='$(git_prompt_dir)$(get_branch_color)$(get_branch_name)${RESET_COLOR} → '
+
+plugins=(git)

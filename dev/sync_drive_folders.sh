@@ -173,7 +173,9 @@ create_folder_structure() {
     fi
     
     # Check if the folder already exists
-    SYNC_FOLDER="$DRIVE_PATH/Meu Drive/$folder_name"
+    # TODO - Quando voltar a funcionar o app do drives
+    #SYNC_FOLDER="$DRIVE_PATH/Meu Drive/$folder_name"
+    SYNC_FOLDER="$DRIVE_PATH/$folder_name"
     if [ -d "$SYNC_FOLDER" ]; then
         print_info "Sync folder already exists: $SYNC_FOLDER"
     else
