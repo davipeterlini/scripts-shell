@@ -41,20 +41,21 @@ symbolic_link() {
        local repo_path="$target_dir/$repo_name"
 
        if [[ -d "$repo_path" ]]; then
-           update_repository "$repo_path"
+           no_commit_symbolic_link "$repo_path"
        else
-           clone_repository "$repo_url" "$target_dir"
+           print_error "no repo found $repo_path"
        fi
    done
 }
 
 # Function to update a repository
-update_repository() {
+update_rno_commit_symbolic_linkepository() {
     local repo_path="$1"
     local repo_name=$(basename "$repo_path")
 
-    print_info "Updating repository: $repo_name"
-    if (cd "$repo_path" && git pull origin main); then
+    print_info "Create Symbolyc Link Inside of repository: $repo_name"
+    if (cd "$repo_path"); then
+        
         print_success "Repository updated successfully: $repo_name"
     else
         print_warning "Failed to update repository: $repo_name. Continuing with next repository."
