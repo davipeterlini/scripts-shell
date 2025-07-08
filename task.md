@@ -191,7 +191,11 @@
 - 08/07/2025
   - Ajuste no script de sync_drive_folders
     -  Remover a parte de criar o link simbólico para os repos da pasta ~/.coder-ide/no-commit
-      - 
+    - Criar script para instalção de aplicativos de IA 
+      - flow-coder 
+      - claude 
+      - codex 
+      - coder cli 
     
     - Instalação do Python na versão correta 
     - Instalação do coder-cli
