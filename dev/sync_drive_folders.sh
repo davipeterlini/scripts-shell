@@ -122,27 +122,26 @@ find_drive_path() {
     
     if [[ "$os" == "macOS" ]]; then
         # On macOS, search for Google Drive directory
-        PosSIBLE_PATHS=(
+        POSSIBLE_PATHS=(
             "$HOME/Google Drive"
             "$HOME/Google Drive File Stream"
             "$HOME/Library/CloudStorage/GoogleDrive-*"
-            "$HOME/Insync/davi.peterlini@ciandt.com/Google\ Drive"
+            "$HOME/Insync/davi.peterlini@ciandt.com/Google Drive"
         )
-        print_error "$PosSIBLE_PATHS"
-        for path_pattern in "${PosSIBLE_PATHS[@]}"; do
-            for path in $path_pattern; do
-                if [ -d "$path" ]; then
-                    DRIVE_PATH="$path"
-                    print_info "Found Google Drive at: $DRIVE_PATH"
-                    
-                    # Verify if it's the correct directory
-                    echo -e "${YELLOW}Is this the correct Google Drive path? $DRIVE_PATH (y/n)${NC}"
-                    read -p "" confirm
-                    if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
-                        break 2
-                    fi
+        
+        for path in "${POSSIBLE_PATHS[@]}"; do
+            # Use eval to handle paths with spaces correctly
+            if [ -d "$path" ]; then
+                DRIVE_PATH="$path"
+                print_info "Found Google Drive at: $DRIVE_PATH"
+                
+                # Verify if it's the correct directory
+                echo -e "${YELLOW}Is this the correct Google Drive path? $DRIVE_PATH (y/n)${NC}"
+                read -p "" confirm
+                if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
+                    break
                 fi
-            done
+            fi
         done
         
         # If not found automatically, ask the user
@@ -175,7 +174,7 @@ create_folder_structure() {
     # Check if the folder already exists
     # TODO - Quando voltar a funcionar o app do drives
     #SYNC_FOLDER="$DRIVE_PATH/Meu Drive/$folder_name"
-    SYNC_FOLDER="$DRIVE_PATH$folder_name"
+    SYNC_FOLDER="$DRIVE_PATH/$folder_name"
     if [ -d "$SYNC_FOLDER" ]; then
         print_info "Sync folder already exists: $SYNC_FOLDER"
     else
