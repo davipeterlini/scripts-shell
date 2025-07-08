@@ -202,7 +202,9 @@
       - Teste e ajustes finos        
 
 
-
+BITBUCKET_USERNAME=davipeterlinicit
+BITBUCKET_APP_PASSWORD=YOUR_APP_PASSWORD_HERE
+Inner Souce - YOUR_INNER_SOURCE_TOKEN_HERE
 
 
 

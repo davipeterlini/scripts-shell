@@ -35,6 +35,8 @@ setup_dev() {
     # TODO - Ajustar para abrir as pastas desejadas no terminal 
     #open_project_iterm
 
+    # VScode config
+
     print_success "Setup concluído com sucesso!"
 }
 
