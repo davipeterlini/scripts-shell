@@ -15,7 +15,6 @@ CLAUDE_PACKAGE="@anthropic-ai/claude-code"
 CODEX_PACKAGE="@openai/codex"
 GEMINI_PACKAGE="@google/gemini-cli"
 
-# Verifica os requisitos do sistema
 check_requirements() {
     print_info "Checking system requirements"
     
@@ -35,7 +34,6 @@ check_requirements() {
     return 0
 }
 
-# Instala um pacote npm global
 install_npm_package() {
     local package_name="$1"
     local display_name="$2"
@@ -52,7 +50,6 @@ install_npm_package() {
     fi
 }
 
-# Configura as chaves de API
 configure_api_keys() {
     print_header_info "API Key Configuration"
     print_info "Please provide your API keys:"
@@ -83,7 +80,6 @@ configure_api_keys() {
     source ~/.bashrc
 }
 
-# Testa se um comando está disponível
 test_command() {
     local command_name="$1"
     local display_name="$2"
@@ -100,7 +96,6 @@ test_command() {
     fi
 }
 
-# Testa todas as ferramentas instaladas
 test_installed_tools() {
     print_header_info "Testing installed tools"
     
@@ -113,27 +108,26 @@ test_installed_tools() {
     return $success
 }
 
-# Função principal
 install_ai_tools() {
     print_header "AI Tools Installation"
     print_info "Starting installation of AI development tools"
+
+    if ! confirm_action "Do you want Setting up global environment ?"; then
+        print_info "Skipping configuration"
+        return 0
+    fi
     
-    # Verificar requisitos
     check_requirements || exit 1
     
-    # Instalar pacotes
     install_npm_package "$CLAUDE_PACKAGE" "Claude Code" || exit 1
     install_npm_package "$CODEX_PACKAGE" "OpenAI Codex" || exit 1
     install_npm_package "$GEMINI_PACKAGE" "Google Gemini CLI" || exit 1
     
-    # Configurar chaves de API
     configure_api_keys
     
-    # Testar ferramentas instaladas
     test_installed_tools
     local test_result=$?
     
-    # Mensagem final
     print_header "Installation Complete"
     
     if [ $test_result -eq 0 ]; then
