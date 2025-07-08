@@ -23,12 +23,12 @@ setup_dev() {
     # TODO - arrumar para que seja chamado apenas quando o script for chamado diretamente
     #grant_permissions
 
-    setup_projects
-
     sync_drive_folders
-    
+
     # TODO - ajustar script para que grave o .env na pasta sincronizada do drive 
     setup_global_env
+
+    setup_projects
 
     #install_flow_coder
 

@@ -48,6 +48,19 @@ symbolic_link() {
    done
 }
 
+# Function to update a repository
+update_repository() {
+    local repo_path="$1"
+    local repo_name=$(basename "$repo_path")
+
+    print_info "Updating repository: $repo_name"
+    if (cd "$repo_path" && git pull origin main); then
+        print_success "Repository updated successfully: $repo_name"
+    else
+        print_warning "Failed to update repository: $repo_name. Continuing with next repository."
+    fi
+}
+
 # Main script execution
 setup_projects() {
     print_header_info "Starting Project Configuration"
@@ -106,19 +119,6 @@ setup_projects() {
     
     print_info "Continuing with the rest of the setup..."
     return 1
-}
-
-# Function to update a repository
-update_repository() {
-    local repo_path="$1"
-    local repo_name=$(basename "$repo_path")
-
-    print_info "Updating repository: $repo_name"
-    if (cd "$repo_path" && git pull origin main); then
-        print_success "Repository updated successfully: $repo_name"
-    else
-        print_warning "Failed to update repository: $repo_name. Continuing with next repository."
-    fi
 }
 
 # Check if the script is being executed directly or sourced
