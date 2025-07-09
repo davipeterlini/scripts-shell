@@ -15,3 +15,7 @@ chatHistory.json
 no-commit/
 .env.local.bak
 no-commit
+
+# VMs
+windows_scripts.zip
+linux_scripts.zip
