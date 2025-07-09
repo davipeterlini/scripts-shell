@@ -210,6 +210,7 @@
       codex
       gemini
   - aplique o clean code nesse codigoe crie um main 
+  - gere um scritp em shell na pasta dev para instalação da aplicação pip install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl. Considere que para esse script preciso instalar a versáo do python 3.12.9 isoladamente na maquina do usuário, porém precisa ser considerado as diferentes versões de S
 - 09/07/2025
   - Altere o script setup_projects para que faça o link simbolico na pasta correta 
   - Alterar o script setup_global_env para criar ou alterar as variávis no ~/.coder-ide/.env
