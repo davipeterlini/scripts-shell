@@ -38,7 +38,7 @@ install_npm_package() {
     local package_name="$1"
     local display_name="$2"
     
-    print_header_info "Installing $display_name"
+    print_info "Installing $display_name"
     npm install -g "$package_name"
     
     if [ $? -eq 0 ]; then
@@ -109,7 +109,7 @@ test_installed_tools() {
 }
 
 install_ai_tools() {
-    print_header "AI Tools Installation"
+    print_header_info "AI Tools Installation"
     print_info "Starting installation of AI development tools"
 
     if ! confirm_action "Do you want Setting up global environment ?"; then

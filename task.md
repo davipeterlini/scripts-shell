@@ -210,8 +210,14 @@
       codex
       gemini
   - aplique o clean code nesse codigoe crie um main 
-  - 
-
+- 09/07/2025
+  - Altere o script setup_projects para que faça o link simbolico na pasta correta 
+  - Alterar o script setup_global_env para criar ou alterar as variávis no ~/.coder-ide/.env
+  - Abra o Site - https://aistudio.google.com/apikey para geração de api do gemini 
+  - Abra o Site - https://aistudio.google.com/apikey para geração de api do gemini 
+  - Alterar o script setup_dev para
+    - Instalar o coder 
+    - Instalar o flow-coder
 
 
     - Criar script para instalção de aplicativos de IA 
