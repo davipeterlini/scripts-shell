@@ -214,19 +214,15 @@
   - Alterar o nome dos scripts para install_flow_coder_cli
   - Alterar o nome dos scripts para install_flow_coder_ide
   - Colocar no script 
+  - Remove da dock do mac os itens abertos recentemente
+  - instalar o claude desktop e colocar isso no env
 - 09/07/2025
   - Altere o script setup_projects para que faça o link simbolico na pasta correta 
   - Alterar o script setup_global_env para criar ou alterar as variávis no ~/.coder-ide/.env
   - Abra o Site - https://aistudio.google.com/apikey para geração de api do gemini 
   - Abra o Site - https://aistudio.google.com/apikey para geração de api do gemini 
   - Alterar o nome dos scripts para install_flow_coder_cli para instalar o python compilado puro sem brew 
-
-
-    - Criar script para instalção de aplicativos de IA 
-      - flow-coder 
-      - claude 
-      - codex 
-      - coder cli 
+  - Remove da dock do mac os itens abertos recentemente - script 
     
     - Instalação do Python na versão correta 
     - Instalação do coder-cli

@@ -1,0 +1,60 @@
+##################################################################################
+#                    Layout Brasileiro ABNT2 para o Mac OS X                     # 
+#                                     V 0.5                                      #
+##################################################################################
+
+SOBRE
+----------------------
+Criei este programa pois não encontrei nenhum outro layout que refletisse o 
+teclado ABNT2 no Mac. Além das teclas comum, copiei as saidas do ABNT2 no Ubuntu Linux
+para teclas poucos usadas.
+
+Existem dois Layouts: 
+    1- Brasil Note : Para ser usado em Notebooks (como Mac Book Pro)
+    2- Brasil PC   : Para quando se conecta um teclado ABNT2 comum por USB no mac
+    
+Eu uso ambos layouts o tempo todo :)
+       
+INSTALAÇÃO
+----------------------
+    => Copie "Brasil ABNT2.bundle" para "/Biblioteca/Keyboard Layouts/" (use o atalho)
+    => É NECESSÁRIO fazer logout ou reiniciar para refletir as mudanças
+    => Vá em "Preferências do Sistema" no ícone do Mac e clique em "Idioma e Texto"
+    => Na aba "Leiautes de Teclado", escolha "Brasil Note" e/ou "Brasil PC"
+    => Divirta-se
+
+PROBLEMAS
+----------------------
+Nos teclados comuns dos computadores da Apple, existem 3 diferenças em relação ao teclado 
+ABNT2 padrão:
+    (A) - Na linha de teclas qwer..., existe uma tecla a mais
+    (B) - Na linha de teclas asdf..., existe uma tecla a menos
+    (C) - Na linha de teclas zxcv..., existem duas teclas a menos
+    
+A solução encontrada foi mover os caracteres da tecla a menos da linha em (B) para a 
+tecla de (A). Já na linha (C), os principais caracteres que sumiram serão acessíveis 
+assim (Option = Alt):
+    (1) - Option + Q = /
+    (2) - Option + W = ?
+    (3) - Option + Z = \
+    (4) - Option + X = |
+Veja que (1) e (2) é muito usado em Notebooks com teclado nativo ABNT2. Já (3) e (4) foram 
+colocados para suprir a tecla faltante.
+
+Existe um bug da Apple que, por algum motivo, não diferencia Alt direito do Alt Esquerdo 
+("Alt Gr" no meu teclado). Infelizmente, não é possível reproduzir tal comportamento.
+
+ATUALIZAÇÃO 
+-----------------------
+V 0.5 - Por algum motivo estranho, quando conectei meu teclado ABNT2 por USB (Brasil PC), 
+        a tecla que produz \| esta produzindo '". Não faço idéia do porquê. 
+
+Caso a Apple nos dê mais surpresas, você mesmo pode arrumar. Clique com o botão direito
+no .bundle e vá em "Mostrar Conteudo do Pacote". Edite os arquivos texto como quiser. 
+Tentei deixar o mais fácil e intuitivo possível.
+
+DÚVIDAS
+----------------------
+Qualquer dúvida, erros ou sugestões, favor entrar em contato. Adoro saber que existem
+pessoas usando isso :)
+rodrigozanattasilva@gmail.com
