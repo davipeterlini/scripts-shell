@@ -95,7 +95,7 @@ install_flow_coder_cli() {
         "linux")
             install_python_linux
             ;;
-        "macos")
+        "macOS")
             install_python_macos
             ;;
         "windows")
