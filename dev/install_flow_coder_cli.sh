@@ -5,29 +5,10 @@ set -e
 PYTHON_VERSION="3.12.9"
 FLOW_CODER_URL="https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl"
 
-print_info() {
-    echo "ℹ️  $1"
-}
 
-print_success() {
-    echo "✅ $1"
-}
-
-print_error() {
-    echo "❌ $1"
-}
-
-detect_os() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        echo "linux"
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "macos"
-    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-        echo "windows"
-    else
-        echo "unknown"
-    fi
-}
+# Import color scheme and profile selection script
+source ./utils/colors_message.sh
+source ./utils/detect_os.sh
 
 install_python_linux() {
     print_info "Installing Python $PYTHON_VERSION on Linux..."
@@ -99,13 +80,18 @@ install_flow_coder() {
     print_success "Flow Coder installed successfully!"
 }
 
-main() {
-    print_info "Starting Flow Coder installation..."
+install_flow_coder_cli() {
+    print_header_info "Starting Flow Coder installation..."
+
+    if ! confirm_action "Do you want Setting up global environment ?"; then
+        print_info "Skipping configuration"
+        return 0
+    fi
     
-    OS=$(detect_os)
-    print_info "Detected OS: $OS"
+    detect_os
+    print_info "Detected OS: $os"
     
-    case $OS in
+    case $os in
         "linux")
             install_python_linux
             ;;
@@ -116,7 +102,7 @@ main() {
             install_python_windows
             ;;
         *)
-            print_error "Unsupported operating system: $OS"
+            print_error "Unsupported operating system: $os"
             exit 1
             ;;
     esac
@@ -134,5 +120,7 @@ main() {
     print_info "You can now use Flow Coder by running: flow_coder"
 }
 
-# Run main function
-main "$@"
+# Check if the script is being executed directly or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    install_flow_coder_cli "$@"
+fi
