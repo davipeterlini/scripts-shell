@@ -588,15 +588,6 @@ run_installation() {
     print_success "Flow Coder CLI is now installed and ready to use!"
 }
 
-###########################################
-# SCRIPT EXECUTION
-###########################################
+
 run_installation
 
-# # Execute main installation process
-# if _ask_confirmation "Do you want to start the Flow Coder CLI installation process?"; then
-#     run_installation
-# else
-#     print_info "Installation aborted by user."
-#     exit 0
-# fi
