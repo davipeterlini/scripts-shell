@@ -22,6 +22,97 @@ source "$PROJECT_ROOT/utils/detect_os.sh"
 # PRIVATE FUNCTIONS (Internal use only)
 ###########################################
 
+# Function to display a progress bar
+_show_progress() {
+    local duration=$1    # Duration in seconds
+    local prefix=$2      # Text to display before the progress bar
+    local width=50       # Width of the progress bar
+    local interval=0.1   # Update interval in seconds
+    local steps=$((duration / interval))
+    local progress=0
+    
+    # Hide cursor
+    tput civis
+    
+    # Start time
+    local start_time=$(date +%s)
+    local current_time
+    local elapsed
+    local percent
+    
+    while [ $progress -lt $steps ]; do
+        current_time=$(date +%s)
+        elapsed=$((current_time - start_time))
+        
+        # Calculate percentage
+        percent=$((elapsed * 100 / duration))
+        if [ $percent -gt 100 ]; then
+            percent=100
+        fi
+        
+        # Calculate filled and empty parts of the bar
+        local filled=$((width * percent / 100))
+        local empty=$((width - filled))
+        
+        # Build the progress bar
+        local bar=""
+        for ((i=0; i<filled; i++)); do
+            bar="${bar}█"
+        done
+        for ((i=0; i<empty; i++)); do
+            bar="${bar}░"
+        done
+        
+        # Print the progress bar
+        printf "\r${BLUE}${prefix}${NC} [${GREEN}%s${NC}] %3d%%" "$bar" "$percent"
+        
+        # Update progress
+        progress=$((elapsed * steps / duration))
+        if [ $progress -ge $steps ]; then
+            break
+        fi
+        
+        sleep $interval
+    done
+    
+    # Complete the progress bar
+    local bar=""
+    for ((i=0; i<width; i++)); do
+        bar="${bar}█"
+    done
+    printf "\r${BLUE}${prefix}${NC} [${GREEN}%s${NC}] %3d%%\n" "$bar" "100"
+    
+    # Show cursor
+    tput cnorm
+}
+
+# Function to run a command with a progress bar
+_run_with_progress() {
+    local command=$1
+    local message=$2
+    local duration=$3
+    
+    # Run the command in the background and redirect output
+    eval "$command" > /tmp/command_output.log 2>&1 &
+    local pid=$!
+    
+    # Show progress bar
+    _show_progress "$duration" "$message"
+    
+    # Wait for the command to finish
+    wait $pid
+    local exit_code=$?
+    
+    # Check if the command was successful
+    if [ $exit_code -ne 0 ]; then
+        print_error "Command failed with exit code $exit_code"
+        print_error "Check the log file at /tmp/command_output.log for details"
+        return $exit_code
+    fi
+    
+    return 0
+}
+
 # Function to ask user for confirmation
 _ask_confirmation() {
     local message=$1
@@ -124,21 +215,25 @@ _install_python_from_source() {
     
     # Download Python source
     print_info "Downloading Python 3.12.9 source..."
-    wget https://www.python.org/ftp/python/3.12.9/Python-3.12.9.tgz
+    wget -q --show-progress https://www.python.org/ftp/python/3.12.9/Python-3.12.9.tgz
     
     # Extract source
+    print_info "Extracting Python source..."
     tar -xzf Python-3.12.9.tgz
     cd Python-3.12.9
     
     # Configure and install Python
     print_info "Configuring Python 3.12.9..."
-    ./configure --prefix="$install_dir" --enable-optimizations
+    ./configure --prefix="$install_dir" --enable-optimizations > /tmp/python_configure.log 2>&1
     
     print_info "Building Python 3.12.9 (this may take a while)..."
-    make -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
+    # Estimate the number of cores for parallel build
+    local cores=$(nproc 2>/dev/null || sysctl -n hw.ncpu)
+    make -j$cores > /tmp/python_build.log 2>&1
     
     print_info "Installing Python 3.12.9..."
-    make install
+    # Run make install with a progress bar (estimated 60 seconds, adjust as needed)
+    _run_with_progress "make install" "Installing Python" 60
     
     # Clean up
     cd "$HOME"
@@ -172,7 +267,9 @@ _install_python_with_pyenv() {
         print_alert "Python 3.12.9 already installed with pyenv"
     else
         # Use the previously installed Python as the build environment
-        PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install 3.12.9
+        print_info "Installing Python 3.12.9 with pyenv (this may take a while)..."
+        # Run pyenv install with a progress bar (estimated 180 seconds, adjust as needed)
+        _run_with_progress "PYTHON_CONFIGURE_OPTS='--enable-shared' pyenv install 3.12.9" "Building Python with pyenv" 180
         print_success "Python 3.12.9 installed with pyenv successfully."
     fi
     
@@ -238,7 +335,6 @@ install_pyenv() {
         
         # Install Python 3.12.9 with pyenv
         if _ask_confirmation "Do you want to install Python 3.12.9 with pyenv?"; then
-            print_info "Installing Python 3.12.9 with pyenv..."
             _install_python_with_pyenv
         else
             print_alert "Skipping Python 3.12.9 installation with pyenv. This might cause issues later."
@@ -260,7 +356,8 @@ install_pipx() {
             print_alert "pipx already installed"
         else
             # Install pipx using the pyenv Python
-            python -m pip install --user pipx
+            print_info "Installing pipx..."
+            _run_with_progress "python -m pip install --user pipx" "Installing pipx" 10
             print_success "pipx installed successfully."
         fi
         
@@ -287,7 +384,8 @@ install_flow_coder_cli() {
         print_header_info "Starting Flow Coder CLI installation..."
         
         # Install Flow Coder CLI using pipx
-        pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl
+        print_info "Installing Flow Coder CLI..."
+        _run_with_progress "pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl" "Installing Flow Coder CLI" 15
         
         print_success "Flow Coder CLI installed successfully."
     else

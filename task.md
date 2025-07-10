@@ -238,10 +238,10 @@
     - O script deve aplicar boas práticas de clean code e clean arquitecture 
     - O nome do script deve ser install_coder_cli.sh e deve estar na pasta flow_coder
     - No script sempre pergunte para cada execução de cada metodo 
-
     - Ajuste o script @install_coder_cli.sh para usar o @detect_os.sh e @colors_message.sh 
-
     - Ocute a saida do make install do metodo _install_python_from_source do terminal mostre uma barra de progresso 
+
+
 
     - Como remover o python instalado pelo script 
     - precisa instalar o pipx com o python 3.12.9 no pyenv
