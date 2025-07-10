@@ -279,6 +279,7 @@ install_pyenv() {
 }
 
 # Function to install pipx
+# TODO - precisa instalar o pipx com o python 3.12.9 no pyenv
 install_pipx() {
     if _ask_confirmation "Do you want to install pipx?"; then
         _log_message "Starting pipx installation..."

@@ -238,6 +238,7 @@
     - O script deve aplicar boas práticas de clean code e clean arquitecture 
     - O nome do script deve ser install_coder_cli.sh e deve estar na pasta flow_coder
     - No script sempre pergunte para cada execução de cada metodo 
+    - Ocute a parte onde é feito o make install e coloque uma barra de progresso 
     - No final do script execute o teste no pyhton, pyenv, pipx e no coder 
     - Para executar o teste no coder execute os comando 
       - coder auth add --tenant <seu_tenant> --client <seu_client_id> --secret <seu_client_secret>
