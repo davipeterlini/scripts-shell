@@ -240,15 +240,15 @@
     - No script sempre pergunte para cada execução de cada metodo 
     - Ajuste o script @install_coder_cli.sh para usar o @detect_os.sh e @colors_message.sh 
     - Ocute a saida do make install do metodo _install_python_from_source do terminal mostre uma barra de progresso 
+    - Preciso remover a versão do python compilado com o make para testar a barra de progresso adicionada no script
 
 
-
-    - Como remover o python instalado pelo script 
     - precisa instalar o pipx com o python 3.12.9 no pyenv
 
 
-    no script  eu preciso usar o python instalado na versão 3.12.9 que foi compilado e relaciona-lo ao pyenv como poderia fazer 
-    - No final do script execute o teste no pyhton, pyenv, pipx e no coder 
+    Ao final do script, após instalar tudo, eu preciso usar o python instalado na versão 3.12.9 que foi compilado e relaciona-lo ao pyenv para testar o flow coder instalado  
+    
+    - No final do script execute o teste no flow coder 
     - Para executar o teste no coder execute os comando 
       - coder auth add --tenant <seu_tenant> --client <seu_client_id> --secret <seu_client_secret>
         - Cada um dos campos acima deve ser pedido ao usuário 
