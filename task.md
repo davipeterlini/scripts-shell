@@ -237,6 +237,16 @@
     - Obs: A Instalação deve do python deve estar isolada no ambiente para não afetar a instalação atual do python da máquina do usuário 
     - O script deve aplicar boas práticas de clean code e clean arquitecture 
     - O nome do script deve ser install_coder_cli.sh e deve estar na pasta flow_coder
+    - No script sempre pergunte para cada execução de cada metodo 
+    - No final do script execute o teste no pyhton, pyenv, pipx e no coder 
+    - Para executar o teste no coder execute os comando 
+      - coder auth add --tenant <seu_tenant> --client <seu_client_id> --secret <seu_client_secret>
+        - Cada um dos campos acima deve ser pedido ao usuário 
+        - Salve na raiz do repo que está executando o script no .env as vars acima 
+      - coder smoke
+
+
+
 
     - ajustes o script criado para usar o utils de detect_os e o colors_message.sh 
 
@@ -252,6 +262,7 @@
   - Remove da dock do mac os itens abertos recentemente - script 
   - Rodar o script de configuração de teclado (o novo script) 
 
+- Pinnar mensagens no Space
 
 
 

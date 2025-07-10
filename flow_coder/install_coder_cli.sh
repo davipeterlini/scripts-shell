@@ -37,6 +37,35 @@ _log_error() {
     echo -e "${_RED}[ERROR]${_NC} $1"
 }
 
+# Function to ask user for confirmation
+_ask_confirmation() {
+    local message=$1
+    local default=${2:-Y}
+    
+    if [[ "$default" == "Y" ]]; then
+        prompt="[Y/n]"
+    else
+        prompt="[y/N]"
+    fi
+    
+    echo -e "${_YELLOW}[QUESTION]${_NC} $message $prompt"
+    read -r response
+    
+    # Default response if user just presses Enter
+    if [[ -z "$response" ]]; then
+        response=$default
+    fi
+    
+    # Convert to lowercase
+    response=$(echo "$response" | tr '[:upper:]' '[:lower:]')
+    
+    if [[ "$response" == "y" || "$response" == "yes" ]]; then
+        return 0  # True in bash
+    else
+        return 1  # False in bash
+    fi
+}
+
 # Function to check if a command exists
 _command_exists() {
     command -v "$1" >/dev/null 2>&1
@@ -183,73 +212,129 @@ _install_python_with_pyenv() {
 # PUBLIC FUNCTIONS (Main installation steps)
 ###########################################
 
-# Function to install pyenv
-install_pyenv() {
-    _log_message "Starting pyenv installation..."
-    
-    if [[ -d "$HOME/.pyenv" ]]; then
-        _log_warning "pyenv already installed at $HOME/.pyenv"
+# Function to install dependencies
+install_dependencies() {
+    if _ask_confirmation "Do you want to install required dependencies?"; then
+        local os=$(_detect_os)
+        _log_message "Installing dependencies for $os..."
+        _install_dependencies "$os"
+        _log_success "Dependencies installation completed."
     else
-        _log_message "Installing pyenv..."
-        curl https://pyenv.run | bash
-        
-        _log_success "pyenv installed successfully."
+        _log_warning "Skipping dependencies installation. This might cause issues later."
     fi
-    
-    # Set up pyenv in shell profile
-    local profile=$(_detect_shell_profile)
-    _configure_pyenv_profile "$profile"
-    
-    # Source the profile to make pyenv available in the current session
-    export PYENV_ROOT="$HOME/.pyenv"
-    export PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init --path)"
-    eval "$(pyenv init -)"
-    
-    # Install Python 3.12.9 with pyenv
-    _log_message "Installing Python 3.12.9 with pyenv..."
-    _install_python_with_pyenv
-    
-    _log_success "pyenv setup completed."
-}
-
-# Function to install pipx
-install_pipx() {
-    _log_message "Starting pipx installation..."
-    
-    # Check if pipx is already installed
-    if _command_exists pipx; then
-        _log_warning "pipx already installed"
-    else
-        # Install pipx using the pyenv Python
-        python -m pip install --user pipx
-        _log_success "pipx installed successfully."
-    fi
-    
-    # Ensure pipx is in PATH
-    python -m pipx ensurepath
-    
-    # Add pipx to PATH for the current session
-    export PATH="$HOME/.local/bin:$PATH"
-    
-    _log_success "pipx setup completed."
-}
-
-# Function to install Flow Coder CLI
-install_flow_coder_cli() {
-    _log_message "Starting Flow Coder CLI installation..."
-    
-    # Install Flow Coder CLI using pipx
-    pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl
-    
-    _log_success "Flow Coder CLI installed successfully."
 }
 
 # Function to install Python 3.12.9
 install_python() {
-    _log_message "Starting Python 3.12.9 installation..."
-    _install_python_from_source
-    _log_success "Python installation completed."
+    if _ask_confirmation "Do you want to install Python 3.12.9 from source?"; then
+        _log_message "Starting Python 3.12.9 installation..."
+        _install_python_from_source
+        _log_success "Python installation completed."
+    else
+        _log_warning "Skipping Python installation. This might cause issues with pyenv setup."
+    fi
+}
+
+# Function to install pyenv
+install_pyenv() {
+    if _ask_confirmation "Do you want to install pyenv?"; then
+        _log_message "Starting pyenv installation..."
+        
+        if [[ -d "$HOME/.pyenv" ]]; then
+            _log_warning "pyenv already installed at $HOME/.pyenv"
+        else
+            _log_message "Installing pyenv..."
+            curl https://pyenv.run | bash
+            
+            _log_success "pyenv installed successfully."
+        fi
+        
+        # Set up pyenv in shell profile
+        local profile=$(_detect_shell_profile)
+        
+        if _ask_confirmation "Do you want to configure pyenv in your shell profile ($profile)?"; then
+            _configure_pyenv_profile "$profile"
+        else
+            _log_warning "Skipping pyenv configuration in shell profile. You'll need to configure it manually."
+        fi
+        
+        # Source the profile to make pyenv available in the current session
+        export PYENV_ROOT="$HOME/.pyenv"
+        export PATH="$PYENV_ROOT/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        
+        # Install Python 3.12.9 with pyenv
+        if _ask_confirmation "Do you want to install Python 3.12.9 with pyenv?"; then
+            _log_message "Installing Python 3.12.9 with pyenv..."
+            _install_python_with_pyenv
+        else
+            _log_warning "Skipping Python 3.12.9 installation with pyenv. This might cause issues later."
+        fi
+        
+        _log_success "pyenv setup completed."
+    else
+        _log_warning "Skipping pyenv installation. This might cause issues with pipx setup."
+    fi
+}
+
+# Function to install pipx
+install_pipx() {
+    if _ask_confirmation "Do you want to install pipx?"; then
+        _log_message "Starting pipx installation..."
+        
+        # Check if pipx is already installed
+        if _command_exists pipx; then
+            _log_warning "pipx already installed"
+        else
+            # Install pipx using the pyenv Python
+            python -m pip install --user pipx
+            _log_success "pipx installed successfully."
+        fi
+        
+        # Ensure pipx is in PATH
+        if _ask_confirmation "Do you want to add pipx to your PATH?"; then
+            python -m pipx ensurepath
+            
+            # Add pipx to PATH for the current session
+            export PATH="$HOME/.local/bin:$PATH"
+            _log_success "pipx added to PATH."
+        else
+            _log_warning "Skipping pipx PATH configuration. You'll need to add it manually."
+        fi
+        
+        _log_success "pipx setup completed."
+    else
+        _log_warning "Skipping pipx installation. This will prevent Flow Coder CLI installation."
+    fi
+}
+
+# Function to install Flow Coder CLI
+install_flow_coder_cli() {
+    if _ask_confirmation "Do you want to install Flow Coder CLI?"; then
+        _log_message "Starting Flow Coder CLI installation..."
+        
+        # Install Flow Coder CLI using pipx
+        pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl
+        
+        _log_success "Flow Coder CLI installed successfully."
+    else
+        _log_warning "Skipping Flow Coder CLI installation."
+    fi
+}
+
+# Function to reload shell profile
+reload_shell_profile() {
+    local profile=$(_detect_shell_profile)
+    
+    if _ask_confirmation "Do you want to reload your shell profile ($profile)?"; then
+        _log_message "Reloading shell profile: $profile"
+        # shellcheck disable=SC1090
+        source "$profile"
+        _log_success "Shell profile reloaded."
+    else
+        _log_warning "Skipping shell profile reload. You'll need to reload it manually with: source $profile"
+    fi
 }
 
 # Main installation process
@@ -265,7 +350,7 @@ run_installation() {
     _log_message "Using shell profile: $profile"
     
     # Install dependencies
-    _install_dependencies "$os"
+    install_dependencies
     
     # Install Python 3.12.9 from source
     install_python
@@ -279,8 +364,11 @@ run_installation() {
     # Install Flow Coder CLI
     install_flow_coder_cli
     
+    # Reload shell profile
+    reload_shell_profile
+    
     # Final instructions
-    _log_message "Installation complete!"
+    _log_message "Installation process completed!"
     _log_message "To start using Flow Coder CLI, please restart your terminal or run:"
     _log_message "source $profile"
     
@@ -292,4 +380,9 @@ run_installation() {
 ###########################################
 
 # Execute main installation process
-run_installation
+if _ask_confirmation "Do you want to start the Flow Coder CLI installation process?"; then
+    run_installation
+else
+    _log_message "Installation aborted by user."
+    exit 0
+fi
