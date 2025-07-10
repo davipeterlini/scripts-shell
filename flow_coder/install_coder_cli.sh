@@ -19,6 +19,49 @@ source "$PROJECT_ROOT/utils/colors_message.sh"
 source "$PROJECT_ROOT/utils/detect_os.sh"
 
 ###########################################
+# GLOBAL VARIABLES
+###########################################
+
+# Array to track installed dependencies
+declare -a INSTALLED_DEPENDENCIES=()
+
+# Function to add a dependency to the tracking array
+_add_dependency() {
+    local dep_name=$1
+    local dep_version=$2
+    local dep_path=$3
+    
+    if [[ -n "$dep_version" && -n "$dep_path" ]]; then
+        INSTALLED_DEPENDENCIES+=("$dep_name ($dep_version) - $dep_path")
+    elif [[ -n "$dep_version" ]]; then
+        INSTALLED_DEPENDENCIES+=("$dep_name ($dep_version)")
+    elif [[ -n "$dep_path" ]]; then
+        INSTALLED_DEPENDENCIES+=("$dep_name - $dep_path")
+    else
+        INSTALLED_DEPENDENCIES+=("$dep_name")
+    fi
+}
+
+# Function to display all installed dependencies
+_show_installed_dependencies() {
+    print_header "Installed Dependencies"
+    
+    if [ ${#INSTALLED_DEPENDENCIES[@]} -eq 0 ]; then
+        print_alert "No dependencies were installed."
+        return
+    fi
+    
+    print_info "The following dependencies were installed:"
+    echo
+    
+    for ((i=0; i<${#INSTALLED_DEPENDENCIES[@]}; i++)); do
+        echo -e "${GREEN}✅ ${INSTALLED_DEPENDENCIES[$i]}${NC}"
+    done
+    
+    echo
+}
+
+###########################################
 # PRIVATE FUNCTIONS (Internal use only)
 ###########################################
 
@@ -174,64 +217,131 @@ _install_dependencies() {
     
     if [[ "$os" == "Linux" ]]; then
         # Linux dependencies
+        local linux_deps=()
+        
+        # Update package lists
         sudo apt-get update -y || sudo yum update -y || sudo dnf update -y
-        sudo apt-get install -y curl wget git build-essential libssl-dev zlib1g-dev \
-            libbz2-dev libreadline-dev libsqlite3-dev llvm libncurses5-dev libncursesw5-dev \
-            xz-utils tk-dev libffi-dev liblzma-dev python-openssl || \
-        sudo yum install -y curl wget git gcc zlib-devel bzip2 bzip2-devel readline-devel \
-            sqlite sqlite-devel openssl-devel tk-devel libffi-devel xz-devel || \
-        sudo dnf install -y curl wget git gcc zlib-devel bzip2 bzip2-devel readline-devel \
-            sqlite sqlite-devel openssl-devel tk-devel libffi-devel xz-devel
+        
+        # Try to install with apt-get (Debian/Ubuntu)
+        if command -v apt-get &> /dev/null; then
+            local apt_deps=(
+                "curl" "wget" "git" "build-essential" "libssl-dev" "zlib1g-dev"
+                "libbz2-dev" "libreadline-dev" "libsqlite3-dev" "llvm" 
+                "libncurses5-dev" "libncursesw5-dev" "xz-utils" "tk-dev" 
+                "libffi-dev" "liblzma-dev" "python-openssl"
+            )
+            
+            for dep in "${apt_deps[@]}"; do
+                if ! dpkg -l | grep -q "$dep"; then
+                    sudo apt-get install -y "$dep"
+                    _add_dependency "$dep" "" "apt package"
+                    linux_deps+=("$dep")
+                fi
+            done
+        # Try to install with yum (CentOS/RHEL)
+        elif command -v yum &> /dev/null; then
+            local yum_deps=(
+                "curl" "wget" "git" "gcc" "zlib-devel" "bzip2" "bzip2-devel" 
+                "readline-devel" "sqlite" "sqlite-devel" "openssl-devel" 
+                "tk-devel" "libffi-devel" "xz-devel"
+            )
+            
+            for dep in "${yum_deps[@]}"; do
+                if ! rpm -q "$dep" &> /dev/null; then
+                    sudo yum install -y "$dep"
+                    _add_dependency "$dep" "" "yum package"
+                    linux_deps+=("$dep")
+                fi
+            done
+        # Try to install with dnf (Fedora)
+        elif command -v dnf &> /dev/null; then
+            local dnf_deps=(
+                "curl" "wget" "git" "gcc" "zlib-devel" "bzip2" "bzip2-devel" 
+                "readline-devel" "sqlite" "sqlite-devel" "openssl-devel" 
+                "tk-devel" "libffi-devel" "xz-devel"
+            )
+            
+            for dep in "${dnf_deps[@]}"; do
+                if ! rpm -q "$dep" &> /dev/null; then
+                    sudo dnf install -y "$dep"
+                    _add_dependency "$dep" "" "dnf package"
+                    linux_deps+=("$dep")
+                fi
+            done
+        fi
+        
+        if [ ${#linux_deps[@]} -eq 0 ]; then
+            print_info "All required Linux dependencies are already installed."
+        else
+            print_success "Installed Linux dependencies: ${linux_deps[*]}"
+        fi
+        
     elif [[ "$os" == "macOS" ]]; then
         # macOS dependencies
+        local mac_deps=()
+        
         if ! _command_exists xcode-select; then
             print_info "Installing command line tools..."
             xcode-select --install || true
+            _add_dependency "Xcode Command Line Tools" "" "/Library/Developer/CommandLineTools"
+            mac_deps+=("Xcode Command Line Tools")
         fi
         
         # Check if we need to install additional dependencies
         if ! _command_exists make || ! _command_exists gcc; then
             print_alert "Some development tools might be missing. If installation fails, please install Xcode Command Line Tools."
+        else
+            _add_dependency "make" "$(make --version | head -n 1 | cut -d ' ' -f 3)" "$(which make)"
+            _add_dependency "gcc" "$(gcc --version | head -n 1 | awk '{print $NF}')" "$(which gcc)"
+            mac_deps+=("make" "gcc")
+        fi
+        
+        if [ ${#mac_deps[@]} -eq 0 ]; then
+            print_info "All required macOS dependencies are already installed."
+        else
+            print_success "Installed macOS dependencies: ${mac_deps[*]}"
         fi
     fi
     
-    print_success "Dependencies installed successfully."
+    print_success "Dependencies installation completed."
 }
 
 # Function to install Python 3.12.9 from source
 _install_python_from_source() {
     local install_dir="$HOME/.local/python3.12.9"
+    local python_version="3.12.9"
     
     if [[ -d "$install_dir" ]]; then
-        print_alert "Python 3.12.9 already installed at $install_dir"
+        print_alert "Python $python_version already installed at $install_dir"
+        _add_dependency "Python" "$python_version" "$install_dir"
         return 0
     fi
     
-    print_info "Installing Python 3.12.9 from source..."
+    print_info "Installing Python $python_version from source..."
     
     # Create temporary directory
     local temp_dir=$(mktemp -d)
     cd "$temp_dir"
     
     # Download Python source
-    print_info "Downloading Python 3.12.9 source..."
-    wget -q --show-progress https://www.python.org/ftp/python/3.12.9/Python-3.12.9.tgz
+    print_info "Downloading Python $python_version source..."
+    wget -q --show-progress "https://www.python.org/ftp/python/$python_version/Python-$python_version.tgz"
     
     # Extract source
     print_info "Extracting Python source..."
-    tar -xzf Python-3.12.9.tgz
-    cd Python-3.12.9
+    tar -xzf "Python-$python_version.tgz"
+    cd "Python-$python_version"
     
     # Configure and install Python
-    print_info "Configuring Python 3.12.9..."
+    print_info "Configuring Python $python_version..."
     ./configure --prefix="$install_dir" --enable-optimizations > /tmp/python_configure.log 2>&1
     
-    print_info "Building Python 3.12.9 (this may take a while)..."
+    print_info "Building Python $python_version (this may take a while)..."
     # Estimate the number of cores for parallel build
     local cores=$(nproc 2>/dev/null || sysctl -n hw.ncpu)
     make -j$cores > /tmp/python_build.log 2>&1
     
-    print_info "Installing Python 3.12.9..."
+    print_info "Installing Python $python_version..."
     # Run make install with a progress bar (estimated 60 seconds, adjust as needed)
     _run_with_progress "make install" "Installing Python" 60
     
@@ -239,7 +349,10 @@ _install_python_from_source() {
     cd "$HOME"
     rm -rf "$temp_dir"
     
-    print_success "Python 3.12.9 installed successfully at $install_dir"
+    # Add to installed dependencies
+    _add_dependency "Python (from source)" "$python_version" "$install_dir"
+    
+    print_success "Python $python_version installed successfully at $install_dir"
 }
 
 # Function to configure pyenv in shell profile
@@ -262,20 +375,24 @@ EOF
 
 # Function to install Python with pyenv
 _install_python_with_pyenv() {
+    local python_version="3.12.9"
+    
     # Check if Python 3.12.9 is already installed with pyenv
-    if pyenv versions | grep -q "3.12.9"; then
-        print_alert "Python 3.12.9 already installed with pyenv"
+    if pyenv versions | grep -q "$python_version"; then
+        print_alert "Python $python_version already installed with pyenv"
+        _add_dependency "Python (via pyenv)" "$python_version" "$HOME/.pyenv/versions/$python_version"
     else
         # Use the previously installed Python as the build environment
-        print_info "Installing Python 3.12.9 with pyenv (this may take a while)..."
+        print_info "Installing Python $python_version with pyenv (this may take a while)..."
         # Run pyenv install with a progress bar (estimated 180 seconds, adjust as needed)
-        _run_with_progress "PYTHON_CONFIGURE_OPTS='--enable-shared' pyenv install 3.12.9" "Building Python with pyenv" 180
-        print_success "Python 3.12.9 installed with pyenv successfully."
+        _run_with_progress "PYTHON_CONFIGURE_OPTS='--enable-shared' pyenv install $python_version" "Building Python with pyenv" 180
+        _add_dependency "Python (via pyenv)" "$python_version" "$HOME/.pyenv/versions/$python_version"
+        print_success "Python $python_version installed with pyenv successfully."
     fi
     
     # Set Python 3.12.9 as the global version
-    pyenv global 3.12.9
-    print_info "Python 3.12.9 set as the global version."
+    pyenv global $python_version
+    print_info "Python $python_version set as the global version."
 }
 
 ###########################################
@@ -311,9 +428,16 @@ install_pyenv() {
         
         if [[ -d "$HOME/.pyenv" ]]; then
             print_alert "pyenv already installed at $HOME/.pyenv"
+            # Get pyenv version
+            local pyenv_version=$(pyenv --version 2>/dev/null | cut -d ' ' -f 2 || echo "unknown")
+            _add_dependency "pyenv" "$pyenv_version" "$HOME/.pyenv"
         else
             print_info "Installing pyenv..."
             curl https://pyenv.run | bash
+            
+            # Get pyenv version after installation
+            local pyenv_version=$(PYENV_ROOT="$HOME/.pyenv" PATH="$HOME/.pyenv/bin:$PATH" pyenv --version 2>/dev/null | cut -d ' ' -f 2 || echo "unknown")
+            _add_dependency "pyenv" "$pyenv_version" "$HOME/.pyenv"
             
             print_success "pyenv installed successfully."
         fi
@@ -323,6 +447,7 @@ install_pyenv() {
         
         if _ask_confirmation "Do you want to configure pyenv in your shell profile ($profile)?"; then
             _configure_pyenv_profile "$profile"
+            _add_dependency "pyenv configuration" "" "$profile"
         else
             print_alert "Skipping pyenv configuration in shell profile. You'll need to configure it manually."
         fi
@@ -354,10 +479,17 @@ install_pipx() {
         # Check if pipx is already installed
         if _command_exists pipx; then
             print_alert "pipx already installed"
+            local pipx_version=$(pipx --version 2>/dev/null || echo "unknown")
+            _add_dependency "pipx" "$pipx_version" "$(which pipx)"
         else
             # Install pipx using the pyenv Python
             print_info "Installing pipx..."
             _run_with_progress "python -m pip install --user pipx" "Installing pipx" 10
+            
+            # Get pipx version after installation
+            local pipx_version=$(python -m pipx --version 2>/dev/null || echo "unknown")
+            _add_dependency "pipx" "$pipx_version" "$HOME/.local/bin/pipx"
+            
             print_success "pipx installed successfully."
         fi
         
@@ -386,6 +518,14 @@ install_flow_coder_cli() {
         # Install Flow Coder CLI using pipx
         print_info "Installing Flow Coder CLI..."
         _run_with_progress "pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl" "Installing Flow Coder CLI" 15
+        
+        # Get Flow Coder CLI version after installation
+        if _command_exists flow-coder; then
+            local flow_coder_version=$(flow-coder --version 2>/dev/null | cut -d ' ' -f 2 || echo "1.4.0")
+            _add_dependency "Flow Coder CLI" "$flow_coder_version" "$HOME/.local/bin/flow-coder"
+        else
+            _add_dependency "Flow Coder CLI" "1.4.0" "$HOME/.local/bin/flow-coder"
+        fi
         
         print_success "Flow Coder CLI installed successfully."
     else
@@ -437,6 +577,9 @@ run_installation() {
     # Reload shell profile
     reload_shell_profile
     
+    # Show installed dependencies
+    _show_installed_dependencies
+    
     # Final instructions
     print_header "Installation process completed!"
     print_info "To start using Flow Coder CLI, please restart your terminal or run:"
@@ -448,9 +591,9 @@ run_installation() {
 ###########################################
 # SCRIPT EXECUTION
 ###########################################
-
 run_installation
-# Execute main installation process
+
+# # Execute main installation process
 # if _ask_confirmation "Do you want to start the Flow Coder CLI installation process?"; then
 #     run_installation
 # else
