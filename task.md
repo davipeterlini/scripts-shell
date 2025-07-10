@@ -238,7 +238,16 @@
     - O script deve aplicar boas práticas de clean code e clean arquitecture 
     - O nome do script deve ser install_coder_cli.sh e deve estar na pasta flow_coder
     - No script sempre pergunte para cada execução de cada metodo 
-    - Ocute a parte onde é feito o make install e coloque uma barra de progresso 
+
+    - Ajuste o script @install_coder_cli.sh para usar o @detect_os.sh e @colors_message.sh 
+
+    - Ocute a saida do make install do metodo _install_python_from_source do terminal mostre uma barra de progresso 
+
+    - Como remover o python instalado pelo script 
+    - precisa instalar o pipx com o python 3.12.9 no pyenv
+
+
+    no script  eu preciso usar o python instalado na versão 3.12.9 que foi compilado e relaciona-lo ao pyenv como poderia fazer 
     - No final do script execute o teste no pyhton, pyenv, pipx e no coder 
     - Para executar o teste no coder execute os comando 
       - coder auth add --tenant <seu_tenant> --client <seu_client_id> --secret <seu_client_secret>
