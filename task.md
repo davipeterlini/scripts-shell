@@ -222,8 +222,39 @@
   - Abra o Site - https://aistudio.google.com/apikey para geração de api do gemini 
   - Abra o Site - https://aistudio.google.com/apikey para geração de api do gemini 
   - Alterar o nome dos scripts para install_flow_coder_cli para instalar o python compilado puro sem brew 
+- 10/07/2025
+  - Criar o script para instalação do flow coder cli 
+    - Esse script deve executar a sequencia abaixo: 
+      - Instalação do python 3.12.9 pura
+      - Instalação do pyenv com o python 3.12.9 instalado anteriormente 
+      - Instalação do pipx no pyenv 
+      - Instalação do flow coder cli com pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl
+      - Ajustes do path - pipx ensurepath
+      - Reload do source - source ~/.zshrc ou source ~/.bashrc (identifique qual o profile em uso)
+    - Todas as instações acima devem partir de pacotes oficiais e não de gerenciador de pacotes como o brew ou apt-get 
+    - ou seja, versão oficial do python 3.12.9, do pyenv, do pipx 
+    - Deve ser considerado para a instalação os SOs (linux e mac) 
+    - Obs: A Instalação deve do python deve estar isolada no ambiente para não afetar a instalação atual do python da máquina do usuário 
+    - O script deve aplicar boas práticas de clean code e clean arquitecture 
+    - O nome do script deve ser install_coder_cli.sh e deve estar na pasta flow_coder
+
+    - ajustes o script criado para usar o utils de detect_os e o colors_message.sh 
+
+    - como remover uma aplicação que instalei com pipx com o comando: 
+- Disponibilizar o flow coder reviewer com mcp 
+- 
+
+
+- Script de configuração de máquina 
+  - Aplicativos de inicialização 
+    - Adicionar apps: flameshoot 
+    - Remover apps 
   - Remove da dock do mac os itens abertos recentemente - script 
-    
+  - Rodar o script de configuração de teclado (o novo script) 
+
+
+
+
     - Instalação do Python na versão correta 
     - Instalação do coder-cli
     - Instalação do flow-coder
