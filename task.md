@@ -240,7 +240,7 @@
 
     - ajustes o script criado para usar o utils de detect_os e o colors_message.sh 
 
-    - como remover uma aplicação que instalei com pipx com o comando: 
+    - como remover uma aplicação que instalei com pipx com o comando: pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl
 - Disponibilizar o flow coder reviewer com mcp 
 - 
 
