@@ -124,7 +124,7 @@ _ask_confirmation() {
         prompt="[y/N]"
     fi
     
-    print_yellow "[QUESTION] $message $prompt"
+    print_alert "$message $prompt"
     read -r response
     
     # Default response if user just presses Enter
@@ -410,6 +410,7 @@ reload_shell_profile() {
 # Main installation process
 run_installation() {
     print_header "Starting Flow Coder CLI installation process..."
+    print
     
     # Detect OS using the imported detect_os function
     detect_os
@@ -448,10 +449,11 @@ run_installation() {
 # SCRIPT EXECUTION
 ###########################################
 
+run_installation
 # Execute main installation process
-if _ask_confirmation "Do you want to start the Flow Coder CLI installation process?"; then
-    run_installation
-else
-    print_info "Installation aborted by user."
-    exit 0
-fi
+# if _ask_confirmation "Do you want to start the Flow Coder CLI installation process?"; then
+#     run_installation
+# else
+#     print_info "Installation aborted by user."
+#     exit 0
+# fi
