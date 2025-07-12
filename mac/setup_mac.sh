@@ -42,7 +42,7 @@ setup_mac() {
     enable_touchid_sudo
 
     # Configuração do Teclado 
-    setup_karabiner
+    setup_karabiner all
 
     print_success "Mac setup completed successfully!"
 }

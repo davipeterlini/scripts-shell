@@ -65,7 +65,7 @@ _create_config_directory() {
 }
 
 _initialize_karabiner_config() {
-    print_header "Inicializando configuração do Karabiner-Elements"
+    print_info "Inicializando configuração do Karabiner-Elements"
     
     local config_file="$HOME/.config/karabiner/karabiner.json"
     local base_config_file="$(dirname "$0")/karabine_config/base_config.json"
@@ -95,7 +95,7 @@ _initialize_karabiner_config() {
 }
 
 _restart_karabiner() {
-    print_header "Reiniciando Karabiner-Elements"
+    print_info "Reiniciando Karabiner-Elements ..."
     
     if get_user_confirmation "Deseja reiniciar o Karabiner-Elements para aplicar as alterações?"; then
         # Verificar se o Karabiner está em execução
@@ -149,7 +149,7 @@ fn_input_switcher() {
     print_info "Configuração: $title"
     print_info "Descrição: $description"
     
-    if get_user_confirmation "Deseja aplicar esta configuração?"; then
+    if get_user_confirmation "Deseja aplicar esta configuração? (y/n)"; then
         local temp_file=$(mktemp)
         print_info "Adicionando regra para usar fn para alternar fonte de entrada..."
         
@@ -167,7 +167,7 @@ fn_input_switcher() {
 
 # Função para listar todas as configurações disponíveis
 list_available_configs() {
-    print_header "Configurações Disponíveis"
+    print_header_info "Configurações Disponíveis"
     
     local config_dir="$(dirname "$0")/karabine_config"
     
@@ -221,7 +221,7 @@ apply_all_configs() {
         return 1
     fi
     
-    if get_user_confirmation "Deseja aplicar TODAS as configurações disponíveis?"; then
+    if get_user_confirmation "Deseja aplicar TODAS as configurações disponíveis? (y/n)"; then
         for config_file in "$config_dir"/*.json; do
             if [ -f "$config_file" ] && [[ "$(basename "$config_file")" != "base_config.json" ]]; then
                 local filename=$(basename "$config_file" .json)
@@ -267,7 +267,6 @@ setup_karabiner() {
             ;;
     esac
     
-    print_header "Configuração Concluída"
     print_success "Karabiner-Elements foi configurado com sucesso!"
 }
 
