@@ -79,7 +79,7 @@ _initialize_karabiner_config() {
     # Verificar se o arquivo de configuração já existe
     if [ -f "$config_file" ]; then
         print_info "Arquivo de configuração encontrado."
-        if get_user_confirmation "Deseja fazer backup da configuração atual?"; then
+        if get_user_confirmation "Deseja fazer backup da configuração atual? (y/n)"; then
             local backup_file="${config_file}.backup.$(date +%Y%m%d%H%M%S)"
             cp "$config_file" "$backup_file"
             print_success "Backup criado em: $backup_file"
@@ -202,7 +202,7 @@ fn_input_switcher() {
         fi
     fi
     
-    if get_user_confirmation "Deseja aplicar esta configuração?"; then
+    if get_user_confirmation "Deseja aplicar esta configuração? (y/n)"; then
         local temp_file=$(mktemp)
         print_info "Adicionando regra para usar fn para alternar fonte de entrada..."
         

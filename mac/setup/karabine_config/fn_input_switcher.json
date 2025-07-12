@@ -14,7 +14,8 @@
           },
           "to": [
             {
-              "key_code": "globe"
+              "key_code": "spacebar",
+              "modifiers": ["left_control"]
             }
           ]
         }
