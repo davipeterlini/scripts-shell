@@ -1,13 +1,13 @@
 {
-  "title": "Use fn to switch input source",
+  "title": "Use F13 to switch input source (alternative for external keyboards)",
   "rules": [
     {
-      "description": "Change input source when pressing fn (using Control+Space)",
+      "description": "Change input source when pressing F13 (using Control+Space)",
       "manipulators": [
         {
           "type": "basic",
           "from": {
-            "key_code": "fn",
+            "key_code": "f13",
             "modifiers": {
               "optional": ["any"]
             }

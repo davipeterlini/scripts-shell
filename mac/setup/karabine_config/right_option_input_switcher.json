@@ -1,0 +1,36 @@
+{
+  "title": "Use Right Option to switch input source (alternative for external keyboards)",
+  "rules": [
+    {
+      "description": "Change input source when pressing Right Option (using Control+Space)",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "right_option",
+            "modifiers": {
+              "optional": ["any"]
+            }
+          },
+          "to": [
+            {
+              "key_code": "spacebar",
+              "modifiers": ["left_control"]
+            }
+          ],
+          "conditions": [
+            {
+              "type": "device_if",
+              "identifiers": [
+                {
+                  "is_keyboard": true,
+                  "is_built_in_keyboard": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

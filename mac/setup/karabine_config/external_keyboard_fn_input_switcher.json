@@ -1,0 +1,36 @@
+{
+  "title": "External Keyboard: Use fn to switch input source",
+  "rules": [
+    {
+      "description": "External Keyboard: Change input source when pressing fn (using Control+Space)",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "fn",
+            "modifiers": {
+              "optional": ["any"]
+            }
+          },
+          "to": [
+            {
+              "key_code": "spacebar",
+              "modifiers": ["left_control"]
+            }
+          ],
+          "conditions": [
+            {
+              "type": "device_if",
+              "identifiers": [
+                {
+                  "is_keyboard": true,
+                  "is_built_in_keyboard": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

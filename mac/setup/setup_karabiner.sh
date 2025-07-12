@@ -167,15 +167,11 @@ _remove_rule() {
     return $?
 }
 
-# ====================================
-# Config Functions - Cada função corresponde a um arquivo na pasta karabine_config
-# ====================================
-
-fn_input_switcher() {
-    print_header_info "Configurando: Use fn to switch input source"
-    
+# Função genérica para aplicar uma configuração a partir de um arquivo JSON
+_apply_config_from_file() {
+    local config_name="$1"
     local config_file="$HOME/.config/karabiner/karabiner.json"
-    local config_json_file="$(dirname "$0")/karabine_config/fn_input_switcher.json"
+    local config_json_file="$(dirname "$0")/karabine_config/${config_name}.json"
     
     # Verificar se o arquivo de configuração existe
     if [ ! -f "$config_json_file" ]; then
@@ -187,7 +183,7 @@ fn_input_switcher() {
     local title=$(jq -r '.title' "$config_json_file")
     local description=$(jq -r '.rules[0].description' "$config_json_file")
     
-    print_info "Configuração: $title"
+    print_info "Configurando: $title"
     print_info "Descrição: $description"
     
     # Verificar se a regra já existe
@@ -216,6 +212,26 @@ fn_input_switcher() {
     else
         print_alert "Configuração '$title' não foi aplicada."
     fi
+}
+
+# ====================================
+# Config Functions - Cada função corresponde a um arquivo na pasta karabine_config
+# ====================================
+
+fn_input_switcher() {
+    _apply_config_from_file "fn_input_switcher"
+}
+
+external_keyboard_fn_input_switcher() {
+    _apply_config_from_file "external_keyboard_fn_input_switcher"
+}
+
+f13_input_switcher() {
+    _apply_config_from_file "f13_input_switcher"
+}
+
+right_option_input_switcher() {
+    _apply_config_from_file "right_option_input_switcher"
 }
 
 # Função para listar todas as configurações disponíveis
@@ -259,9 +275,14 @@ apply_config() {
     if type "$function_name" &>/dev/null; then
         "$function_name"
     else
-        print_error "Configuração '$config_name' não encontrada."
-        print_info "Execute '$0 list' para ver as configurações disponíveis."
-        return 1
+        # Tentar aplicar usando a função genérica
+        if [ -f "$(dirname "$0")/karabine_config/${config_name}.json" ]; then
+            _apply_config_from_file "$config_name"
+        else
+            print_error "Configuração '$config_name' não encontrada."
+            print_info "Execute '$0 list' para ver as configurações disponíveis."
+            return 1
+        fi
     fi
 }
 
@@ -325,6 +346,7 @@ setup_karabiner() {
     print_info "Se o Karabiner-Elements não foi reiniciado automaticamente, por favor:"
     print_info "1. Abra o aplicativo Karabiner-Elements manualmente"
     print_info "2. Verifique se as configurações foram aplicadas corretamente"
+    print_info "3. Se estiver usando um teclado externo, talvez seja necessário configurá-lo nas preferências do Karabiner-Elements"
 }
 
 # Executar o script apenas se não estiver sendo importado
