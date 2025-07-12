@@ -36,7 +36,7 @@ _install_karabiner() {
         print_success "Karabiner-Elements já está instalado."
     else
         print_info "Karabiner-Elements não está instalado."
-        if get_user_confirmation "Deseja instalar o Karabiner-Elements agora? (y/n)"; then
+        if get_user_confirmation "Deseja instalar o Karabiner-Elements agora?"; then
             print_info "Instalando Karabiner-Elements..."
             brew install --cask karabiner-elements
             
@@ -67,7 +67,14 @@ _create_config_directory() {
 _initialize_karabiner_config() {
     print_header "Inicializando configuração do Karabiner-Elements"
     
-    local config_file="$HOME/.config/karabiner/karabiner.json"  # <-- AQUI é definido o caminho do arquivo
+    local config_file="$HOME/.config/karabiner/karabiner.json"
+    local base_config_file="$(dirname "$0")/karabine_config/base_config.json"
+    
+    # Verificar se o arquivo de configuração base existe
+    if [ ! -f "$base_config_file" ]; then
+        print_error "Arquivo de configuração base não encontrado: $base_config_file"
+        exit 1
+    fi
     
     # Verificar se o arquivo de configuração já existe
     if [ -f "$config_file" ]; then
@@ -79,39 +86,9 @@ _initialize_karabiner_config() {
         fi
     else
         print_info "Criando novo arquivo de configuração..."
-        # Criar estrutura básica do arquivo de configuração
-        cat > "$config_file" << EOF  # <-- AQUI o arquivo é criado
-{
-    "global": {
-        "check_for_updates_on_startup": true,
-        "show_in_menu_bar": true,
-        "show_profile_name_in_menu_bar": false
-    },
-    "profiles": [
-        {
-            "name": "Default profile",
-            "selected": true,
-            "simple_modifications": [],
-            "complex_modifications": {
-                "parameters": {
-                    "basic.simultaneous_threshold_milliseconds": 50,
-                    "basic.to_delayed_action_delay_milliseconds": 500,
-                    "basic.to_if_alone_timeout_milliseconds": 1000,
-                    "basic.to_if_held_down_threshold_milliseconds": 500,
-                    "mouse_motion_to_scroll.speed": 100
-                },
-                "rules": []
-            },
-            "devices": [],
-            "fn_function_keys": [],
-            "virtual_hid_keyboard": {
-                "country_code": 0,
-                "mouse_key_xy_scale": 100
-            }
-        }
-    ]
-}
-EOF
+        # Copiar o arquivo de configuração base
+        cp "$base_config_file" "$config_file"
+        print_success "Arquivo de configuração criado em: $config_file"
     fi
     
     return 0
@@ -203,9 +180,9 @@ list_available_configs() {
     echo ""
     
     for config_file in "$config_dir"/*.json; do
-        if [ -f "$config_file" ]; then
+        if [ -f "$config_file" ] && [[ "$(basename "$config_file")" != "base_config.json" ]]; then
             local filename=$(basename "$config_file" .json)
-            local title=$(jq -r '.title' "$config_file")
+            local title=$(jq -r '.title // "Sem título"' "$config_file")
             local description=$(jq -r '.rules[0].description // "Sem descrição"' "$config_file")
             print_yellow "- $filename: $title"
             print "  $description"
@@ -246,7 +223,7 @@ apply_all_configs() {
     
     if get_user_confirmation "Deseja aplicar TODAS as configurações disponíveis?"; then
         for config_file in "$config_dir"/*.json; do
-            if [ -f "$config_file" ]; then
+            if [ -f "$config_file" ] && [[ "$(basename "$config_file")" != "base_config.json" ]]; then
                 local filename=$(basename "$config_file" .json)
                 apply_config "$filename"
             fi
