@@ -79,7 +79,7 @@ _initialize_karabiner_config() {
     # Verificar se o arquivo de configuração já existe
     if [ -f "$config_file" ]; then
         print_info "Arquivo de configuração encontrado."
-        if get_user_confirmation "Deseja fazer backup da configuração atual?"; then
+        if get_user_confirmation "Deseja fazer backup da configuração atual? (y/n)"; then
             local backup_file="${config_file}.backup.$(date +%Y%m%d%H%M%S)"
             cp "$config_file" "$backup_file"
             print_success "Backup criado em: $backup_file"
@@ -97,7 +97,7 @@ _initialize_karabiner_config() {
 _restart_karabiner() {
     print_info "Reiniciando Karabiner-Elements ..."
     
-    if get_user_confirmation "Deseja reiniciar o Karabiner-Elements para aplicar as alterações?"; then
+    if get_user_confirmation "Deseja reiniciar o Karabiner-Elements para aplicar as alterações? (y/n)"; then
         print_info "Tentando reiniciar o Karabiner-Elements..."
         
         # Método 1: Tentar reiniciar usando launchctl
