@@ -67,7 +67,7 @@ _create_config_directory() {
 _initialize_karabiner_config() {
     print_header "Inicializando configuração do Karabiner-Elements"
     
-    local config_file="$HOME/.config/karabiner/karabiner.json"
+    local config_file="$HOME/.config/karabiner/karabiner.json"  # <-- AQUI é definido o caminho do arquivo
     
     # Verificar se o arquivo de configuração já existe
     if [ -f "$config_file" ]; then
@@ -80,7 +80,7 @@ _initialize_karabiner_config() {
     else
         print_info "Criando novo arquivo de configuração..."
         # Criar estrutura básica do arquivo de configuração
-        cat > "$config_file" << EOF
+        cat > "$config_file" << EOF  # <-- AQUI o arquivo é criado
 {
     "global": {
         "check_for_updates_on_startup": true,
