@@ -79,7 +79,7 @@ _initialize_karabiner_config() {
     # Verificar se o arquivo de configuração já existe
     if [ -f "$config_file" ]; then
         print_info "Arquivo de configuração encontrado."
-        if get_user_confirmation "Deseja fazer backup da configuração atual? (y/n)"; then
+        if get_user_confirmation "Deseja fazer backup da configuração atual?"; then
             local backup_file="${config_file}.backup.$(date +%Y%m%d%H%M%S)"
             cp "$config_file" "$backup_file"
             print_success "Backup criado em: $backup_file"
@@ -155,6 +155,18 @@ _rule_exists() {
     fi
 }
 
+# Função para remover uma regra existente
+_remove_rule() {
+    local config_file="$1"
+    local rule_description="$2"
+    local temp_file=$(mktemp)
+    
+    # Remover a regra com a descrição especificada
+    jq --arg desc "$rule_description" '.profiles[0].complex_modifications.rules = [.profiles[0].complex_modifications.rules[] | select(.description != $desc)]' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+    
+    return $?
+}
+
 # ====================================
 # Config Functions - Cada função corresponde a um arquivo na pasta karabine_config
 # ====================================
@@ -181,8 +193,13 @@ fn_input_switcher() {
     # Verificar se a regra já existe
     if _rule_exists "$config_file" "$description"; then
         print_alert "A regra '$description' já existe na configuração."
-        print_info "Ignorando a adição da regra para evitar duplicação."
-        return 0
+        if get_user_confirmation "Deseja sobrescrever a regra existente? (y/n)"; then
+            print_info "Removendo regra existente..."
+            _remove_rule "$config_file" "$description"
+        else
+            print_info "Mantendo a regra existente."
+            return 0
+        fi
     fi
     
     if get_user_confirmation "Deseja aplicar esta configuração?"; then
