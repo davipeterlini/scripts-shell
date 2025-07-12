@@ -98,15 +98,29 @@ _restart_karabiner() {
     print_info "Reiniciando Karabiner-Elements ..."
     
     if get_user_confirmation "Deseja reiniciar o Karabiner-Elements para aplicar as alterações?"; then
-        # Verificar se o Karabiner está em execução
-        if pgrep -x "karabiner_console_user_server" > /dev/null; then
-            print_info "Reiniciando Karabiner-Elements..."
-            launchctl kickstart -k gui/$(id -u)/org.pqrs.karabiner.karabiner_console_user_server
+        print_info "Tentando reiniciar o Karabiner-Elements..."
+        
+        # Método 1: Tentar reiniciar usando launchctl
+        if launchctl kickstart -k gui/$(id -u)/org.pqrs.karabiner.karabiner_console_user_server &>/dev/null; then
             print_success "Karabiner-Elements reiniciado com sucesso!"
+            return 0
         else
-            print_info "Iniciando Karabiner-Elements..."
-            open -a "Karabiner-Elements"
-            print_success "Karabiner-Elements iniciado!"
+            print_alert "Não foi possível reiniciar o serviço usando launchctl. Tentando método alternativo..."
+        fi
+        
+        # Método 2: Tentar encerrar e reiniciar o aplicativo
+        if pkill -f "karabiner"; then
+            print_info "Processos do Karabiner encerrados. Reiniciando o aplicativo..."
+            sleep 2
+        fi
+        
+        # Abrir o aplicativo Karabiner-Elements
+        if open -a "Karabiner-Elements"; then
+            print_success "Karabiner-Elements iniciado com sucesso!"
+        else
+            print_alert "Não foi possível abrir o Karabiner-Elements automaticamente."
+            print_info "Por favor, abra o Karabiner-Elements manualmente para aplicar as alterações."
+            print_info "Você pode encontrá-lo na pasta Aplicativos ou usando o Spotlight (Cmd+Espaço)."
         fi
     else
         print_alert "As alterações só terão efeito após reiniciar o Karabiner-Elements."
@@ -267,7 +281,11 @@ setup_karabiner() {
             ;;
     esac
     
+    print_header "Configuração Concluída"
     print_success "Karabiner-Elements foi configurado com sucesso!"
+    print_info "Se o Karabiner-Elements não foi reiniciado automaticamente, por favor:"
+    print_info "1. Abra o aplicativo Karabiner-Elements manualmente"
+    print_info "2. Verifique se as configurações foram aplicadas corretamente"
 }
 
 # Executar o script apenas se não estiver sendo importado
