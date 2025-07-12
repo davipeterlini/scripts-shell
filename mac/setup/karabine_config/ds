@@ -2,7 +2,7 @@
   "title": "Use fn to switch input source",
   "rules": [
     {
-      "description": "Change input source when pressing fn (using globe key)",
+      "description": "Change input source when pressing fn",
       "manipulators": [
         {
           "type": "basic",
@@ -14,7 +14,8 @@
           },
           "to": [
             {
-              "key_code": "globe"
+              "key_code": "spacebar",
+              "modifiers": ["left_control"]
             }
           ]
         }
