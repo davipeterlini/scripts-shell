@@ -11,6 +11,7 @@ source "$(dirname "$0")/mac/setup/setup_iterm.sh"
 source "$(dirname "$0")/mac/setup/setup_terminal.sh"
 source "$(dirname "$0")/mac/setup/setup_abnt2_keyboard.sh"
 source "$(dirname "$0")/mac/setup/enable_touchid_sudo.sh"
+source "$(dirname "$0")/mac/setup/setup_karabiner.sh"
 
 # Função principal
 setup_mac() {
@@ -39,6 +40,9 @@ setup_mac() {
     
     # Habilitar Touch ID para sudo
     enable_touchid_sudo
+
+    # Configuração do Teclado 
+    setup_karabiner
 
     print_success "Mac setup completed successfully!"
 }

@@ -8,6 +8,7 @@
 
 # Importar utilitários de cores para mensagens
 source "$(dirname "$0")/../../utils/colors_message.sh"
+source "$(dirname "$0")/../../utils/bash_tools.sh"
 
 # ====================================
 # Private Functions
@@ -15,26 +16,38 @@ source "$(dirname "$0")/../../utils/colors_message.sh"
 
 _check_brew_installed() {
     if ! command -v brew &> /dev/null; then
-        print_alert "Homebrew não está instalado. Instalando..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        print_alert "Homebrew não está instalado."
+        if get_user_confirmation "Deseja instalar o Homebrew agora?"; then
+            print_info "Instalando Homebrew..."
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        else
+            print_error "Homebrew é necessário para continuar. Abortando."
+            exit 1
+        fi
     else
         print_info "Homebrew já está instalado."
     fi
 }
 
 _install_karabiner() {
-    print_header "Instalando Karabiner-Elements"
+    print_header "Karabiner-Elements"
     
     if brew list --cask karabiner-elements &>/dev/null; then
         print_success "Karabiner-Elements já está instalado."
     else
-        print_info "Instalando Karabiner-Elements..."
-        brew install --cask karabiner-elements
-        
-        if [ $? -eq 0 ]; then
-            print_success "Karabiner-Elements instalado com sucesso!"
+        print_info "Karabiner-Elements não está instalado."
+        if get_user_confirmation "Deseja instalar o Karabiner-Elements agora? (y/n)"; then
+            print_info "Instalando Karabiner-Elements..."
+            brew install --cask karabiner-elements
+            
+            if [ $? -eq 0 ]; then
+                print_success "Karabiner-Elements instalado com sucesso!"
+            else
+                print_error "Erro ao instalar Karabiner-Elements."
+                exit 1
+            fi
         else
-            print_error "Erro ao instalar Karabiner-Elements."
+            print_error "Karabiner-Elements é necessário para continuar. Abortando."
             exit 1
         fi
     fi
@@ -58,8 +71,12 @@ _initialize_karabiner_config() {
     
     # Verificar se o arquivo de configuração já existe
     if [ -f "$config_file" ]; then
-        print_info "Arquivo de configuração encontrado. Fazendo backup..."
-        cp "$config_file" "${config_file}.backup.$(date +%Y%m%d%H%M%S)"
+        print_info "Arquivo de configuração encontrado."
+        if get_user_confirmation "Deseja fazer backup da configuração atual?"; then
+            local backup_file="${config_file}.backup.$(date +%Y%m%d%H%M%S)"
+            cp "$config_file" "$backup_file"
+            print_success "Backup criado em: $backup_file"
+        fi
     else
         print_info "Criando novo arquivo de configuração..."
         # Criar estrutura básica do arquivo de configuração
@@ -103,22 +120,32 @@ EOF
 _restart_karabiner() {
     print_header "Reiniciando Karabiner-Elements"
     
-    # Verificar se o Karabiner está em execução
-    if pgrep -x "karabiner_console_user_server" > /dev/null; then
-        print_info "Reiniciando Karabiner-Elements..."
-        launchctl kickstart -k gui/$(id -u)/org.pqrs.karabiner.karabiner_console_user_server
-        print_success "Karabiner-Elements reiniciado com sucesso!"
+    if get_user_confirmation "Deseja reiniciar o Karabiner-Elements para aplicar as alterações?"; then
+        # Verificar se o Karabiner está em execução
+        if pgrep -x "karabiner_console_user_server" > /dev/null; then
+            print_info "Reiniciando Karabiner-Elements..."
+            launchctl kickstart -k gui/$(id -u)/org.pqrs.karabiner.karabiner_console_user_server
+            print_success "Karabiner-Elements reiniciado com sucesso!"
+        else
+            print_info "Iniciando Karabiner-Elements..."
+            open -a "Karabiner-Elements"
+            print_success "Karabiner-Elements iniciado!"
+        fi
     else
-        print_info "Iniciando Karabiner-Elements..."
-        open -a "Karabiner-Elements"
-        print_success "Karabiner-Elements iniciado!"
+        print_alert "As alterações só terão efeito após reiniciar o Karabiner-Elements."
     fi
 }
 
 _ensure_jq_installed() {
     if ! command -v jq &> /dev/null; then
-        print_alert "jq não está instalado. Instalando..."
-        brew install jq
+        print_alert "jq não está instalado."
+        if get_user_confirmation "Deseja instalar o jq agora? (necessário para processar arquivos JSON)"; then
+            print_info "Instalando jq..."
+            brew install jq
+        else
+            print_error "jq é necessário para continuar. Abortando."
+            exit 1
+        fi
     fi
 }
 
@@ -131,17 +158,34 @@ fn_input_switcher() {
     
     local config_file="$HOME/.config/karabiner/karabiner.json"
     local config_json_file="$(dirname "$0")/karabine_config/fn_input_switcher.json"
-    local temp_file=$(mktemp)
     
-    print_info "Adicionando regra para usar fn para alternar fonte de entrada..."
+    # Verificar se o arquivo de configuração existe
+    if [ ! -f "$config_json_file" ]; then
+        print_error "Arquivo de configuração não encontrado: $config_json_file"
+        return 1
+    fi
     
-    # Extrair as regras do arquivo JSON
-    local rules=$(jq -c '.rules' "$config_json_file")
+    # Mostrar descrição da configuração
+    local title=$(jq -r '.title' "$config_json_file")
+    local description=$(jq -r '.rules[0].description' "$config_json_file")
     
-    # Adicionar as regras ao arquivo de configuração
-    jq --argjson new_rules "$rules" '.profiles[0].complex_modifications.rules += $new_rules' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+    print_info "Configuração: $title"
+    print_info "Descrição: $description"
     
-    print_success "Configuração 'Use fn to switch input source' adicionada com sucesso!"
+    if get_user_confirmation "Deseja aplicar esta configuração?"; then
+        local temp_file=$(mktemp)
+        print_info "Adicionando regra para usar fn para alternar fonte de entrada..."
+        
+        # Extrair as regras do arquivo JSON
+        local rules=$(jq -c '.rules' "$config_json_file")
+        
+        # Adicionar as regras ao arquivo de configuração
+        jq --argjson new_rules "$rules" '.profiles[0].complex_modifications.rules += $new_rules' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+        
+        print_success "Configuração '$title' adicionada com sucesso!"
+    else
+        print_alert "Configuração '$title' não foi aplicada."
+    fi
 }
 
 # Função para listar todas as configurações disponíveis
@@ -162,7 +206,9 @@ list_available_configs() {
         if [ -f "$config_file" ]; then
             local filename=$(basename "$config_file" .json)
             local title=$(jq -r '.title' "$config_file")
+            local description=$(jq -r '.rules[0].description // "Sem descrição"' "$config_file")
             print_yellow "- $filename: $title"
+            print "  $description"
         fi
     done
     
@@ -198,12 +244,16 @@ apply_all_configs() {
         return 1
     fi
     
-    for config_file in "$config_dir"/*.json; do
-        if [ -f "$config_file" ]; then
-            local filename=$(basename "$config_file" .json)
-            apply_config "$filename"
-        fi
-    done
+    if get_user_confirmation "Deseja aplicar TODAS as configurações disponíveis?"; then
+        for config_file in "$config_dir"/*.json; do
+            if [ -f "$config_file" ]; then
+                local filename=$(basename "$config_file" .json)
+                apply_config "$filename"
+            fi
+        done
+    else
+        print_alert "Operação cancelada pelo usuário."
+    fi
 }
 
 # ====================================
