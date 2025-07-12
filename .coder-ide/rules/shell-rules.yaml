@@ -1,0 +1,6 @@
+name: Shell Script Clean Code
+version: 0.0.1
+schema: v1
+rules:
+  - name: Shell Script Clean Code
+    rule: Always structure shell scripts with clean code principles, separating private functions (prefixed with "_") from public ones, and include a main function that serves as the entry point.
