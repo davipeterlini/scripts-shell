@@ -140,6 +140,21 @@ _ensure_jq_installed() {
     fi
 }
 
+# Função para verificar se uma regra já existe na configuração
+_rule_exists() {
+    local config_file="$1"
+    local rule_description="$2"
+    
+    # Verificar se a regra com a mesma descrição já existe
+    local existing_rule=$(jq -r --arg desc "$rule_description" '.profiles[0].complex_modifications.rules[] | select(.description == $desc)' "$config_file")
+    
+    if [ -n "$existing_rule" ]; then
+        return 0  # Regra existe
+    else
+        return 1  # Regra não existe
+    fi
+}
+
 # ====================================
 # Config Functions - Cada função corresponde a um arquivo na pasta karabine_config
 # ====================================
@@ -163,7 +178,14 @@ fn_input_switcher() {
     print_info "Configuração: $title"
     print_info "Descrição: $description"
     
-    if get_user_confirmation "Deseja aplicar esta configuração? (y/n)"; then
+    # Verificar se a regra já existe
+    if _rule_exists "$config_file" "$description"; then
+        print_alert "A regra '$description' já existe na configuração."
+        print_info "Ignorando a adição da regra para evitar duplicação."
+        return 0
+    fi
+    
+    if get_user_confirmation "Deseja aplicar esta configuração?"; then
         local temp_file=$(mktemp)
         print_info "Adicionando regra para usar fn para alternar fonte de entrada..."
         
