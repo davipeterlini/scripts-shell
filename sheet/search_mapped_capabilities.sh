@@ -6,7 +6,7 @@ const CLIENT_SECRET = PropertiesService.getScriptProperties().getProperty("FLOW_
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Executar Script')
-      .addItem('Search Mapped Capabilities', 'fetchMappedCapabilities')
+      .addItem('Search LLM Capabilities', 'fetchMappedCapabilities')
       .addItem('Configurar Credenciais', 'configureCredentials')
       .addToUi();
 }
