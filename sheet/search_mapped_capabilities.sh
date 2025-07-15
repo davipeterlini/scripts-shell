@@ -1,8 +1,100 @@
+// Variáveis de configuração - podem ser definidas nas propriedades do script
+const TENANT = PropertiesService.getScriptProperties().getProperty("FLOW_TENANT");
+const CLIENT_ID = PropertiesService.getScriptProperties().getProperty("FLOW_CLIENT_ID");
+const CLIENT_SECRET = PropertiesService.getScriptProperties().getProperty("FLOW_CLIENT_SECRET");
+
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Executar Script')
       .addItem('Search Mapped Capabilities', 'fetchMappedCapabilities')
+      .addItem('Configurar Credenciais', 'configureCredentials')
       .addToUi();
+}
+
+function configureCredentials() {
+  const ui = SpreadsheetApp.getUi();
+  
+  // Solicita o tenant
+  const tenantResponse = ui.prompt(
+    'Configuração de Credenciais',
+    'Digite o TENANT:',
+    ui.ButtonSet.OK_CANCEL);
+  
+  if (tenantResponse.getSelectedButton() == ui.Button.CANCEL) {
+    return;
+  }
+  
+  // Solicita o client ID
+  const clientIdResponse = ui.prompt(
+    'Configuração de Credenciais',
+    'Digite o CLIENT_ID:',
+    ui.ButtonSet.OK_CANCEL);
+  
+  if (clientIdResponse.getSelectedButton() == ui.Button.CANCEL) {
+    return;
+  }
+  
+  // Solicita o client secret
+  const clientSecretResponse = ui.prompt(
+    'Configuração de Credenciais',
+    'Digite o CLIENT_SECRET:',
+    ui.ButtonSet.OK_CANCEL);
+  
+  if (clientSecretResponse.getSelectedButton() == ui.Button.CANCEL) {
+    return;
+  }
+  
+  // Salva as credenciais nas propriedades do script
+  const scriptProperties = PropertiesService.getScriptProperties();
+  scriptProperties.setProperty("FLOW_TENANT", tenantResponse.getResponseText());
+  scriptProperties.setProperty("FLOW_CLIENT_ID", clientIdResponse.getResponseText());
+  scriptProperties.setProperty("FLOW_CLIENT_SECRET", clientSecretResponse.getResponseText());
+  
+  ui.alert('Configuração', 'Credenciais salvas com sucesso!', ui.ButtonSet.OK);
+}
+
+function getAuthToken() {
+  // Verifica se as credenciais estão configuradas
+  const tenant = PropertiesService.getScriptProperties().getProperty("FLOW_TENANT");
+  const clientId = PropertiesService.getScriptProperties().getProperty("FLOW_CLIENT_ID");
+  const clientSecret = PropertiesService.getScriptProperties().getProperty("FLOW_CLIENT_SECRET");
+  
+  if (!tenant || !clientId || !clientSecret) {
+    throw new Error("Credenciais não configuradas. Por favor, use a opção 'Configurar Credenciais' no menu.");
+  }
+  
+  // URL da API de geração de token
+  const tokenUrl = 'https://flow.ciandt.com/auth-engine-api/v1/api-key/token';
+  
+  // Payload para a requisição
+  const payload = {
+    "clientId": clientId,
+    "clientSecret": clientSecret,
+    "appToAccess": "llm-api"
+  };
+  
+  // Configuração da requisição
+  const options = {
+    'method': 'post',
+    'contentType': 'application/json',
+    'headers': {
+      'accept': '*/*',
+      'FlowTenant': tenant,
+      'FlowAgent': 'chat-with-docs'
+    },
+    'payload': JSON.stringify(payload)
+  };
+  
+  try {
+    // Fazendo a requisição para a API de token
+    const response = UrlFetchApp.fetch(tokenUrl, options);
+    const data = JSON.parse(response.getContentText());
+    
+    // Retorna o token de acesso
+    return data.accessToken;
+  } catch (error) {
+    throw new Error("Erro ao obter token de autenticação: " + error.message);
+  }
 }
 
 function fetchMappedCapabilities() {
@@ -14,27 +106,25 @@ function fetchMappedCapabilities() {
     sheet.clear();
   }
   
-  // Solicita ao usuário o token de autenticação
-  const userToken = Browser.inputBox("Por favor, insira seu token de autenticação:");
-
-  // Valida se o token não está vazio
-  if (!userToken) {
-    Browser.msgBox("O token de autenticação não pode estar vazio. A execução do script foi cancelada.");
-    return;
-  }
-
-  const url = 'https://flow.ciandt.com/ai-orchestration-api/v2/tenant/flowteam/capabilities';
-
-  // Configuração da requisição
-  const options = {
-    'method': 'get',
-    'headers': {
-      'Authorization': 'Bearer ' + userToken,
-      'accept': '*/*'
-    }
-  };
-  
   try {
+    // Obtém o token de autenticação
+    const token = getAuthToken();
+    
+    // Obtém o tenant configurado
+    const tenant = PropertiesService.getScriptProperties().getProperty("FLOW_TENANT");
+    
+    // URL da API de capabilities
+    const url = `https://flow.ciandt.com/ai-orchestration-api/v2/tenant/${tenant}/capabilities`;
+    
+    // Configuração da requisição
+    const options = {
+      'method': 'get',
+      'headers': {
+        'Authorization': 'Bearer ' + token,
+        'accept': '*/*'
+      }
+    };
+    
     // Fazendo a requisição para a API
     const response = UrlFetchApp.fetch(url, options);
     const data = JSON.parse(response.getContentText());
@@ -101,9 +191,12 @@ function fetchMappedCapabilities() {
     // Formatação da planilha
     formatSheet(sheet, headers.length, allCapabilities.length);
     
+    // Exibe mensagem de sucesso
+    SpreadsheetApp.getUi().alert("Dados carregados com sucesso!");
+    
   } catch (error) {
     // Exibe uma mensagem de erro se a requisição falhar
-    Browser.msgBox("Erro ao acessar a API: " + error.message);
+    SpreadsheetApp.getUi().alert("Erro: " + error.message);
   }
 }
 
