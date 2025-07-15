@@ -14,6 +14,18 @@ function fetchMappedCapabilities() {
     sheet.clear();
   }
   
+  // Adiciona a linha preta com o título "RETORNO DA API"
+  sheet.appendRow(Array(7).fill(''));
+  const titleRow = sheet.getRange(1, 1, 1, 7);
+  titleRow.merge();
+  titleRow.setValue("RETORNO DA API");
+  titleRow.setFontWeight("bold");
+  titleRow.setBackground("#000000");
+  titleRow.setFontColor("#FFFFFF");
+  titleRow.setHorizontalAlignment("center");
+  titleRow.setVerticalAlignment("middle");
+  titleRow.setBorder(true, true, true, true, true, true, "black", SpreadsheetApp.BorderStyle.SOLID);
+  
   // Definindo apenas os cabeçalhos das colunas mapeadas
   const headers = ['Provider', 'Modelo', 'Streaming', 'System Instruction', 
                    'Chat Conversation', 'Image Recognition', 
@@ -23,7 +35,7 @@ function fetchMappedCapabilities() {
   sheet.appendRow(headers);
 
   // Define estilo para a linha dos cabeçalhos
-  const headerRange = sheet.getRange(1, 1, 1, headers.length);
+  const headerRange = sheet.getRange(2, 1, 1, headers.length);
   headerRange.setFontWeight("bold");
   headerRange.setFontSize(12);
   headerRange.setBackground("#D3D3D3"); // Cor de fundo cinza
@@ -102,23 +114,24 @@ function formatSheet(sheet, numColumns) {
   const dataRange = sheet.getRange(1, 1, lastRow, numColumns);
   dataRange.setBorder(true, true, true, true, true, true);
   
-  // Alterna a cor das linhas de dados (começando da linha 2)
-  for (let i = 2; i <= lastRow; i++) {
-    if (i % 2 === 0) { // Linhas pares (2, 4, 6...)
+  // Alterna a cor das linhas de dados (começando da linha 3)
+  for (let i = 3; i <= lastRow; i++) {
+    if (i % 2 === 1) { // Linhas ímpares (3, 5, 7...)
       sheet.getRange(i, 1, 1, numColumns).setBackground("#f2f2f2"); // Cor de fundo cinza claro
     }
   }
 
   // Ajusta a altura das linhas
-  sheet.setRowHeight(1, 35); // Altura da linha do cabeçalho aumentada para acomodar quebra de texto
+  sheet.setRowHeight(1, 30); // Altura da linha do título
+  sheet.setRowHeight(2, 35); // Altura da linha do cabeçalho aumentada para acomodar quebra de texto
   
   // Ajusta a altura das linhas de dados
-  for (let i = 2; i <= lastRow; i++) {
+  for (let i = 3; i <= lastRow; i++) {
     sheet.setRowHeight(i, 25);
   }
 
   // Centraliza o conteúdo das células de capabilities
-  const capabilitiesRange = sheet.getRange(2, 3, lastRow - 1, numColumns - 2);
+  const capabilitiesRange = sheet.getRange(3, 3, lastRow - 2, numColumns - 2);
   capabilitiesRange.setHorizontalAlignment("center");
   
   // Adiciona espaçamento entre as linhas
@@ -136,7 +149,7 @@ function formatSheet(sheet, numColumns) {
   
   // Aplica a validação de dados a cada coluna de capacidade para todas as linhas de dados
   capabilityColumns.forEach(colIndex => {
-    const range = sheet.getRange(2, colIndex, lastRow - 1, 1); // Da linha 2 até a última linha
+    const range = sheet.getRange(3, colIndex, lastRow - 2, 1); // Da linha 3 até a última linha
     range.setDataValidation(rule);
   });
 
@@ -144,7 +157,7 @@ function formatSheet(sheet, numColumns) {
   const longHeaderColumns = [3, 4, 5, 6, 7]; // Índices das colunas com nomes longos
   
   longHeaderColumns.forEach(colIndex => {
-    const headerCell = sheet.getRange(1, colIndex);
+    const headerCell = sheet.getRange(2, colIndex);
     headerCell.setWrap(true);
     headerCell.setVerticalAlignment("middle");
   });
@@ -155,7 +168,7 @@ function formatSheet(sheet, numColumns) {
   // Define o range para formatação condicional (todas as colunas de capacidades)
   const formatRanges = [];
   capabilityColumns.forEach(colIndex => {
-    formatRanges.push(sheet.getRange(2, colIndex, lastRow - 1, 1));
+    formatRanges.push(sheet.getRange(3, colIndex, lastRow - 2, 1));
   });
   
   // Cria as regras de formatação condicional
