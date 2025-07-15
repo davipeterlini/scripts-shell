@@ -130,22 +130,22 @@ function formatSheet(sheet, numColumns) {
     sheet.setRowHeight(i, 25);
   }
 
-  // Centraliza o conteúdo das células de capabilities
+  // Centraliza o conteúdo das células de capabilities (colunas 3-7)
   const capabilitiesRange = sheet.getRange(3, 3, lastRow - 2, numColumns - 2);
   capabilitiesRange.setHorizontalAlignment("center");
   
   // Adiciona espaçamento entre as linhas
   sheet.getRange(1, 1, lastRow, numColumns).setVerticalAlignment("middle"); // Centraliza verticalmente
 
-  // Adiciona a validação de dados nas colunas
+  // Adiciona a validação de dados nas colunas de capabilities (colunas 3-7)
   const validationValues = ["Enable", "Disable"];
   const rule = SpreadsheetApp.newDataValidation()
       .requireValueInList(validationValues)
       .setAllowInvalid(false)
       .build();
 
-  // Cria ranges para todas as colunas de capacidades
-  const capabilityColumns = [3, 4, 5, 6, 7]; // Índices das colunas de capacidades
+  // Cria ranges para as colunas de capacidades (excluindo Provider e Modelo)
+  const capabilityColumns = [3, 4, 5, 6, 7]; // Índices das colunas de capacidades (começando da coluna Streaming)
   
   // Aplica a validação de dados a cada coluna de capacidade para todas as linhas de dados
   capabilityColumns.forEach(colIndex => {
@@ -165,7 +165,7 @@ function formatSheet(sheet, numColumns) {
   // Limpa as regras existentes
   sheet.clearConditionalFormatRules();
   
-  // Define o range para formatação condicional (todas as colunas de capacidades)
+  // Define o range para formatação condicional (apenas colunas de capacidades)
   const formatRanges = [];
   capabilityColumns.forEach(colIndex => {
     formatRanges.push(sheet.getRange(3, colIndex, lastRow - 2, 1));
