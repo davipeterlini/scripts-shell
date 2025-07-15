@@ -269,7 +269,7 @@ _verify_installation() {
 }
 
 # Main function
-main() {
+install_coder_cli() {
     print_header "Coder CLI Installation Script"
     
     # Check if pyenv is installed
@@ -336,4 +336,4 @@ main() {
 }
 
 # Execute main function
-main
+install_coder_cli
