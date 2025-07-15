@@ -10,11 +10,144 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/utils/colors_message.sh"
 source "$SCRIPT_DIR/utils/detect_os.sh"
 
-# Python version to use
 PYTHON_VERSION="3.12.9"
 
-# Private functions
-_install_pyenv() {
+check_pyenv() {
+    print_header_info "Checking pyenv installation"
+    
+    # Check if pyenv command exists
+    if ! command -v pyenv &>/dev/null; then
+        print_alert "pyenv is not installed"
+        return 1
+    fi
+    
+    # Check pyenv version
+    local pyenv_version=$(pyenv --version 2>&1)
+    print_info "pyenv version: $pyenv_version"
+    
+    # Check if pyenv is in PATH
+    if ! echo "$PATH" | grep -q "pyenv"; then
+        print_alert "pyenv is not in PATH"
+        return 1
+    fi
+    
+    print_success "pyenv is installed and configured correctly"
+    return 0
+}
+
+# Check if Python version is installed and set as global
+check_python() {
+    print_header "Checking Python installation"
+    
+    # Check if pyenv is available
+    if ! command -v pyenv &>/dev/null; then
+        print_alert "pyenv is not available, cannot check Python versions"
+        return 1
+    fi
+    
+    # Check if our required version is installed
+    if ! pyenv versions | grep -q $PYTHON_VERSION; then
+        print_alert "Python $PYTHON_VERSION is not installed"
+        return 1
+    fi
+    
+    # Check current global version
+    local current_version=$(pyenv version | cut -d' ' -f1)
+    print_info "Current global Python version: $current_version"
+    
+    # Check if current version matches required version
+    if [[ "$current_version" != "$PYTHON_VERSION" ]]; then
+        print_alert "Current global Python version ($current_version) is not the required version ($PYTHON_VERSION)"
+        return 1
+    fi
+    
+    # Check if Python is working correctly
+    if ! python --version &>/dev/null; then
+        print_alert "Python is not working correctly"
+        return 1
+    fi
+    
+    print_success "Python $PYTHON_VERSION is installed and set as global"
+    return 0
+}
+
+# Check if pipx is installed and using the correct Python
+check_pipx() {
+    print_header "Checking pipx installation"
+    
+    # Check if pipx command exists
+    if ! command -v pipx &>/dev/null; then
+        print_alert "pipx is not installed"
+        return 1
+    fi
+    
+    # Check pipx version
+    local pipx_version=$(pipx --version 2>&1)
+    print_info "pipx version: $pipx_version"
+    
+    # Get the full path to the Python executable
+    local python_path=$(pyenv which python)
+    
+    # Check if PIPX_DEFAULT_PYTHON is set correctly
+    if [[ -z "$PIPX_DEFAULT_PYTHON" ]]; then
+        print_alert "PIPX_DEFAULT_PYTHON is not set"
+        return 1
+    elif [[ "$PIPX_DEFAULT_PYTHON" != "$python_path" ]]; then
+        print_alert "PIPX_DEFAULT_PYTHON is not set to the correct Python path"
+        print_info "Current: $PIPX_DEFAULT_PYTHON"
+        print_info "Expected: $python_path"
+        return 1
+    fi
+    
+    # Check which Python pipx is using
+    # Create a temporary script to print Python version and path
+    local temp_script=$(mktemp)
+    echo "import sys; print(f'Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} at {sys.executable}')" > "$temp_script"
+    
+    # Run the script with pipx
+    local pipx_python_info=$(pipx run --spec=pydantic python "$temp_script" 2>/dev/null || echo "Failed to run pipx")
+    rm -f "$temp_script"
+    
+    print_info "pipx is using: $pipx_python_info"
+    
+    # Check if pipx is using Python 3.12.9
+    if [[ "$pipx_python_info" != *"Python 3.12.9"* ]]; then
+        print_alert "pipx is not using Python $PYTHON_VERSION"
+        return 1
+    fi
+    
+    print_success "pipx is installed and using Python $PYTHON_VERSION"
+    return 0
+}
+
+# Check if Coder CLI is installed and working
+check_coder() {
+    print_header "Checking Coder CLI installation"
+    
+    # Check if coder command exists
+    if ! command -v coder &>/dev/null; then
+        print_alert "Coder CLI is not installed"
+        return 1
+    fi
+    
+    # Check coder version
+    if ! coder --version &>/dev/null; then
+        print_alert "Coder CLI is not working correctly"
+        return 1
+    fi
+    
+    local coder_version=$(coder --version 2>&1)
+    print_info "Coder CLI version: $coder_version"
+    print_info "Coder CLI path: $(which coder)"
+    
+    print_success "Coder CLI is installed and working correctly"
+    return 0
+}
+
+# ===== INSTALL FUNCTIONS =====
+
+# Install pyenv
+install_pyenv() {
     print_header "Installing pyenv"
     
     # Detect OS using the imported function
@@ -60,31 +193,18 @@ _install_pyenv() {
     
     print_success "pyenv installed successfully"
     print_alert "You may need to restart your terminal or run 'source $shell_profile' to use pyenv"
-}
-
-_check_system_python() {
-    print_header "Checking system Python"
     
-    # Check if Python is installed
-    if command -v python3 &>/dev/null; then
-        local system_python_version=$(python3 --version 2>&1 | awk '{print $2}')
-        print_info "System Python version: $system_python_version"
-        
-        # Compare versions (simple string comparison)
-        if [[ "$system_python_version" < "$PYTHON_VERSION" ]]; then
-            print_alert "System Python version ($system_python_version) is older than required version ($PYTHON_VERSION)"
-            return 1
-        else
-            print_success "System Python version ($system_python_version) meets requirements"
-            return 0
-        fi
+    # Verify installation
+    if check_pyenv; then
+        return 0
     else
-        print_alert "No system Python found"
-        return 1
+        print_error "Failed to install pyenv correctly"
+        exit 1
     fi
 }
 
-_install_python_version() {
+# Install Python version
+install_python() {
     print_header "Installing Python $PYTHON_VERSION with pyenv"
     
     # Check if this version is already installed
@@ -107,48 +227,18 @@ _install_python_version() {
         print_error "Failed to set Python $PYTHON_VERSION as global version. Current version is $current_version"
         exit 1
     fi
-}
-
-_check_python_versions() {
-    print_header "Checking Python versions"
     
-    # Check if pyenv is installed
-    if ! command -v pyenv &>/dev/null; then
-        print_alert "pyenv is not installed, cannot check Python versions"
-        return 1
-    fi
-    
-    # List all installed Python versions
-    print_info "Installed Python versions:"
-    pyenv versions
-    
-    # Check if our required version is installed
-    if pyenv versions | grep -q $PYTHON_VERSION; then
-        print_success "Python $PYTHON_VERSION is installed"
-    else
-        print_alert "Python $PYTHON_VERSION is not installed"
-        return 1
-    fi
-    
-    # Check current global version
-    local current_version=$(pyenv version | cut -d' ' -f1)
-    print_info "Current global Python version: $current_version"
-    
-    # Compare versions
-    if [[ "$current_version" == "$PYTHON_VERSION" ]]; then
-        print_success "Current global Python version matches required version"
+    # Verify installation
+    if check_python; then
         return 0
-    elif [[ "$current_version" < "$PYTHON_VERSION" ]]; then
-        print_alert "Current global Python version ($current_version) is older than required version ($PYTHON_VERSION)"
-        return 1
     else
-        print_info "Current global Python version ($current_version) is newer than required version ($PYTHON_VERSION)"
-        print_alert "Will set $PYTHON_VERSION as global version for compatibility"
-        return 1
+        print_error "Failed to install Python correctly"
+        exit 1
     fi
 }
 
-_clean_pipx_installation() {
+# Clean up existing pipx installation
+clean_pipx() {
     print_info "Cleaning up existing pipx installation..."
     
     # Uninstall pipx if it exists
@@ -177,11 +267,12 @@ _clean_pipx_installation() {
     print_success "Cleaned up pipx installation"
 }
 
-_install_pipx() {
+# Install pipx
+install_pipx() {
     print_header "Installing pipx with Python $PYTHON_VERSION"
     
     # Clean up any existing pipx installation
-    _clean_pipx_installation
+    clean_pipx
     
     # Make sure we're using the pyenv Python
     pyenv shell $PYTHON_VERSION
@@ -214,55 +305,18 @@ _install_pipx() {
     "$python_path" -m pipx ensurepath --force
     
     print_success "pipx installed successfully with Python $PYTHON_VERSION"
-}
-
-_verify_pipx_python() {
-    print_header "Verifying pipx Python version"
     
-    # Get the full path to the Python executable
-    local python_path=$(pyenv which python)
-    
-    # Check if PIPX_DEFAULT_PYTHON is set correctly
-    if [[ "$PIPX_DEFAULT_PYTHON" == "$python_path" ]]; then
-        print_success "PIPX_DEFAULT_PYTHON is correctly set to $python_path"
-    else
-        print_alert "PIPX_DEFAULT_PYTHON is not set correctly"
-        export PIPX_DEFAULT_PYTHON="$python_path"
-        print_info "Set PIPX_DEFAULT_PYTHON to $python_path"
-    fi
-    
-    # Check if pipx is available
-    if ! command -v pipx &>/dev/null; then
-        print_error "pipx is not available in PATH"
-        _install_pipx
-        return 0
-    fi
-    
-    # Check which Python pipx is using
-    print_info "Checking which Python pipx is using..."
-    
-    # Create a temporary script to print Python version and path
-    local temp_script=$(mktemp)
-    echo "import sys; print(f'Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} at {sys.executable}')" > "$temp_script"
-    
-    # Run the script with pipx
-    local pipx_python_info=$(pipx run --spec=pydantic python "$temp_script" 2>/dev/null || echo "Failed to run pipx")
-    rm -f "$temp_script"
-    
-    print_info "pipx is using: $pipx_python_info"
-    
-    # Check if pipx is using Python 3.12.9
-    if [[ "$pipx_python_info" == *"Python 3.12.9"* ]]; then
-        print_success "pipx is correctly using Python 3.12.9"
+    # Verify installation
+    if check_pipx; then
         return 0
     else
-        print_alert "pipx is not using Python 3.12.9, reinstalling pipx"
-        _install_pipx
-        return 0
+        print_error "Failed to install pipx correctly"
+        exit 1
     fi
 }
 
-_install_coder_cli() {
+# Install Coder CLI
+install_coder() {
     print_header "Installing Coder CLI"
     
     # Make sure we're using the pyenv Python
@@ -297,9 +351,18 @@ _install_coder_cli() {
     fi
     
     print_success "Coder CLI installed successfully"
+    
+    # Verify installation
+    if check_coder; then
+        return 0
+    else
+        print_error "Failed to install Coder CLI correctly"
+        exit 1
+    fi
 }
 
-_configure_coder_cli() {
+# Configure Coder CLI
+configure_coder() {
     print_header "Configuring Coder CLI"
     
     # Ensure coder is in PATH
@@ -341,71 +404,33 @@ _configure_coder_cli() {
     fi
 }
 
-_verify_installation() {
+# Verify the entire installation
+verify_installation() {
     print_header "Verifying Installation"
     
-    # Ensure PATH includes necessary directories
-    export PATH="$HOME/.pyenv/bin:$PATH"
-    export PATH="$HOME/.local/bin:$PATH"
+    # Check all components
+    local all_ok=true
     
-    # Check pyenv
-    if command -v pyenv &>/dev/null; then
-        print_success "pyenv is available in PATH"
-        print_info "pyenv path: $(which pyenv)"
-        print_info "pyenv version: $(pyenv --version)"
-    else
-        print_error "pyenv is not available in PATH"
+    if ! check_pyenv; then
+        all_ok=false
     fi
     
-    # Check Python version
-    if command -v python &>/dev/null; then
-        local python_version=$(python --version)
-        print_success "Python is available: $python_version"
-        print_info "Python path: $(which python)"
-    else
-        print_error "Python is not available in PATH"
+    if ! check_python; then
+        all_ok=false
     fi
     
-    # Check pipx
-    if command -v pipx &>/dev/null; then
-        print_success "pipx is available in PATH"
-        print_info "pipx path: $(which pipx)"
-        print_info "pipx version: $(pipx --version)"
-        
-        # Check PIPX_DEFAULT_PYTHON
-        if [[ -n "$PIPX_DEFAULT_PYTHON" ]]; then
-            print_info "PIPX_DEFAULT_PYTHON: $PIPX_DEFAULT_PYTHON"
-        else
-            print_alert "PIPX_DEFAULT_PYTHON is not set"
-        fi
-        
-        # Create a temporary script to print Python version and path
-        local temp_script=$(mktemp)
-        echo "import sys; print(f'Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} at {sys.executable}')" > "$temp_script"
-        
-        # Run the script with pipx
-        print_info "pipx is using: $(pipx run --spec=pydantic python "$temp_script" 2>/dev/null || echo "Failed to run pipx")"
-        rm -f "$temp_script"
-    else
-        print_error "pipx is not available in PATH"
+    if ! check_pipx; then
+        all_ok=false
     fi
     
-    # Check coder
-    if command -v coder &>/dev/null; then
-        local coder_version=$(coder --version)
-        print_success "Coder CLI is available: $coder_version"
-        print_info "Coder CLI executable path: $(which coder)"
+    if ! check_coder; then
+        all_ok=false
+    fi
+    
+    if $all_ok; then
+        print_success "All components are installed and configured correctly"
     else
-        print_error "Coder CLI is not available in PATH"
-        
-        # Try to find the coder executable
-        local coder_path=$(find "$HOME/.local" -name "coder" -type f -executable 2>/dev/null)
-        if [[ -n "$coder_path" ]]; then
-            print_info "Found Coder CLI at: $coder_path"
-            print_info "But it's not in your PATH. Add the directory to your PATH."
-        else
-            print_error "Could not find Coder CLI executable anywhere"
-        fi
+        print_error "Some components are not installed or configured correctly"
     fi
 }
 
@@ -413,30 +438,28 @@ _verify_installation() {
 main() {
     print_header "Coder CLI Installation Script"
     
-    # Check if pyenv is installed
-    if command -v pyenv &>/dev/null; then
-        print_success "pyenv is already installed"
-    else
-        print_alert "pyenv is not installed"
-        _install_pyenv
-    fi
+    # Detect OS
+    detect_os
+    print_info "Operating System: $OS_NAME $OS_VERSION"
     
-    # Make sure pyenv is in PATH
+    # Setup environment
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init -)"
     
-    # Check system Python version
-    _check_system_python
-    
-    # Check installed Python versions and set 3.12.9 if needed
-    if ! _check_python_versions; then
-        print_alert "Need to install or set Python $PYTHON_VERSION as global version"
-        _install_python_version
+    # Check and install pyenv if needed
+    if ! check_pyenv; then
+        print_alert "pyenv needs to be installed"
+        install_pyenv
     fi
     
-    # Set the Python version as global
-    pyenv global $PYTHON_VERSION
+    # Initialize pyenv
+    eval "$(pyenv init -)"
+    
+    # Check and install Python if needed
+    if ! check_python; then
+        print_alert "Python $PYTHON_VERSION needs to be installed or set as global"
+        install_python
+    fi
     
     # Get the full path to the Python executable
     local python_path=$(pyenv which python)
@@ -444,28 +467,23 @@ main() {
     # Set PIPX_DEFAULT_PYTHON
     export PIPX_DEFAULT_PYTHON="$python_path"
     
-    # Check if pipx is installed
-    if command -v pipx &>/dev/null; then
-        print_success "pipx is already installed"
-        _verify_pipx_python
-    else
-        print_alert "pipx is not installed"
-        _install_pipx
+    # Check and install pipx if needed
+    if ! check_pipx; then
+        print_alert "pipx needs to be installed or reconfigured"
+        install_pipx
     fi
     
-    # Check if Coder CLI is installed
-    if command -v coder &>/dev/null; then
-        print_success "Coder CLI is already installed"
-    else
-        print_alert "Coder CLI is not installed"
-        _install_coder_cli
+    # Check and install Coder CLI if needed
+    if ! check_coder; then
+        print_alert "Coder CLI needs to be installed"
+        install_coder
     fi
     
     # Configure Coder CLI
-    _configure_coder_cli
+    configure_coder
     
-    # Verify installation
-    _verify_installation
+    # Final verification
+    verify_installation
     
     print_header "Installation Complete"
     print_info "You can now use Coder CLI with Python $PYTHON_VERSION"

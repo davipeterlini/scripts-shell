@@ -11,6 +11,8 @@ source "$(dirname "$0")/grant_permissions.sh"
 source "$(dirname "$0")/dev/setup_projects.sh"
 source "$(dirname "$0")/dev/sync_drive_folders.sh"
 source "$(dirname "$0")/dev/setup_global_env.sh"
+source "$(dirname "$0")/dev/setup_node.sh"
+source "$(dirname "$0")/dev/setup_java.sh"
 source "$(dirname "$0")/dev/install_ai_tools.sh"
 source "$(dirname "$0")/dev/install_flow_coder_cli.sh"
 source "$(dirname "$0")/dev/install_flow_coder_ide.sh"
@@ -31,6 +33,10 @@ setup_dev() {
     setup_global_env
 
     setup_projects
+
+    setup_node 
+
+    setup_java
 
     install_ai_tools
 
