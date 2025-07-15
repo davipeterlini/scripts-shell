@@ -65,9 +65,14 @@ check_python() {
         return 1
     fi
     
+    # Ensure pyenv shims are in PATH
+    eval "$(pyenv init --path)"
+    eval "$(pyenv init -)"
+    
     # Verify that the active Python version is the one we expect
-    local active_version=$(python --version 2>&1 | cut -d' ' -f2)
-    print_error "$active_version"
+    # Use pyenv which python to get the correct path
+    local python_path=$(pyenv which python)
+    local active_version=$("$python_path" --version 2>&1 | cut -d' ' -f2)
     print_info "Active Python version: $active_version"
     
     # Extract major.minor.patch from active version
@@ -80,7 +85,7 @@ check_python() {
     fi
     
     # Check if Python is working correctly
-    if ! python -c "print('Python is working')" &>/dev/null; then
+    if ! "$python_path" -c "print('Python is working')" &>/dev/null; then
         print_alert "Python is not working correctly"
         return 1
     fi
@@ -140,21 +145,30 @@ check_pipx() {
 check_coder() {
     print_header_info "Checking Coder CLI installation"
     
+    # Get the path to coder executable
+    local coder_path="$HOME/.local/bin/coder"
+    
     # Check if coder command exists
-    if ! command -v coder &>/dev/null; then
-        print_alert "Coder CLI is not installed"
+    if [[ ! -f "$coder_path" ]]; then
+        print_alert "Coder CLI is not installed at expected location: $coder_path"
         return 1
     fi
     
-    # Check coder version
-    if ! coder --version &>/dev/null; then
+    # Check if coder is executable
+    if [[ ! -x "$coder_path" ]]; then
+        print_alert "Coder CLI exists but is not executable"
+        return 1
+    fi
+    
+    # Check coder version using full path
+    if ! "$coder_path" --version &>/dev/null; then
         print_alert "Coder CLI is not working correctly"
         return 1
     fi
     
-    local coder_version=$(coder --version 2>&1)
+    local coder_version=$("$coder_path" --version 2>&1)
     print_info "Coder CLI version: $coder_version"
-    print_info "Coder CLI path: $(which coder)"
+    print_info "Coder CLI path: $coder_path"
     
     print_success "Coder CLI is installed and working correctly"
     return 0
@@ -199,13 +213,15 @@ install_pyenv() {
         echo '' >> "$shell_profile"
         echo '# pyenv configuration' >> "$shell_profile"
         echo 'export PYENV_ROOT="$HOME/.pyenv"' >> "$shell_profile"
-        echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> "$shell_profile"
+        echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> "$shell_profile"
+        echo 'eval "$(pyenv init --path)"' >> "$shell_profile"
         echo 'eval "$(pyenv init -)"' >> "$shell_profile"
     fi
     
     # Also add to current session
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init --path)"
     eval "$(pyenv init -)"
     
     print_success "pyenv installed successfully"
@@ -240,6 +256,9 @@ install_python() {
     print_info "Setting Python $PYTHON_VERSION as global version..."
     pyenv global $PYTHON_VERSION
     
+    # Rehash to update shims
+    pyenv rehash
+    
     # Verify the installation
     local current_version=$(pyenv global)
     if [[ "$current_version" == "$PYTHON_VERSION" ]]; then
@@ -266,9 +285,12 @@ clean_pipx() {
         return 1
     fi
     
+    # Get Python path
+    local python_path=$(pyenv which python)
+    
     # Uninstall pipx if it exists
     if command -v pipx &>/dev/null; then
-        python -m pip uninstall -y pipx || true
+        "$python_path" -m pip uninstall -y pipx || true
     fi
     
     # Remove pipx directories
@@ -306,6 +328,7 @@ install_pipx() {
     
     # Make sure we're using the pyenv Python
     pyenv shell $PYTHON_VERSION
+    pyenv rehash
     
     # Get the full path to the Python executable
     local python_path=$(pyenv which python)
@@ -355,6 +378,7 @@ install_coder() {
     
     # Make sure we're using the pyenv Python
     pyenv shell $PYTHON_VERSION
+    pyenv rehash
     
     # Get the full path to the Python executable
     local python_path=$(pyenv which python)
@@ -362,27 +386,30 @@ install_coder() {
     # Set PIPX_DEFAULT_PYTHON
     export PIPX_DEFAULT_PYTHON="$python_path"
     
-    # Install Coder CLI using pipx with force
-    print_info "Installing Coder CLI using pipx with Python $PYTHON_VERSION..."
-    PIPX_DEFAULT_PYTHON="$python_path" pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl --force
-    
-    # Add to PATH for current session
+    # Ensure ~/.local/bin is in PATH
     export PATH="$HOME/.local/bin:$PATH"
     
-    # Create symlink to ensure coder is in PATH
-    if [[ -f "$HOME/.local/bin/coder" ]]; then
-        print_info "Coder CLI executable found at $HOME/.local/bin/coder"
-    else
+    # Install Coder CLI using pipx with force
+    print_info "Installing Coder CLI using pipx with Python $PYTHON_VERSION..."
+    "$python_path" -m pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl --force
+    
+    # Verify coder executable exists
+    local coder_path="$HOME/.local/bin/coder"
+    if [[ ! -f "$coder_path" ]]; then
         # Try to find the coder executable
-        local coder_path=$(find "$HOME/.local" -name "coder" -type f -executable 2>/dev/null | head -n 1)
-        if [[ -n "$coder_path" ]]; then
+        local found_coder_path=$(find "$HOME/.local" -name "coder" -type f -executable 2>/dev/null | head -n 1)
+        if [[ -n "$found_coder_path" ]]; then
             print_info "Creating symlink for Coder CLI at $HOME/.local/bin/coder"
             mkdir -p "$HOME/.local/bin"
-            ln -sf "$coder_path" "$HOME/.local/bin/coder"
+            ln -sf "$found_coder_path" "$coder_path"
         else
             print_error "Could not find Coder CLI executable"
+            exit 1
         fi
     fi
+    
+    # Make sure coder is executable
+    chmod +x "$coder_path"
     
     print_success "Coder CLI installed successfully"
     
@@ -408,20 +435,23 @@ configure_coder() {
     # Ensure coder is in PATH
     export PATH="$HOME/.local/bin:$PATH"
     
+    # Get the full path to coder
+    local coder_path="$HOME/.local/bin/coder"
+    
     # Check if coder is available
-    if ! command -v coder &>/dev/null; then
-        print_error "Coder CLI not found in PATH. Please restart your terminal or source your shell profile"
+    if [[ ! -f "$coder_path" ]] || [[ ! -x "$coder_path" ]]; then
+        print_error "Coder CLI not found or not executable at $coder_path"
         print_info "You can manually run: export PATH=\"\$HOME/.local/bin:\$PATH\""
         return 1
     fi
     
     # Check if already authenticated
-    if coder --version &>/dev/null; then
+    if "$coder_path" --version &>/dev/null; then
         print_info "Coder CLI version:"
-        coder --version
+        "$coder_path" --version
         
         # Try to initialize
-        if coder init; then
+        if "$coder_path" init; then
             print_success "Coder CLI initialized successfully"
             return 0
         fi
@@ -440,7 +470,7 @@ configure_coder() {
     read -p "Enter client ID: " CLIENT_ID
     read -p "Enter client secret: " CLIENT_SECRET
     
-    coder auth add --tenant "$TENANT" --client "$CLIENT_ID" --secret "$CLIENT_SECRET"
+    "$coder_path" auth add --tenant "$TENANT" --client "$CLIENT_ID" --secret "$CLIENT_SECRET"
     
     if [ $? -eq 0 ]; then
         print_success "Coder CLI authenticated successfully"
@@ -502,6 +532,7 @@ main() {
     fi
     
     # Initialize pyenv
+    eval "$(pyenv init --path)"
     eval "$(pyenv init -)"
     
     # Check and install Python if needed
@@ -515,6 +546,9 @@ main() {
     
     # Set PIPX_DEFAULT_PYTHON
     export PIPX_DEFAULT_PYTHON="$python_path"
+    
+    # Ensure ~/.local/bin is in PATH
+    export PATH="$HOME/.local/bin:$PATH"
     
     # Check and install pipx if needed
     if ! check_pipx; then
@@ -548,6 +582,10 @@ main() {
     print_yellow "source $shell_profile"
     print_yellow "# OR"
     print_yellow "export PATH=\"\$HOME/.local/bin:\$PATH\""
+    print_yellow "export PYENV_ROOT=\"\$HOME/.pyenv\""
+    print_yellow "export PATH=\"\$PYENV_ROOT/bin:\$PATH\""
+    print_yellow "eval \"\$(pyenv init --path)\""
+    print_yellow "eval \"\$(pyenv init -)\""
     print_yellow "export PIPX_DEFAULT_PYTHON=\"$python_path\""
 }
 
