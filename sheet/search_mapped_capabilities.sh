@@ -1,0 +1,243 @@
+function onOpen() {
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu('Executar Script')
+      .addItem('Search Mapped Capabilities', 'fetchMappedCapabilities')
+      .addToUi();
+}
+
+function fetchMappedCapabilities() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = spreadsheet.getSheetByName("Mapped-Capabilities") || spreadsheet.insertSheet("Mapped-Capabilities");
+  
+  // Limpa a aba se já existir
+  if (sheet.getLastRow() > 0) {
+    sheet.clear();
+  }
+  
+  // Definindo apenas os cabeçalhos das colunas mapeadas
+  const headers = ['Provider', 'Modelo', 'Streaming', 'System Instruction', 
+                   'Chat Conversation', 'Image Recognition', 
+                   'Text Embedding'];
+
+  // Adiciona os cabeçalhos
+  sheet.appendRow(headers);
+
+  // Define estilo para a linha dos cabeçalhos
+  const headerRange = sheet.getRange(1, 1, 1, headers.length);
+  headerRange.setFontWeight("bold");
+  headerRange.setFontSize(12);
+  headerRange.setBackground("#D3D3D3"); // Cor de fundo cinza
+  headerRange.setFontColor("black"); // Cor da fonte preta
+  headerRange.setHorizontalAlignment("center");
+  headerRange.setBorder(true, true, true, true, true, true); // Adiciona bordas
+
+  // Solicita ao usuário o token de autenticação
+  const userToken = Browser.inputBox("Por favor, insira seu token de autenticação:");
+
+  // Valida se o token não está vazio
+  if (!userToken) {
+    Browser.msgBox("O token de autenticação não pode estar vazio. A execução do script foi cancelada.");
+    return;
+  }
+
+  const url = 'https://flow.ciandt.com/ai-orchestration-api/v2/tenant/flowteam/capabilities';
+
+  // Configuração da requisição
+  const options = {
+    'method': 'get',
+    'headers': {
+      'Authorization': 'Bearer ' + userToken,
+      'accept': '*/*'
+    }
+  };
+  
+  try {
+    // Fazendo a requisição para a API
+    const response = UrlFetchApp.fetch(url, options);
+    const data = JSON.parse(response.getContentText());
+    
+    // Iterando sobre os providers e modelos
+    for (const provider in data.supportedModels) {
+      const models = data.supportedModels[provider];
+      
+      models.forEach(model => {
+        const capabilities = model.capabilities;
+        const modelName = model.name;
+
+        const row = [
+          provider,
+          modelName,
+          capabilities.includes('streaming') ? "Enable" : "Disable", // Coluna Streaming
+          capabilities.includes('system-instruction') ? "Enable" : "Disable", // Coluna System Instruction
+          capabilities.includes('chat-conversation') ? "Enable" : "Disable", // Coluna Chat Conversation
+          capabilities.includes('image-recognition') ? "Enable" : "Disable", // Coluna Image Recognition
+          capabilities.includes('text-embedding') ? "Enable" : "Disable", // Coluna Text Embedding
+        ];
+        
+        sheet.appendRow(row);
+      });
+    }
+
+    // Formatação da planilha
+    formatSheet(sheet, headers.length);
+    
+  } catch (error) {
+    // Exibe uma mensagem de erro se a requisição falhar
+    Browser.msgBox("Erro ao acessar a API: " + error.message);
+  }
+}
+
+function formatSheet(sheet, numColumns) {
+  // Define a largura mínima das colunas
+  const minColumnWidths = [160, 200, 120, 120, 120, 120, 120];
+
+  // Aplica a largura mínima
+  for (let i = 0; i < numColumns; i++) {
+    sheet.setColumnWidth(i + 1, minColumnWidths[i]);
+  }
+  
+  const lastRow = sheet.getLastRow();
+  
+  // Aplica bordas a todas as células preenchidas
+  const dataRange = sheet.getRange(1, 1, lastRow, numColumns);
+  dataRange.setBorder(true, true, true, true, true, true);
+  
+  // Alterna a cor das linhas de dados (começando da linha 2)
+  for (let i = 2; i <= lastRow; i++) {
+    if (i % 2 === 0) { // Linhas pares (2, 4, 6...)
+      sheet.getRange(i, 1, 1, numColumns).setBackground("#f2f2f2"); // Cor de fundo cinza claro
+    }
+  }
+
+  // Ajusta a altura das linhas
+  sheet.setRowHeight(1, 35); // Altura da linha do cabeçalho aumentada para acomodar quebra de texto
+  
+  // Ajusta a altura das linhas de dados
+  for (let i = 2; i <= lastRow; i++) {
+    sheet.setRowHeight(i, 25);
+  }
+
+  // Centraliza o conteúdo das células de capabilities
+  const capabilitiesRange = sheet.getRange(2, 3, lastRow - 1, numColumns - 2);
+  capabilitiesRange.setHorizontalAlignment("center");
+  
+  // Adiciona espaçamento entre as linhas
+  sheet.getRange(1, 1, lastRow, numColumns).setVerticalAlignment("middle"); // Centraliza verticalmente
+
+  // Adiciona a validação de dados nas colunas
+  const validationValues = ["Enable", "Disable"];
+  const rule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(validationValues)
+      .setAllowInvalid(false)
+      .build();
+
+  // Cria ranges para todas as colunas de capacidades
+  const capabilityColumns = [3, 4, 5, 6, 7]; // Índices das colunas de capacidades
+  
+  // Aplica a validação de dados a cada coluna de capacidade para todas as linhas de dados
+  capabilityColumns.forEach(colIndex => {
+    const range = sheet.getRange(2, colIndex, lastRow - 1, 1); // Da linha 2 até a última linha
+    range.setDataValidation(rule);
+  });
+
+  // Habilita quebra de texto para todas as colunas de cabeçalho com nomes longos
+  const longHeaderColumns = [3, 4, 5, 6, 7]; // Índices das colunas com nomes longos
+  
+  longHeaderColumns.forEach(colIndex => {
+    const headerCell = sheet.getRange(1, colIndex);
+    headerCell.setWrap(true);
+    headerCell.setVerticalAlignment("middle");
+  });
+
+  // Limpa as regras existentes
+  sheet.clearConditionalFormatRules();
+  
+  // Define o range para formatação condicional (todas as colunas de capacidades)
+  const formatRanges = [];
+  capabilityColumns.forEach(colIndex => {
+    formatRanges.push(sheet.getRange(2, colIndex, lastRow - 1, 1));
+  });
+  
+  // Cria as regras de formatação condicional
+  const rules = [];
+  
+  // Regra para "Enable"
+  rules.push(SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo("Enable")
+      .setBackground("#008000") // Verde
+      .setRanges(formatRanges)
+      .build());
+  
+  // Regra para "Disable"
+  rules.push(SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo("Disable")
+      .setBackground("#dc3545") // Vermelho
+      .setRanges(formatRanges)
+      .build());
+  
+  // Aplica todas as regras
+  sheet.setConditionalFormatRules(rules);
+  
+  // Adiciona a legenda abaixo da tabela
+  addLegend(sheet, lastRow + 3); // Adiciona a legenda 3 linhas abaixo da tabela
+}
+
+function addLegend(sheet, startRow) {
+  // Define os itens da legenda com seus respectivos status e cores
+  const legendItems = [
+    { status: "Enable", color: "#008000", description: "Funcionalidade suportada pelo modelo" },
+    { status: "Disable", color: "#dc3545", description: "Funcionalidade não suportada pelo modelo" }
+  ];
+  
+  // Adiciona o título da legenda
+  const legendTitleCell = sheet.getRange(startRow, 1, 1, 4);
+  legendTitleCell.merge();
+  legendTitleCell.setValue("LEGENDA");
+  legendTitleCell.setFontWeight("bold");
+  legendTitleCell.setHorizontalAlignment("center");
+  legendTitleCell.setBackground("#f2f2f2");
+  legendTitleCell.setBorder(true, true, true, true, true, true);
+  
+  // Adiciona os cabeçalhos da legenda
+  const headerRow = startRow + 1;
+  sheet.getRange(headerRow, 1).setValue("Status");
+  sheet.getRange(headerRow, 2).setValue("Cor");
+  sheet.getRange(headerRow, 3, 1, 2).merge().setValue("Descrição");
+  
+  // Formata os cabeçalhos
+  const headerRange = sheet.getRange(headerRow, 1, 1, 4);
+  headerRange.setFontWeight("bold");
+  headerRange.setBackground("#D3D3D3");
+  headerRange.setHorizontalAlignment("center");
+  headerRange.setBorder(true, true, true, true, true, true);
+  
+  // Adiciona os itens da legenda
+  legendItems.forEach((item, index) => {
+    const row = headerRow + index + 1;
+    
+    // Status
+    const statusCell = sheet.getRange(row, 1);
+    statusCell.setValue(item.status);
+    statusCell.setHorizontalAlignment("center");
+    statusCell.setBorder(true, true, true, true, true, true);
+    
+    // Cor
+    const colorCell = sheet.getRange(row, 2);
+    colorCell.setBackground(item.color);
+    colorCell.setBorder(true, true, true, true, true, true);
+    
+    // Descrição
+    const descCell = sheet.getRange(row, 3, 1, 2);
+    descCell.merge();
+    descCell.setValue(item.description);
+    descCell.setBorder(true, true, true, true, true, true);
+  });
+  
+  // Adiciona uma nota sobre a legenda
+  const noteRow = headerRow + legendItems.length + 2;
+  const noteCell = sheet.getRange(noteRow, 1, 1, 4);
+  noteCell.merge();
+  noteCell.setValue("Nota: Esta legenda serve como referência para interpretar os status nas células da tabela acima.");
+  noteCell.setFontStyle("italic");
+  noteCell.setHorizontalAlignment("center");
+}
