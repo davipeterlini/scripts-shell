@@ -7,24 +7,12 @@ function onOpen() {
 
 function fetchMappedCapabilities() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = spreadsheet.getSheetByName("Mapped-Capabilities") || spreadsheet.insertSheet("Mapped-Capabilities");
+  const sheet = spreadsheet.getSheetByName("LLM-Capabilities") || spreadsheet.insertSheet("LLM-Capabilities");
   
   // Limpa a aba se já existir
   if (sheet.getLastRow() > 0) {
     sheet.clear();
   }
-  
-  // Adiciona a linha preta com o título "RETORNO DA API"
-  sheet.appendRow(Array(7).fill(''));
-  const titleRow = sheet.getRange(1, 1, 1, 7);
-  titleRow.merge();
-  titleRow.setValue("RETORNO DA API");
-  titleRow.setFontWeight("bold");
-  titleRow.setBackground("#000000");
-  titleRow.setFontColor("#FFFFFF");
-  titleRow.setHorizontalAlignment("center");
-  titleRow.setVerticalAlignment("middle");
-  titleRow.setBorder(true, true, true, true, true, true, "black", SpreadsheetApp.BorderStyle.SOLID);
   
   // Solicita ao usuário o token de autenticação
   const userToken = Browser.inputBox("Por favor, insira seu token de autenticação:");
@@ -61,6 +49,21 @@ function fetchMappedCapabilities() {
       const formattedCapability = formatCapabilityName(capability);
       headers.push(formattedCapability);
     });
+    
+    // Calcula o número total de colunas (2 fixas + número de capabilities)
+    const totalColumns = 2 + allCapabilities.length;
+    
+    // Adiciona a linha preta com o título "RETORNO DA API"
+    sheet.appendRow(Array(totalColumns).fill(''));
+    const titleRow = sheet.getRange(1, 1, 1, totalColumns);
+    titleRow.merge();
+    titleRow.setValue("RETORNO DA API");
+    titleRow.setFontWeight("bold");
+    titleRow.setBackground("#000000");
+    titleRow.setFontColor("#FFFFFF");
+    titleRow.setHorizontalAlignment("center");
+    titleRow.setVerticalAlignment("middle");
+    titleRow.setBorder(true, true, true, true, true, true, "black", SpreadsheetApp.BorderStyle.SOLID);
 
     // Adiciona os cabeçalhos
     sheet.appendRow(headers);
