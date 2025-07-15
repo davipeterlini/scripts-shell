@@ -510,7 +510,7 @@ verify_installation() {
     fi
 }
 
-main() {
+install_flow_coder_cli() {
     print_header "Coder CLI Installation Script"
     
     if ! confirm_action "This script will install and configure pyenv, Python $PYTHON_VERSION, pipx, and Coder CLI. Continue?"; then
@@ -590,5 +590,7 @@ main() {
     print_yellow "export PIPX_DEFAULT_PYTHON=\"$python_path\""
 }
 
-# Execute main function
-main
+# Check if the script is being executed directly or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    install_flow_coder_cli "$@"
+fi

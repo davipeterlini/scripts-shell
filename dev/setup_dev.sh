@@ -14,7 +14,7 @@ source "$(dirname "$0")/dev/setup_global_env.sh"
 source "$(dirname "$0")/dev/setup_node.sh"
 source "$(dirname "$0")/dev/setup_java.sh"
 source "$(dirname "$0")/dev/install_ai_tools.sh"
-source "$(dirname "$0")/dev/install_flow_coder_cli.sh"
+source "$(dirname "$0")/flow_coder/install_flow_coder_cli.sh"
 source "$(dirname "$0")/dev/install_flow_coder_ide.sh"
 #source "$(dirname "$0")/dev/open_project_iterm.sh"
 
