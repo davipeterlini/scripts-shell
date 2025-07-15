@@ -69,15 +69,50 @@ _install_python_version() {
     print_success "Python $PYTHON_VERSION installed successfully"
 }
 
+_clean_pipx_installation() {
+    print_info "Cleaning up existing pipx installation..."
+    
+    # Uninstall pipx if it exists
+    if command -v pipx &>/dev/null; then
+        python -m pip uninstall -y pipx || true
+    fi
+    
+    # Remove pipx directories
+    rm -rf "$HOME/.local/pipx" || true
+    
+    # Remove pipx from PATH in shell profile
+    local shell_profile="$HOME/.bashrc"
+    if [[ "$SHELL" == *"zsh"* ]]; then
+        shell_profile="$HOME/.zshrc"
+    fi
+    
+    # Remove any pipx-related lines from shell profile
+    if [[ -f "$shell_profile" ]]; then
+        sed -i.bak '/pipx/d' "$shell_profile" || true
+        rm -f "${shell_profile}.bak" || true
+    fi
+    
+    # Remove pipx executable
+    rm -f "$HOME/.local/bin/pipx" || true
+    
+    print_success "Cleaned up pipx installation"
+}
+
 _install_pipx() {
-    print_header "Installing pipx"
+    print_header "Installing pipx with Python $PYTHON_VERSION"
+    
+    # Clean up any existing pipx installation
+    _clean_pipx_installation
     
     # Make sure we're using the pyenv Python
     pyenv shell $PYTHON_VERSION
     
+    # Get the full path to the Python executable
+    local python_path=$(pyenv which python)
+    print_info "Using Python from: $python_path"
+    
     # Install pipx using the pyenv Python
-    python -m pip install --user pipx
-    python -m pipx ensurepath
+    "$python_path" -m pip install --user pipx
     
     # Determine shell profile file
     local shell_profile="$HOME/.bashrc"
@@ -85,50 +120,65 @@ _install_pipx() {
         shell_profile="$HOME/.zshrc"
     fi
     
-    # Add pipx to PATH in shell profile if not already there
-    if ! grep -q "pipx" "$shell_profile"; then
-        print_info "Adding pipx to $shell_profile"
-        echo '' >> "$shell_profile"
-        echo '# pipx configuration' >> "$shell_profile"
-        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$shell_profile"
-    fi
+    # Add pipx to PATH in shell profile
+    print_info "Adding pipx to $shell_profile"
+    echo '' >> "$shell_profile"
+    echo '# pipx configuration' >> "$shell_profile"
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$shell_profile"
+    echo "export PIPX_DEFAULT_PYTHON=\"$python_path\"" >> "$shell_profile"
     
     # Add pipx to PATH for current session
     export PATH="$HOME/.local/bin:$PATH"
+    export PIPX_DEFAULT_PYTHON="$python_path"
     
-    print_success "pipx installed successfully"
-    print_alert "You may need to restart your terminal or run 'source $shell_profile' to use pipx"
+    # Force ensurepath to add pipx to PATH
+    "$python_path" -m pipx ensurepath --force
+    
+    print_success "pipx installed successfully with Python $PYTHON_VERSION"
 }
 
 _verify_pipx_python() {
     print_header "Verifying pipx Python version"
     
-    # Get the Python path used by pipx
-    local pipx_python_path=$(pipx environment --value PIPX_LOCAL_VENVS)
+    # Get the full path to the Python executable
+    local python_path=$(pyenv which python)
     
-    if [[ -z "$pipx_python_path" ]]; then
-        print_error "Could not determine pipx Python path"
-        return 1
+    # Check if PIPX_DEFAULT_PYTHON is set correctly
+    if [[ "$PIPX_DEFAULT_PYTHON" == "$python_path" ]]; then
+        print_success "PIPX_DEFAULT_PYTHON is correctly set to $python_path"
+    else
+        print_alert "PIPX_DEFAULT_PYTHON is not set correctly"
+        export PIPX_DEFAULT_PYTHON="$python_path"
+        print_info "Set PIPX_DEFAULT_PYTHON to $python_path"
     fi
     
-    print_info "pipx is using Python from: $pipx_python_path"
+    # Check if pipx is available
+    if ! command -v pipx &>/dev/null; then
+        print_error "pipx is not available in PATH"
+        _install_pipx
+        return 0
+    fi
     
-    # Check if pipx is using the pyenv Python
-    local pyenv_python_path=$(pyenv which python)
-    print_info "pyenv Python path: $pyenv_python_path"
+    # Check which Python pipx is using
+    print_info "Checking which Python pipx is using..."
     
-    if pipx environment | grep -q "$PYTHON_VERSION"; then
-        print_success "pipx is correctly using Python $PYTHON_VERSION"
+    # Create a temporary script to print Python version and path
+    local temp_script=$(mktemp)
+    echo "import sys; print(f'Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} at {sys.executable}')" > "$temp_script"
+    
+    # Run the script with pipx
+    local pipx_python_info=$(pipx run --spec=pydantic python "$temp_script" 2>/dev/null || echo "Failed to run pipx")
+    rm -f "$temp_script"
+    
+    print_info "pipx is using: $pipx_python_info"
+    
+    # Check if pipx is using Python 3.12.9
+    if [[ "$pipx_python_info" == *"Python 3.12.9"* ]]; then
+        print_success "pipx is correctly using Python 3.12.9"
         return 0
     else
-        print_alert "pipx is not using Python $PYTHON_VERSION"
-        
-        # Reinstall pipx with the correct Python version
-        print_info "Reinstalling pipx with Python $PYTHON_VERSION..."
-        python -m pip uninstall -y pipx
-        python -m pip install --user pipx
-        python -m pipx ensurepath
-        
+        print_alert "pipx is not using Python 3.12.9, reinstalling pipx"
+        _install_pipx
         return 0
     fi
 }
@@ -139,22 +189,15 @@ _install_coder_cli() {
     # Make sure we're using the pyenv Python
     pyenv shell $PYTHON_VERSION
     
-    # Install Coder CLI using pipx
-    pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl
+    # Get the full path to the Python executable
+    local python_path=$(pyenv which python)
     
-    # Determine shell profile file
-    local shell_profile="$HOME/.bashrc"
-    if [[ "$SHELL" == *"zsh"* ]]; then
-        shell_profile="$HOME/.zshrc"
-    fi
+    # Set PIPX_DEFAULT_PYTHON
+    export PIPX_DEFAULT_PYTHON="$python_path"
     
-    # Add pipx bin directory to PATH in shell profile if not already there
-    if ! grep -q "pipx" "$shell_profile"; then
-        print_info "Adding pipx bin directory to $shell_profile"
-        echo '' >> "$shell_profile"
-        echo '# pipx configuration' >> "$shell_profile"
-        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$shell_profile"
-    fi
+    # Install Coder CLI using pipx with force
+    print_info "Installing Coder CLI using pipx with Python $PYTHON_VERSION..."
+    PIPX_DEFAULT_PYTHON="$python_path" pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl --force
     
     # Add to PATH for current session
     export PATH="$HOME/.local/bin:$PATH"
@@ -175,7 +218,6 @@ _install_coder_cli() {
     fi
     
     print_success "Coder CLI installed successfully"
-    print_alert "You may need to restart your terminal or run 'source $shell_profile' to use coder"
 }
 
 _configure_coder_cli() {
@@ -230,6 +272,8 @@ _verify_installation() {
     # Check pyenv
     if command -v pyenv &>/dev/null; then
         print_success "pyenv is available in PATH"
+        print_info "pyenv path: $(which pyenv)"
+        print_info "pyenv version: $(pyenv --version)"
     else
         print_error "pyenv is not available in PATH"
     fi
@@ -238,6 +282,7 @@ _verify_installation() {
     if command -v python &>/dev/null; then
         local python_version=$(python --version)
         print_success "Python is available: $python_version"
+        print_info "Python path: $(which python)"
     else
         print_error "Python is not available in PATH"
     fi
@@ -245,6 +290,23 @@ _verify_installation() {
     # Check pipx
     if command -v pipx &>/dev/null; then
         print_success "pipx is available in PATH"
+        print_info "pipx path: $(which pipx)"
+        print_info "pipx version: $(pipx --version)"
+        
+        # Check PIPX_DEFAULT_PYTHON
+        if [[ -n "$PIPX_DEFAULT_PYTHON" ]]; then
+            print_info "PIPX_DEFAULT_PYTHON: $PIPX_DEFAULT_PYTHON"
+        else
+            print_alert "PIPX_DEFAULT_PYTHON is not set"
+        fi
+        
+        # Create a temporary script to print Python version and path
+        local temp_script=$(mktemp)
+        echo "import sys; print(f'Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} at {sys.executable}')" > "$temp_script"
+        
+        # Run the script with pipx
+        print_info "pipx is using: $(pipx run --spec=pydantic python "$temp_script" 2>/dev/null || echo "Failed to run pipx")"
+        rm -f "$temp_script"
     else
         print_error "pipx is not available in PATH"
     fi
@@ -269,7 +331,7 @@ _verify_installation() {
 }
 
 # Main function
-install_coder_cli() {
+main() {
     print_header "Coder CLI Installation Script"
     
     # Check if pyenv is installed
@@ -295,6 +357,12 @@ install_coder_cli() {
     
     # Set the Python version as global
     pyenv global $PYTHON_VERSION
+    
+    # Get the full path to the Python executable
+    local python_path=$(pyenv which python)
+    
+    # Set PIPX_DEFAULT_PYTHON
+    export PIPX_DEFAULT_PYTHON="$python_path"
     
     # Check if pipx is installed
     if command -v pipx &>/dev/null; then
@@ -333,7 +401,8 @@ install_coder_cli() {
     print_yellow "source $shell_profile"
     print_yellow "# OR"
     print_yellow "export PATH=\"\$HOME/.local/bin:\$PATH\""
+    print_yellow "export PIPX_DEFAULT_PYTHON=\"$python_path\""
 }
 
 # Execute main function
-install_coder_cli
+main
