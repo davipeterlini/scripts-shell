@@ -97,60 +97,16 @@ function compareCapabilities() {
     _displayReport(reportSheet, discrepancies, sourceData.headers);
     Logger.log("Relatório gerado com sucesso");
     
-    // Prepare detailed message with discrepancies
-    let message = "";
-    if (discrepancies.length > 0) {
-      message = `Comparação concluída. Foram encontradas ${discrepancies.length} divergências de status.\n\n`;
-      
-      // Add summary of discrepancies
-      let statusCount = 0;
-      let missingModelCount = 0;
-      let headerIssue = false;
-      
-      discrepancies.forEach(d => {
-        if (d.type === "status") statusCount++;
-        else if (d.type === "missing_model") missingModelCount++;
-        else if (d.type === "header") headerIssue = true;
-      });
-      
-      if (statusCount > 0) message += `- ${statusCount} divergências de status\n`;
-      if (missingModelCount > 0) message += `- ${missingModelCount} modelos ausentes\n`;
-      if (headerIssue) message += "- Problema nos cabeçalhos das planilhas\n";
-      
-      // List first 10 discrepancies as examples
-      if (discrepancies.length > 0) {
-        message += "\nExemplos de divergências encontradas:\n";
-        
-        const maxExamples = Math.min(10, discrepancies.length);
-        for (let i = 0; i < maxExamples; i++) {
-          const d = discrepancies[i];
-          
-          if (d.type === "status") {
-            message += `${i+1}. ${d.provider} - ${d.model}: ${d.capability} (${d.sourceStatus} vs ${d.targetStatus})\n`;
-          } else if (d.type === "missing_model") {
-            const location = d.location === "source" ? COMPARE_CONFIG.TARGET_SHEET_NAME : COMPARE_CONFIG.SOURCE_SHEET_NAME;
-            message += `${i+1}. Modelo ausente: ${d.provider} - ${d.model} (apenas em ${location})\n`;
-          }
-        }
-        
-        if (discrepancies.length > maxExamples) {
-          message += `... e mais ${discrepancies.length - maxExamples} divergências (veja o relatório completo na planilha ${COMPARE_CONFIG.REPORT_SHEET_NAME})`;
-        }
-      }
-    } else {
-      message = "Comparação concluída. Nenhuma divergência de status encontrada!";
-    }
+    // Show completion message
+    const message = discrepancies.length > 0 
+      ? `Comparação concluída. Foram encontradas ${discrepancies.length} divergências de status.` 
+      : "Comparação concluída. Nenhuma divergência de status encontrada!";
     
     Logger.log(`=== COMPARAÇÃO FINALIZADA ===`);
     Logger.log(`Hora de término: ${new Date().toLocaleString()}`);
     Logger.log(message);
     
-    // Show completion message with limited details (to avoid UI freezing with too much text)
-    const shortMessage = discrepancies.length > 0 
-      ? `Comparação concluída. Foram encontradas ${discrepancies.length} divergências de status. Veja os detalhes na planilha ${COMPARE_CONFIG.REPORT_SHEET_NAME}.` 
-      : "Comparação concluída. Nenhuma divergência de status encontrada!";
-    
-    SpreadsheetApp.getUi().alert("Resultado da Comparação", shortMessage, SpreadsheetApp.getUi().ButtonSet.OK);
+    SpreadsheetApp.getUi().alert("Resultado da Comparação", message, SpreadsheetApp.getUi().ButtonSet.OK);
     
   } catch (error) {
     Logger.log(`ERRO: ${error.message}`);
@@ -461,28 +417,7 @@ function _displayReport(reportSheet, discrepancies, headers) {
   Logger.log("Formatando relatório");
   _formatReport(reportSheet);
   
-  // Add a link to the top of the report for easy navigation
-  _addNavigationLinks(reportSheet);
-  
   Logger.log("Relatório gerado com sucesso");
-}
-
-/**
- * Adds navigation links to the report
- * @param {Object} sheet - Report sheet object
- * @private
- */
-function _addNavigationLinks(reportSheet) {
-  // Add a navigation row below the summary
-  const navRow = 3;
-  reportSheet.insertRowAfter(2);
-  
-  const navRange = reportSheet.getRange(navRow, 1, 1, 8);
-  navRange.merge();
-  navRange.setValue("Clique nos links abaixo para navegar até as divergências específicas");
-  navRange.setFontWeight("bold");
-  navRange.setBackground("#E6E6FA"); // Light lavender
-  navRange.setHorizontalAlignment("center");
 }
 
 /**
@@ -578,7 +513,7 @@ function _addReportHeaders(sheet) {
   sheet.appendRow(['']);
   sheet.appendRow(headers);
   
-  const headerRange = sheet.getRange(sheet.getLastRow(), 1, 1, headers.length);
+  const headerRange = sheet.getRange(4, 1, 1, headers.length);
   headerRange.setFontWeight("bold");
   headerRange.setBackground(COMPARE_CONFIG.COLORS.HEADER_BG);
   headerRange.setHorizontalAlignment("center");
@@ -593,7 +528,7 @@ function _addReportHeaders(sheet) {
  * @private
  */
 function _addDiscrepancies(sheet, discrepancies, headers) {
-  let rowIndex = sheet.getLastRow() + 1; // Start after headers
+  let rowIndex = 5; // Start after headers
   
   discrepancies.forEach((discrepancy, index) => {
     // Log progress periodically
@@ -696,7 +631,7 @@ function _formatReport(sheet) {
   sheet.setColumnWidth(8, 250); // Recommended Action
   
   // Apply borders and background color
-  const dataRange = sheet.getRange(5, 1, lastRow - 4, lastColumn);
+  const dataRange = sheet.getRange(4, 1, lastRow - 3, lastColumn);
   dataRange.setBorder(true, true, true, true, true, true);
   
   // Set light background color for data rows (except status cells that are already colored)
@@ -713,7 +648,7 @@ function _formatReport(sheet) {
   sheet.getRange(5, 8, lastRow - 4, 1).setHorizontalAlignment("left");
   
   // Enable text wrapping
-  sheet.getRange(5, 1, lastRow - 4, lastColumn).setWrap(true);
+  sheet.getRange(4, 1, lastRow - 3, lastColumn).setWrap(true);
   
   // Add alternating row colors for better readability
   for (let i = 5; i <= lastRow; i += 2) {
