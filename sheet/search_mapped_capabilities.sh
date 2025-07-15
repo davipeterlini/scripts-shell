@@ -103,7 +103,7 @@ function getAuthToken() {
 
 function fetchMappedCapabilities() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = spreadsheet.getSheetByName("Mapped-Capabilities") || spreadsheet.insertSheet("Mapped-Capabilities");
+  const sheet = spreadsheet.getSheetByName("LLM-Capabilities") || spreadsheet.insertSheet("LLM-Capabilities");
   
   // Limpa a aba se já existir
   if (sheet.getLastRow() > 0) {
