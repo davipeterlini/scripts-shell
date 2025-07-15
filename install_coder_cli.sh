@@ -9,35 +9,13 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/utils/colors_message.sh"
 source "$SCRIPT_DIR/utils/detect_os.sh"
+source "$SCRIPT_DIR/utils/bash_tools.sh"
 
 # Python version to use
 PYTHON_VERSION="3.12.9"
 
-# Helper function to ask for confirmation
-ask_confirmation() {
-    local message="$1"
-    local default_answer="$2"
-    
-    if [[ "$default_answer" == "Y" ]]; then
-        local prompt="$message [Y/n]: "
-        local default="Y"
-    else
-        local prompt="$message [y/N]: "
-        local default="N"
-    fi
-    
-    read -p "$prompt" answer
-    answer=${answer:-$default}
-    
-    if [[ "${answer,,}" == "y" || "${answer,,}" == "yes" ]]; then
-        return 0
-    else
-        return 1
-    fi
-}
-
 check_pyenv() {
-    print_header_info_info "Checking pyenv installation"
+    print_header_info "Checking pyenv installation"
     
     # Check if pyenv command exists
     if ! command -v pyenv &>/dev/null; then
@@ -60,7 +38,7 @@ check_pyenv() {
 }
 
 check_python() {
-    print_header_info_info "Checking Python installation"
+    print_header_info "Checking Python installation"
     
     # Check if pyenv is available
     if ! command -v pyenv &>/dev/null; then
@@ -95,7 +73,7 @@ check_python() {
 }
 
 check_pipx() {
-    print_header_info_info "Checking pipx installation"
+    print_header_info "Checking pipx installation"
     
     # Check if pipx command exists
     if ! command -v pipx &>/dev/null; then
@@ -168,7 +146,7 @@ check_coder() {
 install_pyenv() {
     print_header_info "Installing pyenv"
     
-    if ! ask_confirmation "Do you want to install pyenv?" "Y"; then
+    if ! confirm_action "Do you want to install pyenv?"; then
         print_alert "pyenv installation skipped by user"
         exit 1
     fi
@@ -228,7 +206,7 @@ install_pyenv() {
 install_python() {
     print_header_info "Installing Python $PYTHON_VERSION with pyenv"
     
-    if ! ask_confirmation "Do you want to install Python $PYTHON_VERSION?" "Y"; then
+    if ! confirm_action "Do you want to install Python $PYTHON_VERSION?"; then
         print_alert "Python installation skipped by user"
         exit 1
     fi
@@ -266,7 +244,7 @@ install_python() {
 clean_pipx() {
     print_info "Cleaning up existing pipx installation..."
     
-    if ! ask_confirmation "Do you want to clean up the existing pipx installation?" "Y"; then
+    if ! confirm_action "Do you want to clean up the existing pipx installation?"; then
         print_alert "pipx cleanup skipped by user"
         return 1
     fi
@@ -301,7 +279,7 @@ clean_pipx() {
 install_pipx() {
     print_header_info "Installing pipx with Python $PYTHON_VERSION"
     
-    if ! ask_confirmation "Do you want to install pipx?" "Y"; then
+    if ! confirm_action "Do you want to install pipx?"; then
         print_alert "pipx installation skipped by user"
         exit 1
     fi
@@ -353,7 +331,7 @@ install_pipx() {
 install_coder() {
     print_header_info "Installing Coder CLI"
     
-    if ! ask_confirmation "Do you want to install Coder CLI?" "Y"; then
+    if ! confirm_action "Do you want to install Coder CLI?"; then
         print_alert "Coder CLI installation skipped by user"
         exit 1
     fi
@@ -405,7 +383,7 @@ configure_coder() {
     print_header_info "Configuring Coder CLI"
     
     # Ask for confirmation
-    if ! ask_confirmation "Do you want to configure Coder CLI?" "Y"; then
+    if ! confirm_action "Do you want to configure Coder CLI?"; then
         print_alert "Coder CLI configuration skipped by user"
         return 0
     fi
@@ -436,7 +414,7 @@ configure_coder() {
     print_alert "Coder CLI authentication required"
     
     # Ask for confirmation before authentication
-    if ! ask_confirmation "Do you want to authenticate Coder CLI?" "Y"; then
+    if ! confirm_action "Do you want to authenticate Coder CLI?"; then
         print_alert "Coder CLI authentication skipped by user"
         return 0
     fi
@@ -487,7 +465,7 @@ verify_installation() {
 main() {
     print_header "Coder CLI Installation Script"
     
-    if ! ask_confirmation "This script will install and configure pyenv, Python $PYTHON_VERSION, pipx, and Coder CLI. Continue?" "Y"; then
+    if ! confirm_action "This script will install and configure pyenv, Python $PYTHON_VERSION, pipx, and Coder CLI. Continue?"; then
         print_alert "Installation cancelled by user"
         exit 0
     fi
