@@ -65,7 +65,7 @@ _create_config_directory() {
 }
 
 _initialize_karabiner_config() {
-    print_info "Inicializando configuração do Karabiner-Elements"
+    print_header "Inicializando configuração do Karabiner-Elements"
     
     local config_file="$HOME/.config/karabiner/karabiner.json"
     local base_config_file="$(dirname "$0")/karabine_config/base_config.json"
@@ -79,7 +79,7 @@ _initialize_karabiner_config() {
     # Verificar se o arquivo de configuração já existe
     if [ -f "$config_file" ]; then
         print_info "Arquivo de configuração encontrado."
-        if get_user_confirmation "Deseja fazer backup da configuração atual? (y/n)"; then
+        if get_user_confirmation "Deseja fazer backup da configuração atual?"; then
             local backup_file="${config_file}.backup.$(date +%Y%m%d%H%M%S)"
             cp "$config_file" "$backup_file"
             print_success "Backup criado em: $backup_file"
@@ -95,9 +95,9 @@ _initialize_karabiner_config() {
 }
 
 _restart_karabiner() {
-    print_info "Reiniciando Karabiner-Elements ..."
+    print_header "Reiniciando Karabiner-Elements"
     
-    if get_user_confirmation "Deseja reiniciar o Karabiner-Elements para aplicar as alterações? (y/n)"; then
+    if get_user_confirmation "Deseja reiniciar o Karabiner-Elements para aplicar as alterações?"; then
         print_info "Tentando reiniciar o Karabiner-Elements..."
         
         # Método 1: Tentar reiniciar usando launchctl
@@ -183,13 +183,13 @@ _apply_config_from_file() {
     local title=$(jq -r '.title' "$config_json_file")
     local description=$(jq -r '.rules[0].description' "$config_json_file")
     
-    print_info "Configurando: $title"
+    print_header_info "Configurando: $title"
     print_info "Descrição: $description"
     
     # Verificar se a regra já existe
     if _rule_exists "$config_file" "$description"; then
         print_alert "A regra '$description' já existe na configuração."
-        if get_user_confirmation "Deseja sobrescrever a regra existente? (y/n)"; then
+        if get_user_confirmation "Deseja sobrescrever a regra existente?"; then
             print_info "Removendo regra existente..."
             _remove_rule "$config_file" "$description"
         else
@@ -198,9 +198,9 @@ _apply_config_from_file() {
         fi
     fi
     
-    if get_user_confirmation "Deseja aplicar esta configuração? (y/n)"; then
+    if get_user_confirmation "Deseja aplicar esta configuração?"; then
         local temp_file=$(mktemp)
-        print_info "Adicionando regra para usar fn para alternar fonte de entrada..."
+        print_info "Adicionando regra: $description"
         
         # Extrair as regras do arquivo JSON
         local rules=$(jq -c '.rules' "$config_json_file")
@@ -234,9 +234,25 @@ right_option_input_switcher() {
     _apply_config_from_file "right_option_input_switcher"
 }
 
+any_key_to_input_switcher() {
+    _apply_config_from_file "any_key_to_input_switcher"
+}
+
+direct_input_source_switch() {
+    _apply_config_from_file "direct_input_source_switch"
+}
+
+fn_key_workaround() {
+    _apply_config_from_file "fn_key_workaround"
+}
+
+double_tap_input_switch() {
+    _apply_config_from_file "double_tap_input_switch"
+}
+
 # Função para listar todas as configurações disponíveis
 list_available_configs() {
-    print_header_info "Configurações Disponíveis"
+    print_header "Configurações Disponíveis"
     
     local config_dir="$(dirname "$0")/karabine_config"
     
@@ -295,7 +311,7 @@ apply_all_configs() {
         return 1
     fi
     
-    if get_user_confirmation "Deseja aplicar TODAS as configurações disponíveis? (y/n)"; then
+    if get_user_confirmation "Deseja aplicar TODAS as configurações disponíveis?"; then
         for config_file in "$config_dir"/*.json; do
             if [ -f "$config_file" ] && [[ "$(basename "$config_file")" != "base_config.json" ]]; then
                 local filename=$(basename "$config_file" .json)
@@ -347,6 +363,7 @@ setup_karabiner() {
     print_info "1. Abra o aplicativo Karabiner-Elements manualmente"
     print_info "2. Verifique se as configurações foram aplicadas corretamente"
     print_info "3. Se estiver usando um teclado externo, talvez seja necessário configurá-lo nas preferências do Karabiner-Elements"
+    print_info "4. Certifique-se de que o teclado externo está habilitado na seção 'Devices' do Karabiner-Elements"
 }
 
 # Executar o script apenas se não estiver sendo importado

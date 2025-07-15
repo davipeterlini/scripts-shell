@@ -1,3 +1,5 @@
+
+
 # Function to check for and install gdrive CLI tool
 install_gdrive() {
   if ! command -v gdrive &> /dev/null; then
@@ -90,12 +92,6 @@ publish_to_drive() {
   }
 
   # Open the Google Drive folder in the browser
-  print_info "Opening the Google Drive folder in your browser..."
-  if command -v xdg-open &> /dev/null; then
-    xdg-open "https://drive.google.com/drive/u/0/folders/$DRIVE_FOLDER_ID"
-  elif command -v open &> /dev/null; then
-    open "https://drive.google.com/drive/u/0/folders/$DRIVE_FOLDER_ID"
-  else
-    print_info "Drive folder URL: https://drive.google.com/drive/u/0/folders/$DRIVE_FOLDER_ID"
-  fi
+  print_info Opening the Google Drive folder in your browser...
+  open_browser "https://drive.google.com/drive/u/0/folders/$DRIVE_FOLDER_ID"
 }
