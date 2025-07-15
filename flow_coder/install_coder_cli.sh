@@ -7,9 +7,10 @@ set -e
 
 # Import utility scripts
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/utils/colors_message.sh"
-source "$SCRIPT_DIR/utils/detect_os.sh"
-source "$SCRIPT_DIR/utils/bash_tools.sh"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$ROOT_DIR/utils/colors_message.sh"
+source "$ROOT_DIR/utils/detect_os.sh"
+source "$ROOT_DIR/utils/bash_tools.sh"
 
 # Python version to use
 PYTHON_VERSION="3.12.9"
