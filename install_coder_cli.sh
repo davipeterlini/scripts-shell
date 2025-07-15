@@ -52,18 +52,35 @@ check_python() {
         return 1
     fi
     
+    print_info "Python $PYTHON_VERSION is installed with pyenv"
+    
     # Check current global version
-    local current_version=$(pyenv version | cut -d' ' -f1)
+    local current_version=$(pyenv global)
     print_info "Current global Python version: $current_version"
     
     # Check if current version matches required version
     if [[ "$current_version" != "$PYTHON_VERSION" ]]; then
-        print_alert "Current global Python version ($current_version) is not the required version ($PYTHON_VERSION)"
+        print_alert "Python $PYTHON_VERSION is installed but not set as global version"
+        print_alert "Current global version is: $current_version"
+        return 1
+    fi
+    
+    # Verify that the active Python version is the one we expect
+    local active_version=$(python --version 2>&1 | cut -d' ' -f2)
+    print_error "$active_version"
+    print_info "Active Python version: $active_version"
+    
+    # Extract major.minor.patch from active version
+    local active_major_minor_patch=$(echo $active_version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+    
+    if [[ "$active_major_minor_patch" != "$PYTHON_VERSION" ]]; then
+        print_alert "Active Python version ($active_version) does not match required version ($PYTHON_VERSION)"
+        print_alert "This may indicate an issue with pyenv configuration"
         return 1
     fi
     
     # Check if Python is working correctly
-    if ! python --version &>/dev/null; then
+    if ! python -c "print('Python is working')" &>/dev/null; then
         print_alert "Python is not working correctly"
         return 1
     fi
@@ -224,7 +241,7 @@ install_python() {
     pyenv global $PYTHON_VERSION
     
     # Verify the installation
-    local current_version=$(pyenv version | cut -d' ' -f1)
+    local current_version=$(pyenv global)
     if [[ "$current_version" == "$PYTHON_VERSION" ]]; then
         print_success "Python $PYTHON_VERSION is now the global version"
     else
