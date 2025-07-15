@@ -62,11 +62,90 @@ _install_pyenv() {
     print_alert "You may need to restart your terminal or run 'source $shell_profile' to use pyenv"
 }
 
+_check_system_python() {
+    print_header "Checking system Python"
+    
+    # Check if Python is installed
+    if command -v python3 &>/dev/null; then
+        local system_python_version=$(python3 --version 2>&1 | awk '{print $2}')
+        print_info "System Python version: $system_python_version"
+        
+        # Compare versions (simple string comparison)
+        if [[ "$system_python_version" < "$PYTHON_VERSION" ]]; then
+            print_alert "System Python version ($system_python_version) is older than required version ($PYTHON_VERSION)"
+            return 1
+        else
+            print_success "System Python version ($system_python_version) meets requirements"
+            return 0
+        fi
+    else
+        print_alert "No system Python found"
+        return 1
+    fi
+}
+
 _install_python_version() {
     print_header "Installing Python $PYTHON_VERSION with pyenv"
-    pyenv install $PYTHON_VERSION
+    
+    # Check if this version is already installed
+    if pyenv versions | grep -q $PYTHON_VERSION; then
+        print_info "Python $PYTHON_VERSION is already installed with pyenv"
+    else
+        print_info "Installing Python $PYTHON_VERSION with pyenv..."
+        pyenv install $PYTHON_VERSION
+    fi
+    
+    # Set as global Python version
+    print_info "Setting Python $PYTHON_VERSION as global version..."
     pyenv global $PYTHON_VERSION
-    print_success "Python $PYTHON_VERSION installed successfully"
+    
+    # Verify the installation
+    local current_version=$(pyenv version | cut -d' ' -f1)
+    if [[ "$current_version" == "$PYTHON_VERSION" ]]; then
+        print_success "Python $PYTHON_VERSION is now the global version"
+    else
+        print_error "Failed to set Python $PYTHON_VERSION as global version. Current version is $current_version"
+        exit 1
+    fi
+}
+
+_check_python_versions() {
+    print_header "Checking Python versions"
+    
+    # Check if pyenv is installed
+    if ! command -v pyenv &>/dev/null; then
+        print_alert "pyenv is not installed, cannot check Python versions"
+        return 1
+    fi
+    
+    # List all installed Python versions
+    print_info "Installed Python versions:"
+    pyenv versions
+    
+    # Check if our required version is installed
+    if pyenv versions | grep -q $PYTHON_VERSION; then
+        print_success "Python $PYTHON_VERSION is installed"
+    else
+        print_alert "Python $PYTHON_VERSION is not installed"
+        return 1
+    fi
+    
+    # Check current global version
+    local current_version=$(pyenv version | cut -d' ' -f1)
+    print_info "Current global Python version: $current_version"
+    
+    # Compare versions
+    if [[ "$current_version" == "$PYTHON_VERSION" ]]; then
+        print_success "Current global Python version matches required version"
+        return 0
+    elif [[ "$current_version" < "$PYTHON_VERSION" ]]; then
+        print_alert "Current global Python version ($current_version) is older than required version ($PYTHON_VERSION)"
+        return 1
+    else
+        print_info "Current global Python version ($current_version) is newer than required version ($PYTHON_VERSION)"
+        print_alert "Will set $PYTHON_VERSION as global version for compatibility"
+        return 1
+    fi
 }
 
 _clean_pipx_installation() {
@@ -347,11 +426,12 @@ main() {
     export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
     
-    # Check if Python version is installed
-    if pyenv versions | grep -q $PYTHON_VERSION; then
-        print_success "Python $PYTHON_VERSION is already installed"
-    else
-        print_alert "Python $PYTHON_VERSION is not installed"
+    # Check system Python version
+    _check_system_python
+    
+    # Check installed Python versions and set 3.12.9 if needed
+    if ! _check_python_versions; then
+        print_alert "Need to install or set Python $PYTHON_VERSION as global version"
         _install_python_version
     fi
     
