@@ -90,8 +90,12 @@ function getAuthToken() {
     const response = UrlFetchApp.fetch(tokenUrl, options);
     const data = JSON.parse(response.getContentText());
     
-    // Retorna o token de acesso
-    return data.accessToken;
+    // Retorna o token de acesso (campo access_token da resposta)
+    if (!data.access_token) {
+      throw new Error("Token de acesso não encontrado na resposta da API");
+    }
+    
+    return data.access_token;
   } catch (error) {
     throw new Error("Erro ao obter token de autenticação: " + error.message);
   }
@@ -99,7 +103,7 @@ function getAuthToken() {
 
 function fetchMappedCapabilities() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = spreadsheet.getSheetByName("LLM-Capabilities") || spreadsheet.insertSheet("LLM-Capabilities");
+  const sheet = spreadsheet.getSheetByName("Mapped-Capabilities") || spreadsheet.insertSheet("Mapped-Capabilities");
   
   // Limpa a aba se já existir
   if (sheet.getLastRow() > 0) {
