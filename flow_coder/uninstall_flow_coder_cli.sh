@@ -259,7 +259,7 @@ verify_uninstallation() {
     fi
 }
 
-main() {
+uninstall_flow_coder_cli() {
     print_header "Coder CLI Uninstallation Script"
     
     if ! confirm_action "This script will uninstall Coder CLI, pipx, Python $PYTHON_VERSION, and pyenv. Continue?"; then
@@ -308,5 +308,7 @@ main() {
     print_yellow "You may want to run: source $shell_profile"
 }
 
-# Execute main function
-main
+# Check if the script is being executed directly or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    uninstall_flow_coder_cli "$@"
+fi
