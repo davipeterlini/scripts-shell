@@ -1,30 +1,18 @@
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Executar Script')
-      .addItem('Search Mapped Capabilities', 'fetchMappedCapabilities')
+      .addItem('Search Dynamic Capabilities', 'fetchDynamicCapabilities')
       .addToUi();
 }
 
-function fetchMappedCapabilities() {
+function fetchDynamicCapabilities() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = spreadsheet.getSheetByName("Mapped-Capabilities") || spreadsheet.insertSheet("Mapped-Capabilities");
+  const sheet = spreadsheet.getSheetByName("Dynamic-Capabilities") || spreadsheet.insertSheet("Dynamic-Capabilities");
   
   // Limpa a aba se já existir
   if (sheet.getLastRow() > 0) {
     sheet.clear();
   }
-  
-  // Adiciona a linha preta com o título "RETORNO DA API"
-  sheet.appendRow(Array(7).fill(''));
-  const titleRow = sheet.getRange(1, 1, 1, 7);
-  titleRow.merge();
-  titleRow.setValue("RETORNO DA API");
-  titleRow.setFontWeight("bold");
-  titleRow.setBackground("#000000");
-  titleRow.setFontColor("#FFFFFF");
-  titleRow.setHorizontalAlignment("center");
-  titleRow.setVerticalAlignment("middle");
-  titleRow.setBorder(true, true, true, true, true, true, "black", SpreadsheetApp.BorderStyle.SOLID);
   
   // Solicita ao usuário o token de autenticação
   const userToken = Browser.inputBox("Por favor, insira seu token de autenticação:");
@@ -51,17 +39,27 @@ function fetchMappedCapabilities() {
     const response = UrlFetchApp.fetch(url, options);
     const data = JSON.parse(response.getContentText());
     
-    // Obtém todas as capabilities disponíveis da resposta da API
+    // Obtém todas as capabilities disponíveis
     const allCapabilities = data.allCapabilities || [];
     
-    // Define os cabeçalhos com Provider e Modelo fixos, seguidos pelas capabilities dinâmicas
-    const headers = ['Provider', 'Modelo'];
-    allCapabilities.forEach(capability => {
-      // Converte o nome da capability para um formato mais legível
-      const formattedCapability = formatCapabilityName(capability);
-      headers.push(formattedCapability);
-    });
-
+    // Cria os cabeçalhos fixos
+    const fixedHeaders = ['Provider', 'Modelo'];
+    
+    // Combina os cabeçalhos fixos com as capabilities para formar o cabeçalho completo
+    const headers = [...fixedHeaders, ...allCapabilities];
+    
+    // Adiciona a linha preta com o título "RETORNO DA API"
+    sheet.appendRow(Array(headers.length).fill(''));
+    const titleRow = sheet.getRange(1, 1, 1, headers.length);
+    titleRow.merge();
+    titleRow.setValue("RETORNO DA API");
+    titleRow.setFontWeight("bold");
+    titleRow.setBackground("#000000");
+    titleRow.setFontColor("#FFFFFF");
+    titleRow.setHorizontalAlignment("center");
+    titleRow.setVerticalAlignment("middle");
+    titleRow.setBorder(true, true, true, true, true, true, "black", SpreadsheetApp.BorderStyle.SOLID);
+    
     // Adiciona os cabeçalhos
     sheet.appendRow(headers);
 
@@ -79,16 +77,16 @@ function fetchMappedCapabilities() {
       const models = data.supportedModels[provider];
       
       models.forEach(model => {
-        const capabilities = model.capabilities;
+        const modelCapabilities = model.capabilities || [];
         const modelName = model.name;
 
-        // Inicia a linha com provider e modelo
+        // Cria uma linha com o provider e o modelo
         const row = [provider, modelName];
         
-        // Adiciona o status para cada capability
+        // Para cada capability disponível, verifica se o modelo suporta
         allCapabilities.forEach(capability => {
-          const status = capabilities.includes(capability) ? "Enable" : "Disable";
-          row.push(status);
+          const hasCapability = modelCapabilities.includes(capability);
+          row.push(hasCapability ? "Enable" : "Disable");
         });
         
         sheet.appendRow(row);
@@ -96,7 +94,7 @@ function fetchMappedCapabilities() {
     }
 
     // Formatação da planilha
-    formatSheet(sheet, headers.length, allCapabilities.length);
+    formatSheet(sheet, headers.length, fixedHeaders.length);
     
   } catch (error) {
     // Exibe uma mensagem de erro se a requisição falhar
@@ -104,26 +102,19 @@ function fetchMappedCapabilities() {
   }
 }
 
-// Função para formatar o nome da capability para um formato mais legível
-function formatCapabilityName(capability) {
-  // Substitui hífens por espaços e capitaliza cada palavra
-  return capability.split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
-
-function formatSheet(sheet, numColumns, numCapabilities) {
+function formatSheet(sheet, numColumns, fixedColumnsCount) {
   // Define a largura mínima das colunas
-  const minColumnWidths = [160, 200]; // Provider e Modelo
+  const baseColumnWidth = 120;
+  const minColumnWidths = [160, 200]; // Larguras para Provider e Modelo
   
-  // Adiciona larguras para as colunas de capabilities (120px cada)
-  for (let i = 0; i < numCapabilities; i++) {
-    minColumnWidths.push(120);
+  // Adiciona larguras para as colunas de capabilities
+  for (let i = 0; i < numColumns - fixedColumnsCount; i++) {
+    minColumnWidths.push(baseColumnWidth);
   }
 
   // Aplica a largura mínima
   for (let i = 0; i < numColumns; i++) {
-    sheet.setColumnWidth(i + 1, minColumnWidths[i] || 120);
+    sheet.setColumnWidth(i + 1, minColumnWidths[i] || baseColumnWidth);
   }
   
   const lastRow = sheet.getLastRow();
@@ -148,14 +139,16 @@ function formatSheet(sheet, numColumns, numCapabilities) {
     sheet.setRowHeight(i, 25);
   }
 
-  // Centraliza o conteúdo das células de capabilities (colunas 3 em diante)
-  const capabilitiesRange = sheet.getRange(3, 3, lastRow - 2, numColumns - 2);
-  capabilitiesRange.setHorizontalAlignment("center");
+  // Centraliza o conteúdo das células de capabilities
+  if (lastRow > 2) {
+    const capabilitiesRange = sheet.getRange(3, fixedColumnsCount + 1, lastRow - 2, numColumns - fixedColumnsCount);
+    capabilitiesRange.setHorizontalAlignment("center");
+  }
   
   // Adiciona espaçamento entre as linhas
   sheet.getRange(1, 1, lastRow, numColumns).setVerticalAlignment("middle"); // Centraliza verticalmente
 
-  // Adiciona a validação de dados nas colunas de capabilities (colunas 3 em diante)
+  // Adiciona a validação de dados nas colunas de capabilities
   const validationValues = ["Enable", "Disable"];
   const rule = SpreadsheetApp.newDataValidation()
       .requireValueInList(validationValues)
@@ -164,51 +157,57 @@ function formatSheet(sheet, numColumns, numCapabilities) {
 
   // Cria ranges para as colunas de capacidades (excluindo Provider e Modelo)
   const capabilityColumns = [];
-  for (let i = 3; i <= numColumns; i++) {
+  for (let i = fixedColumnsCount + 1; i <= numColumns; i++) {
     capabilityColumns.push(i);
   }
   
   // Aplica a validação de dados a cada coluna de capacidade para todas as linhas de dados
-  capabilityColumns.forEach(colIndex => {
-    const range = sheet.getRange(3, colIndex, lastRow - 2, 1); // Da linha 3 até a última linha
-    range.setDataValidation(rule);
-  });
+  if (lastRow > 2) {
+    capabilityColumns.forEach(colIndex => {
+      const range = sheet.getRange(3, colIndex, lastRow - 2, 1); // Da linha 3 até a última linha
+      range.setDataValidation(rule);
+    });
+  }
 
-  // Habilita quebra de texto para todas as colunas de cabeçalho com nomes longos
-  capabilityColumns.forEach(colIndex => {
-    const headerCell = sheet.getRange(2, colIndex);
+  // Habilita quebra de texto para todas as colunas de cabeçalho
+  for (let i = 1; i <= numColumns; i++) {
+    const headerCell = sheet.getRange(2, i);
     headerCell.setWrap(true);
     headerCell.setVerticalAlignment("middle");
-  });
+  }
 
   // Limpa as regras existentes
   sheet.clearConditionalFormatRules();
   
   // Define o range para formatação condicional (apenas colunas de capacidades)
   const formatRanges = [];
-  capabilityColumns.forEach(colIndex => {
-    formatRanges.push(sheet.getRange(3, colIndex, lastRow - 2, 1));
-  });
+  if (lastRow > 2) {
+    capabilityColumns.forEach(colIndex => {
+      formatRanges.push(sheet.getRange(3, colIndex, lastRow - 2, 1));
+    });
+  }
   
   // Cria as regras de formatação condicional
   const rules = [];
   
-  // Regra para "Enable"
-  rules.push(SpreadsheetApp.newConditionalFormatRule()
-      .whenTextEqualTo("Enable")
-      .setBackground("#008000") // Verde
-      .setRanges(formatRanges)
-      .build());
-  
-  // Regra para "Disable"
-  rules.push(SpreadsheetApp.newConditionalFormatRule()
-      .whenTextEqualTo("Disable")
-      .setBackground("#dc3545") // Vermelho
-      .setRanges(formatRanges)
-      .build());
-  
-  // Aplica todas as regras
-  sheet.setConditionalFormatRules(rules);
+  if (formatRanges.length > 0) {
+    // Regra para "Enable"
+    rules.push(SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo("Enable")
+        .setBackground("#008000") // Verde
+        .setRanges(formatRanges)
+        .build());
+    
+    // Regra para "Disable"
+    rules.push(SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo("Disable")
+        .setBackground("#dc3545") // Vermelho
+        .setRanges(formatRanges)
+        .build());
+    
+    // Aplica todas as regras
+    sheet.setConditionalFormatRules(rules);
+  }
   
   // Adiciona a legenda abaixo da tabela
   addLegend(sheet, lastRow + 3); // Adiciona a legenda 3 linhas abaixo da tabela
