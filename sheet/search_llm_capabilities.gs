@@ -1,8 +1,50 @@
-// Variáveis de configuração - podem ser definidas nas propriedades do script
+/**
+ * LLM Capabilities Search Tool
+ * 
+ * This script allows users to fetch and display LLM capabilities from Flow API
+ * in a structured spreadsheet format.
+ */
+
+// Global properties
 const TENANT = PropertiesService.getScriptProperties().getProperty("FLOW_TENANT");
 const CLIENT_ID = PropertiesService.getScriptProperties().getProperty("FLOW_CLIENT_ID");
 const CLIENT_SECRET = PropertiesService.getScriptProperties().getProperty("FLOW_CLIENT_SECRET");
 
+// Configuration constants
+const CONFIG = {
+  SHEET_NAME: "LLM-Capabilities",
+  API: {
+    TOKEN_URL: 'https://flow.ciandt.com/auth-engine-api/v1/api-key/token',
+    CAPABILITIES_URL: 'https://flow.ciandt.com/ai-orchestration-api/v2/tenant/'
+  },
+  COLORS: {
+    TITLE_BG: "#000000",
+    TITLE_TEXT: "#FFFFFF",
+    HEADER_BG: "#D3D3D3",
+    ROW_ALTERNATE: "#f2f2f2",
+    ENABLE: "#008000",
+    DISABLE: "#dc3545",
+    LEGEND_BG: "#f2f2f2"
+  },
+  SIZES: {
+    TITLE_HEIGHT: 30,
+    HEADER_HEIGHT: 35,
+    ROW_HEIGHT: 25,
+    COLUMN_WIDTHS: {
+      PROVIDER: 160,
+      MODEL: 200,
+      CAPABILITY: 120
+    }
+  }
+};
+
+// =============================================================================
+// UI Functions
+// =============================================================================
+
+/**
+ * Creates custom menu when spreadsheet is opened
+ */
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Executar Script')
@@ -11,86 +53,88 @@ function onOpen() {
       .addToUi();
 }
 
+/**
+ * Displays UI for configuring API credentials
+ */
 function configureCredentials() {
   const ui = SpreadsheetApp.getUi();
   
-  // Solicita o tenant
-  const tenantResponse = ui.prompt(
-    'Configuração de Credenciais',
-    'Digite o TENANT:',
-    ui.ButtonSet.OK_CANCEL);
+  // Request tenant
+  const tenantResponse = _promptForCredential(ui, 'Digite o TENANT:');
+  if (!tenantResponse) return;
   
-  if (tenantResponse.getSelectedButton() == ui.Button.CANCEL) {
-    return;
-  }
+  // Request client ID
+  const clientIdResponse = _promptForCredential(ui, 'Digite o CLIENT_ID:');
+  if (!clientIdResponse) return;
   
-  // Solicita o client ID
-  const clientIdResponse = ui.prompt(
-    'Configuração de Credenciais',
-    'Digite o CLIENT_ID:',
-    ui.ButtonSet.OK_CANCEL);
+  // Request client secret
+  const clientSecretResponse = _promptForCredential(ui, 'Digite o CLIENT_SECRET:');
+  if (!clientSecretResponse) return;
   
-  if (clientIdResponse.getSelectedButton() == ui.Button.CANCEL) {
-    return;
-  }
-  
-  // Solicita o client secret
-  const clientSecretResponse = ui.prompt(
-    'Configuração de Credenciais',
-    'Digite o CLIENT_SECRET:',
-    ui.ButtonSet.OK_CANCEL);
-  
-  if (clientSecretResponse.getSelectedButton() == ui.Button.CANCEL) {
-    return;
-  }
-  
-  // Salva as credenciais nas propriedades do script
-  const scriptProperties = PropertiesService.getScriptProperties();
-  scriptProperties.setProperty("FLOW_TENANT", tenantResponse.getResponseText());
-  scriptProperties.setProperty("FLOW_CLIENT_ID", clientIdResponse.getResponseText());
-  scriptProperties.setProperty("FLOW_CLIENT_SECRET", clientSecretResponse.getResponseText());
+  // Save credentials to script properties
+  _saveCredentials(tenantResponse, clientIdResponse, clientSecretResponse);
   
   ui.alert('Configuração', 'Credenciais salvas com sucesso!', ui.ButtonSet.OK);
 }
 
-function getAuthToken() {
-  // Verifica se as credenciais estão configuradas
-  const tenant = PropertiesService.getScriptProperties().getProperty("FLOW_TENANT");
-  const clientId = PropertiesService.getScriptProperties().getProperty("FLOW_CLIENT_ID");
-  const clientSecret = PropertiesService.getScriptProperties().getProperty("FLOW_CLIENT_SECRET");
-  
-  if (!tenant || !clientId || !clientSecret) {
-    throw new Error("Credenciais não configuradas. Por favor, use a opção 'Configurar Credenciais' no menu.");
+/**
+ * Main function to fetch and display LLM capabilities
+ */
+function fetchMappedCapabilities() {
+  try {
+    // Prepare the sheet
+    const sheet = _prepareSheet();
+    
+    // Get data from API
+    const data = _fetchCapabilitiesData();
+    
+    // Process and display data
+    _displayCapabilitiesData(sheet, data);
+    
+    // Show success message
+    SpreadsheetApp.getUi().alert("Dados carregados com sucesso!");
+    
+  } catch (error) {
+    SpreadsheetApp.getUi().alert("Erro: " + error.message);
   }
+}
+
+// =============================================================================
+// API Functions
+// =============================================================================
+
+/**
+ * Gets authentication token from Flow API
+ * @return {string} Authentication token
+ */
+function getAuthToken() {
+  // Verify credentials are configured
+  const credentials = _getCredentials();
   
-  // URL da API de geração de token
-  const tokenUrl = 'https://flow.ciandt.com/auth-engine-api/v1/api-key/token';
-  
-  // Payload para a requisição
+  // Prepare request payload
   const payload = {
-    "clientId": clientId,
-    "clientSecret": clientSecret,
+    "clientId": credentials.clientId,
+    "clientSecret": credentials.clientSecret,
     "appToAccess": "llm-api"
   };
   
-  // Configuração da requisição
+  // Configure request
   const options = {
     'method': 'post',
     'contentType': 'application/json',
     'headers': {
       'accept': '*/*',
-      'FlowTenant': tenant,
+      'FlowTenant': credentials.tenant,
       'FlowAgent': 'chat-with-docs'
     },
     'payload': JSON.stringify(payload)
   };
   
   try {
-    // Fazendo a requisição para a API de token
-    const response = UrlFetchApp.fetch(tokenUrl, options);
+    // Make request to token API
+    const response = UrlFetchApp.fetch(CONFIG.API.TOKEN_URL, options);
     const data = JSON.parse(response.getContentText());
     
-    // Retorna o token de acesso (campo access_token da resposta)
     if (!data.access_token) {
       throw new Error("Token de acesso não encontrado na resposta da API");
     }
@@ -101,249 +145,480 @@ function getAuthToken() {
   }
 }
 
-function fetchMappedCapabilities() {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = spreadsheet.getSheetByName("LLM-Capabilities") || spreadsheet.insertSheet("LLM-Capabilities");
+// =============================================================================
+// Private Helper Functions
+// =============================================================================
+
+/**
+ * Prompts user for a credential value
+ * @param {Object} ui - SpreadsheetApp UI object
+ * @param {string} promptText - Text to display in prompt
+ * @return {string|null} User input or null if canceled
+ * @private
+ */
+function _promptForCredential(ui, promptText) {
+  const response = ui.prompt(
+    'Configuração de Credenciais',
+    promptText,
+    ui.ButtonSet.OK_CANCEL);
   
-  // Limpa a aba se já existir
+  if (response.getSelectedButton() == ui.Button.CANCEL) {
+    return null;
+  }
+  
+  return response.getResponseText();
+}
+
+/**
+ * Saves credentials to script properties
+ * @param {string} tenant - Tenant value
+ * @param {string} clientId - Client ID value
+ * @param {string} clientSecret - Client Secret value
+ * @private
+ */
+function _saveCredentials(tenant, clientId, clientSecret) {
+  const scriptProperties = PropertiesService.getScriptProperties();
+  scriptProperties.setProperty("FLOW_TENANT", tenant);
+  scriptProperties.setProperty("FLOW_CLIENT_ID", clientId);
+  scriptProperties.setProperty("FLOW_CLIENT_SECRET", clientSecret);
+}
+
+/**
+ * Gets credentials from script properties
+ * @return {Object} Credentials object
+ * @private
+ */
+function _getCredentials() {
+  const tenant = PropertiesService.getScriptProperties().getProperty("FLOW_TENANT");
+  const clientId = PropertiesService.getScriptProperties().getProperty("FLOW_CLIENT_ID");
+  const clientSecret = PropertiesService.getScriptProperties().getProperty("FLOW_CLIENT_SECRET");
+  
+  if (!tenant || !clientId || !clientSecret) {
+    throw new Error("Credenciais não configuradas. Por favor, use a opção 'Configurar Credenciais' no menu.");
+  }
+  
+  return { tenant, clientId, clientSecret };
+}
+
+/**
+ * Prepares the sheet for data display
+ * @return {Object} Sheet object
+ * @private
+ */
+function _prepareSheet() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = spreadsheet.getSheetByName(CONFIG.SHEET_NAME) || spreadsheet.insertSheet(CONFIG.SHEET_NAME);
+  
+  // Clear sheet if it already exists
   if (sheet.getLastRow() > 0) {
     sheet.clear();
   }
   
-  try {
-    // Obtém o token de autenticação
-    const token = getAuthToken();
-    
-    // Obtém o tenant configurado
-    const tenant = PropertiesService.getScriptProperties().getProperty("FLOW_TENANT");
-    
-    // URL da API de capabilities
-    const url = `https://flow.ciandt.com/ai-orchestration-api/v2/tenant/${tenant}/capabilities`;
-    
-    // Configuração da requisição
-    const options = {
-      'method': 'get',
-      'headers': {
-        'Authorization': 'Bearer ' + token,
-        'accept': '*/*'
-      }
-    };
-    
-    // Fazendo a requisição para a API
-    const response = UrlFetchApp.fetch(url, options);
-    const data = JSON.parse(response.getContentText());
-    
-    // Obtém todas as capabilities disponíveis da resposta da API
-    const allCapabilities = data.allCapabilities || [];
-    
-    // Define os cabeçalhos com Provider e Modelo fixos, seguidos pelas capabilities dinâmicas
-    const headers = ['Provider', 'Modelo'];
-    allCapabilities.forEach(capability => {
-      // Converte o nome da capability para um formato mais legível
-      const formattedCapability = formatCapabilityName(capability);
-      headers.push(formattedCapability);
-    });
-    
-    // Calcula o número total de colunas (2 fixas + número de capabilities)
-    const totalColumns = 2 + allCapabilities.length;
-    
-    // Adiciona a linha preta com o título "RETORNO DA API"
-    sheet.appendRow(Array(totalColumns).fill(''));
-    const titleRow = sheet.getRange(1, 1, 1, totalColumns);
-    titleRow.merge();
-    titleRow.setValue("RETORNO DA API");
-    titleRow.setFontWeight("bold");
-    titleRow.setBackground("#000000");
-    titleRow.setFontColor("#FFFFFF");
-    titleRow.setHorizontalAlignment("center");
-    titleRow.setVerticalAlignment("middle");
-    titleRow.setBorder(true, true, true, true, true, true, "black", SpreadsheetApp.BorderStyle.SOLID);
-
-    // Adiciona os cabeçalhos
-    sheet.appendRow(headers);
-
-    // Define estilo para a linha dos cabeçalhos
-    const headerRange = sheet.getRange(2, 1, 1, headers.length);
-    headerRange.setFontWeight("bold");
-    headerRange.setFontSize(12);
-    headerRange.setBackground("#D3D3D3"); // Cor de fundo cinza
-    headerRange.setFontColor("black"); // Cor da fonte preta
-    headerRange.setHorizontalAlignment("center");
-    headerRange.setBorder(true, true, true, true, true, true); // Adiciona bordas
-    
-    // Iterando sobre os providers e modelos
-    for (const provider in data.supportedModels) {
-      const models = data.supportedModels[provider];
-      
-      models.forEach(model => {
-        const capabilities = model.capabilities;
-        const modelName = model.name;
-
-        // Inicia a linha com provider e modelo
-        const row = [provider, modelName];
-        
-        // Adiciona o status para cada capability
-        allCapabilities.forEach(capability => {
-          const status = capabilities.includes(capability) ? "Enable" : "Disable";
-          row.push(status);
-        });
-        
-        sheet.appendRow(row);
-      });
-    }
-
-    // Formatação da planilha
-    formatSheet(sheet, headers.length, allCapabilities.length);
-    
-    // Exibe mensagem de sucesso
-    SpreadsheetApp.getUi().alert("Dados carregados com sucesso!");
-    
-  } catch (error) {
-    // Exibe uma mensagem de erro se a requisição falhar
-    SpreadsheetApp.getUi().alert("Erro: " + error.message);
-  }
+  return sheet;
 }
 
-// Função para formatar o nome da capability para um formato mais legível
-function formatCapabilityName(capability) {
-  // Substitui hífens por espaços e capitaliza cada palavra
+/**
+ * Fetches capabilities data from API
+ * @return {Object} API response data
+ * @private
+ */
+function _fetchCapabilitiesData() {
+  // Get authentication token
+  const token = getAuthToken();
+  
+  // Get tenant
+  const tenant = PropertiesService.getScriptProperties().getProperty("FLOW_TENANT");
+  
+  // API URL
+  const url = `${CONFIG.API.CAPABILITIES_URL}${tenant}/capabilities`;
+  
+  // Configure request
+  const options = {
+    'method': 'get',
+    'headers': {
+      'Authorization': 'Bearer ' + token,
+      'accept': '*/*'
+    }
+  };
+  
+  // Make request to API
+  const response = UrlFetchApp.fetch(url, options);
+  return JSON.parse(response.getContentText());
+}
+
+/**
+ * Displays capabilities data in the sheet
+ * @param {Object} sheet - Sheet object
+ * @param {Object} data - API response data
+ * @private
+ */
+function _displayCapabilitiesData(sheet, data) {
+  // Get all capabilities from API response
+  const allCapabilities = data.allCapabilities || [];
+  
+  // Create headers
+  const headers = _createHeaders(allCapabilities);
+  
+  // Calculate total columns
+  const totalColumns = 2 + allCapabilities.length;
+  
+  // Add title row
+  _addTitleRow(sheet, totalColumns);
+
+  // Add headers row
+  sheet.appendRow(headers);
+  _formatHeaderRow(sheet, headers.length);
+  
+  // Add data rows
+  _addDataRows(sheet, data, allCapabilities);
+  
+  // Format sheet
+  _formatSheet(sheet, headers.length, allCapabilities.length);
+  
+  // Add legend
+  _addLegend(sheet, sheet.getLastRow() + 3);
+}
+
+/**
+ * Creates headers array from capabilities
+ * @param {Array} capabilities - List of capabilities
+ * @return {Array} Headers array
+ * @private
+ */
+function _createHeaders(capabilities) {
+  const headers = ['Provider', 'Modelo'];
+  capabilities.forEach(capability => {
+    headers.push(_formatCapabilityName(capability));
+  });
+  return headers;
+}
+
+/**
+ * Formats capability name to be more readable
+ * @param {string} capability - Raw capability name
+ * @return {string} Formatted capability name
+ * @private
+ */
+function _formatCapabilityName(capability) {
   return capability.split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 }
 
-function formatSheet(sheet, numColumns, numCapabilities) {
-  // Define a largura mínima das colunas
-  const minColumnWidths = [160, 200]; // Provider e Modelo
-  
-  // Adiciona larguras para as colunas de capabilities (120px cada)
-  for (let i = 0; i < numCapabilities; i++) {
-    minColumnWidths.push(120);
-  }
+/**
+ * Adds title row to sheet
+ * @param {Object} sheet - Sheet object
+ * @param {number} totalColumns - Total number of columns
+ * @private
+ */
+function _addTitleRow(sheet, totalColumns) {
+  sheet.appendRow(Array(totalColumns).fill(''));
+  const titleRow = sheet.getRange(1, 1, 1, totalColumns);
+  titleRow.merge();
+  titleRow.setValue("RETORNO DA API");
+  titleRow.setFontWeight("bold");
+  titleRow.setBackground(CONFIG.COLORS.TITLE_BG);
+  titleRow.setFontColor(CONFIG.COLORS.TITLE_TEXT);
+  titleRow.setHorizontalAlignment("center");
+  titleRow.setVerticalAlignment("middle");
+  titleRow.setBorder(true, true, true, true, true, true, "black", SpreadsheetApp.BorderStyle.SOLID);
+}
 
-  // Aplica a largura mínima
-  for (let i = 0; i < numColumns; i++) {
-    sheet.setColumnWidth(i + 1, minColumnWidths[i] || 120);
+/**
+ * Formats header row
+ * @param {Object} sheet - Sheet object
+ * @param {number} headerLength - Number of header columns
+ * @private
+ */
+function _formatHeaderRow(sheet, headerLength) {
+  const headerRange = sheet.getRange(2, 1, 1, headerLength);
+  headerRange.setFontWeight("bold");
+  headerRange.setFontSize(12);
+  headerRange.setBackground(CONFIG.COLORS.HEADER_BG);
+  headerRange.setFontColor("black");
+  headerRange.setHorizontalAlignment("center");
+  headerRange.setBorder(true, true, true, true, true, true);
+}
+
+/**
+ * Adds data rows to sheet
+ * @param {Object} sheet - Sheet object
+ * @param {Object} data - API response data
+ * @param {Array} allCapabilities - List of all capabilities
+ * @private
+ */
+function _addDataRows(sheet, data, allCapabilities) {
+  for (const provider in data.supportedModels) {
+    const models = data.supportedModels[provider];
+    
+    models.forEach(model => {
+      const capabilities = model.capabilities;
+      const modelName = model.name;
+
+      // Start row with provider and model
+      const row = [provider, modelName];
+      
+      // Add status for each capability
+      allCapabilities.forEach(capability => {
+        const status = capabilities.includes(capability) ? "Enable" : "Disable";
+        row.push(status);
+      });
+      
+      sheet.appendRow(row);
+    });
   }
+}
+
+/**
+ * Formats the sheet for better readability
+ * @param {Object} sheet - Sheet object
+ * @param {number} numColumns - Number of columns
+ * @param {number} numCapabilities - Number of capabilities
+ * @private
+ */
+function _formatSheet(sheet, numColumns, numCapabilities) {
+  // Set column widths
+  _setColumnWidths(sheet, numColumns, numCapabilities);
   
   const lastRow = sheet.getLastRow();
   
-  // Aplica bordas a todas as células preenchidas
+  // Apply borders to all filled cells
   const dataRange = sheet.getRange(1, 1, lastRow, numColumns);
   dataRange.setBorder(true, true, true, true, true, true);
   
-  // Alterna a cor das linhas de dados (começando da linha 3)
+  // Alternate row colors
+  _alternateRowColors(sheet, lastRow, numColumns);
+
+  // Adjust row heights
+  _adjustRowHeights(sheet, lastRow);
+
+  // Center content in capability cells
+  _centerCapabilityCells(sheet, lastRow, numColumns);
+  
+  // Add data validation for capability columns
+  _addDataValidation(sheet, lastRow, numColumns);
+
+  // Enable text wrapping for header cells
+  _enableHeaderTextWrapping(sheet, numColumns);
+
+  // Add conditional formatting
+  _addConditionalFormatting(sheet, lastRow, numColumns);
+}
+
+/**
+ * Sets column widths
+ * @param {Object} sheet - Sheet object
+ * @param {number} numColumns - Number of columns
+ * @param {number} numCapabilities - Number of capabilities
+ * @private
+ */
+function _setColumnWidths(sheet, numColumns, numCapabilities) {
+  // Set width for Provider and Model columns
+  sheet.setColumnWidth(1, CONFIG.SIZES.COLUMN_WIDTHS.PROVIDER);
+  sheet.setColumnWidth(2, CONFIG.SIZES.COLUMN_WIDTHS.MODEL);
+  
+  // Set width for capability columns
+  for (let i = 3; i <= numColumns; i++) {
+    sheet.setColumnWidth(i, CONFIG.SIZES.COLUMN_WIDTHS.CAPABILITY);
+  }
+}
+
+/**
+ * Alternates row colors for better readability
+ * @param {Object} sheet - Sheet object
+ * @param {number} lastRow - Last row number
+ * @param {number} numColumns - Number of columns
+ * @private
+ */
+function _alternateRowColors(sheet, lastRow, numColumns) {
   for (let i = 3; i <= lastRow; i++) {
-    if (i % 2 === 1) { // Linhas ímpares (3, 5, 7...)
-      sheet.getRange(i, 1, 1, numColumns).setBackground("#f2f2f2"); // Cor de fundo cinza claro
+    if (i % 2 === 1) { // Odd rows (3, 5, 7...)
+      sheet.getRange(i, 1, 1, numColumns).setBackground(CONFIG.COLORS.ROW_ALTERNATE);
     }
   }
+}
 
-  // Ajusta a altura das linhas
-  sheet.setRowHeight(1, 30); // Altura da linha do título
-  sheet.setRowHeight(2, 35); // Altura da linha do cabeçalho aumentada para acomodar quebra de texto
+/**
+ * Adjusts row heights
+ * @param {Object} sheet - Sheet object
+ * @param {number} lastRow - Last row number
+ * @private
+ */
+function _adjustRowHeights(sheet, lastRow) {
+  sheet.setRowHeight(1, CONFIG.SIZES.TITLE_HEIGHT);
+  sheet.setRowHeight(2, CONFIG.SIZES.HEADER_HEIGHT);
   
-  // Ajusta a altura das linhas de dados
   for (let i = 3; i <= lastRow; i++) {
-    sheet.setRowHeight(i, 25);
+    sheet.setRowHeight(i, CONFIG.SIZES.ROW_HEIGHT);
   }
+}
 
-  // Centraliza o conteúdo das células de capabilities (colunas 3 em diante)
+/**
+ * Centers content in capability cells
+ * @param {Object} sheet - Sheet object
+ * @param {number} lastRow - Last row number
+ * @param {number} numColumns - Number of columns
+ * @private
+ */
+function _centerCapabilityCells(sheet, lastRow, numColumns) {
   const capabilitiesRange = sheet.getRange(3, 3, lastRow - 2, numColumns - 2);
   capabilitiesRange.setHorizontalAlignment("center");
   
-  // Adiciona espaçamento entre as linhas
-  sheet.getRange(1, 1, lastRow, numColumns).setVerticalAlignment("middle"); // Centraliza verticalmente
+  // Add vertical spacing between rows
+  sheet.getRange(1, 1, lastRow, numColumns).setVerticalAlignment("middle");
+}
 
-  // Adiciona a validação de dados nas colunas de capabilities (colunas 3 em diante)
+/**
+ * Adds data validation for capability columns
+ * @param {Object} sheet - Sheet object
+ * @param {number} lastRow - Last row number
+ * @param {number} numColumns - Number of columns
+ * @private
+ */
+function _addDataValidation(sheet, lastRow, numColumns) {
   const validationValues = ["Enable", "Disable"];
   const rule = SpreadsheetApp.newDataValidation()
       .requireValueInList(validationValues)
       .setAllowInvalid(false)
       .build();
 
-  // Cria ranges para as colunas de capacidades (excluindo Provider e Modelo)
+  // Get capability column indexes
   const capabilityColumns = [];
   for (let i = 3; i <= numColumns; i++) {
     capabilityColumns.push(i);
   }
   
-  // Aplica a validação de dados a cada coluna de capacidade para todas as linhas de dados
+  // Apply data validation to each capability column
   capabilityColumns.forEach(colIndex => {
-    const range = sheet.getRange(3, colIndex, lastRow - 2, 1); // Da linha 3 até a última linha
+    const range = sheet.getRange(3, colIndex, lastRow - 2, 1);
     range.setDataValidation(rule);
   });
-
-  // Habilita quebra de texto para todas as colunas de cabeçalho com nomes longos
-  capabilityColumns.forEach(colIndex => {
-    const headerCell = sheet.getRange(2, colIndex);
-    headerCell.setWrap(true);
-    headerCell.setVerticalAlignment("middle");
-  });
-
-  // Limpa as regras existentes
-  sheet.clearConditionalFormatRules();
-  
-  // Define o range para formatação condicional (apenas colunas de capacidades)
-  const formatRanges = [];
-  capabilityColumns.forEach(colIndex => {
-    formatRanges.push(sheet.getRange(3, colIndex, lastRow - 2, 1));
-  });
-  
-  // Cria as regras de formatação condicional
-  const rules = [];
-  
-  // Regra para "Enable"
-  rules.push(SpreadsheetApp.newConditionalFormatRule()
-      .whenTextEqualTo("Enable")
-      .setBackground("#008000") // Verde
-      .setRanges(formatRanges)
-      .build());
-  
-  // Regra para "Disable"
-  rules.push(SpreadsheetApp.newConditionalFormatRule()
-      .whenTextEqualTo("Disable")
-      .setBackground("#dc3545") // Vermelho
-      .setRanges(formatRanges)
-      .build());
-  
-  // Aplica todas as regras
-  sheet.setConditionalFormatRules(rules);
-  
-  // Adiciona a legenda abaixo da tabela
-  addLegend(sheet, lastRow + 3); // Adiciona a legenda 3 linhas abaixo da tabela
 }
 
-function addLegend(sheet, startRow) {
-  // Define os itens da legenda com seus respectivos status e cores
+/**
+ * Enables text wrapping for header cells
+ * @param {Object} sheet - Sheet object
+ * @param {number} numColumns - Number of columns
+ * @private
+ */
+function _enableHeaderTextWrapping(sheet, numColumns) {
+  for (let i = 3; i <= numColumns; i++) {
+    const headerCell = sheet.getRange(2, i);
+    headerCell.setWrap(true);
+    headerCell.setVerticalAlignment("middle");
+  }
+}
+
+/**
+ * Adds conditional formatting for capability cells
+ * @param {Object} sheet - Sheet object
+ * @param {number} lastRow - Last row number
+ * @param {number} numColumns - Number of columns
+ * @private
+ */
+function _addConditionalFormatting(sheet, lastRow, numColumns) {
+  // Clear existing rules
+  sheet.clearConditionalFormatRules();
+  
+  // Define ranges for conditional formatting
+  const formatRanges = [];
+  for (let i = 3; i <= numColumns; i++) {
+    formatRanges.push(sheet.getRange(3, i, lastRow - 2, 1));
+  }
+  
+  // Create conditional formatting rules
+  const rules = [];
+  
+  // Rule for "Enable"
+  rules.push(SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo("Enable")
+      .setBackground(CONFIG.COLORS.ENABLE)
+      .setRanges(formatRanges)
+      .build());
+  
+  // Rule for "Disable"
+  rules.push(SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo("Disable")
+      .setBackground(CONFIG.COLORS.DISABLE)
+      .setRanges(formatRanges)
+      .build());
+  
+  // Apply rules
+  sheet.setConditionalFormatRules(rules);
+}
+
+/**
+ * Adds legend to the sheet
+ * @param {Object} sheet - Sheet object
+ * @param {number} startRow - Starting row for legend
+ * @private
+ */
+function _addLegend(sheet, startRow) {
+  // Define legend items
   const legendItems = [
-    { status: "Enable", color: "#008000", description: "Funcionalidade suportada pelo modelo" },
-    { status: "Disable", color: "#dc3545", description: "Funcionalidade não suportada pelo modelo" }
+    { status: "Enable", color: CONFIG.COLORS.ENABLE, description: "Funcionalidade suportada pelo modelo" },
+    { status: "Disable", color: CONFIG.COLORS.DISABLE, description: "Funcionalidade não suportada pelo modelo" }
   ];
   
-  // Adiciona o título da legenda
+  // Add legend title
+  _addLegendTitle(sheet, startRow);
+  
+  // Add legend headers
+  _addLegendHeaders(sheet, startRow);
+  
+  // Add legend items
+  _addLegendItems(sheet, startRow, legendItems);
+  
+  // Add legend note
+  _addLegendNote(sheet, startRow, legendItems.length);
+}
+
+/**
+ * Adds legend title
+ * @param {Object} sheet - Sheet object
+ * @param {number} startRow - Starting row for legend
+ * @private
+ */
+function _addLegendTitle(sheet, startRow) {
   const legendTitleCell = sheet.getRange(startRow, 1, 1, 4);
   legendTitleCell.merge();
   legendTitleCell.setValue("LEGENDA");
   legendTitleCell.setFontWeight("bold");
   legendTitleCell.setHorizontalAlignment("center");
-  legendTitleCell.setBackground("#f2f2f2");
+  legendTitleCell.setBackground(CONFIG.COLORS.LEGEND_BG);
   legendTitleCell.setBorder(true, true, true, true, true, true);
-  
-  // Adiciona os cabeçalhos da legenda
+}
+
+/**
+ * Adds legend headers
+ * @param {Object} sheet - Sheet object
+ * @param {number} startRow - Starting row for legend
+ * @private
+ */
+function _addLegendHeaders(sheet, startRow) {
   const headerRow = startRow + 1;
   sheet.getRange(headerRow, 1).setValue("Status");
   sheet.getRange(headerRow, 2).setValue("Cor");
   sheet.getRange(headerRow, 3, 1, 2).merge().setValue("Descrição");
   
-  // Formata os cabeçalhos
+  // Format headers
   const headerRange = sheet.getRange(headerRow, 1, 1, 4);
   headerRange.setFontWeight("bold");
-  headerRange.setBackground("#D3D3D3");
+  headerRange.setBackground(CONFIG.COLORS.HEADER_BG);
   headerRange.setHorizontalAlignment("center");
   headerRange.setBorder(true, true, true, true, true, true);
+}
+
+/**
+ * Adds legend items
+ * @param {Object} sheet - Sheet object
+ * @param {number} startRow - Starting row for legend
+ * @param {Array} legendItems - Legend items
+ * @private
+ */
+function _addLegendItems(sheet, startRow, legendItems) {
+  const headerRow = startRow + 1;
   
-  // Adiciona os itens da legenda
   legendItems.forEach((item, index) => {
     const row = headerRow + index + 1;
     
@@ -353,20 +628,28 @@ function addLegend(sheet, startRow) {
     statusCell.setHorizontalAlignment("center");
     statusCell.setBorder(true, true, true, true, true, true);
     
-    // Cor
+    // Color
     const colorCell = sheet.getRange(row, 2);
     colorCell.setBackground(item.color);
     colorCell.setBorder(true, true, true, true, true, true);
     
-    // Descrição
+    // Description
     const descCell = sheet.getRange(row, 3, 1, 2);
     descCell.merge();
     descCell.setValue(item.description);
     descCell.setBorder(true, true, true, true, true, true);
   });
-  
-  // Adiciona uma nota sobre a legenda
-  const noteRow = headerRow + legendItems.length + 2;
+}
+
+/**
+ * Adds legend note
+ * @param {Object} sheet - Sheet object
+ * @param {number} startRow - Starting row for legend
+ * @param {number} itemCount - Number of legend items
+ * @private
+ */
+function _addLegendNote(sheet, startRow, itemCount) {
+  const noteRow = startRow + itemCount + 2;
   const noteCell = sheet.getRange(noteRow, 1, 1, 4);
   noteCell.merge();
   noteCell.setValue("Nota: Esta legenda serve como referência para interpretar os status nas células da tabela acima.");
