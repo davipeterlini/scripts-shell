@@ -50,6 +50,9 @@ function compareCapabilities() {
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     Logger.log(`Planilha ativa: ${spreadsheet.getName()}`);
     
+    // Delete the report sheet if it exists
+    _deleteReportSheet(spreadsheet);
+    
     // Get source and target sheets
     Logger.log(`Carregando planilha fonte: ${COMPARE_CONFIG.SOURCE_SHEET_NAME}`);
     const sourceSheet = spreadsheet.getSheetByName(COMPARE_CONFIG.SOURCE_SHEET_NAME);
@@ -68,9 +71,9 @@ function compareCapabilities() {
       throw new Error(`Planilha "${COMPARE_CONFIG.TARGET_SHEET_NAME}" não encontrada.`);
     }
     
-    // Create or clear report sheet
-    Logger.log(`Preparando planilha de relatório: ${COMPARE_CONFIG.REPORT_SHEET_NAME}`);
-    const reportSheet = _prepareReportSheet(spreadsheet);
+    // Create report sheet
+    Logger.log(`Criando planilha de relatório: ${COMPARE_CONFIG.REPORT_SHEET_NAME}`);
+    const reportSheet = _createReportSheet(spreadsheet);
     
     // Get data from both sheets including cell backgrounds
     Logger.log(`Obtendo dados da planilha fonte: ${COMPARE_CONFIG.SOURCE_SHEET_NAME}`);
@@ -164,24 +167,31 @@ function compareCapabilities() {
 // =============================================================================
 
 /**
- * Prepares the report sheet
+ * Deletes the report sheet if it exists
+ * @param {Object} spreadsheet - Spreadsheet object
+ * @private
+ */
+function _deleteReportSheet(spreadsheet) {
+  const reportSheet = spreadsheet.getSheetByName(COMPARE_CONFIG.REPORT_SHEET_NAME);
+  
+  if (reportSheet) {
+    Logger.log(`Excluindo planilha existente: ${COMPARE_CONFIG.REPORT_SHEET_NAME}`);
+    spreadsheet.deleteSheet(reportSheet);
+    Logger.log(`Planilha ${COMPARE_CONFIG.REPORT_SHEET_NAME} excluída com sucesso`);
+  } else {
+    Logger.log(`Planilha ${COMPARE_CONFIG.REPORT_SHEET_NAME} não encontrada, nenhuma exclusão necessária`);
+  }
+}
+
+/**
+ * Creates a new report sheet
  * @param {Object} spreadsheet - Spreadsheet object
  * @return {Object} Report sheet object
  * @private
  */
-function _prepareReportSheet(spreadsheet) {
-  let reportSheet = spreadsheet.getSheetByName(COMPARE_CONFIG.REPORT_SHEET_NAME);
-  
-  if (reportSheet) {
-    // Clear existing content if sheet exists
-    Logger.log(`Limpando conteúdo existente da planilha ${COMPARE_CONFIG.REPORT_SHEET_NAME}`);
-    reportSheet.clear();
-  } else {
-    // Create new sheet if it doesn't exist
-    Logger.log(`Criando nova planilha ${COMPARE_CONFIG.REPORT_SHEET_NAME}`);
-    reportSheet = spreadsheet.insertSheet(COMPARE_CONFIG.REPORT_SHEET_NAME);
-  }
-  
+function _createReportSheet(spreadsheet) {
+  Logger.log(`Criando nova planilha ${COMPARE_CONFIG.REPORT_SHEET_NAME}`);
+  const reportSheet = spreadsheet.insertSheet(COMPARE_CONFIG.REPORT_SHEET_NAME);
   return reportSheet;
 }
 
