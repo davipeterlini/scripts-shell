@@ -10,10 +10,34 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/utils/colors_message.sh"
 source "$SCRIPT_DIR/utils/detect_os.sh"
 
+# Python version to use
 PYTHON_VERSION="3.12.9"
 
+# Helper function to ask for confirmation
+ask_confirmation() {
+    local message="$1"
+    local default_answer="$2"
+    
+    if [[ "$default_answer" == "Y" ]]; then
+        local prompt="$message [Y/n]: "
+        local default="Y"
+    else
+        local prompt="$message [y/N]: "
+        local default="N"
+    fi
+    
+    read -p "$prompt" answer
+    answer=${answer:-$default}
+    
+    if [[ "${answer,,}" == "y" || "${answer,,}" == "yes" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 check_pyenv() {
-    print_header_info "Checking pyenv installation"
+    print_header_info_info "Checking pyenv installation"
     
     # Check if pyenv command exists
     if ! command -v pyenv &>/dev/null; then
@@ -35,9 +59,8 @@ check_pyenv() {
     return 0
 }
 
-# Check if Python version is installed and set as global
 check_python() {
-    print_header "Checking Python installation"
+    print_header_info_info "Checking Python installation"
     
     # Check if pyenv is available
     if ! command -v pyenv &>/dev/null; then
@@ -71,9 +94,8 @@ check_python() {
     return 0
 }
 
-# Check if pipx is installed and using the correct Python
 check_pipx() {
-    print_header "Checking pipx installation"
+    print_header_info_info "Checking pipx installation"
     
     # Check if pipx command exists
     if ! command -v pipx &>/dev/null; then
@@ -120,9 +142,8 @@ check_pipx() {
     return 0
 }
 
-# Check if Coder CLI is installed and working
 check_coder() {
-    print_header "Checking Coder CLI installation"
+    print_header_info "Checking Coder CLI installation"
     
     # Check if coder command exists
     if ! command -v coder &>/dev/null; then
@@ -144,13 +165,14 @@ check_coder() {
     return 0
 }
 
-# ===== INSTALL FUNCTIONS =====
-
-# Install pyenv
 install_pyenv() {
-    print_header "Installing pyenv"
+    print_header_info "Installing pyenv"
     
-    # Detect OS using the imported function
+    if ! ask_confirmation "Do you want to install pyenv?" "Y"; then
+        print_alert "pyenv installation skipped by user"
+        exit 1
+    fi
+    
     detect_os
     
     if [[ "$OS_NAME" == "Linux" ]]; then
@@ -203,9 +225,13 @@ install_pyenv() {
     fi
 }
 
-# Install Python version
 install_python() {
-    print_header "Installing Python $PYTHON_VERSION with pyenv"
+    print_header_info "Installing Python $PYTHON_VERSION with pyenv"
+    
+    if ! ask_confirmation "Do you want to install Python $PYTHON_VERSION?" "Y"; then
+        print_alert "Python installation skipped by user"
+        exit 1
+    fi
     
     # Check if this version is already installed
     if pyenv versions | grep -q $PYTHON_VERSION; then
@@ -237,9 +263,13 @@ install_python() {
     fi
 }
 
-# Clean up existing pipx installation
 clean_pipx() {
     print_info "Cleaning up existing pipx installation..."
+    
+    if ! ask_confirmation "Do you want to clean up the existing pipx installation?" "Y"; then
+        print_alert "pipx cleanup skipped by user"
+        return 1
+    fi
     
     # Uninstall pipx if it exists
     if command -v pipx &>/dev/null; then
@@ -265,11 +295,16 @@ clean_pipx() {
     rm -f "$HOME/.local/bin/pipx" || true
     
     print_success "Cleaned up pipx installation"
+    return 0
 }
 
-# Install pipx
 install_pipx() {
-    print_header "Installing pipx with Python $PYTHON_VERSION"
+    print_header_info "Installing pipx with Python $PYTHON_VERSION"
+    
+    if ! ask_confirmation "Do you want to install pipx?" "Y"; then
+        print_alert "pipx installation skipped by user"
+        exit 1
+    fi
     
     # Clean up any existing pipx installation
     clean_pipx
@@ -315,9 +350,13 @@ install_pipx() {
     fi
 }
 
-# Install Coder CLI
 install_coder() {
-    print_header "Installing Coder CLI"
+    print_header_info "Installing Coder CLI"
+    
+    if ! ask_confirmation "Do you want to install Coder CLI?" "Y"; then
+        print_alert "Coder CLI installation skipped by user"
+        exit 1
+    fi
     
     # Make sure we're using the pyenv Python
     pyenv shell $PYTHON_VERSION
@@ -363,7 +402,13 @@ install_coder() {
 
 # Configure Coder CLI
 configure_coder() {
-    print_header "Configuring Coder CLI"
+    print_header_info "Configuring Coder CLI"
+    
+    # Ask for confirmation
+    if ! ask_confirmation "Do you want to configure Coder CLI?" "Y"; then
+        print_alert "Coder CLI configuration skipped by user"
+        return 0
+    fi
     
     # Ensure coder is in PATH
     export PATH="$HOME/.local/bin:$PATH"
@@ -390,6 +435,12 @@ configure_coder() {
     # If we get here, we need to authenticate
     print_alert "Coder CLI authentication required"
     
+    # Ask for confirmation before authentication
+    if ! ask_confirmation "Do you want to authenticate Coder CLI?" "Y"; then
+        print_alert "Coder CLI authentication skipped by user"
+        return 0
+    fi
+    
     read -p "Enter Coder tenant URL: " TENANT
     read -p "Enter client ID: " CLIENT_ID
     read -p "Enter client secret: " CLIENT_SECRET
@@ -404,9 +455,8 @@ configure_coder() {
     fi
 }
 
-# Verify the entire installation
 verify_installation() {
-    print_header "Verifying Installation"
+    print_header_info "Verifying Installation"
     
     # Check all components
     local all_ok=true
@@ -434,9 +484,13 @@ verify_installation() {
     fi
 }
 
-# Main function
 main() {
     print_header "Coder CLI Installation Script"
+    
+    if ! ask_confirmation "This script will install and configure pyenv, Python $PYTHON_VERSION, pipx, and Coder CLI. Continue?" "Y"; then
+        print_alert "Installation cancelled by user"
+        exit 0
+    fi
     
     # Detect OS
     detect_os
@@ -485,7 +539,7 @@ main() {
     # Final verification
     verify_installation
     
-    print_header "Installation Complete"
+    print_header_info "Installation Complete"
     print_info "You can now use Coder CLI with Python $PYTHON_VERSION"
     print_info "Run 'coder --help' for available commands"
     
