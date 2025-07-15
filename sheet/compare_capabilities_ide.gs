@@ -5,8 +5,8 @@
  * with the IDE-Capabilities sheet to identify any discrepancies.
  */
 
-// Configuration constants
-const CONFIG = {
+// Configuration constants - renamed to avoid conflict with other scripts
+const COMPARE_CONFIG = {
   SOURCE_SHEET_NAME: "LLM-Capabilities",
   TARGET_SHEET_NAME: "IDE-Capabilities",
   REPORT_SHEET_NAME: "Comparison-Report",
@@ -37,16 +37,16 @@ function compareCapabilities() {
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     
     // Get source and target sheets
-    const sourceSheet = spreadsheet.getSheetByName(CONFIG.SOURCE_SHEET_NAME);
-    const targetSheet = spreadsheet.getSheetByName(CONFIG.TARGET_SHEET_NAME);
+    const sourceSheet = spreadsheet.getSheetByName(COMPARE_CONFIG.SOURCE_SHEET_NAME);
+    const targetSheet = spreadsheet.getSheetByName(COMPARE_CONFIG.TARGET_SHEET_NAME);
     
     // Validate sheets exist
     if (!sourceSheet) {
-      throw new Error(`Planilha "${CONFIG.SOURCE_SHEET_NAME}" não encontrada. Execute o script search_llm_capabilities.gs primeiro.`);
+      throw new Error(`Planilha "${COMPARE_CONFIG.SOURCE_SHEET_NAME}" não encontrada. Execute o script search_llm_capabilities.gs primeiro.`);
     }
     
     if (!targetSheet) {
-      throw new Error(`Planilha "${CONFIG.TARGET_SHEET_NAME}" não encontrada.`);
+      throw new Error(`Planilha "${COMPARE_CONFIG.TARGET_SHEET_NAME}" não encontrada.`);
     }
     
     // Create or clear report sheet
@@ -85,14 +85,14 @@ function compareCapabilities() {
  * @private
  */
 function _prepareReportSheet(spreadsheet) {
-  let reportSheet = spreadsheet.getSheetByName(CONFIG.REPORT_SHEET_NAME);
+  let reportSheet = spreadsheet.getSheetByName(COMPARE_CONFIG.REPORT_SHEET_NAME);
   
   if (reportSheet) {
     // Clear existing content if sheet exists
     reportSheet.clear();
   } else {
     // Create new sheet if it doesn't exist
-    reportSheet = spreadsheet.insertSheet(CONFIG.REPORT_SHEET_NAME);
+    reportSheet = spreadsheet.insertSheet(COMPARE_CONFIG.REPORT_SHEET_NAME);
   }
   
   return reportSheet;
@@ -290,8 +290,8 @@ function _addReportTitle(sheet) {
   titleRange.merge();
   titleRange.setValue("RELATÓRIO DE COMPARAÇÃO DE CAPABILITIES");
   titleRange.setFontWeight("bold");
-  titleRange.setBackground(CONFIG.COLORS.TITLE_BG);
-  titleRange.setFontColor(CONFIG.COLORS.TITLE_TEXT);
+  titleRange.setBackground(COMPARE_CONFIG.COLORS.TITLE_BG);
+  titleRange.setFontColor(COMPARE_CONFIG.COLORS.TITLE_TEXT);
   titleRange.setHorizontalAlignment("center");
   titleRange.setVerticalAlignment("middle");
   sheet.setRowHeight(1, 30);
@@ -308,7 +308,7 @@ function _addNoDiscrepanciesMessage(sheet) {
   messageRange.merge();
   messageRange.setValue("Nenhuma divergência encontrada. As planilhas são idênticas.");
   messageRange.setFontWeight("bold");
-  messageRange.setBackground(CONFIG.COLORS.SUCCESS_BG);
+  messageRange.setBackground(COMPARE_CONFIG.COLORS.SUCCESS_BG);
   messageRange.setHorizontalAlignment("center");
   messageRange.setVerticalAlignment("middle");
   sheet.setRowHeight(2, 30);
@@ -335,7 +335,7 @@ function _addReportHeaders(sheet) {
   
   const headerRange = sheet.getRange(3, 1, 1, headers.length);
   headerRange.setFontWeight("bold");
-  headerRange.setBackground(CONFIG.COLORS.HEADER_BG);
+  headerRange.setBackground(COMPARE_CONFIG.COLORS.HEADER_BG);
   headerRange.setHorizontalAlignment("center");
   headerRange.setVerticalAlignment("middle");
 }
@@ -365,8 +365,8 @@ function _addDiscrepancies(sheet, discrepancies, headers) {
       ];
     } else if (discrepancy.type === "missing_model") {
       const location = discrepancy.location === "source" 
-        ? `Modelo existe apenas em ${CONFIG.TARGET_SHEET_NAME} (linha ${discrepancy.rowIndex})` 
-        : `Modelo existe apenas em ${CONFIG.SOURCE_SHEET_NAME} (linha ${discrepancy.rowIndex})`;
+        ? `Modelo existe apenas em ${COMPARE_CONFIG.TARGET_SHEET_NAME} (linha ${discrepancy.rowIndex})` 
+        : `Modelo existe apenas em ${COMPARE_CONFIG.SOURCE_SHEET_NAME} (linha ${discrepancy.rowIndex})`;
       
       row = [
         "Modelo Ausente",
@@ -385,7 +385,7 @@ function _addDiscrepancies(sheet, discrepancies, headers) {
         discrepancy.capability,
         discrepancy.sourceValue,
         discrepancy.targetValue,
-        `${CONFIG.SOURCE_SHEET_NAME} (${_columnToLetter(discrepancy.columnIndex)}${discrepancy.sourceRowIndex}) vs ${CONFIG.TARGET_SHEET_NAME} (${_columnToLetter(discrepancy.columnIndex)}${discrepancy.targetRowIndex})`
+        `${COMPARE_CONFIG.SOURCE_SHEET_NAME} (${_columnToLetter(discrepancy.columnIndex)}${discrepancy.sourceRowIndex}) vs ${COMPARE_CONFIG.TARGET_SHEET_NAME} (${_columnToLetter(discrepancy.columnIndex)}${discrepancy.targetRowIndex})`
       ];
     }
     
@@ -418,7 +418,7 @@ function _formatReport(sheet) {
   
   // Set background color for data rows
   const errorRange = sheet.getRange(4, 1, lastRow - 3, lastColumn);
-  errorRange.setBackground(CONFIG.COLORS.ERROR_BG);
+  errorRange.setBackground(COMPARE_CONFIG.COLORS.ERROR_BG);
   
   // Center align all cells
   sheet.getRange(1, 1, lastRow, lastColumn).setHorizontalAlignment("center");
