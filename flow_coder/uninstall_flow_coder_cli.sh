@@ -5,15 +5,156 @@
 
 set -e
 
-# Import utility scripts
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-source "$ROOT_DIR/utils/colors_message.sh"
-source "$ROOT_DIR/utils/detect_os.sh"
-source "$ROOT_DIR/utils/bash_tools.sh"
-
 # Python version that was installed
 PYTHON_VERSION="3.12.9"
+
+# Color definitions
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;37m'
+NC='\033[0m' # No Color
+
+# Function to display information messages
+function print_info() {
+  echo -e "\n${BLUE}ℹ️  $1${NC}"
+}
+
+# Function to display success messages
+function print_success() {
+  echo -e "${GREEN}✅ $1${NC}"
+}
+
+# Function to display alert messages
+function print_alert() {
+  echo -e "\n${YELLOW}⚠️  $1${NC}"
+}
+
+# Function to display error messages
+function print_error() {
+  echo -e "${RED}❌ Error: $1${NC}"
+}
+
+# Function to display formatted messages
+function print_header() {
+  echo -e "\n${YELLOW}===========================================================================${NC}"
+  echo -e "${GREEN}$1${NC}"
+  echo -e "${YELLOW}===========================================================================${NC}"
+}
+
+function print_header_info() {
+  echo -e "\n${BLUE}=======================================================${NC}"
+  echo -e "${YELLOW}$1${NC}"
+  echo -e "${BLUE}=======================================================${NC}"
+}
+
+# Function to display alert messages
+function print_yellow() {
+  echo -e "${YELLOW}$1${NC}"
+}
+
+# Function to detect the operating system and version
+function detect_os() {
+    local os_name=""
+    local os_version=""
+    local os_codename=""
+    
+    # Detect OS type
+    case "$(uname -s)" in
+        Darwin)
+            os_name="macOS"
+            os_version=$(sw_vers -productVersion)
+            
+            # Get macOS codename based on version
+            case "${os_version%%.*}" in
+                10)
+                    case "${os_version#*.}" in
+                        15*) os_codename="Catalina" ;;
+                        14*) os_codename="Mojave" ;;
+                        13*) os_codename="High Sierra" ;;
+                        12*) os_codename="Sierra" ;;
+                        11*) os_codename="El Capitan" ;;
+                        10*) os_codename="Yosemite" ;;
+                        9*) os_codename="Mavericks" ;;
+                        *) os_codename="Unknown" ;;
+                    esac
+                    ;;
+                11) os_codename="Big Sur" ;;
+                12) os_codename="Monterey" ;;
+                13) os_codename="Ventura" ;;
+                14) os_codename="Sonoma" ;;
+                15) os_codename="Sequoia" ;;
+                *) os_codename="Unknown" ;;
+            esac
+            ;;
+            
+        Linux)
+            os_name="Linux"
+            
+            # Check for common Linux distribution information files
+            if [ -f /etc/os-release ]; then
+                . /etc/os-release
+                os_version="$VERSION_ID"
+                os_codename="$PRETTY_NAME"
+                os_name="$ID"
+                
+                # Capitalize first letter of distribution name
+                os_name="$(tr '[:lower:]' '[:upper:]' <<< ${os_name:0:1})${os_name:1}"
+            elif [ -f /etc/lsb-release ]; then
+                . /etc/lsb-release
+                os_version="$DISTRIB_RELEASE"
+                os_codename="$DISTRIB_CODENAME"
+                os_name="$DISTRIB_ID"
+            elif [ -f /etc/debian_version ]; then
+                os_name="Debian"
+                os_version=$(cat /etc/debian_version)
+            elif [ -f /etc/redhat-release ]; then
+                os_name=$(cat /etc/redhat-release | cut -d ' ' -f 1)
+                os_version=$(cat /etc/redhat-release | grep -oE '[0-9]+\.[0-9]+')
+            fi
+            ;;
+            
+        CYGWIN*|MINGW32*|MSYS*|MINGW*)
+            os_name="Windows"
+            if [ -n "$(command -v cmd.exe)" ]; then
+                # Get Windows version using systeminfo
+                os_version=$(cmd.exe /c ver 2>/dev/null | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
+                
+                # Try to get Windows edition
+                if [ -n "$(command -v wmic)" ]; then
+                    os_codename=$(wmic os get Caption /value 2>/dev/null | grep -o "Windows.*" | sed 's/Windows //')
+                fi
+            fi
+            ;;
+            
+        *)
+            print_error "Sistema operacional não suportado"
+            return 1
+            ;;
+    esac
+    
+    # Export variables
+    export OS_NAME="$os_name"
+    export OS_VERSION="$os_version"
+    export OS_CODENAME="$os_codename"
+    
+    # Print OS information
+    print_success "Sistema Operacional Detectado: $os_name $os_version $os_codename"
+}
+
+# Ask user for confirmation
+function confirm_action() {
+  local prompt="$1"
+  local choice
+  
+  read -p "$prompt (y/n): " choice
+  case "$choice" in
+    [Yy]* ) return 0 ;;
+    * ) return 1 ;;
+  esac
+}
 
 uninstall_coder() {
     print_header_info "Uninstalling Coder CLI"

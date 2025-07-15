@@ -14,6 +14,10 @@ source "$ROOT_DIR/utils/bash_tools.sh"
 
 # Python version to use
 PYTHON_VERSION="3.12.9"
+# Version constants
+FLOW_CODER_VERSION="1.4.0"
+FLOW_CODER_URL="https://storage.googleapis.com/flow-coder/flow_coder-${FLOW_CODER_VERSION}-py3-none-any.whl"
+
 
 check_pyenv() {
     print_header_info "Checking pyenv installation"
@@ -391,8 +395,8 @@ install_coder() {
     export PATH="$HOME/.local/bin:$PATH"
     
     # Install Coder CLI using pipx with force
-    print_info "Installing Coder CLI using pipx with Python $PYTHON_VERSION..."
-    "$python_path" -m pipx install https://storage.googleapis.com/flow-coder/flow_coder-1.4.0-py3-none-any.whl --force
+    print_info "Installing Coder CLI version $FLOW_CODER_VERSION using pipx with Python $PYTHON_VERSION..."
+    "$python_path" -m pipx install "$FLOW_CODER_URL" --force
     
     # Verify coder executable exists
     local coder_path="$HOME/.local/bin/coder"
@@ -513,7 +517,7 @@ verify_installation() {
 install_flow_coder_cli() {
     print_header "Coder CLI Installation Script"
     
-    if ! confirm_action "This script will install and configure pyenv, Python $PYTHON_VERSION, pipx, and Coder CLI. Continue?"; then
+    if ! confirm_action "This script will install and configure pyenv, Python $PYTHON_VERSION, pipx, and Coder CLI version $FLOW_CODER_VERSION. Continue?"; then
         print_alert "Installation cancelled by user"
         exit 0
     fi
@@ -570,7 +574,7 @@ install_flow_coder_cli() {
     verify_installation
     
     print_header_info "Installation Complete"
-    print_info "You can now use Coder CLI with Python $PYTHON_VERSION"
+    print_info "You can now use Coder CLI version $FLOW_CODER_VERSION with Python $PYTHON_VERSION"
     print_info "Run 'coder --help' for available commands"
     
     # Determine shell profile file
