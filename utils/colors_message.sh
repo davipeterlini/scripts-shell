@@ -21,7 +21,7 @@ function print_success() {
 
 # Function to display alert messages
 function print_alert() {
-  echo -e "\n${YELLOW}⚠️  $1${NC}"
+  echo -n -e "\n${YELLOW}⚠️  $1${NC}"
 }
 
 # Function to display error messages
@@ -39,12 +39,6 @@ function print_header() {
   echo -e "\n${YELLOW}===========================================================================${NC}"
   echo -e "${GREEN}$1${NC}"
   echo -e "${YELLOW}===========================================================================${NC}"
-}
-
-function print_header_info() {
-  echo -e "\n${BLUE}=======================================================${NC}"
-  echo -e "${YELLOW}$1${NC}"
-  echo -e "${BLUE}=======================================================${NC}"
 }
 
 # Function to display alert messages
