@@ -51,7 +51,7 @@ function compareCapabilitiesIDE() {
     Logger.log(`Planilha ativa: ${spreadsheet.getName()}`);
     
     // Delete the report sheet if it exists
-    _deleteReportSheet(spreadsheet);
+    _deleteReportSheetIDE(spreadsheet);
     
     // Get source and target sheets
     Logger.log(`Carregando planilha fonte: ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}`);
@@ -73,31 +73,31 @@ function compareCapabilitiesIDE() {
     
     // Create report sheet
     Logger.log(`Criando planilha de relatório: ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME}`);
-    const reportSheet = _createReportSheet(spreadsheet);
+    const reportSheet = _createReportSheetIDE(spreadsheet);
     
     // Get data from both sheets including cell backgrounds
     Logger.log(`Obtendo dados da planilha fonte: ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}`);
-    const sourceData = _getSheetDataWithFormatting(sourceSheet);
+    const sourceData = _getSheetDataWithFormattingIDE(sourceSheet);
     Logger.log(`Dados obtidos da planilha fonte: ${sourceData.rows.length} linhas, ${sourceData.headers.length} colunas`);
     
     Logger.log(`Obtendo dados da planilha alvo: ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}`);
-    const targetData = _getSheetDataWithFormatting(targetSheet);
+    const targetData = _getSheetDataWithFormattingIDE(targetSheet);
     Logger.log(`Dados obtidos da planilha alvo: ${targetData.rows.length} linhas, ${targetData.headers.length} colunas`);
     
     // Create lookup maps for faster comparison
     Logger.log("Criando mapas de busca para comparação rápida");
-    const sourceMap = _createLookupMap(sourceData.rows, sourceData.backgrounds);
-    const targetMap = _createLookupMap(targetData.rows, targetData.backgrounds);
+    const sourceMap = _createLookupMapIDE(sourceData.rows, sourceData.backgrounds);
+    const targetMap = _createLookupMapIDE(targetData.rows, targetData.backgrounds);
     Logger.log(`Mapas criados: ${Object.keys(sourceMap).length} modelos na fonte, ${Object.keys(targetMap).length} modelos no alvo`);
     
     // Compare data and generate report
     Logger.log("Iniciando comparação de dados");
-    const discrepancies = _compareData(sourceData, targetData, sourceMap, targetMap);
+    const discrepancies = _compareDataIDE(sourceData, targetData, sourceMap, targetMap);
     Logger.log(`Comparação concluída. Encontradas ${discrepancies.length} divergências`);
     
     // Display report
     Logger.log("Gerando relatório de comparação");
-    _displayReport(reportSheet, discrepancies, sourceData.headers);
+    _displayReportIDE(reportSheet, discrepancies, sourceData.headers);
     Logger.log("Relatório gerado com sucesso");
     
     // Prepare detailed message with discrepancies
@@ -164,7 +164,7 @@ function compareCapabilitiesIDE() {
  * @param {Object} spreadsheet - Spreadsheet object
  * @private
  */
-function _deleteReportSheet(spreadsheet) {
+function _deleteReportSheetIDE(spreadsheet) {
   const reportSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_IDE.REPORT_SHEET_NAME);
   
   if (reportSheet) {
@@ -182,7 +182,7 @@ function _deleteReportSheet(spreadsheet) {
  * @return {Object} Report sheet object
  * @private
  */
-function _createReportSheet(spreadsheet) {
+function _createReportSheetIDE(spreadsheet) {
   Logger.log(`Criando nova planilha ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME}`);
   const reportSheet = spreadsheet.insertSheet(COMPARE_CONFIG_IDE.REPORT_SHEET_NAME);
   return reportSheet;
@@ -194,7 +194,7 @@ function _createReportSheet(spreadsheet) {
  * @return {Object} Object containing headers, rows, and backgrounds
  * @private
  */
-function _getSheetDataWithFormatting(sheet) {
+function _getSheetDataWithFormattingIDE(sheet) {
   const lastRow = sheet.getLastRow();
   const lastColumn = sheet.getLastColumn();
   
@@ -238,7 +238,7 @@ function _getSheetDataWithFormatting(sheet) {
  * @return {Array} Array of discrepancies
  * @private
  */
-function _compareData(sourceData, targetData, sourceMap, targetMap) {
+function _compareDataIDE(sourceData, targetData, sourceMap, targetMap) {
   const discrepancies = [];
   
   // Check if headers match
@@ -261,11 +261,11 @@ function _compareData(sourceData, targetData, sourceMap, targetMap) {
   
   // Compare source to target
   Logger.log("Comparando modelos da fonte com o alvo");
-  _findStatusDiscrepancies(sourceData, targetData, sourceMap, targetMap, discrepancies);
+  _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMap, discrepancies);
   
   // Compare target to source (to find models in target that don't exist in source)
   Logger.log("Verificando modelos ausentes");
-  _findMissingModels(sourceData, targetData, sourceMap, targetMap, discrepancies);
+  _findMissingModelsIDE(sourceData, targetData, sourceMap, targetMap, discrepancies);
   
   return discrepancies;
 }
@@ -277,7 +277,7 @@ function _compareData(sourceData, targetData, sourceMap, targetMap) {
  * @return {Object} Lookup map
  * @private
  */
-function _createLookupMap(rows, backgrounds) {
+function _createLookupMapIDE(rows, backgrounds) {
   const map = {};
   
   rows.forEach((row, rowIndex) => {
@@ -304,7 +304,7 @@ function _createLookupMap(rows, backgrounds) {
  * @param {Array} discrepancies - Array to store discrepancies
  * @private
  */
-function _findStatusDiscrepancies(sourceData, targetData, sourceMap, targetMap, discrepancies) {
+function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMap, discrepancies) {
   const totalRows = sourceData.rows.length;
   Logger.log(`Iniciando comparação de status para ${totalRows} modelos`);
   
@@ -400,7 +400,7 @@ function _findStatusDiscrepancies(sourceData, targetData, sourceMap, targetMap, 
  * @param {Array} discrepancies - Array to store discrepancies
  * @private
  */
-function _findMissingModels(sourceData, targetData, sourceMap, targetMap, discrepancies) {
+function _findMissingModelsIDE(sourceData, targetData, sourceMap, targetMap, discrepancies) {
   Logger.log(`Verificando modelos que existem no alvo mas não na fonte`);
   let missingModelsCount = 0;
   
@@ -434,7 +434,7 @@ function _findMissingModels(sourceData, targetData, sourceMap, targetMap, discre
  * @param {Array} headers - Headers from source sheet
  * @private
  */
-function _displayReport(reportSheet, discrepancies, headers) {
+function _displayReportIDE(reportSheet, discrepancies, headers) {
   Logger.log("Iniciando geração do relatório");
   
   // Add title
