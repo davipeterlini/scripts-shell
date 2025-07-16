@@ -7,10 +7,10 @@
  */
 
 // Configuration constants - renamed to avoid conflict with other scripts
-const COMPARE_CONFIG_IDE = {
+const COMPARE_CONFIG_CLI = {
   SOURCE_SHEET_NAME: "LLM-Capabilities",
-  TARGET_SHEET_NAME: "IDE-Capabilities",
-  REPORT_SHEET_NAME: "Comparison-IDE-Report",
+  TARGET_SHEET_NAME: "CLI-Capabilities",
+  REPORT_SHEET_NAME: "Comparison-CLI-Report",
   PROGRESS_SHEET_NAME: "Progress-Tracker",
   STATUS: {
     ENABLE: "Enable",
@@ -34,14 +34,14 @@ const COMPARE_CONFIG_IDE = {
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Comparar Planilhas')
-      .addItem('Comparar Status de Capabilities', 'compareCapabilitiesIDE')
+      .addItem('Comparar Status de Capabilities', 'compareCapabilitiesCLI')
       .addToUi();
 }
 
 /**
  * Main function to compare capabilities between sheets
  */
-function compareCapabilitiesIDE() {
+function compareCapabilitiesCLI() {
   try {
     // Start logging
     Logger.log("=== INICIANDO COMPARAÇÃO DE CAPABILITIES ===");
@@ -54,33 +54,33 @@ function compareCapabilitiesIDE() {
     _deleteReportSheet(spreadsheet);
     
     // Get source and target sheets
-    Logger.log(`Carregando planilha fonte: ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}`);
-    const sourceSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME);
+    Logger.log(`Carregando planilha fonte: ${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME}`);
+    const sourceSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME);
     
-    Logger.log(`Carregando planilha alvo: ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}`);
-    const targetSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_IDE.TARGET_SHEET_NAME);
+    Logger.log(`Carregando planilha alvo: ${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME}`);
+    const targetSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_CLI.TARGET_SHEET_NAME);
     
     // Validate sheets exist
     if (!sourceSheet) {
-      Logger.log(`ERRO: Planilha "${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}" não encontrada`);
-      throw new Error(`Planilha "${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}" não encontrada. Execute o script search_llm_capabilities.gs primeiro.`);
+      Logger.log(`ERRO: Planilha "${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME}" não encontrada`);
+      throw new Error(`Planilha "${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME}" não encontrada. Execute o script search_llm_capabilities.gs primeiro.`);
     }
     
     if (!targetSheet) {
-      Logger.log(`ERRO: Planilha "${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}" não encontrada`);
-      throw new Error(`Planilha "${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}" não encontrada.`);
+      Logger.log(`ERRO: Planilha "${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME}" não encontrada`);
+      throw new Error(`Planilha "${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME}" não encontrada.`);
     }
     
     // Create report sheet
-    Logger.log(`Criando planilha de relatório: ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME}`);
+    Logger.log(`Criando planilha de relatório: ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME}`);
     const reportSheet = _createReportSheet(spreadsheet);
     
     // Get data from both sheets including cell backgrounds
-    Logger.log(`Obtendo dados da planilha fonte: ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}`);
+    Logger.log(`Obtendo dados da planilha fonte: ${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME}`);
     const sourceData = _getSheetDataWithFormatting(sourceSheet);
     Logger.log(`Dados obtidos da planilha fonte: ${sourceData.rows.length} linhas, ${sourceData.headers.length} colunas`);
     
-    Logger.log(`Obtendo dados da planilha alvo: ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}`);
+    Logger.log(`Obtendo dados da planilha alvo: ${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME}`);
     const targetData = _getSheetDataWithFormatting(targetSheet);
     Logger.log(`Dados obtidos da planilha alvo: ${targetData.rows.length} linhas, ${targetData.headers.length} colunas`);
     
@@ -131,13 +131,13 @@ function compareCapabilitiesIDE() {
           if (d.type === "status") {
             message += `${i+1}. ${d.provider} - ${d.model}: ${d.capability} (${d.sourceStatus} vs ${d.targetStatus})\n`;
           } else if (d.type === "missing_model") {
-            const location = d.location === "source" ? COMPARE_CONFIG_IDE.TARGET_SHEET_NAME : COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME;
+            const location = d.location === "source" ? COMPARE_CONFIG_CLI.TARGET_SHEET_NAME : COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME;
             message += `${i+1}. Modelo ausente: ${d.provider} - ${d.model} (apenas em ${location})\n`;
           }
         }
         
         if (discrepancies.length > maxExamples) {
-          message += `... e mais ${discrepancies.length - maxExamples} divergências (veja o relatório completo na planilha ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME})`;
+          message += `... e mais ${discrepancies.length - maxExamples} divergências (veja o relatório completo na planilha ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME})`;
         }
       }
     } else {
@@ -165,14 +165,14 @@ function compareCapabilitiesIDE() {
  * @private
  */
 function _deleteReportSheet(spreadsheet) {
-  const reportSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_IDE.REPORT_SHEET_NAME);
+  const reportSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_CLI.REPORT_SHEET_NAME);
   
   if (reportSheet) {
-    Logger.log(`Excluindo planilha existente: ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME}`);
+    Logger.log(`Excluindo planilha existente: ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME}`);
     spreadsheet.deleteSheet(reportSheet);
-    Logger.log(`Planilha ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME} excluída com sucesso`);
+    Logger.log(`Planilha ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME} excluída com sucesso`);
   } else {
-    Logger.log(`Planilha ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME} não encontrada, nenhuma exclusão necessária`);
+    Logger.log(`Planilha ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME} não encontrada, nenhuma exclusão necessária`);
   }
 }
 
@@ -183,8 +183,8 @@ function _deleteReportSheet(spreadsheet) {
  * @private
  */
 function _createReportSheet(spreadsheet) {
-  Logger.log(`Criando nova planilha ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME}`);
-  const reportSheet = spreadsheet.insertSheet(COMPARE_CONFIG_IDE.REPORT_SHEET_NAME);
+  Logger.log(`Criando nova planilha ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME}`);
+  const reportSheet = spreadsheet.insertSheet(COMPARE_CONFIG_CLI.REPORT_SHEET_NAME);
   return reportSheet;
 }
 
@@ -344,7 +344,7 @@ function _findStatusDiscrepancies(sourceData, targetData, sourceMap, targetMap, 
         const capability = sourceData.headers[colIndex];
         
         // Log column comparison based on frequency setting
-        if (colIndex % COMPARE_CONFIG_IDE.LOG_FREQUENCY === 0 || colIndex === 2 || colIndex === sourceRow.length - 1) {
+        if (colIndex % COMPARE_CONFIG_CLI.LOG_FREQUENCY === 0 || colIndex === 2 || colIndex === sourceRow.length - 1) {
           Logger.log(`  Comparando coluna ${_columnToLetter(colIndex + 1)} (${colIndex + 1}): ${capability}`);
         }
         
@@ -499,8 +499,8 @@ function _addReportTitle(sheet) {
   titleRange.merge();
   titleRange.setValue("RELATÓRIO DE COMPARAÇÃO DE STATUS DE CAPABILITIES");
   titleRange.setFontWeight("bold");
-  titleRange.setBackground(COMPARE_CONFIG_IDE.COLORS.TITLE_BG);
-  titleRange.setFontColor(COMPARE_CONFIG_IDE.COLORS.TITLE_TEXT);
+  titleRange.setBackground(COMPARE_CONFIG_CLI.COLORS.TITLE_BG);
+  titleRange.setFontColor(COMPARE_CONFIG_CLI.COLORS.TITLE_TEXT);
   titleRange.setHorizontalAlignment("center");
   titleRange.setVerticalAlignment("middle");
   sheet.setRowHeight(1, 30);
@@ -555,7 +555,7 @@ function _addNoDiscrepanciesMessage(sheet) {
   messageRange.merge();
   messageRange.setValue("Nenhuma divergência de status encontrada. Os status das capabilities são idênticos em ambas as planilhas.");
   messageRange.setFontWeight("bold");
-  messageRange.setBackground(COMPARE_CONFIG_IDE.COLORS.SUCCESS_BG);
+  messageRange.setBackground(COMPARE_CONFIG_CLI.COLORS.SUCCESS_BG);
   messageRange.setHorizontalAlignment("center");
   messageRange.setVerticalAlignment("middle");
   sheet.setRowHeight(2, 30);
@@ -583,7 +583,7 @@ function _addReportHeaders(sheet) {
   
   const headerRange = sheet.getRange(sheet.getLastRow(), 1, 1, headers.length);
   headerRange.setFontWeight("bold");
-  headerRange.setBackground(COMPARE_CONFIG_IDE.COLORS.HEADER_BG);
+  headerRange.setBackground(COMPARE_CONFIG_CLI.COLORS.HEADER_BG);
   headerRange.setHorizontalAlignment("center");
   headerRange.setVerticalAlignment("middle");
 }
@@ -620,12 +620,12 @@ function _addDiscrepancies(sheet, discrepancies, headers) {
       sheet.appendRow(row);
     } else if (discrepancy.type === "missing_model") {
       const location = discrepancy.location === "source" 
-        ? `Modelo existe apenas em ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME} (linha ${discrepancy.rowIndex})` 
-        : `Modelo existe apenas em ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME} (linha ${discrepancy.rowIndex})`;
+        ? `Modelo existe apenas em ${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME} (linha ${discrepancy.rowIndex})` 
+        : `Modelo existe apenas em ${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME} (linha ${discrepancy.rowIndex})`;
       
       const action = discrepancy.location === "source"
-        ? `Adicionar modelo ao ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}`
-        : `Adicionar modelo ao ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}`;
+        ? `Adicionar modelo ao ${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME}`
+        : `Adicionar modelo ao ${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME}`;
       
       row = [
         "Modelo Ausente",
@@ -639,7 +639,7 @@ function _addDiscrepancies(sheet, discrepancies, headers) {
       ];
       sheet.appendRow(row);
     } else if (discrepancy.type === "status") {
-      const location = `${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME} (${_columnToLetter(discrepancy.columnIndex)}${discrepancy.sourceRowIndex}) vs ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME} (${_columnToLetter(discrepancy.columnIndex)}${discrepancy.targetRowIndex})`;
+      const location = `${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME} (${_columnToLetter(discrepancy.columnIndex)}${discrepancy.sourceRowIndex}) vs ${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME} (${_columnToLetter(discrepancy.columnIndex)}${discrepancy.targetRowIndex})`;
       
       const action = `Alinhar o status de ${discrepancy.capability} para o modelo ${discrepancy.model}`;
       
@@ -660,18 +660,18 @@ function _addDiscrepancies(sheet, discrepancies, headers) {
       
       // Colorir a célula do status na planilha fonte
       const sourceStatusCell = sheet.getRange(currentRow, 5);
-      if (discrepancy.sourceStatus === COMPARE_CONFIG_IDE.STATUS.ENABLE) {
-        sourceStatusCell.setBackground(COMPARE_CONFIG_IDE.COLORS.ENABLE_BG);
-      } else if (discrepancy.sourceStatus === COMPARE_CONFIG_IDE.STATUS.DISABLE) {
-        sourceStatusCell.setBackground(COMPARE_CONFIG_IDE.COLORS.DISABLE_BG);
+      if (discrepancy.sourceStatus === COMPARE_CONFIG_CLI.STATUS.ENABLE) {
+        sourceStatusCell.setBackground(COMPARE_CONFIG_CLI.COLORS.ENABLE_BG);
+      } else if (discrepancy.sourceStatus === COMPARE_CONFIG_CLI.STATUS.DISABLE) {
+        sourceStatusCell.setBackground(COMPARE_CONFIG_CLI.COLORS.DISABLE_BG);
       }
       
       // Colorir a célula do status na planilha alvo
       const targetStatusCell = sheet.getRange(currentRow, 6);
-      if (discrepancy.targetStatus === COMPARE_CONFIG_IDE.STATUS.ENABLE) {
-        targetStatusCell.setBackground(COMPARE_CONFIG_IDE.COLORS.ENABLE_BG);
-      } else if (discrepancy.targetStatus === COMPARE_CONFIG_IDE.STATUS.DISABLE) {
-        targetStatusCell.setBackground(COMPARE_CONFIG_IDE.COLORS.DISABLE_BG);
+      if (discrepancy.targetStatus === COMPARE_CONFIG_CLI.STATUS.ENABLE) {
+        targetStatusCell.setBackground(COMPARE_CONFIG_CLI.COLORS.ENABLE_BG);
+      } else if (discrepancy.targetStatus === COMPARE_CONFIG_CLI.STATUS.DISABLE) {
+        targetStatusCell.setBackground(COMPARE_CONFIG_CLI.COLORS.DISABLE_BG);
       }
     }
     
