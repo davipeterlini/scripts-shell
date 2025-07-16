@@ -7,7 +7,7 @@
  */
 
 // Configuration constants - renamed to avoid conflict with other scripts
-const COMPARE_CONFIG_CLI = {
+const CLI_COMPARE_CONFIG = {
   SOURCE_SHEET_NAME: "LLM-Capabilities",
   TARGET_SHEET_NAME: "CLI-Capabilities",
   REPORT_SHEET_NAME: "Comparison-CLI-Report",
@@ -31,17 +31,17 @@ const COMPARE_CONFIG_CLI = {
 /**
  * Creates custom menu when spreadsheet is opened
  */
-function onOpenCompareCLI() {
+function CLIonOpenCompare() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Comparar CLI')
-      .addItem('Comparar Status de Capabilities CLI', 'compareCapabilitiesCLI')
+      .addItem('Comparar Status de Capabilities CLI', 'CLIcompareCapabilities')
       .addToUi();
 }
 
 /**
  * Main function to compare capabilities between sheets
  */
-function compareCapabilitiesCLI() {
+function CLIcompareCapabilities() {
   try {
     // Start logging
     Logger.log("=== INICIANDO COMPARAÇÃO DE CAPABILITIES ===");
@@ -51,53 +51,53 @@ function compareCapabilitiesCLI() {
     Logger.log(`Planilha ativa: ${spreadsheet.getName()}`);
     
     // Delete the report sheet if it exists
-    _deleteReportSheetCLI(spreadsheet);
+    CLI_deleteReportSheet(spreadsheet);
     
     // Get source and target sheets
-    Logger.log(`Carregando planilha fonte: ${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME}`);
-    const sourceSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME);
+    Logger.log(`Carregando planilha fonte: ${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}`);
+    const sourceSheet = spreadsheet.getSheetByName(CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME);
     
-    Logger.log(`Carregando planilha alvo: ${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME}`);
-    const targetSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_CLI.TARGET_SHEET_NAME);
+    Logger.log(`Carregando planilha alvo: ${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}`);
+    const targetSheet = spreadsheet.getSheetByName(CLI_COMPARE_CONFIG.TARGET_SHEET_NAME);
     
     // Validate sheets exist
     if (!sourceSheet) {
-      Logger.log(`ERRO: Planilha "${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME}" não encontrada`);
-      throw new Error(`Planilha "${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME}" não encontrada. Execute o script search_llm_capabilities.gs primeiro.`);
+      Logger.log(`ERRO: Planilha "${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}" não encontrada`);
+      throw new Error(`Planilha "${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}" não encontrada. Execute o script search_llm_capabilities.gs primeiro.`);
     }
     
     if (!targetSheet) {
-      Logger.log(`ERRO: Planilha "${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME}" não encontrada`);
-      throw new Error(`Planilha "${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME}" não encontrada.`);
+      Logger.log(`ERRO: Planilha "${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}" não encontrada`);
+      throw new Error(`Planilha "${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}" não encontrada.`);
     }
     
     // Create report sheet
-    Logger.log(`Criando planilha de relatório: ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME}`);
-    const reportSheet = _createReportSheetCLI(spreadsheet);
+    Logger.log(`Criando planilha de relatório: ${CLI_COMPARE_CONFIG.REPORT_SHEET_NAME}`);
+    const reportSheet = CLI_createReportSheet(spreadsheet);
     
     // Get data from both sheets including cell backgrounds
-    Logger.log(`Obtendo dados da planilha fonte: ${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME}`);
-    const sourceData = _getSheetDataWithFormattingCLI(sourceSheet);
+    Logger.log(`Obtendo dados da planilha fonte: ${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}`);
+    const sourceData = CLI_getSheetDataWithFormatting(sourceSheet);
     Logger.log(`Dados obtidos da planilha fonte: ${sourceData.rows.length} linhas, ${sourceData.headers.length} colunas`);
     
-    Logger.log(`Obtendo dados da planilha alvo: ${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME}`);
-    const targetData = _getSheetDataWithFormattingCLI(targetSheet);
+    Logger.log(`Obtendo dados da planilha alvo: ${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}`);
+    const targetData = CLI_getSheetDataWithFormatting(targetSheet);
     Logger.log(`Dados obtidos da planilha alvo: ${targetData.rows.length} linhas, ${targetData.headers.length} colunas`);
     
     // Create lookup maps for faster comparison
     Logger.log("Criando mapas de busca para comparação rápida");
-    const sourceMap = _createLookupMapCLI(sourceData.rows, sourceData.backgrounds);
-    const targetMap = _createLookupMapCLI(targetData.rows, targetData.backgrounds);
+    const sourceMap = CLI_createLookupMap(sourceData.rows, sourceData.backgrounds);
+    const targetMap = CLI_createLookupMap(targetData.rows, targetData.backgrounds);
     Logger.log(`Mapas criados: ${Object.keys(sourceMap).length} modelos na fonte, ${Object.keys(targetMap).length} modelos no alvo`);
     
     // Compare data and generate report
     Logger.log("Iniciando comparação de dados");
-    const discrepancies = _compareDataCLI(sourceData, targetData, sourceMap, targetMap);
+    const discrepancies = CLI_compareData(sourceData, targetData, sourceMap, targetMap);
     Logger.log(`Comparação concluída. Encontradas ${discrepancies.length} divergências`);
     
     // Display report
     Logger.log("Gerando relatório de comparação");
-    _displayReportCLI(reportSheet, discrepancies, sourceData.headers);
+    CLI_displayReport(reportSheet, discrepancies, sourceData.headers);
     Logger.log("Relatório gerado com sucesso");
     
     // Prepare detailed message with discrepancies
@@ -131,13 +131,13 @@ function compareCapabilitiesCLI() {
           if (d.type === "status") {
             message += `${i+1}. ${d.provider} - ${d.model}: ${d.capability} (${d.sourceStatus} vs ${d.targetStatus})\n`;
           } else if (d.type === "missing_model") {
-            const location = d.location === "source" ? COMPARE_CONFIG_CLI.TARGET_SHEET_NAME : COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME;
+            const location = d.location === "source" ? CLI_COMPARE_CONFIG.TARGET_SHEET_NAME : CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME;
             message += `${i+1}. Modelo ausente: ${d.provider} - ${d.model} (apenas em ${location})\n`;
           }
         }
         
         if (discrepancies.length > maxExamples) {
-          message += `... e mais ${discrepancies.length - maxExamples} divergências (veja o relatório completo na planilha ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME})`;
+          message += `... e mais ${discrepancies.length - maxExamples} divergências (veja o relatório completo na planilha ${CLI_COMPARE_CONFIG.REPORT_SHEET_NAME})`;
         }
       }
     } else {
@@ -164,15 +164,15 @@ function compareCapabilitiesCLI() {
  * @param {Object} spreadsheet - Spreadsheet object
  * @private
  */
-function _deleteReportSheetCLI(spreadsheet) {
-  const reportSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_CLI.REPORT_SHEET_NAME);
+function CLI_deleteReportSheet(spreadsheet) {
+  const reportSheet = spreadsheet.getSheetByName(CLI_COMPARE_CONFIG.REPORT_SHEET_NAME);
   
   if (reportSheet) {
-    Logger.log(`Excluindo planilha existente: ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME}`);
+    Logger.log(`Excluindo planilha existente: ${CLI_COMPARE_CONFIG.REPORT_SHEET_NAME}`);
     spreadsheet.deleteSheet(reportSheet);
-    Logger.log(`Planilha ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME} excluída com sucesso`);
+    Logger.log(`Planilha ${CLI_COMPARE_CONFIG.REPORT_SHEET_NAME} excluída com sucesso`);
   } else {
-    Logger.log(`Planilha ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME} não encontrada, nenhuma exclusão necessária`);
+    Logger.log(`Planilha ${CLI_COMPARE_CONFIG.REPORT_SHEET_NAME} não encontrada, nenhuma exclusão necessária`);
   }
 }
 
@@ -182,9 +182,9 @@ function _deleteReportSheetCLI(spreadsheet) {
  * @return {Object} Report sheet object
  * @private
  */
-function _createReportSheetCLI(spreadsheet) {
-  Logger.log(`Criando nova planilha ${COMPARE_CONFIG_CLI.REPORT_SHEET_NAME}`);
-  const reportSheet = spreadsheet.insertSheet(COMPARE_CONFIG_CLI.REPORT_SHEET_NAME);
+function CLI_createReportSheet(spreadsheet) {
+  Logger.log(`Criando nova planilha ${CLI_COMPARE_CONFIG.REPORT_SHEET_NAME}`);
+  const reportSheet = spreadsheet.insertSheet(CLI_COMPARE_CONFIG.REPORT_SHEET_NAME);
   return reportSheet;
 }
 
@@ -194,7 +194,7 @@ function _createReportSheetCLI(spreadsheet) {
  * @return {Object} Object containing headers, rows, and backgrounds
  * @private
  */
-function _getSheetDataWithFormattingCLI(sheet) {
+function CLI_getSheetDataWithFormatting(sheet) {
   const lastRow = sheet.getLastRow();
   const lastColumn = sheet.getLastColumn();
   
@@ -238,12 +238,12 @@ function _getSheetDataWithFormattingCLI(sheet) {
  * @return {Array} Array of discrepancies
  * @private
  */
-function _compareDataCLI(sourceData, targetData, sourceMap, targetMap) {
+function CLI_compareData(sourceData, targetData, sourceMap, targetMap) {
   const discrepancies = [];
   
   // Check if headers match
   Logger.log("Verificando se os cabeçalhos correspondem");
-  if (!_arraysEqualCLI(sourceData.headers, targetData.headers)) {
+  if (!CLI_arraysEqual(sourceData.headers, targetData.headers)) {
     Logger.log("ALERTA: Os cabeçalhos das planilhas não correspondem");
     Logger.log(`Cabeçalhos fonte: ${sourceData.headers.join(', ')}`);
     Logger.log(`Cabeçalhos alvo: ${targetData.headers.join(', ')}`);
@@ -261,11 +261,11 @@ function _compareDataCLI(sourceData, targetData, sourceMap, targetMap) {
   
   // Compare source to target
   Logger.log("Comparando modelos da fonte com o alvo");
-  _findStatusDiscrepanciesCLI(sourceData, targetData, sourceMap, targetMap, discrepancies);
+  CLI_findStatusDiscrepancies(sourceData, targetData, sourceMap, targetMap, discrepancies);
   
   // Compare target to source (to find models in target that don't exist in source)
   Logger.log("Verificando modelos ausentes");
-  _findMissingModelsCLI(sourceData, targetData, sourceMap, targetMap, discrepancies);
+  CLI_findMissingModels(sourceData, targetData, sourceMap, targetMap, discrepancies);
   
   return discrepancies;
 }
@@ -277,7 +277,7 @@ function _compareDataCLI(sourceData, targetData, sourceMap, targetMap) {
  * @return {Object} Lookup map
  * @private
  */
-function _createLookupMapCLI(rows, backgrounds) {
+function CLI_createLookupMap(rows, backgrounds) {
   const map = {};
   
   rows.forEach((row, rowIndex) => {
@@ -304,14 +304,14 @@ function _createLookupMapCLI(rows, backgrounds) {
  * @param {Array} discrepancies - Array to store discrepancies
  * @private
  */
-function _findStatusDiscrepanciesCLI(sourceData, targetData, sourceMap, targetMap, discrepancies) {
+function CLI_findStatusDiscrepancies(sourceData, targetData, sourceMap, targetMap, discrepancies) {
   const totalRows = sourceData.rows.length;
   Logger.log(`Iniciando comparação de status para ${totalRows} modelos`);
   
   // Log column headers for reference
   Logger.log("Colunas de capabilities a serem comparadas:");
   for (let colIndex = 2; colIndex < sourceData.headers.length; colIndex++) {
-    Logger.log(`Coluna ${_columnToLetterCLI(colIndex + 1)} (${colIndex + 1}): ${sourceData.headers[colIndex]}`);
+    Logger.log(`Coluna ${CLI_columnToLetter(colIndex + 1)} (${colIndex + 1}): ${sourceData.headers[colIndex]}`);
   }
   
   // Track progress
@@ -344,8 +344,8 @@ function _findStatusDiscrepanciesCLI(sourceData, targetData, sourceMap, targetMa
         const capability = sourceData.headers[colIndex];
         
         // Log column comparison based on frequency setting
-        if (colIndex % COMPARE_CONFIG_CLI.LOG_FREQUENCY === 0 || colIndex === 2 || colIndex === sourceRow.length - 1) {
-          Logger.log(`  Comparando coluna ${_columnToLetterCLI(colIndex + 1)} (${colIndex + 1}): ${capability}`);
+        if (colIndex % CLI_COMPARE_CONFIG.LOG_FREQUENCY === 0 || colIndex === 2 || colIndex === sourceRow.length - 1) {
+          Logger.log(`  Comparando coluna ${CLI_columnToLetter(colIndex + 1)} (${colIndex + 1}): ${capability}`);
         }
         
         // Compare status values (Enable/Disable)
@@ -353,7 +353,7 @@ function _findStatusDiscrepanciesCLI(sourceData, targetData, sourceMap, targetMa
           statusDiscrepancies++;
           
           // Log each discrepancy found
-          Logger.log(`  DIVERGÊNCIA ENCONTRADA na coluna ${_columnToLetterCLI(colIndex + 1)} (${colIndex + 1}) - ${capability}: ${sourceStatus} vs ${targetStatus}`);
+          Logger.log(`  DIVERGÊNCIA ENCONTRADA na coluna ${CLI_columnToLetter(colIndex + 1)} (${colIndex + 1}) - ${capability}: ${sourceStatus} vs ${targetStatus}`);
           
           discrepancies.push({
             type: "status",
@@ -400,7 +400,7 @@ function _findStatusDiscrepanciesCLI(sourceData, targetData, sourceMap, targetMa
  * @param {Array} discrepancies - Array to store discrepancies
  * @private
  */
-function _findMissingModelsCLI(sourceData, targetData, sourceMap, targetMap, discrepancies) {
+function CLI_findMissingModels(sourceData, targetData, sourceMap, targetMap, discrepancies) {
   Logger.log(`Verificando modelos que existem no alvo mas não na fonte`);
   let missingModelsCount = 0;
   
@@ -434,38 +434,38 @@ function _findMissingModelsCLI(sourceData, targetData, sourceMap, targetMap, dis
  * @param {Array} headers - Headers from source sheet
  * @private
  */
-function _displayReportCLI(reportSheet, discrepancies, headers) {
+function CLI_displayReport(reportSheet, discrepancies, headers) {
   Logger.log("Iniciando geração do relatório");
   
   // Add title
   Logger.log("Adicionando título ao relatório");
-  _addReportTitleCLI(reportSheet);
+  CLI_addReportTitle(reportSheet);
   
   if (discrepancies.length === 0) {
     // No discrepancies found
     Logger.log("Nenhuma discrepância encontrada, adicionando mensagem");
-    _addNoDiscrepanciesMessageCLI(reportSheet);
-    return;
+    CLI_addNoDiscrepanciesMessage(reportSheet);
+    return; // Importante: retornar aqui para evitar processamento adicional
   }
   
   // Add summary
   Logger.log("Adicionando resumo ao relatório");
-  _addSummaryCLI(reportSheet, discrepancies);
+  CLI_addSummary(reportSheet, discrepancies);
   
   // Add report headers
   Logger.log("Adicionando cabeçalhos ao relatório");
-  _addReportHeadersCLI(reportSheet);
+  CLI_addReportHeaders(reportSheet);
   
   // Add discrepancies
   Logger.log(`Adicionando ${discrepancies.length} discrepâncias ao relatório`);
-  _addDiscrepanciesCLI(reportSheet, discrepancies, headers);
+  CLI_addDiscrepancies(reportSheet, discrepancies, headers);
   
   // Format report
   Logger.log("Formatando relatório");
-  _formatReportCLI(reportSheet);
+  CLI_formatReport(reportSheet);
   
   // Add a link to the top of the report for easy navigation
-  _addNavigationLinksCLI(reportSheet);
+  CLI_addNavigationLinks(reportSheet);
   
   Logger.log("Relatório gerado com sucesso");
 }
@@ -475,7 +475,7 @@ function _displayReportCLI(reportSheet, discrepancies, headers) {
  * @param {Object} sheet - Report sheet object
  * @private
  */
-function _addNavigationLinksCLI(reportSheet) {
+function CLI_addNavigationLinks(reportSheet) {
   // Add a navigation row below the summary
   const navRow = 3;
   reportSheet.insertRowAfter(2);
@@ -493,14 +493,14 @@ function _addNavigationLinksCLI(reportSheet) {
  * @param {Object} sheet - Report sheet object
  * @private
  */
-function _addReportTitleCLI(sheet) {
+function CLI_addReportTitle(sheet) {
   sheet.appendRow(['']);
   const titleRange = sheet.getRange(1, 1, 1, 8);
   titleRange.merge();
   titleRange.setValue("RELATÓRIO DE COMPARAÇÃO DE STATUS DE CAPABILITIES");
   titleRange.setFontWeight("bold");
-  titleRange.setBackground(COMPARE_CONFIG_CLI.COLORS.TITLE_BG);
-  titleRange.setFontColor(COMPARE_CONFIG_CLI.COLORS.TITLE_TEXT);
+  titleRange.setBackground(CLI_COMPARE_CONFIG.COLORS.TITLE_BG);
+  titleRange.setFontColor(CLI_COMPARE_CONFIG.COLORS.TITLE_TEXT);
   titleRange.setHorizontalAlignment("center");
   titleRange.setVerticalAlignment("middle");
   sheet.setRowHeight(1, 30);
@@ -512,7 +512,7 @@ function _addReportTitleCLI(sheet) {
  * @param {Array} discrepancies - Array of discrepancies
  * @private
  */
-function _addSummaryCLI(sheet, discrepancies) {
+function CLI_addSummary(sheet, discrepancies) {
   // Count discrepancies by type
   let statusCount = 0;
   let missingModelCount = 0;
@@ -549,13 +549,13 @@ function _addSummaryCLI(sheet, discrepancies) {
  * @param {Object} sheet - Report sheet object
  * @private
  */
-function _addNoDiscrepanciesMessageCLI(sheet) {
+function CLI_addNoDiscrepanciesMessage(sheet) {
   sheet.appendRow(['']);
   const messageRange = sheet.getRange(2, 1, 1, 8);
   messageRange.merge();
   messageRange.setValue("Nenhuma divergência de status encontrada. Os status das capabilities são idênticos em ambas as planilhas.");
   messageRange.setFontWeight("bold");
-  messageRange.setBackground(COMPARE_CONFIG_CLI.COLORS.SUCCESS_BG);
+  messageRange.setBackground(CLI_COMPARE_CONFIG.COLORS.SUCCESS_BG);
   messageRange.setHorizontalAlignment("center");
   messageRange.setVerticalAlignment("middle");
   sheet.setRowHeight(2, 30);
@@ -566,7 +566,7 @@ function _addNoDiscrepanciesMessageCLI(sheet) {
  * @param {Object} sheet - Report sheet object
  * @private
  */
-function _addReportHeadersCLI(sheet) {
+function CLI_addReportHeaders(sheet) {
   const headers = [
     'Tipo de Divergência',
     'Provider',
@@ -583,7 +583,7 @@ function _addReportHeadersCLI(sheet) {
   
   const headerRange = sheet.getRange(sheet.getLastRow(), 1, 1, headers.length);
   headerRange.setFontWeight("bold");
-  headerRange.setBackground(COMPARE_CONFIG_CLI.COLORS.HEADER_BG);
+  headerRange.setBackground(CLI_COMPARE_CONFIG.COLORS.HEADER_BG);
   headerRange.setHorizontalAlignment("center");
   headerRange.setVerticalAlignment("middle");
 }
@@ -595,7 +595,7 @@ function _addReportHeadersCLI(sheet) {
  * @param {Array} headers - Headers from source sheet
  * @private
  */
-function _addDiscrepanciesCLI(sheet, discrepancies, headers) {
+function CLI_addDiscrepancies(sheet, discrepancies, headers) {
   let rowIndex = sheet.getLastRow() + 1; // Start after headers
   
   discrepancies.forEach((discrepancy, index) => {
@@ -620,12 +620,12 @@ function _addDiscrepanciesCLI(sheet, discrepancies, headers) {
       sheet.appendRow(row);
     } else if (discrepancy.type === "missing_model") {
       const location = discrepancy.location === "source" 
-        ? `Modelo existe apenas em ${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME} (linha ${discrepancy.rowIndex})` 
-        : `Modelo existe apenas em ${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME} (linha ${discrepancy.rowIndex})`;
+        ? `Modelo existe apenas em ${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME} (linha ${discrepancy.rowIndex})` 
+        : `Modelo existe apenas em ${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME} (linha ${discrepancy.rowIndex})`;
       
       const action = discrepancy.location === "source"
-        ? `Adicionar modelo ao ${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME}`
-        : `Adicionar modelo ao ${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME}`;
+        ? `Adicionar modelo ao ${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}`
+        : `Adicionar modelo ao ${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}`;
       
       row = [
         "Modelo Ausente",
@@ -639,7 +639,7 @@ function _addDiscrepanciesCLI(sheet, discrepancies, headers) {
       ];
       sheet.appendRow(row);
     } else if (discrepancy.type === "status") {
-      const location = `${COMPARE_CONFIG_CLI.SOURCE_SHEET_NAME} (${_columnToLetterCLI(discrepancy.columnIndex)}${discrepancy.sourceRowIndex}) vs ${COMPARE_CONFIG_CLI.TARGET_SHEET_NAME} (${_columnToLetterCLI(discrepancy.columnIndex)}${discrepancy.targetRowIndex})`;
+      const location = `${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME} (${CLI_columnToLetter(discrepancy.columnIndex)}${discrepancy.sourceRowIndex}) vs ${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME} (${CLI_columnToLetter(discrepancy.columnIndex)}${discrepancy.targetRowIndex})`;
       
       const action = `Alinhar o status de ${discrepancy.capability} para o modelo ${discrepancy.model}`;
       
@@ -660,18 +660,18 @@ function _addDiscrepanciesCLI(sheet, discrepancies, headers) {
       
       // Colorir a célula do status na planilha fonte
       const sourceStatusCell = sheet.getRange(currentRow, 5);
-      if (discrepancy.sourceStatus === COMPARE_CONFIG_CLI.STATUS.ENABLE) {
-        sourceStatusCell.setBackground(COMPARE_CONFIG_CLI.COLORS.ENABLE_BG);
-      } else if (discrepancy.sourceStatus === COMPARE_CONFIG_CLI.STATUS.DISABLE) {
-        sourceStatusCell.setBackground(COMPARE_CONFIG_CLI.COLORS.DISABLE_BG);
+      if (discrepancy.sourceStatus === CLI_COMPARE_CONFIG.STATUS.ENABLE) {
+        sourceStatusCell.setBackground(CLI_COMPARE_CONFIG.COLORS.ENABLE_BG);
+      } else if (discrepancy.sourceStatus === CLI_COMPARE_CONFIG.STATUS.DISABLE) {
+        sourceStatusCell.setBackground(CLI_COMPARE_CONFIG.COLORS.DISABLE_BG);
       }
       
       // Colorir a célula do status na planilha alvo
       const targetStatusCell = sheet.getRange(currentRow, 6);
-      if (discrepancy.targetStatus === COMPARE_CONFIG_CLI.STATUS.ENABLE) {
-        targetStatusCell.setBackground(COMPARE_CONFIG_CLI.COLORS.ENABLE_BG);
-      } else if (discrepancy.targetStatus === COMPARE_CONFIG_CLI.STATUS.DISABLE) {
-        targetStatusCell.setBackground(COMPARE_CONFIG_CLI.COLORS.DISABLE_BG);
+      if (discrepancy.targetStatus === CLI_COMPARE_CONFIG.STATUS.ENABLE) {
+        targetStatusCell.setBackground(CLI_COMPARE_CONFIG.COLORS.ENABLE_BG);
+      } else if (discrepancy.targetStatus === CLI_COMPARE_CONFIG.STATUS.DISABLE) {
+        targetStatusCell.setBackground(CLI_COMPARE_CONFIG.COLORS.DISABLE_BG);
       }
     }
     
@@ -684,9 +684,15 @@ function _addDiscrepanciesCLI(sheet, discrepancies, headers) {
  * @param {Object} sheet - Report sheet object
  * @private
  */
-function _formatReportCLI(sheet) {
+function CLI_formatReport(sheet) {
   const lastRow = sheet.getLastRow();
   const lastColumn = 8; // Number of columns in report
+  
+  // Verificar se há linhas suficientes para formatar
+  if (lastRow < 5) {
+    Logger.log("Não há linhas suficientes para formatar o relatório");
+    return;
+  }
   
   // Set column widths
   sheet.setColumnWidth(1, 150); // Type
@@ -713,7 +719,9 @@ function _formatReportCLI(sheet) {
   sheet.getRange(1, 1, lastRow, lastColumn).setVerticalAlignment("middle");
   
   // Left align text in the action column
-  sheet.getRange(5, 8, lastRow - 4, 1).setHorizontalAlignment("left");
+  if (lastRow >= 5) {
+    sheet.getRange(5, 8, lastRow - 4, 1).setHorizontalAlignment("left");
+  }
   
   // Enable text wrapping
   sheet.getRange(5, 1, lastRow - 4, lastColumn).setWrap(true);
@@ -734,7 +742,7 @@ function _formatReportCLI(sheet) {
  * @return {string} Column letter
  * @private
  */
-function _columnToLetterCLI(column) {
+function CLI_columnToLetter(column) {
   let temp, letter = '';
   while (column > 0) {
     temp = (column - 1) % 26;
@@ -751,7 +759,7 @@ function _columnToLetterCLI(column) {
  * @return {boolean} True if arrays are equal
  * @private
  */
-function _arraysEqualCLI(arr1, arr2) {
+function CLI_arraysEqual(arr1, arr2) {
   if (arr1.length !== arr2.length) return false;
   
   for (let i = 0; i < arr1.length; i++) {
