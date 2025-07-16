@@ -1,0 +1,48 @@
+{
+  "name": "shell-utils",
+  "version": "1.0.0",
+  "description": "Shell utilities library for automation and development tools",
+  "main": "shell-utils.sh",
+  "scripts": {
+    "install": "bash install.sh local",
+    "install:global": "sudo bash install.sh global",
+    "uninstall": "sudo bash install.sh uninstall",
+    "test": "bash test/test-runner.sh",
+    "package": "bash install.sh package",
+    "build": "make package",
+    "clean": "make clean"
+  },
+  "keywords": [
+    "shell",
+    "bash",
+    "utilities",
+    "automation",
+    "development",
+    "tools",
+    "library"
+  ],
+  "author": "Your Name <your.email@domain.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seu-usuario/shell-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/seu-usuario/shell-utils/issues"
+  },
+  "homepage": "https://github.com/seu-usuario/shell-utils#readme",
+  "engines": {
+    "bash": ">=4.0"
+  },
+  "os": [
+    "linux",
+    "darwin",
+    "win32"
+  ],
+  "files": [
+    "shell-utils.sh",
+    "README.md",
+    "install.sh",
+    "Makefile"
+  ]
+}

@@ -33,8 +33,8 @@ const COMPARE_CONFIG_IDE = {
  */
 function onOpenCompareIDE() {
   const ui = SpreadsheetApp.getUi();
-  ui.createMenu('Compare IDE')
-      .addItem('Comparar Status de Capabilities - IDE', 'compareCapabilitiesIDE')
+  ui.createMenu('Comparar IDE')
+      .addItem('Comparar Status de Capabilities IDE', 'compareCapabilitiesIDE')
       .addToUi();
 }
 
@@ -439,33 +439,33 @@ function _displayReportIDE(reportSheet, discrepancies, headers) {
   
   // Add title
   Logger.log("Adicionando título ao relatório");
-  _addReportTitle(reportSheet);
+  _addReportTitleIDE(reportSheet);
   
   if (discrepancies.length === 0) {
     // No discrepancies found
     Logger.log("Nenhuma discrepância encontrada, adicionando mensagem");
-    _addNoDiscrepanciesMessage(reportSheet);
+    _addNoDiscrepanciesMessageIDE(reportSheet);
     return;
   }
   
   // Add summary
   Logger.log("Adicionando resumo ao relatório");
-  _addSummary(reportSheet, discrepancies);
+  _addSummaryIDE(reportSheet, discrepancies);
   
   // Add report headers
   Logger.log("Adicionando cabeçalhos ao relatório");
-  _addReportHeaders(reportSheet);
+  _addReportHeadersIDE(reportSheet);
   
   // Add discrepancies
   Logger.log(`Adicionando ${discrepancies.length} discrepâncias ao relatório`);
-  _addDiscrepancies(reportSheet, discrepancies, headers);
+  _addDiscrepanciesIDE(reportSheet, discrepancies, headers);
   
   // Format report
   Logger.log("Formatando relatório");
-  _formatReport(reportSheet);
+  _formatReportIDE(reportSheet);
   
   // Add a link to the top of the report for easy navigation
-  _addNavigationLinks(reportSheet);
+  _addNavigationLinksIDE(reportSheet);
   
   Logger.log("Relatório gerado com sucesso");
 }
@@ -475,7 +475,7 @@ function _displayReportIDE(reportSheet, discrepancies, headers) {
  * @param {Object} sheet - Report sheet object
  * @private
  */
-function _addNavigationLinks(reportSheet) {
+function _addNavigationLinksIDE(reportSheet) {
   // Add a navigation row below the summary
   const navRow = 3;
   reportSheet.insertRowAfter(2);
@@ -493,7 +493,7 @@ function _addNavigationLinks(reportSheet) {
  * @param {Object} sheet - Report sheet object
  * @private
  */
-function _addReportTitle(sheet) {
+function _addReportTitleIDE(sheet) {
   sheet.appendRow(['']);
   const titleRange = sheet.getRange(1, 1, 1, 8);
   titleRange.merge();
@@ -512,7 +512,7 @@ function _addReportTitle(sheet) {
  * @param {Array} discrepancies - Array of discrepancies
  * @private
  */
-function _addSummary(sheet, discrepancies) {
+function _addSummaryIDE(sheet, discrepancies) {
   // Count discrepancies by type
   let statusCount = 0;
   let missingModelCount = 0;
@@ -549,7 +549,7 @@ function _addSummary(sheet, discrepancies) {
  * @param {Object} sheet - Report sheet object
  * @private
  */
-function _addNoDiscrepanciesMessage(sheet) {
+function _addNoDiscrepanciesMessageIDE(sheet) {
   sheet.appendRow(['']);
   const messageRange = sheet.getRange(2, 1, 1, 8);
   messageRange.merge();
@@ -566,7 +566,7 @@ function _addNoDiscrepanciesMessage(sheet) {
  * @param {Object} sheet - Report sheet object
  * @private
  */
-function _addReportHeaders(sheet) {
+function _addReportHeadersIDE(sheet) {
   const headers = [
     'Tipo de Divergência',
     'Provider',
@@ -595,7 +595,7 @@ function _addReportHeaders(sheet) {
  * @param {Array} headers - Headers from source sheet
  * @private
  */
-function _addDiscrepancies(sheet, discrepancies, headers) {
+function _addDiscrepanciesIDE(sheet, discrepancies, headers) {
   let rowIndex = sheet.getLastRow() + 1; // Start after headers
   
   discrepancies.forEach((discrepancy, index) => {
@@ -639,7 +639,7 @@ function _addDiscrepancies(sheet, discrepancies, headers) {
       ];
       sheet.appendRow(row);
     } else if (discrepancy.type === "status") {
-      const location = `${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME} (${_columnToLetter(discrepancy.columnIndex)}${discrepancy.sourceRowIndex}) vs ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME} (${_columnToLetter(discrepancy.columnIndex)}${discrepancy.targetRowIndex})`;
+      const location = `${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME} (${_columnToLetterIDE(discrepancy.columnIndex)}${discrepancy.sourceRowIndex}) vs ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME} (${_columnToLetterIDE(discrepancy.columnIndex)}${discrepancy.targetRowIndex})`;
       
       const action = `Alinhar o status de ${discrepancy.capability} para o modelo ${discrepancy.model}`;
       
@@ -684,7 +684,7 @@ function _addDiscrepancies(sheet, discrepancies, headers) {
  * @param {Object} sheet - Report sheet object
  * @private
  */
-function _formatReport(sheet) {
+function _formatReportIDE(sheet) {
   const lastRow = sheet.getLastRow();
   const lastColumn = 8; // Number of columns in report
   
@@ -734,7 +734,7 @@ function _formatReport(sheet) {
  * @return {string} Column letter
  * @private
  */
-function _columnToLetter(column) {
+function _columnToLetterIDE(column) {
   let temp, letter = '';
   while (column > 0) {
     temp = (column - 1) % 26;
@@ -751,7 +751,7 @@ function _columnToLetter(column) {
  * @return {boolean} True if arrays are equal
  * @private
  */
-function _arraysEqual(arr1, arr2) {
+function _arraysEqualIDE(arr1, arr2) {
   if (arr1.length !== arr2.length) return false;
   
   for (let i = 0; i < arr1.length; i++) {
