@@ -62,7 +62,7 @@ remove_directories() {
 
 get_user_confirmation() {
   local prompt_message="${1:-"Do you want to proceed? (y/n): "}"
-  print_alert "$prompt_message "
+  print_alert_question "$prompt_message "
   read -r user_choice
   if [[ "$user_choice" =~ ^[Yy]$ ]]; then
     return 0

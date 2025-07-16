@@ -243,7 +243,7 @@ function _compareDataIDE(sourceData, targetData, sourceMap, targetMap) {
   
   // Check if headers match
   Logger.log("Verificando se os cabeçalhos correspondem");
-  if (!_arraysEqual(sourceData.headers, targetData.headers)) {
+  if (!_arraysEqualIDE(sourceData.headers, targetData.headers)) {
     Logger.log("ALERTA: Os cabeçalhos das planilhas não correspondem");
     Logger.log(`Cabeçalhos fonte: ${sourceData.headers.join(', ')}`);
     Logger.log(`Cabeçalhos alvo: ${targetData.headers.join(', ')}`);
@@ -311,7 +311,7 @@ function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMa
   // Log column headers for reference
   Logger.log("Colunas de capabilities a serem comparadas:");
   for (let colIndex = 2; colIndex < sourceData.headers.length; colIndex++) {
-    Logger.log(`Coluna ${_columnToLetter(colIndex + 1)} (${colIndex + 1}): ${sourceData.headers[colIndex]}`);
+    Logger.log(`Coluna ${_columnToLetterIDE(colIndex + 1)} (${colIndex + 1}): ${sourceData.headers[colIndex]}`);
   }
   
   // Track progress
@@ -345,7 +345,7 @@ function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMa
         
         // Log column comparison based on frequency setting
         if (colIndex % COMPARE_CONFIG_IDE.LOG_FREQUENCY === 0 || colIndex === 2 || colIndex === sourceRow.length - 1) {
-          Logger.log(`  Comparando coluna ${_columnToLetter(colIndex + 1)} (${colIndex + 1}): ${capability}`);
+          Logger.log(`  Comparando coluna ${_columnToLetterIDE(colIndex + 1)} (${colIndex + 1}): ${capability}`);
         }
         
         // Compare status values (Enable/Disable)
@@ -353,7 +353,7 @@ function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMa
           statusDiscrepancies++;
           
           // Log each discrepancy found
-          Logger.log(`  DIVERGÊNCIA ENCONTRADA na coluna ${_columnToLetter(colIndex + 1)} (${colIndex + 1}) - ${capability}: ${sourceStatus} vs ${targetStatus}`);
+          Logger.log(`  DIVERGÊNCIA ENCONTRADA na coluna ${_columnToLetterIDE(colIndex + 1)} (${colIndex + 1}) - ${capability}: ${sourceStatus} vs ${targetStatus}`);
           
           discrepancies.push({
             type: "status",
