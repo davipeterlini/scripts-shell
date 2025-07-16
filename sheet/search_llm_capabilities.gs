@@ -91,9 +91,6 @@ function fetchMappedCapabilities() {
     // Process and display data
     _displayCapabilitiesData(sheet, data);
     
-    // Show success message
-    SpreadsheetApp.getUi().alert("Dados carregados com sucesso!");
-    
   } catch (error) {
     SpreadsheetApp.getUi().alert("Erro: " + error.message);
   }
