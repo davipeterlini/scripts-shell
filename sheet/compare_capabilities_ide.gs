@@ -31,10 +31,10 @@ const COMPARE_CONFIG_IDE = {
 /**
  * Creates custom menu when spreadsheet is opened
  */
-function onOpen() {
+function onOpenCompareIDE() {
   const ui = SpreadsheetApp.getUi();
-  ui.createMenu('Comparar Planilhas')
-      .addItem('Comparar Status de Capabilities', 'compareCapabilitiesIDE')
+  ui.createMenu('Compare IDE')
+      .addItem('Comparar Status de Capabilities - IDE', 'compareCapabilitiesIDE')
       .addToUi();
 }
 

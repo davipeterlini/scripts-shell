@@ -31,10 +31,10 @@ const COMPARE_CONFIG_CLI = {
 /**
  * Creates custom menu when spreadsheet is opened
  */
-function onOpen() {
+function onOpenCompareCLI() {
   const ui = SpreadsheetApp.getUi();
-  ui.createMenu('Comparar Planilhas')
-      .addItem('Comparar Status de Capabilities', 'compareCapabilitiesCLI')
+  ui.createMenu('Comparar CLI')
+      .addItem('Comparar Status de Capabilities CLI', 'compareCapabilitiesCLI')
       .addToUi();
 }
 

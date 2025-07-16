@@ -32,7 +32,7 @@ const CONFIG = {
     ROW_HEIGHT: 25,
     COLUMN_WIDTHS: {
       PROVIDER: 160,
-      MODEL: 200,
+      MODEL: 250, // Aumentado para acomodar o nome do modelo + região
       CAPABILITY: 120
     }
   }
@@ -45,11 +45,10 @@ const CONFIG = {
 /**
  * Creates custom menu when spreadsheet is opened
  */
-function onOpen() {
+function onOpenSearch() {
   const ui = SpreadsheetApp.getUi();
-  ui.createMenu('Executar Script')
+  ui.createMenu('Buscar Capabilities')
       .addItem('Search LLM Capabilities', 'fetchMappedCapabilities')
-      .addItem('Configurar Credenciais', 'configureCredentials')
       .addToUi();
 }
 
@@ -350,7 +349,8 @@ function _addDataRows(sheet, data, allCapabilities) {
     
     models.forEach(model => {
       const capabilities = model.capabilities;
-      const modelName = model.name;
+      // Adiciona a região ao nome do modelo, se disponível
+      const modelName = model.region ? `${model.name} - ${model.region}` : model.name;
 
       // Start row with provider and model
       const row = [provider, modelName];
