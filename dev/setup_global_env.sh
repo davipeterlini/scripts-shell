@@ -141,7 +141,7 @@ reload_profile() {
 setup_global_env() {
     print_header_info "Setting up global environment"
 
-    if ! confirm_action "Do you want Setting up global environment ?"; then
+    if ! get_user_confirmation "Do you want Setting up global environment ?"; then
         print_info "Skipping configuration"
         return 0
     fi

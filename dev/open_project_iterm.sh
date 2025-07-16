@@ -97,7 +97,7 @@ EOF
 open_project_iterm_main() {
     print_header_info "Starting Open Projects"
 
-    if ! confirm_action "Do you want Open Project?"; then
+    if ! get_user_confirmation "Do you want Open Project?"; then
         print_info "Skipping configuration"
         return 0
     fi

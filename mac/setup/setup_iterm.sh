@@ -89,7 +89,7 @@ configure_iterm_session_persistence() {
 setup_iterm() {
     print_header_info "Setting up iTerm2"
 
-    if ! confirm_action "Do you want Setup Iterm2 ?"; then
+    if ! get_user_confirmation "Do you want Setup Iterm2 ?"; then
         print_info "Skipping configuration"
         return 0
     fi

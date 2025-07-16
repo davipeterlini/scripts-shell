@@ -70,7 +70,7 @@ handle_linux_installation() {
 install_apps() {
     print_header "Install Apps on OS"
 
-    if ! confirm_action "Install Apps on OS?"; then
+    if ! get_user_confirmation "Install Apps on OS?"; then
         print_info "Skipping install"
         return 0
     fi

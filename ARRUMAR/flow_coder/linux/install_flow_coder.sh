@@ -196,7 +196,7 @@ install_flow_coder() {
     
     # If called from another script, install all tools automatically
     if [[ $is_direct_call -eq 0 ]]; then
-        if ! confirm_action "Do you want Install flow-coder-extension in vscode and jetbrains ?"; then
+        if ! get_user_confirmation "Do you want Install flow-coder-extension in vscode and jetbrains ?"; then
             print_info "Skipping install"
             return 0
         fi

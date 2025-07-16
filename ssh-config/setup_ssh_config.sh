@@ -267,7 +267,7 @@ _display_config_content() {
 setup_ssh_config() {
     print_header "Starting SSH Configuration for Git Services"
 
-    if ! confirm_action "Do you want Config SSH and Git Services ?"; then
+    if ! get_user_confirmation "Do you want Config SSH and Git Services ?"; then
         print_info "Skipping configuration"
         return 0
     fi

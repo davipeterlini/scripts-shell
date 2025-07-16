@@ -8,7 +8,7 @@ source "$(dirname "$0")/utils/bash_tools.sh"
 enable_touchid_sudo() {
     print_header_info "Enable Touch ID for sudo"
 
-    if ! confirm_action "Do you want to enable Touch ID for sudo?"; then
+    if ! get_user_confirmation "Do you want to enable Touch ID for sudo?"; then
         print_info "Skipping Touch ID configuration"
         return 0
     fi

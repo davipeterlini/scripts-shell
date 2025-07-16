@@ -71,7 +71,7 @@ set_symbolic_link_no_commit() {
 setup_projects() {
     print_header_info "Starting Project Configuration"
 
-    if ! confirm_action "Do you want Project Configuration ?"; then
+    if ! get_user_confirmation "Do you want Project Configuration ?"; then
         print_info "Skipping configuration"
         return 0
     fi
@@ -116,7 +116,7 @@ setup_projects() {
         print_success "Project setup completed successfully!"
         
         # Ask if user wants to continue with another environment
-        if ! confirm_action "Do you want to configure another environment?"; then
+        if ! get_user_confirmation "Do you want to configure another environment?"; then
             break
         fi
     done

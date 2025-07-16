@@ -184,7 +184,7 @@ setup_github_accounts() {
   load_env .env.personal
   load_env .env.work
 
-  if ! confirm_action "Do you want Setting up multiple GitHub accounts ?"; then
+  if ! get_user_confirmation "Do you want Setting up multiple GitHub accounts ?"; then
     print_info "Skipping configuration"
     return 0
   fi

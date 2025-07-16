@@ -76,13 +76,3 @@ cleanup_temp_files() {
     rm -rf "$temp_dir"
 }
 
-confirm_action() {
-  local prompt="$1"
-  local choice
-  
-  read -p "$prompt (y/n): " choice
-  case "$choice" in
-    [Yy]* ) return 0 ;;
-    * ) return 1 ;;
-  esac
-}

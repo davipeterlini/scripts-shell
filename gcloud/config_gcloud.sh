@@ -99,7 +99,7 @@ configure_region() {
 config_gcloud() {
   print_header "Starting Google Cloud SDK configuration..."
 
-  if ! confirm_action "Do you want configure Google Cloud tools ?"; then
+  if ! get_user_confirmation "Do you want configure Google Cloud tools ?"; then
     print_info "Skipping configuration"
     return 0
   fi

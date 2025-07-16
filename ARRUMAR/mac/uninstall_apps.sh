@@ -35,7 +35,7 @@ display_menu() {
 uninstall_brew_package() {
     local app_name=$1
     if brew list "$app_name" &>/dev/null; then
-        if confirm_action "Do you want to uninstall $app_name using Homebrew?"; then
+        if get_user_confirmation "Do you want to uninstall $app_name using Homebrew?"; then
             print_info "Uninstalling $app_name using Homebrew..."
             brew uninstall "$app_name"
             print_success "$app_name uninstalled successfully."
@@ -51,7 +51,7 @@ uninstall_brew_package() {
 remove_app_bundle() {
     local app_name=$1
     if [ -d "/Applications/$app_name.app" ]; then
-        if confirm_action "Do you want to remove $app_name.app from /Applications?"; then
+        if get_user_confirmation "Do you want to remove $app_name.app from /Applications?"; then
             print_info "Removing $app_name.app..."
             sudo rm -rf "/Applications/$app_name.app"
             print_success "$app_name.app removed successfully."
@@ -68,7 +68,7 @@ remove_pkg_installation() {
     local app_name=$1
     local pkg_receipt=$(pkgutil --pkgs | grep -i "$app_name")
     if [ -n "$pkg_receipt" ]; then
-        if confirm_action "Do you want to remove the PKG installation for $app_name?"; then
+        if get_user_confirmation "Do you want to remove the PKG installation for $app_name?"; then
             print_info "Removing PKG installation for $app_name..."
             sudo pkgutil --forget "$pkg_receipt"
             print_success "PKG installation for $app_name removed successfully."
@@ -84,7 +84,7 @@ remove_pkg_installation() {
 remove_sh_installation() {
     local app_name=$1
     if [ -f "/usr/local/bin/$app_name" ]; then
-        if confirm_action "Do you want to remove the SH installation for $app_name from /usr/local/bin?"; then
+        if get_user_confirmation "Do you want to remove the SH installation for $app_name from /usr/local/bin?"; then
             print_info "Removing SH installation for $app_name..."
             sudo rm -f "/usr/local/bin/$app_name"
             print_success "SH installation for $app_name removed successfully."
@@ -100,7 +100,7 @@ remove_sh_installation() {
 remove_zip_installation() {
     local app_name=$1
     if [ -d "/Applications/$app_name" ]; then
-        if confirm_action "Do you want to remove the ZIP installation for $app_name from /Applications?"; then
+        if get_user_confirmation "Do you want to remove the ZIP installation for $app_name from /Applications?"; then
             print_info "Removing ZIP installation for $app_name..."
             sudo rm -rf "/Applications/$app_name"
             print_success "ZIP installation for $app_name removed successfully."
@@ -131,7 +131,7 @@ uninstall_app() {
         print_alert "Unable to determine installation method for $app_name. Skipping."
     fi
 
-    if confirm_action "Do you want to perform a final cleanup for any remaining files of $app_name?"; then
+    if get_user_confirmation "Do you want to perform a final cleanup for any remaining files of $app_name?"; then
         print_info "Cleaning up remaining files for $app_name..."
         sudo find /Applications /Library ~/Library -name "*$app_name*" -print0 | xargs -0 sudo rm -rf
         print_success "Final cleanup completed for $app_name."
@@ -167,7 +167,7 @@ main() {
         if [ "$choice" -eq $((${#APPS_TO_UNINSTALL[@]}+1)) ]; then
             # Uninstall all apps one by one
             for app in "${APPS_TO_UNINSTALL[@]}"; do
-                if confirm_action "Do you want to process the uninstallation of $app?"; then
+                if get_user_confirmation "Do you want to process the uninstallation of $app?"; then
                     uninstall_app "$app"
                 else
                     print_alert "Skipping uninstallation of $app."

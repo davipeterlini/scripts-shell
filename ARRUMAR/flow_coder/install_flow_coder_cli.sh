@@ -83,7 +83,7 @@ install_flow_coder() {
 install_flow_coder_cli() {
     print_header_info "Starting Flow Coder installation..."
 
-    if ! confirm_action "Do you want Setting up global environment ?"; then
+    if ! get_user_confirmation "Do you want Setting up global environment ?"; then
         print_info "Skipping configuration"
         return 0
     fi

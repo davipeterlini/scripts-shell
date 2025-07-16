@@ -112,7 +112,7 @@ install_ai_tools() {
     print_header_info "AI Tools Installation"
     print_info "Starting installation of AI development tools"
 
-    if ! confirm_action "Do you want Setting up global environment ?"; then
+    if ! get_user_confirmation "Do you want Setting up global environment ?"; then
         print_info "Skipping configuration"
         return 0
     fi

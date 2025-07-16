@@ -35,7 +35,7 @@ download_file() {
     fi
 }
 
-confirm_action() {
+get_user_confirmation() {
   local prompt="$1"
   local choice
   

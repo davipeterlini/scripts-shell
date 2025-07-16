@@ -212,7 +212,7 @@ test_flow_coder() {
     
     # If called from another script, run all tests automatically
     if [[ $is_direct_call -eq 0 ]]; then
-        if ! confirm_action "Do you want Flow Coder extension test ?"; then
+        if ! get_user_confirmation "Do you want Flow Coder extension test ?"; then
             print_info "Skipping install"
             return 0
         fi

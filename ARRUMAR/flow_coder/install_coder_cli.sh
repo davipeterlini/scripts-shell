@@ -177,7 +177,7 @@ check_coder() {
 install_pyenv() {
     print_header_info "Installing pyenv"
     
-    if ! confirm_action "Do you want to install pyenv?"; then
+    if ! get_user_confirmation "Do you want to install pyenv?"; then
         print_alert "pyenv installation skipped by user"
         exit 1
     fi
@@ -239,7 +239,7 @@ install_pyenv() {
 install_python() {
     print_header_info "Installing Python $PYTHON_VERSION with pyenv"
     
-    if ! confirm_action "Do you want to install Python $PYTHON_VERSION?"; then
+    if ! get_user_confirmation "Do you want to install Python $PYTHON_VERSION?"; then
         print_alert "Python installation skipped by user"
         exit 1
     fi
@@ -280,7 +280,7 @@ install_python() {
 clean_pipx() {
     print_info "Cleaning up existing pipx installation..."
     
-    if ! confirm_action "Do you want to clean up the existing pipx installation?"; then
+    if ! get_user_confirmation "Do you want to clean up the existing pipx installation?"; then
         print_alert "pipx cleanup skipped by user"
         return 1
     fi
@@ -318,7 +318,7 @@ clean_pipx() {
 install_pipx() {
     print_header_info "Installing pipx with Python $PYTHON_VERSION"
     
-    if ! confirm_action "Do you want to install pipx?"; then
+    if ! get_user_confirmation "Do you want to install pipx?"; then
         print_alert "pipx installation skipped by user"
         exit 1
     fi
@@ -371,7 +371,7 @@ install_pipx() {
 install_coder() {
     print_header_info "Installing Coder CLI"
     
-    if ! confirm_action "Do you want to install Coder CLI?"; then
+    if ! get_user_confirmation "Do you want to install Coder CLI?"; then
         print_alert "Coder CLI installation skipped by user"
         exit 1
     fi
@@ -427,7 +427,7 @@ configure_coder() {
     print_header_info "Configuring Coder CLI"
     
     # Ask for confirmation
-    if ! confirm_action "Do you want to configure Coder CLI?"; then
+    if ! get_user_confirmation "Do you want to configure Coder CLI?"; then
         print_alert "Coder CLI configuration skipped by user"
         return 0
     fi
@@ -461,7 +461,7 @@ configure_coder() {
     print_alert "Coder CLI authentication required"
     
     # Ask for confirmation before authentication
-    if ! confirm_action "Do you want to authenticate Coder CLI?"; then
+    if ! get_user_confirmation "Do you want to authenticate Coder CLI?"; then
         print_alert "Coder CLI authentication skipped by user"
         return 0
     fi
@@ -512,7 +512,7 @@ verify_installation() {
 main() {
     print_header "Coder CLI Installation Script"
     
-    if ! confirm_action "This script will install and configure pyenv, Python $PYTHON_VERSION, pipx, and Coder CLI. Continue?"; then
+    if ! get_user_confirmation "This script will install and configure pyenv, Python $PYTHON_VERSION, pipx, and Coder CLI. Continue?"; then
         print_alert "Installation cancelled by user"
         exit 0
     fi

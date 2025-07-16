@@ -17,7 +17,7 @@ PYTHON_VERSION="3.12.9"
 uninstall_coder() {
     print_header_info "Uninstalling Coder CLI"
     
-    if ! confirm_action "Do you want to uninstall Coder CLI?"; then
+    if ! get_user_confirmation "Do you want to uninstall Coder CLI?"; then
         print_alert "Coder CLI uninstallation skipped by user"
         return 0
     fi
@@ -61,7 +61,7 @@ uninstall_coder() {
 uninstall_pipx() {
     print_header_info "Uninstalling pipx"
     
-    if ! confirm_action "Do you want to uninstall pipx?"; then
+    if ! get_user_confirmation "Do you want to uninstall pipx?"; then
         print_alert "pipx uninstallation skipped by user"
         return 0
     fi
@@ -109,7 +109,7 @@ uninstall_pipx() {
 uninstall_python() {
     print_header_info "Uninstalling Python $PYTHON_VERSION"
     
-    if ! confirm_action "Do you want to uninstall Python $PYTHON_VERSION?"; then
+    if ! get_user_confirmation "Do you want to uninstall Python $PYTHON_VERSION?"; then
         print_alert "Python uninstallation skipped by user"
         return 0
     fi
@@ -147,7 +147,7 @@ uninstall_python() {
 uninstall_pyenv() {
     print_header_info "Uninstalling pyenv"
     
-    if ! confirm_action "Do you want to uninstall pyenv?"; then
+    if ! get_user_confirmation "Do you want to uninstall pyenv?"; then
         print_alert "pyenv uninstallation skipped by user"
         return 0
     fi
@@ -186,7 +186,7 @@ uninstall_pyenv() {
 clean_local_bin() {
     print_header_info "Cleaning up ~/.local/bin directory"
     
-    if ! confirm_action "Do you want to clean up the ~/.local/bin directory?"; then
+    if ! get_user_confirmation "Do you want to clean up the ~/.local/bin directory?"; then
         print_alert "~/.local/bin cleanup skipped by user"
         return 0
     fi
@@ -202,7 +202,7 @@ clean_local_bin() {
     ls -la "$HOME/.local/bin"
     
     # Ask for confirmation to remove specific files
-    if confirm_action "Do you want to remove all files in ~/.local/bin?"; then
+    if get_user_confirmation "Do you want to remove all files in ~/.local/bin?"; then
         print_info "Removing all files in ~/.local/bin..."
         rm -rf "$HOME/.local/bin"/*
         print_success "All files in ~/.local/bin removed"
@@ -261,7 +261,7 @@ verify_uninstallation() {
 main() {
     print_header "Coder CLI Uninstallation Script"
     
-    if ! confirm_action "This script will uninstall Coder CLI, pipx, Python $PYTHON_VERSION, and pyenv. Continue?"; then
+    if ! get_user_confirmation "This script will uninstall Coder CLI, pipx, Python $PYTHON_VERSION, and pyenv. Continue?"; then
         print_alert "Uninstallation cancelled by user"
         exit 0
     fi

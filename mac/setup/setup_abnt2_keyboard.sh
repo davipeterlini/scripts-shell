@@ -207,7 +207,7 @@ setup_abnt2_keyboard() {
 setup_abnt2_keyboard() {
     print_header_info "Configuração do Teclado ABNT2 para Mac OS X"
 
-    if ! confirm_action "Do you want Config Keyboard for Brazilian ABNT2?"; then
+    if ! get_user_confirmation "Do you want Config Keyboard for Brazilian ABNT2?"; then
         print_info "Skipping configuration"
         return 0
     fi

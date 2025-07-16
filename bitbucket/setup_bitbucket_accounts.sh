@@ -55,7 +55,7 @@ _update_ssh_config() {
   print_info "Checking configuration for bitbucket.org-${label}..."
   
   if grep -q "Host bitbucket.org-${label}" "$ssh_config_path"; then
-    if ! confirm_action "Configuration for bitbucket.org-${label} already exists. Do you want to overwrite it?"; then
+    if ! get_user_confirmation "Configuration for bitbucket.org-${label} already exists. Do you want to overwrite it?"; then
       print_info "Skipping configuration for bitbucket.org-${label}"
       return 0
     fi
@@ -104,7 +104,7 @@ __handle_bitbucket_auth() {
     print_info "BITBUCKET_APP_PASSWORD environment variable detected."
     print_info "To use a different App Password, you need to clear this variable."
     
-    if confirm_action "Do you want to clear BITBUCKET_APP_PASSWORD and enter a new one?"; then
+    if get_user_confirmation "Do you want to clear BITBUCKET_APP_PASSWORD and enter a new one?"; then
       unset BITBUCKET_APP_PASSWORD
       print_success "BITBUCKET_APP_PASSWORD has been cleared. You will be prompted for a new App Password."
     else
@@ -392,7 +392,7 @@ setup_bitbucket_accounts() {
   load_env .env.personal
   load_env .env.work
 
-  if ! confirm_action "Do you want to set up multiple Bitbucket accounts?"; then
+  if ! get_user_confirmation "Do you want to set up multiple Bitbucket accounts?"; then
     print_info "Skipping configuration"
     return 0
   fi
@@ -410,7 +410,7 @@ setup_bitbucket_accounts() {
     print_success "Setup completed for $label. Please add the generated SSH keys to your Bitbucket account."
 
     # Ask if the user wants to configure another Bitbucket account
-    if ! confirm_action "Do you want to configure another Bitbucket account?"; then
+    if ! get_user_confirmation "Do you want to configure another Bitbucket account?"; then
       break
     fi
   done

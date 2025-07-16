@@ -76,7 +76,7 @@ install_gsutil() {
 install_gcloud_tools() {
   print_header "Checking and installing Google Cloud tools..."
 
-  if ! confirm_action "Do you want installing Google Cloud tools ?"; then
+  if ! get_user_confirmation "Do you want installing Google Cloud tools ?"; then
     print_info "Skipping install"
     return 0
   fi

@@ -316,7 +316,7 @@ install_ides() {
 
     # If called from another script, install all tools automatically
     if [[ $is_direct_call -eq 0 ]]; then
-        if ! confirm_action "Do you want to install VS Code, IntelliJ IDEA Ultimate and IntelliJ IDEA Community Edition?"; then
+        if ! get_user_confirmation "Do you want to install VS Code, IntelliJ IDEA Ultimate and IntelliJ IDEA Community Edition?"; then
             print_info "Skipping installation"
             return 0
         fi

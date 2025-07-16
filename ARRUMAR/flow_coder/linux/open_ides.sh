@@ -220,7 +220,7 @@ open_ides() {
 
     # If called from another script, install all tools automatically
     if [[ $is_direct_call -eq 0 ]]; then
-        if ! confirm_action "Do you want Open Vscode and Jetbrains ?"; then
+        if ! get_user_confirmation "Do you want Open Vscode and Jetbrains ?"; then
             print_info "Skipping install"
             return 0
         fi
