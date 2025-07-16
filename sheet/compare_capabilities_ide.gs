@@ -445,7 +445,7 @@ function _displayReportIDE(reportSheet, discrepancies, headers) {
     // No discrepancies found
     Logger.log("Nenhuma discrepância encontrada, adicionando mensagem");
     _addNoDiscrepanciesMessageIDE(reportSheet);
-    return;
+    return; // Importante: retornar aqui para evitar processamento adicional
   }
   
   // Add summary
@@ -688,6 +688,12 @@ function _formatReportIDE(sheet) {
   const lastRow = sheet.getLastRow();
   const lastColumn = 8; // Number of columns in report
   
+  // Verificar se há linhas suficientes para formatar
+  if (lastRow < 5) {
+    Logger.log("Não há linhas suficientes para formatar o relatório");
+    return;
+  }
+  
   // Set column widths
   sheet.setColumnWidth(1, 150); // Type
   sheet.setColumnWidth(2, 120); // Provider
@@ -713,7 +719,9 @@ function _formatReportIDE(sheet) {
   sheet.getRange(1, 1, lastRow, lastColumn).setVerticalAlignment("middle");
   
   // Left align text in the action column
-  sheet.getRange(5, 8, lastRow - 4, 1).setHorizontalAlignment("left");
+  if (lastRow >= 5) {
+    sheet.getRange(5, 8, lastRow - 4, 1).setHorizontalAlignment("left");
+  }
   
   // Enable text wrapping
   sheet.getRange(5, 1, lastRow - 4, lastColumn).setWrap(true);
