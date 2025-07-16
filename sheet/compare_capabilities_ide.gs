@@ -148,13 +148,6 @@ function compareCapabilities() {
     Logger.log(`Hora de término: ${new Date().toLocaleString()}`);
     Logger.log(message);
     
-    // Show completion message with limited details (to avoid UI freezing with too much text)
-    const shortMessage = discrepancies.length > 0 
-      ? `Comparação concluída. Foram encontradas ${discrepancies.length} divergências de status. Veja os detalhes na planilha ${COMPARE_CONFIG.REPORT_SHEET_NAME}.` 
-      : "Comparação concluída. Nenhuma divergência de status encontrada!";
-    
-    SpreadsheetApp.getUi().alert("Resultado da Comparação", shortMessage, SpreadsheetApp.getUi().ButtonSet.OK);
-    
   } catch (error) {
     Logger.log(`ERRO: ${error.message}`);
     Logger.log(error.stack);
