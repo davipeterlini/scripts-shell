@@ -121,7 +121,6 @@ _save_vscode_keybindings() {
     fi
 }
 
-
 setup_vscode() {
     print_header_info "Setup VS Code Configuration"
 
