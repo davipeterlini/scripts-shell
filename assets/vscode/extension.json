@@ -1,0 +1,28 @@
+VSCODE_EXTENSIONS=(
+    #"rangav.vscode-thunder-client"
+    #"ms-azuretools.vscode-docker"
+    "mikestead.dotenv"
+    "gerane.Theme-Dracula"
+    "MS-CEINTL.vscode-language-pack-pt-BR"
+    "alphabotsec.vscode-eclipse-keybindings"
+    "moshfeu.compare-folders"
+    "Gruntfuggly.todo-tree"
+    "naumovs.color-highlight"   
+    "Noctarya.typescript-web-development-extension-pack"
+    "vitest.explorer"
+    "Orta.vscode-jest"
+    "firsttris.vscode-jest-runner"
+    #"ms-playwright.playwright"
+    "GitHub.copilot"
+    "GitHub.copilot-labs"
+    "PrismaCloud.prisma-cloud"
+    "eamodio.gitlens" 
+    # Lints and Formmats 
+    "esbenp.prettier-vscode"
+    "dbaeumer.vscode-eslint"
+    "mervin.markdown-formatter"
+    "yoavbls.pretty-ts-errors"
+    # CI&T
+    "prompt-flow.prompt-flow"
+    "cit-flow-coder-assistant.cit-flow-coder-assistant"
+)

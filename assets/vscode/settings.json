@@ -1,13 +1,65 @@
 {
   "files.autoSave": "onFocusChange",
-  "terminal.integrated.persistentSessionReviveProcess": "onExit",
+  // Shell format     
+  "[shellscript]": {
+      "editor.defaultFormatter": "foxundermoon.shell-format",
+      "editor.formatOnSave": true,
+      "editor.tabSize": 2,
+      "editor.insertSpaces": true
+  },
+  "shellformat.path": "/opt/homebrew/bin/shfmt",
+    "shellformat.flag": "-i 2 -ci -bn -sr",
+    "shellformat.effectLanguages": [
+        "shellscript",
+        "dockerfile",
+        "dotenv",
+        "hosts",
+        "jvmoptions",
+        "ignore",
+        "gitignore",
+        "properties",
+        "spring-boot-properties",
+        "azcli"
+    ],
+  // Json format - with comments
+  "[json]": {
+      "editor.defaultFormatter": "vscode.json-language-features",
+      "editor.formatOnSave": true,
+      "editor.tabSize": 2,
+      "editor.insertSpaces": true,
+      "editor.quickSuggestions": {
+          "strings": true
+      },
+      "editor.suggest.insertMode": "replace"
+  },
+  "[jsonc]": {
+      "editor.defaultFormatter": "vscode.json-language-features",
+      "editor.formatOnSave": true,
+      "editor.tabSize": 2,
+      "editor.insertSpaces": true,
+      "editor.quickSuggestions": {
+          "strings": true
+      },
+      "editor.suggest.insertMode": "replace"
+  },
+  "json.format.keepLines": false,
+  "json.validate.enable": true,
+  "json.schemas": [],
+  // Opcional: Ordenar propriedades JSON alfabeticamente
+  "json.format.enable": true,
+  // YAML format
+  "[yaml]": {
+      "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  //"terminal.integrated.persistentSessionReviveProcess": "onExit",
+  "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
   "terminal.integrated.tabs.enabled": true,
+  "terminal.integrated.enablePersistentSessions": true,
+  "terminal.integrated.persistentSessionRestore": true,
   "terminal.integrated.tabs.location": "left",
   "terminal.integrated.splitCwd": "inherited",
   "terminal.integrated.cwd": "${workspaceFolder}",
   "terminal.integrated.persistentSessionScrollback": 1000,
-  "terminal.integrated.persistentSessionRestore": true,
-  "terminal.integrated.enablePersistentSessions": true,
   "terminal.integrated.tabs.defaultLocation": "bottom",
   "terminal.integrated.defaultProfile.windows": "PowerShell",
   "terminal.integrated.defaultProfile.linux": "bash",

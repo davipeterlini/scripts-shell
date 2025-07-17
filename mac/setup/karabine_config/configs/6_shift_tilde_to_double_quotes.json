@@ -1,0 +1,25 @@
+{
+  "title": "Shift + ~ to double quotes",
+  "rules": [
+    {
+      "description": "Change shift + ~ to double quotes",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "grave_accent_and_tilde",
+            "modifiers": {
+              "mandatory": ["shift"]
+            }
+          },
+          "to": [
+            {
+              "key_code": "quote",
+              "modifiers": ["shift"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

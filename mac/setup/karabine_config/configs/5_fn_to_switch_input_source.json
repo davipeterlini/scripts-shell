@@ -1,0 +1,22 @@
+{
+  "title": "Fn key to switch input source",
+  "rules": [
+    {
+      "description": "Change fn key to switch input source",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "fn"
+          },
+          "to": [
+            {
+              "key_code": "spacebar",
+              "modifiers": ["right_control"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

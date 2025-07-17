@@ -1,0 +1,21 @@
+{
+  "title": "Right Command to Right Control",
+  "rules": [
+    {
+      "description": "Change right_command to right_control",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "right_command"
+          },
+          "to": [
+            {
+              "key_code": "right_control"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Left Command to Left Control",
+  "rules": [
+    {
+      "description": "Change left_command to left_control",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "left_command"
+          },
+          "to": [
+            {
+              "key_code": "left_control"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

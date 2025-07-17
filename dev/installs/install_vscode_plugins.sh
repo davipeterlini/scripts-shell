@@ -1,13 +1,9 @@
 #!/bin/bash
 
-# Load environment variables and utility functions
-source "$(dirname "$0")/../utils/load_env.sh"
-load_env
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/load_env.sh"
+source "$(dirname "$0")/save_vscode_settings.sh"
 
-# Load colors message
-source "$(dirname "$0")/../utils/colors_message.sh"
-
-# Function to install VSCode extensions
 install_vscode_extensions() {
     print_info "Installing VSCode extensions..."
 
