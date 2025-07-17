@@ -41,8 +41,10 @@ setup_dev() {
 
     setup_vscode
 
+    # TODO - mudar para setup de ferramentas de ia
     install_ai_tools
 
+    # TODO - Mudar para setup do coder cli
     install_flow_coder_cli
 
     #install_flow_coder_ide
