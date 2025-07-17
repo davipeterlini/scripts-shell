@@ -1,4 +1,13 @@
 /**
+ * Email recipients for comparison reports
+ */
+const REPORT_RECIPIENTS = [
+  'davi.peterlini@ciandt.com',
+  'laisbonafe@ciandt.com',
+  'arysanchez@ciandt.com'
+];
+
+/**
  * Creates triggers to check for comparison reports and send emails
  */
 function createSendComparisonReportsTriggers() {
@@ -23,18 +32,13 @@ function createSendComparisonReportsTriggers() {
  */
 function sendComparisonReports() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  const recipients = [
-    'davi.peterlin@ciandt.com',
-    'laisbonafe@ciandt.com',
-    'arysanchez@ciandt.com'
-  ];
   
   // Check for CLI Report
   const cliReportSheet = _findSheet(spreadsheet, 'Comparison-CLI-Report');
   if (cliReportSheet) {
     const cliDivergences = _extractDivergences(cliReportSheet);
     if (cliDivergences.length > 0) {
-      _sendDivergenceEmail(recipients, 'CLI Comparison Report Divergences', cliDivergences);
+      _sendDivergenceEmail(REPORT_RECIPIENTS, 'CLI Comparison Report Divergences', cliDivergences);
       Logger.log('CLI report email sent');
     } else {
       Logger.log('No CLI divergences found');
@@ -48,7 +52,7 @@ function sendComparisonReports() {
   if (ideReportSheet) {
     const ideDivergences = _extractDivergences(ideReportSheet);
     if (ideDivergences.length > 0) {
-      _sendDivergenceEmail(recipients, 'IDE Comparison Report Divergences', ideDivergences);
+      _sendDivergenceEmail(REPORT_RECIPIENTS, 'IDE Comparison Report Divergences', ideDivergences);
       Logger.log('IDE report email sent');
     } else {
       Logger.log('No IDE divergences found');
