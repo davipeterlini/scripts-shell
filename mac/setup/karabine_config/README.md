@@ -37,9 +37,43 @@ O script permitirá que você escolha quais configurações deseja instalar:
 - Digite `a` para instalar todas as configurações
 - Digite `q` para sair sem instalar
 
+### Validação
+
+Se você encontrar problemas durante a instalação, pode validar os arquivos de configuração usando:
+```bash
+./validate_configs.sh
+```
+
+Este script verificará se todos os arquivos de configuração estão no formato correto e possuem os campos necessários.
+
 ## Personalização
 
 Você pode editar os arquivos JSON na pasta `configs/` para personalizar as configurações conforme suas necessidades.
+
+Cada arquivo de configuração deve seguir este formato:
+```json
+{
+  "title": "Nome da Configuração",
+  "rules": [
+    {
+      "description": "Descrição da regra",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "tecla_origem"
+          },
+          "to": [
+            {
+              "key_code": "tecla_destino"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
 
 ## Observações
 

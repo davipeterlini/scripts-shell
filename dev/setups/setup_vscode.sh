@@ -8,7 +8,54 @@ source "$(dirname "$0")/utils/load_env.sh"
 source "$(dirname "$0")/utils/detect_os.sh"
 source "$(dirname "$0")/save_vscode_settings.sh"
 
-save_vscode_settings() {
+
+# Function to read extensions from assets/vscode/extension-list file
+_read_vscode_extensions() {
+    local extension_file="$(dirname "$0")/../../assets/vscode/extension-list"
+    
+    if [ ! -f "$extension_file" ]; then
+        print_error "Extension list file not found at: $extension_file"
+        return 1
+    fi
+    
+    print_info "Reading VSCode extensions from $extension_file"
+    
+    # Initialize empty array for extensions
+    VSCODE_EXTENSIONS=()
+    
+    # Read the file line by line
+    while IFS= read -r line || [ -n "$line" ]; do
+        # Skip empty lines and comments
+        if [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]]; then
+            continue
+        fi
+        
+        # Extract extension name from the line (remove quotes, spaces, and comments)
+        if [[ "$line" =~ \"([^\"]+)\" ]]; then
+            extension="${BASH_REMATCH[1]}"
+            # Skip commented out extensions
+            if [[ ! "$line" =~ ^[[:space:]]*# ]]; then
+                VSCODE_EXTENSIONS+=("$extension")
+            fi
+        fi
+    done < "$extension_file"
+    
+    print_info "Found ${#VSCODE_EXTENSIONS[@]} extensions to install"
+    export VSCODE_EXTENSIONS
+}
+
+_install_vscode_extensions() {
+    print_info "Installing VSCode extensions..."
+
+    for extension in "${VSCODE_EXTENSIONS[@]}"; do
+        print_info "Installing extension: $extension"
+        code --install-extension "$extension"
+    done
+
+    print_success "VSCode extensions installed successfully."
+}
+
+_save_vscode_settings() {
     local os=$(detect_os)
     local settings_path
     local source_settings="../.vscode/settings.json"
@@ -41,11 +88,15 @@ save_vscode_settings() {
     fi
 }
 
+
 setup_vscode() {
     print_header_info "Setup VS Code Configuration"
 
-    print_info "Install Extension in VSCode..."
-    install_vscode_extensions 
+    print_info "Reading VSCode extensions list..."
+    _read_vscode_extensions
+    
+    print_info "Installing VSCode extensions..."
+    _install_vscode_extensions 
 
     print_info "Saving VSCode global settings..."
     save_vscode_settings
@@ -53,9 +104,7 @@ setup_vscode() {
     print_info "Setting up VSCode configurations..."
     setup_vscode_config
 
-
-
-    echo "VSCode setup completed successfully."
+    print_success "VSCode setup completed successfully."
 }
 
 # Run the function if the script is executed directly
