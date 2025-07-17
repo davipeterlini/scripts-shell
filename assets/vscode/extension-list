@@ -24,5 +24,5 @@ VSCODE_EXTENSIONS=(
     "yoavbls.pretty-ts-errors"
     # CI&T
     "prompt-flow.prompt-flow"
-    "cit-flow-coder-assistant.cit-flow-coder-assistant"
+    #"cit-flow-coder-assistant.cit-flow-coder-assistant"
 )

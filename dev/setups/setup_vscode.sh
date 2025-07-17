@@ -41,42 +41,12 @@ save_vscode_settings() {
     fi
 }
 
-# Function to set up VSCode configurations
-setup_vscode_config() {
-    local vscode_settings_dir="$HOME/.config/Code/User"
-    local vscode_settings_file="$vscode_settings_dir/settings.json"
-    local vscode_extensions_file="$vscode_settings_dir/extensions.json"
-
-    # Create VSCode settings directory if it doesn't exist
-    mkdir -p "$vscode_settings_dir"
-
-    # Write VSCode settings
-    cat > "$vscode_settings_file" <<EOL
-{
-    "terminal.integrated.tabs.enabled": true,
-    "terminal.integrated.tabs.location": "left",
-    "terminal.integrated.splitCwd": "inherited",
-    "terminal.integrated.cwd": "\${workspaceFolder}",
-    "terminal.integrated.persistentSessionScrollback": true,
-    "terminal.integrated.persistentSessionRestore": true,
-    "terminal.integrated.enablePersistentSessions": true
-}
-EOL
-
-# TODO - precisa arrumar isso para pegar da forma correta
-    # Write VSCode extensions recommendations
-vscode_extensions_file=".vscode/extensions.json"
-    cat > "$vscode_extensions_file" <<EOL
-{
-    "recommendations": [
-        $(echo $VSCODE_EXTENSIONS | sed 's/,/","/g' | sed 's/^/"/' | sed 's/$/"/')
-    ]
-}
-EOL
-}
-
-# Main script execution
 setup_vscode() {
+    print_header_info "Setup VS Code Configuration"
+
+    print_info "Install Extension in VSCode..."
+    install_vscode_extensions 
+
     print_info "Saving VSCode global settings..."
     save_vscode_settings
 

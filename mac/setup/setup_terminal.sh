@@ -130,6 +130,7 @@ add_custom_prompt() {
     print_header_info "Adding custom prompt to .zshrc..."
     if ! grep -q "autoload -Uz vcs_info" ~/.zshrc; then
         echo "" >> ~/.zshrc
+        # TODO - verifique se isso está funcionando corretamente
         cat "$(dirname "$0")/.zshrc.example" >> ~/.zshrc
         print_success "Custom prompt added to .zshrc"
     else
