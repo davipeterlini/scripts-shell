@@ -19,12 +19,23 @@ function createSendComparisonReportsTriggers() {
     }
   }
 
-  // Create trigger to run once a day at 11 AM
+  // Create trigger for 10:30 AM daily
   ScriptApp.newTrigger('sendComparisonReports')
     .timeBased()
-    .atHour(11)
+    .atHour(10)
+    .nearMinute(30)
     .everyDays(1)
     .create();
+
+  // Create trigger for 3:30 PM daily
+  ScriptApp.newTrigger('sendComparisonReports')
+    .timeBased()
+    .atHour(15)
+    .nearMinute(30)
+    .everyDays(1)
+    .create();
+    
+  Logger.log('Triggers created for 10:30 AM and 3:30 PM daily');
 }
 
 /**
