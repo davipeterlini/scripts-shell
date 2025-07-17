@@ -88,6 +88,39 @@ _save_vscode_settings() {
     fi
 }
 
+_save_vscode_keybindings() {
+    local os=$(detect_os)
+    local keybindings_path
+    local source_keybindings="$(dirname "$0")/../../assets/vscode/keybindings.json"
+
+    case "$os" in
+        macOS)
+            keybindings_path="$HOME/Library/Application Support/Code/User/keybindings.json"
+            ;;
+        Linux)
+            keybindings_path="$HOME/.config/Code/User/keybindings.json"
+            ;;
+        Windows)
+            keybindings_path="$APPDATA/Code/User/keybindings.json"
+            ;;
+        *)
+            print_error "Unsupported operating system."
+            return 1
+            ;;
+    esac
+
+    if [ -f "$source_keybindings" ]; then
+        print_info "Saving VSCode keybindings.json to OS-specific location..."
+        mkdir -p "$(dirname "$keybindings_path")"
+        cp "$source_keybindings" "$keybindings_path"
+        print_success "Keybindings saved to: $keybindings_path"
+    else
+        print_alert "Source keybindings.json not found at: $source_keybindings"
+        print_error "Please make sure the file exists in the assets/vscode folder."
+        return 1
+    fi
+}
+
 
 setup_vscode() {
     print_header_info "Setup VS Code Configuration"
@@ -99,7 +132,10 @@ setup_vscode() {
     _install_vscode_extensions 
 
     print_info "Saving VSCode global settings..."
-    save_vscode_settings
+    _save_vscode_settings
+
+    print_info "Saving VSCode keybindings..."
+    _save_vscode_keybindings
 
     print_info "Setting up VSCode configurations..."
     setup_vscode_config
