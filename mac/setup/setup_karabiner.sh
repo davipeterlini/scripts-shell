@@ -133,7 +133,6 @@ _restart_karabiner() {
         # TODO - Reiniciar o karabine 
         #udo launchctl unload ~/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist
         #sudo launchctl load ~/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist
-        if pkil
         # Método 2: Tentar encerrar e reiniciar o aplicativo
         if pkill -f "karabiner"; then
             print_info "Processos do Karabiner encerrados. Reiniciando o aplicativo..."
