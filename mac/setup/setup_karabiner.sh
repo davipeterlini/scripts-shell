@@ -204,6 +204,7 @@ _remove_rule() {
 # Função genérica para aplicar uma configuração a partir de um arquivo JSON
 _apply_config_from_file() {
     local config_file_path="$1"
+    local auto_apply="$2"  # Se definido como "yes", aplica automaticamente sem perguntar
     local karabiner_config_file="$HOME/.config/karabiner/karabiner.json"
     
     # Verificar se o arquivo de configuração existe
@@ -222,7 +223,7 @@ _apply_config_from_file() {
     # Verificar se a regra já existe
     if _rule_exists "$karabiner_config_file" "$description"; then
         print_alert "A regra '$description' já existe na configuração."
-        if get_user_confirmation "Deseja sobrescrever a regra existente?"; then
+        if [ "$auto_apply" = "yes" ] || get_user_confirmation "Deseja sobrescrever a regra existente?"; then
             print_info "Removendo regra existente..."
             _remove_rule "$karabiner_config_file" "$description"
         else
@@ -231,7 +232,7 @@ _apply_config_from_file() {
         fi
     fi
     
-    if get_user_confirmation "Deseja aplicar esta configuração?"; then
+    if [ "$auto_apply" = "yes" ] || get_user_confirmation "Deseja aplicar esta configuração?"; then
         local temp_file=$(mktemp)
         print_info "Adicionando regra: $description"
         
@@ -289,16 +290,20 @@ list_available_configs() {
     echo ""
     print "Para aplicar todas as configurações, execute:"
     print_yellow "  $0 all"
+    print ""
+    print "Para aplicar todas as configurações sem confirmações adicionais:"
+    print_yellow "  $0 all auto"
 }
 
 # Função para aplicar uma configuração específica
 apply_config() {
     local config_name="$1"
+    local auto_apply="$2"  # Se definido como "yes", aplica automaticamente sem perguntar
     local config_file="$(dirname "$0")/karabine_config/configs/${config_name}.json"
     
     # Verificar se o arquivo existe
     if [ -f "$config_file" ]; then
-        _apply_config_from_file "$config_file"
+        _apply_config_from_file "$config_file" "$auto_apply"
     else
         print_error "Configuração '$config_name' não encontrada."
         print_info "Execute '$0 list' para ver as configurações disponíveis."
@@ -308,6 +313,7 @@ apply_config() {
 
 # Função para aplicar todas as configurações
 apply_all_configs() {
+    local auto_apply="$1"  # Se definido como "yes", aplica automaticamente sem perguntar
     local config_dir="$(dirname "$0")/karabine_config/configs"
     
     if [ ! -d "$config_dir" ]; then
@@ -322,14 +328,14 @@ apply_all_configs() {
         return 1
     fi
     
-    if get_user_confirmation "Deseja aplicar TODAS as $file_count configurações disponíveis?"; then
+    if [ "$auto_apply" = "yes" ] || get_user_confirmation "Deseja aplicar TODAS as $file_count configurações disponíveis?"; then
         local count=0
         
         for config_file in "$config_dir"/*.json; do
             if [ -f "$config_file" ]; then
                 count=$((count + 1))
                 print_header "Configuração $count de $file_count"
-                _apply_config_from_file "$config_file"
+                _apply_config_from_file "$config_file" "yes"  # Aplica automaticamente sem perguntar novamente
             fi
         done
         
@@ -345,6 +351,12 @@ apply_all_configs() {
 
 setup_karabiner() {
     local command="$1"
+    local auto_mode="$2"  # Se definido como "auto", aplica automaticamente sem perguntar
+    local auto_apply="no"
+    
+    if [ "$auto_mode" = "auto" ]; then
+        auto_apply="yes"
+    fi
     
     _check_brew_installed
     _ensure_jq_installed
@@ -364,13 +376,13 @@ setup_karabiner() {
             list_available_configs
             ;;
         "all")
-            apply_all_configs
+            apply_all_configs "$auto_apply"
             _restart_karabiner
             ;;
         *)
             # Verificar se o comando é um nome de arquivo sem extensão
             if [ -f "$(dirname "$0")/karabine_config/configs/${command}.json" ]; then
-                apply_config "$command"
+                apply_config "$command" "$auto_apply"
                 _restart_karabiner
             else
                 print_error "Comando ou configuração desconhecida: $command"

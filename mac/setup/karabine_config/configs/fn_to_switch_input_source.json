@@ -12,7 +12,7 @@
           "to": [
             {
               "key_code": "spacebar",
-              "modifiers": ["right_control"]
+              "modifiers": ["command"]
             }
           ]
         }
