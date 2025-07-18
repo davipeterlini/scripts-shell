@@ -4,7 +4,7 @@
 # Karabiner Elements Setup Script
 # ====================================
 # Este script instala Karabiner-Elements e configura regras personalizadas
-# a partir dos arquivos na pasta karabine_config
+# a partir dos arquivos na pasta karabine_config/configs
 
 # Importar utilitários de cores para mensagens
 source "$(dirname "$0")/../../utils/colors_message.sh"
@@ -169,29 +169,28 @@ _remove_rule() {
 
 # Função genérica para aplicar uma configuração a partir de um arquivo JSON
 _apply_config_from_file() {
-    local config_name="$1"
-    local config_file="$HOME/.config/karabiner/karabiner.json"
-    local config_json_file="$(dirname "$0")/karabine_config/${config_name}.json"
+    local config_file_path="$1"
+    local karabiner_config_file="$HOME/.config/karabiner/karabiner.json"
     
     # Verificar se o arquivo de configuração existe
-    if [ ! -f "$config_json_file" ]; then
-        print_error "Arquivo de configuração não encontrado: $config_json_file"
+    if [ ! -f "$config_file_path" ]; then
+        print_error "Arquivo de configuração não encontrado: $config_file_path"
         return 1
     fi
     
     # Mostrar descrição da configuração
-    local title=$(jq -r '.title' "$config_json_file")
-    local description=$(jq -r '.rules[0].description' "$config_json_file")
+    local title=$(jq -r '.title' "$config_file_path")
+    local description=$(jq -r '.rules[0].description' "$config_file_path")
     
     print_header_info "Configurando: $title"
     print_info "Descrição: $description"
     
     # Verificar se a regra já existe
-    if _rule_exists "$config_file" "$description"; then
+    if _rule_exists "$karabiner_config_file" "$description"; then
         print_alert "A regra '$description' já existe na configuração."
         if get_user_confirmation "Deseja sobrescrever a regra existente?"; then
             print_info "Removendo regra existente..."
-            _remove_rule "$config_file" "$description"
+            _remove_rule "$karabiner_config_file" "$description"
         else
             print_info "Mantendo a regra existente."
             return 0
@@ -203,10 +202,10 @@ _apply_config_from_file() {
         print_info "Adicionando regra: $description"
         
         # Extrair as regras do arquivo JSON
-        local rules=$(jq -c '.rules' "$config_json_file")
+        local rules=$(jq -c '.rules' "$config_file_path")
         
         # Adicionar as regras ao arquivo de configuração
-        jq --argjson new_rules "$rules" '.profiles[0].complex_modifications.rules += $new_rules' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+        jq --argjson new_rules "$rules" '.profiles[0].complex_modifications.rules += $new_rules' "$karabiner_config_file" > "$temp_file" && mv "$temp_file" "$karabiner_config_file"
         
         print_success "Configuração '$title' adicionada com sucesso!"
     else
@@ -214,47 +213,11 @@ _apply_config_from_file() {
     fi
 }
 
-# ====================================
-# Config Functions - Cada função corresponde a um arquivo na pasta karabine_config
-# ====================================
-
-fn_input_switcher() {
-    _apply_config_from_file "fn_input_switcher"
-}
-
-external_keyboard_fn_input_switcher() {
-    _apply_config_from_file "external_keyboard_fn_input_switcher"
-}
-
-f13_input_switcher() {
-    _apply_config_from_file "f13_input_switcher"
-}
-
-right_option_input_switcher() {
-    _apply_config_from_file "right_option_input_switcher"
-}
-
-any_key_to_input_switcher() {
-    _apply_config_from_file "any_key_to_input_switcher"
-}
-
-direct_input_source_switch() {
-    _apply_config_from_file "direct_input_source_switch"
-}
-
-fn_key_workaround() {
-    _apply_config_from_file "fn_key_workaround"
-}
-
-double_tap_input_switch() {
-    _apply_config_from_file "double_tap_input_switch"
-}
-
 # Função para listar todas as configurações disponíveis
 list_available_configs() {
     print_header "Configurações Disponíveis"
     
-    local config_dir="$(dirname "$0")/karabine_config"
+    local config_dir="$(dirname "$0")/karabine_config/configs"
     
     if [ ! -d "$config_dir" ]; then
         print_error "Diretório de configurações não encontrado: $config_dir"
@@ -265,7 +228,7 @@ list_available_configs() {
     echo ""
     
     for config_file in "$config_dir"/*.json; do
-        if [ -f "$config_file" ] && [[ "$(basename "$config_file")" != "base_config.json" ]]; then
+        if [ -f "$config_file" ]; then
             local filename=$(basename "$config_file" .json)
             local title=$(jq -r '.title // "Sem título"' "$config_file")
             local description=$(jq -r '.rules[0].description // "Sem descrição"' "$config_file")
@@ -285,26 +248,21 @@ list_available_configs() {
 # Função para aplicar uma configuração específica
 apply_config() {
     local config_name="$1"
-    local function_name="${config_name}"
+    local config_file="$(dirname "$0")/karabine_config/configs/${config_name}.json"
     
-    # Verificar se a função existe
-    if type "$function_name" &>/dev/null; then
-        "$function_name"
+    # Verificar se o arquivo existe
+    if [ -f "$config_file" ]; then
+        _apply_config_from_file "$config_file"
     else
-        # Tentar aplicar usando a função genérica
-        if [ -f "$(dirname "$0")/karabine_config/${config_name}.json" ]; then
-            _apply_config_from_file "$config_name"
-        else
-            print_error "Configuração '$config_name' não encontrada."
-            print_info "Execute '$0 list' para ver as configurações disponíveis."
-            return 1
-        fi
+        print_error "Configuração '$config_name' não encontrada."
+        print_info "Execute '$0 list' para ver as configurações disponíveis."
+        return 1
     fi
 }
 
 # Função para aplicar todas as configurações
 apply_all_configs() {
-    local config_dir="$(dirname "$0")/karabine_config"
+    local config_dir="$(dirname "$0")/karabine_config/configs"
     
     if [ ! -d "$config_dir" ]; then
         print_error "Diretório de configurações não encontrado: $config_dir"
@@ -312,12 +270,18 @@ apply_all_configs() {
     fi
     
     if get_user_confirmation "Deseja aplicar TODAS as configurações disponíveis?"; then
+        local count=0
+        local total=$(find "$config_dir" -name "*.json" | wc -l)
+        
         for config_file in "$config_dir"/*.json; do
-            if [ -f "$config_file" ] && [[ "$(basename "$config_file")" != "base_config.json" ]]; then
-                local filename=$(basename "$config_file" .json)
-                apply_config "$filename"
+            if [ -f "$config_file" ]; then
+                count=$((count + 1))
+                print_header "Configuração $count de $total"
+                _apply_config_from_file "$config_file"
             fi
         done
+        
+        print_success "Todas as $count configurações foram processadas."
     else
         print_alert "Operação cancelada pelo usuário."
     fi
@@ -352,8 +316,15 @@ setup_karabiner() {
             _restart_karabiner
             ;;
         *)
-            apply_config "$command"
-            _restart_karabiner
+            # Verificar se o comando é um nome de arquivo sem extensão
+            if [ -f "$(dirname "$0")/karabine_config/configs/${command}.json" ]; then
+                apply_config "$command"
+                _restart_karabiner
+            else
+                print_error "Comando ou configuração desconhecida: $command"
+                print_info "Execute '$0 list' para ver as configurações disponíveis."
+                return 1
+            fi
             ;;
     esac
     
