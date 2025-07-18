@@ -220,16 +220,10 @@ _apply_config_from_file() {
     print_header_info "Configurando: $title"
     print_info "Descrição: $description"
     
-    # Verificar se a regra já existe
+    # Verificar se a regra já existe e removê-la automaticamente
     if _rule_exists "$karabiner_config_file" "$description"; then
-        print_alert "A regra '$description' já existe na configuração."
-        if [ "$auto_apply" = "yes" ] || get_user_confirmation "Deseja sobrescrever a regra existente?"; then
-            print_info "Removendo regra existente..."
-            _remove_rule "$karabiner_config_file" "$description"
-        else
-            print_info "Mantendo a regra existente."
-            return 0
-        fi
+        print_info "A regra '$description' já existe na configuração. Removendo para sobrescrever..."
+        _remove_rule "$karabiner_config_file" "$description"
     fi
     
     if [ "$auto_apply" = "yes" ] || get_user_confirmation "Deseja aplicar esta configuração?"; then
