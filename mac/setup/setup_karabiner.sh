@@ -392,13 +392,12 @@ setup_karabiner() {
     print_header "Configuração Concluída"
     print_success "Karabiner-Elements foi configurado com sucesso!"
     print_info "Se o Karabiner-Elements não foi reiniciado automaticamente, por favor:"
-    print_info "1. Abra o aplicativo Karabiner-Elements manualmente"
-    print_info "2. Verifique se as configurações foram aplicadas corretamente"
-    print_info "3. Se estiver usando um teclado externo, talvez seja necessário configurá-lo nas preferências do Karabiner-Elements"
-    print_info "4. Certifique-se de que o teclado externo está habilitado na seção 'Devices' do Karabiner-Elements"
-    print_info ""
-    print_info "Para que as configurações de alternância de idioma funcionem, verifique se o atalho de teclado"
-    print_info "está configurado corretamente em Preferências do Sistema > Teclado > Atalhos > Fontes de Entrada."
+    print "1. Abra o aplicativo Karabiner-Elements manualmente"
+    print "2. Verifique se as configurações foram aplicadas corretamente"
+    print "3. Se estiver usando um teclado externo, talvez seja necessário configurá-lo nas preferências do Karabiner-Elements"
+    print "4. Certifique-se de que o teclado externo está habilitado na seção 'Devices' do Karabiner-Elements"
+    print "Para que as configurações de alternância de idioma funcionem, verifique se o atalho de teclado"
+    print "está configurado corretamente em Preferências do Sistema > Teclado > Atalhos > Fontes de Entrada."
 }
 
 # Executar o script apenas se não estiver sendo importado
