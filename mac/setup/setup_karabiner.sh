@@ -130,6 +130,10 @@ _restart_karabiner() {
             print_alert "Não foi possível reiniciar o serviço usando launchctl. Tentando método alternativo..."
         fi
         
+        # TODO - Reiniciar o karabine 
+        #udo launchctl unload ~/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist
+        #sudo launchctl load ~/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist
+        if pkil
         # Método 2: Tentar encerrar e reiniciar o aplicativo
         if pkill -f "karabiner"; then
             print_info "Processos do Karabiner encerrados. Reiniciando o aplicativo..."
@@ -137,13 +141,13 @@ _restart_karabiner() {
         fi
         
         # Abrir o aplicativo Karabiner-Elements
-        if open -a "Karabiner-Elements"; then
-            print_success "Karabiner-Elements iniciado com sucesso!"
-        else
-            print_alert "Não foi possível abrir o Karabiner-Elements automaticamente."
-            print_info "Por favor, abra o Karabiner-Elements manualmente para aplicar as alterações."
-            print_info "Você pode encontrá-lo na pasta Aplicativos ou usando o Spotlight (Cmd+Espaço)."
-        fi
+            if open -a "Karabiner-Elements"; then
+                print_success "Karabiner-Elements iniciado com sucesso!"
+            else
+                print_alert "Não foi possível abrir o Karabiner-Elements automaticamente."
+                print_info "Por favor, abra o Karabiner-Elements manualmente para aplicar as alterações."
+                print_info "Você pode encontrá-lo na pasta Aplicativos ou usando o Spotlight (Cmd+Espaço)."
+            fi
     else
         print_alert "As alterações só terão efeito após reiniciar o Karabiner-Elements."
     fi
@@ -393,6 +397,9 @@ setup_karabiner() {
     print_info "2. Verifique se as configurações foram aplicadas corretamente"
     print_info "3. Se estiver usando um teclado externo, talvez seja necessário configurá-lo nas preferências do Karabiner-Elements"
     print_info "4. Certifique-se de que o teclado externo está habilitado na seção 'Devices' do Karabiner-Elements"
+    print_info ""
+    print_info "Para que as configurações de alternância de idioma funcionem, verifique se o atalho de teclado"
+    print_info "está configurado corretamente em Preferências do Sistema > Teclado > Atalhos > Fontes de Entrada."
 }
 
 # Executar o script apenas se não estiver sendo importado
