@@ -84,12 +84,34 @@ _initialize_karabiner_config() {
             cp "$config_file" "$backup_file"
             print_success "Backup criado em: $backup_file"
         fi
+        
+        # Verificar se o arquivo tem a estrutura necessária
+        if ! jq -e '.profiles[0].complex_modifications' "$config_file" > /dev/null 2>&1; then
+            print_alert "O arquivo de configuração existente não tem a estrutura necessária."
+            if get_user_confirmation "Deseja substituir pelo arquivo de configuração base?"; then
+                cp "$base_config_file" "$config_file"
+                print_success "Arquivo de configuração substituído com sucesso."
+            else
+                print_error "Não é possível continuar sem a estrutura correta. Abortando."
+                exit 1
+            fi
+        fi
     else
         print_info "Criando novo arquivo de configuração..."
         # Copiar o arquivo de configuração base
         cp "$base_config_file" "$config_file"
         print_success "Arquivo de configuração criado em: $config_file"
     fi
+    
+    # Garantir que a estrutura complex_modifications.rules exista
+    local temp_file=$(mktemp)
+    jq '
+        if .profiles[0].complex_modifications.rules == null then
+            .profiles[0].complex_modifications.rules = []
+        else
+            .
+        end
+    ' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
     
     return 0
 }
@@ -146,7 +168,13 @@ _rule_exists() {
     local rule_description="$2"
     
     # Verificar se a regra com a mesma descrição já existe
-    local existing_rule=$(jq -r --arg desc "$rule_description" '.profiles[0].complex_modifications.rules[] | select(.description == $desc)' "$config_file")
+    # Primeiro verificamos se a estrutura complex_modifications.rules existe
+    if ! jq -e '.profiles[0].complex_modifications.rules' "$config_file" > /dev/null 2>&1; then
+        return 1  # Estrutura não existe, então a regra não existe
+    fi
+    
+    # Agora verificamos se existe uma regra com a descrição especificada
+    local existing_rule=$(jq -r --arg desc "$rule_description" '.profiles[0].complex_modifications.rules[] | select(.description == $desc) | .description' "$config_file")
     
     if [ -n "$existing_rule" ]; then
         return 0  # Regra existe
@@ -162,7 +190,13 @@ _remove_rule() {
     local temp_file=$(mktemp)
     
     # Remover a regra com a descrição especificada
-    jq --arg desc "$rule_description" '.profiles[0].complex_modifications.rules = [.profiles[0].complex_modifications.rules[] | select(.description != $desc)]' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+    jq --arg desc "$rule_description" '
+        if .profiles[0].complex_modifications.rules != null then
+            .profiles[0].complex_modifications.rules = [.profiles[0].complex_modifications.rules[] | select(.description != $desc)]
+        else
+            .
+        end
+    ' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
     
     return $?
 }
@@ -205,7 +239,13 @@ _apply_config_from_file() {
         local rules=$(jq -c '.rules' "$config_file_path")
         
         # Adicionar as regras ao arquivo de configuração
-        jq --argjson new_rules "$rules" '.profiles[0].complex_modifications.rules += $new_rules' "$karabiner_config_file" > "$temp_file" && mv "$temp_file" "$karabiner_config_file"
+        jq --argjson new_rules "$rules" '
+            if .profiles[0].complex_modifications.rules == null then
+                .profiles[0].complex_modifications.rules = $new_rules
+            else
+                .profiles[0].complex_modifications.rules += $new_rules
+            end
+        ' "$karabiner_config_file" > "$temp_file" && mv "$temp_file" "$karabiner_config_file"
         
         print_success "Configuração '$title' adicionada com sucesso!"
     else
@@ -227,8 +267,10 @@ list_available_configs() {
     print_info "As seguintes configurações estão disponíveis:"
     echo ""
     
+    local count=0
     for config_file in "$config_dir"/*.json; do
         if [ -f "$config_file" ]; then
+            count=$((count + 1))
             local filename=$(basename "$config_file" .json)
             local title=$(jq -r '.title // "Sem título"' "$config_file")
             local description=$(jq -r '.rules[0].description // "Sem descrição"' "$config_file")
@@ -236,6 +278,10 @@ list_available_configs() {
             print "  $description"
         fi
     done
+    
+    if [ $count -eq 0 ]; then
+        print_alert "Nenhuma configuração encontrada no diretório: $config_dir"
+    fi
     
     echo ""
     print "Para aplicar uma configuração específica, execute:"
@@ -269,14 +315,20 @@ apply_all_configs() {
         return 1
     fi
     
-    if get_user_confirmation "Deseja aplicar TODAS as configurações disponíveis?"; then
+    local file_count=$(find "$config_dir" -name "*.json" | wc -l | tr -d ' ')
+    
+    if [ "$file_count" -eq 0 ]; then
+        print_alert "Nenhuma configuração encontrada no diretório: $config_dir"
+        return 1
+    fi
+    
+    if get_user_confirmation "Deseja aplicar TODAS as $file_count configurações disponíveis?"; then
         local count=0
-        local total=$(find "$config_dir" -name "*.json" | wc -l)
         
         for config_file in "$config_dir"/*.json; do
             if [ -f "$config_file" ]; then
                 count=$((count + 1))
-                print_header "Configuração $count de $total"
+                print_header "Configuração $count de $file_count"
                 _apply_config_from_file "$config_file"
             fi
         done
@@ -295,10 +347,10 @@ setup_karabiner() {
     local command="$1"
     
     _check_brew_installed
+    _ensure_jq_installed
     _install_karabiner
     _create_config_directory
     _initialize_karabiner_config
-    _ensure_jq_installed
     
     # Se nenhum comando for fornecido, mostrar a lista de configurações
     if [ -z "$command" ]; then
