@@ -1,18 +1,21 @@
 {
-    "title": "Alt+Tab para Command+Tab",
+    "title": "Windows-style Alt+Tab",
     "rules": [
         {
-            "description": "Alt+Tab para Command+Tab",
+            "description": "Enable Windows-style Alt+Tab behavior",
             "manipulators": [
                 {
+                    "description": "Alt+Tab -> Command+Tab (forward)",
                     "from": {
                         "key_code": "tab",
-                        "modifiers": { "mandatory": ["option"] }
+                        "modifiers": {
+                            "mandatory": ["left_option"]
+                        }
                     },
                     "to": [
                         {
                             "key_code": "tab",
-                            "modifiers": ["command"]
+                            "modifiers": ["left_command"]
                         }
                     ],
                     "type": "basic"
