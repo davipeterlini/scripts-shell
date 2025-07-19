@@ -1,19 +1,23 @@
 {
-    "description": "Alt+Tab to Command+Tab",
-    "enabled": false,
-    "manipulators": [
+    "title": "Alt+Tab para Command+Tab",
+    "rules": [
         {
-            "from": {
-                "key_code": "tab",
-                "modifiers": { "mandatory": ["option"] }
-            },
-            "to": [
+            "description": "Alt+Tab para Command+Tab",
+            "manipulators": [
                 {
-                    "key_code": "tab",
-                    "modifiers": ["command"]
+                    "from": {
+                        "key_code": "tab",
+                        "modifiers": { "mandatory": ["option"] }
+                    },
+                    "to": [
+                        {
+                            "key_code": "tab",
+                            "modifiers": ["command"]
+                        }
+                    ],
+                    "type": "basic"
                 }
-            ],
-            "type": "basic"
+            ]
         }
     ]
 }
