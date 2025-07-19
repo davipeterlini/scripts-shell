@@ -39,10 +39,10 @@ setup_mac() {
     enable_touchid_sudo
 
     # Configuração do teclado ABNT2
-    setup_abnt2_keyboard
+    #setup_abnt2_keyboard
 
     # Configuração do Teclado 
-    #setup_karabiner all
+    setup_karabiner all
 
     print_success "Mac setup completed successfully!"
 }

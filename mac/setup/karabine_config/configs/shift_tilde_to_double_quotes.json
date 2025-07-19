@@ -1,8 +1,8 @@
 {
-  "title": "Shift + ~ to double quotes",
+  "title": "Shift + ~ to double quotes (Brazilian keyboards)",
   "rules": [
     {
-      "description": "Change shift + ~ to double quotes",
+      "description": "Change shift + ~ to double quotes for Brazilian ABNT2 and US layouts",
       "manipulators": [
         {
           "type": "basic",
@@ -13,6 +13,18 @@
             }
           },
           "to": [
+            {
+              "key_code": "quote",
+              "modifiers": ["shift"]
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "quote",
+              "modifiers": ["shift"]
+            }
+          ],
+          "to_if_held_down": [
             {
               "key_code": "quote",
               "modifiers": ["shift"]
