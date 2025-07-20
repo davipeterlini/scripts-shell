@@ -16,6 +16,7 @@ source "$(dirname "$0")/dev/setups/setup_java.sh"
 source "$(dirname "$0")/dev/setups/setup_vscode.sh"
 source "$(dirname "$0")/dev/installs/install_ai_tools.sh"
 source "$(dirname "$0")/flow_coder/install_flow_coder_cli.sh"
+source "$(dirname "$0")/gcloud/setup_gcloud.sh"
 #source "$(dirname "$0")/dev/install_flow_coder_ide.sh"
 #source "$(dirname "$0")/dev/open_project_iterm.sh"
 
@@ -38,6 +39,12 @@ setup_dev() {
     setup_node 
 
     setup_java
+
+    # TODO - Criar setup do python
+    #setup_python
+
+    # TODO - Testar
+    setup_gcloud
 
     setup_vscode
 
