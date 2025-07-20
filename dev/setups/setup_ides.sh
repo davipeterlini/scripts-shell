@@ -1,8 +1,8 @@
 #!/bin/bash
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/colors_message.sh"
-source "$SCRIPT_DIR/detect_os.sh"
+source "..$(dirname "$0")/utils/colors_message.sh"
+source "..$(dirname "$0")/utils/load_constantsnv.sh"
+source "..$(dirname "$0")/utils/detect_os.sh"
 
 # Check for installed IDEs and set environment variables
 check_installed_ides() {

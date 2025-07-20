@@ -11,7 +11,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$ROOT_DIR/utils/colors_message.sh"
 source "$ROOT_DIR/utils/detect_os.sh"
 source "$ROOT_DIR/utils/bash_tools.sh"
-source "$ROOT_DIR/utils/setup_ides.sh"
+source "$ROOT_DIR/dev/setups/setup_ides.sh"
 
 # Constants
 PLUGIN_NAME_VSCODE="ciandt-global.ciandt-flow"
