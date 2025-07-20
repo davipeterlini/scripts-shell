@@ -183,7 +183,7 @@ install_plugin_marketplace_vscode() {
         print_error "VS Code command line tool not found"
         print_alert "Please install VS Code first"
         return 1
-    }
+    fi
 
     print_info "Installing VS Code extension from marketplace: $PLUGIN_NAME_VSCODE"
     

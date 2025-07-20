@@ -1,8 +1,10 @@
 #!/bin/bash
 
-source "..$(dirname "$0")/utils/colors_message.sh"
-source "..$(dirname "$0")/utils/load_constantsnv.sh"
-source "..$(dirname "$0")/utils/detect_os.sh"
+# Corrigindo o caminho para importar os arquivos de utilidades
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "$ROOT_DIR/utils/colors_message.sh"
+source "$ROOT_DIR/utils/detect_os.sh"
 
 # Check for installed IDEs and set environment variables
 check_installed_ides() {
