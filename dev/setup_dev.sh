@@ -17,7 +17,7 @@ source "$(dirname "$0")/dev/setups/setup_ides.sh"
 source "$(dirname "$0")/dev/setups/setup_vscode.sh"
 source "$(dirname "$0")/dev/installs/install_ai_tools.sh"
 source "$(dirname "$0")/flow_coder/install_flow_coder_cli.sh"
-#source "$(dirname "$0")/dev/install_flow_coder_ide.sh"
+source "$(dirname "$0")/dev/install_flow_coder_ide.sh"
 #source "$(dirname "$0")/dev/open_project_iterm.sh"
 
 # Função principal
@@ -47,13 +47,11 @@ setup_dev() {
 
     setup_vscode
 
-    # TODO - mudar para setup de ferramentas de ia
     install_ai_tools
 
-    # TODO - Mudar para setup do coder cli
     install_flow_coder_cli
 
-    #install_flow_coder_ide
+    install_flow_coder_ide
 
     # TODO - Ajustar para abrir as pastas desejadas no terminal 
     #open_project_iterm
