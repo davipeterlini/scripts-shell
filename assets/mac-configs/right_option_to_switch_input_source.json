@@ -1,13 +1,13 @@
 {
-  "title": "Right Command key to switch input source",
+  "title": "Right Option key to switch input source",
   "rules": [
     {
-      "description": "Change right command key to switch input source",
+      "description": "Change right option key to switch input source",
       "manipulators": [
         {
           "type": "basic",
           "from": {
-            "key_code": "right_command",
+            "key_code": "right_option",
             "modifiers": {
               "optional": ["any"]
             }
