@@ -42,15 +42,17 @@ setup_dev() {
 
     setup_ides
 
-    # TODO - Criar setup do python
-    #setup_python
+    # TODO - Testar
+    setup_python
 
+    # TODO - Testar
     setup_vscode
 
     install_ai_tools
 
     install_flow_coder_cli
 
+    # TODO - Testar
     install_flow_coder_ide
 
     # TODO - Ajustar para abrir as pastas desejadas no terminal 
