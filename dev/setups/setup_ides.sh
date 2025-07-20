@@ -30,38 +30,56 @@ check_installed_ides() {
 
   # Check for JetBrains IDEs
   # Define common JetBrains IDEs and their commands
-  declare -A jetbrains_ides=(
-    ["IntelliJ IDEA"]="idea intellij idea.sh"
-    ["PyCharm"]="pycharm charm pycharm.sh"
-    ["WebStorm"]="webstorm wstorm webstorm.sh"
-    ["PhpStorm"]="phpstorm pstorm phpstorm.sh"
-    ["CLion"]="clion clion.sh"
-    ["Rider"]="rider rider.sh"
-    ["GoLand"]="goland goland.sh"
-    ["RubyMine"]="rubymine mine rubymine.sh"
-    ["DataGrip"]="datagrip datagrip.sh"
-    ["Android Studio"]="studio androidstudio studio.sh"
-  )
+  declare -A jetbrains_ides
+  jetbrains_ides["IntelliJ_IDEA"]="idea intellij idea.sh"
+  jetbrains_ides["PyCharm"]="pycharm charm pycharm.sh"
+  jetbrains_ides["WebStorm"]="webstorm wstorm webstorm.sh"
+  jetbrains_ides["PhpStorm"]="phpstorm pstorm phpstorm.sh"
+  jetbrains_ides["CLion"]="clion clion.sh"
+  jetbrains_ides["Rider"]="rider rider.sh"
+  jetbrains_ides["GoLand"]="goland goland.sh"
+  jetbrains_ides["RubyMine"]="rubymine mine rubymine.sh"
+  jetbrains_ides["DataGrip"]="datagrip datagrip.sh"
+  jetbrains_ides["Android_Studio"]="studio androidstudio studio.sh"
 
   # Check for JetBrains applications on macOS
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    for ide in "${!jetbrains_ides[@]}"; do
-      if [ -d "/Applications/${ide}.app" ]; then
+    # Mapeamento de chaves para nomes de aplicativos
+    declare -A app_names
+    app_names["IntelliJ_IDEA"]="IntelliJ IDEA"
+    app_names["PyCharm"]="PyCharm"
+    app_names["WebStorm"]="WebStorm"
+    app_names["PhpStorm"]="PhpStorm"
+    app_names["CLion"]="CLion"
+    app_names["Rider"]="Rider"
+    app_names["GoLand"]="GoLand"
+    app_names["RubyMine"]="RubyMine"
+    app_names["DataGrip"]="DataGrip"
+    app_names["Android_Studio"]="Android Studio"
+    
+    for ide_key in "${!jetbrains_ides[@]}"; do
+      app_name="${app_names[$ide_key]}"
+      if [ -d "/Applications/${app_name}.app" ]; then
         jetbrains_found=true
-        jetbrains_ide="$ide"
-        print_success "$ide is installed (macOS application)"
+        jetbrains_ide="$app_name"
+        print_success "$app_name is installed (macOS application)"
       fi
     done
   fi
 
   # Check for JetBrains commands in PATH
-  for ide in "${!jetbrains_ides[@]}"; do
-    commands=${jetbrains_ides[$ide]}
+  for ide_key in "${!jetbrains_ides[@]}"; do
+    commands=${jetbrains_ides[$ide_key]}
     for cmd in $commands; do
       if command -v $cmd > /dev/null 2>&1; then
         jetbrains_found=true
-        jetbrains_ide="$ide"
-        print_success "$ide is installed (command '$cmd')"
+        # Converter chave para nome amigável
+        case "$ide_key" in
+          "IntelliJ_IDEA") jetbrains_ide="IntelliJ IDEA" ;;
+          "Android_Studio") jetbrains_ide="Android Studio" ;;
+          *) jetbrains_ide="$ide_key" ;;
+        esac
+        print_success "$jetbrains_ide is installed (command '$cmd')"
         break
       fi
     done
