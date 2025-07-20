@@ -38,11 +38,11 @@ setup_mac() {
     # Habilitar Touch ID para sudo
     enable_touchid_sudo
 
-    # Configuração do teclado ABNT2
-    #setup_abnt2_keyboard
-
     # Configuração do Teclado 
     setup_karabiner all
+
+    # Configuração do teclado ABNT2
+    #setup_abnt2_keyboard
 
     print_success "Mac setup completed successfully!"
 }

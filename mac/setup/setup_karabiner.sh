@@ -130,9 +130,6 @@ _restart_karabiner() {
             print_alert "Não foi possível reiniciar o serviço usando launchctl. Tentando método alternativo..."
         fi
         
-        # TODO - Reiniciar o karabine 
-        #udo launchctl unload ~/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist
-        #sudo launchctl load ~/Library/LaunchAgents/org.pqrs.karabiner.karabiner_console_user_server.plist
         # Método 2: Tentar encerrar e reiniciar o aplicativo
         if pkill -f "karabiner"; then
             print_info "Processos do Karabiner encerrados. Reiniciando o aplicativo..."
@@ -140,13 +137,17 @@ _restart_karabiner() {
         fi
         
         # Abrir o aplicativo Karabiner-Elements
-            if open -a "Karabiner-Elements"; then
-                print_success "Karabiner-Elements iniciado com sucesso!"
-            else
-                print_alert "Não foi possível abrir o Karabiner-Elements automaticamente."
-                print_info "Por favor, abra o Karabiner-Elements manualmente para aplicar as alterações."
-                print_info "Você pode encontrá-lo na pasta Aplicativos ou usando o Spotlight (Cmd+Espaço)."
-            fi
+        if open -a "Karabiner-Elements"; then
+            print_success "Karabiner-Elements iniciado com sucesso!"
+            
+            # Dar tempo para o Karabiner-Elements iniciar e detectar os dispositivos
+            print_info "Aguardando o Karabiner-Elements inicializar (10 segundos)..."
+            sleep 10
+        else
+            print_alert "Não foi possível abrir o Karabiner-Elements automaticamente."
+            print_info "Por favor, abra o Karabiner-Elements manualmente para aplicar as alterações."
+            print_info "Você pode encontrá-lo na pasta Aplicativos ou usando o Spotlight (Cmd+Espaço)."
+        fi
     else
         print_alert "As alterações só terão efeito após reiniciar o Karabiner-Elements."
     fi
@@ -202,6 +203,238 @@ _remove_rule() {
     ' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
     
     return $?
+}
+
+# Função para verificar se o Karabiner-Elements está em execução
+_check_karabiner_running() {
+    if ! pgrep -q "karabiner"; then
+        print_alert "Karabiner-Elements não está em execução."
+        if get_user_confirmation "Deseja iniciar o Karabiner-Elements agora?"; then
+            print_info "Iniciando Karabiner-Elements..."
+            open -a "Karabiner-Elements"
+            
+            # Dar tempo para o Karabiner-Elements iniciar e detectar os dispositivos
+            print_info "Aguardando o Karabiner-Elements inicializar (10 segundos)..."
+            sleep 10
+            
+            # Verificar novamente se está em execução
+            if ! pgrep -q "karabiner"; then
+                print_error "Não foi possível iniciar o Karabiner-Elements. Por favor, inicie-o manualmente."
+                return 1
+            fi
+        else
+            print_error "Karabiner-Elements precisa estar em execução para continuar. Abortando."
+            return 1
+        fi
+    fi
+    
+    return 0
+}
+
+# Função para inicializar o perfil padrão com todos os teclados
+_initialize_default_profile_with_all_keyboards() {
+    local config_file="$HOME/.config/karabiner/karabiner.json"
+    local temp_file=$(mktemp)
+    
+    print_info "Inicializando perfil padrão com todos os teclados disponíveis..."
+    
+    # Verificar se o arquivo de configuração existe
+    if [ ! -f "$config_file" ]; then
+        print_error "Arquivo de configuração do Karabiner não encontrado: $config_file"
+        return 1
+    fi
+    
+    # Verificar se há dispositivos na configuração
+    if ! jq -e '.devices' "$config_file" > /dev/null 2>&1; then
+        print_alert "Nenhum dispositivo encontrado na configuração do Karabiner."
+        print_info "Aguarde enquanto o Karabiner-Elements detecta seus dispositivos..."
+        return 1
+    fi
+    
+    # Criar uma lista de dispositivos para o perfil padrão
+    jq '
+        if .devices then
+            .profiles[0].devices = [
+                .devices[] | 
+                select(.is_keyboard == true or .is_keyboard == null) | 
+                {
+                    "disable_built_in_keyboard_if_exists": false,
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": false,
+                        "product_id": .product_id,
+                        "vendor_id": .vendor_id
+                    },
+                    "ignore": false,
+                    "manipulate_caps_lock_led": true,
+                    "simple_modifications": []
+                }
+            ]
+        else
+            .
+        end
+    ' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+    
+    if [ $? -eq 0 ]; then
+        print_success "Perfil padrão inicializado com todos os teclados disponíveis!"
+        return 0
+    else
+        print_error "Erro ao inicializar o perfil padrão."
+        return 1
+    fi
+}
+
+# Função para listar os teclados disponíveis
+_list_available_keyboards() {
+    print_header "Teclados Disponíveis"
+    
+    local config_file="$HOME/.config/karabiner/karabiner.json"
+    
+    # Verificar se o arquivo de configuração existe
+    if [ ! -f "$config_file" ]; then
+        print_error "Arquivo de configuração do Karabiner não encontrado: $config_file"
+        return 1
+    fi
+    
+    # Verificar se o Karabiner-Elements está em execução
+    _check_karabiner_running || return 1
+    
+    # Extrair a lista de dispositivos
+    local devices=$(jq -r '.devices[] | select(.is_keyboard == true or .is_keyboard == null) | "\(.vendor_id):\(.product_id):\(.name // "Teclado sem nome")"' "$config_file" 2>/dev/null)
+    
+    if [ -z "$devices" ]; then
+        print_alert "Nenhum teclado encontrado na configuração do Karabiner."
+        print_info "Por favor, verifique se seus teclados estão conectados e se o Karabiner-Elements os detectou."
+        
+        # Tentar inicializar o perfil com todos os dispositivos disponíveis
+        if get_user_confirmation "Deseja tentar usar todos os dispositivos disponíveis?"; then
+            _initialize_default_profile_with_all_keyboards
+            return 0
+        else
+            return 1
+        fi
+    fi
+    
+    # Exibir a lista de teclados
+    print_info "Os seguintes teclados estão disponíveis:"
+    echo ""
+    
+    local count=0
+    while IFS=: read -r vendor_id product_id name; do
+        count=$((count + 1))
+        print_yellow "$count) $name"
+        print "   ID: $vendor_id:$product_id"
+    done <<< "$devices"
+    
+    echo ""
+    return 0
+}
+
+# Função para selecionar um teclado
+_select_keyboard() {
+    local config_file="$HOME/.config/karabiner/karabiner.json"
+    
+    # Extrair a lista de dispositivos
+    local devices=$(jq -r '.devices[] | select(.is_keyboard == true or .is_keyboard == null) | "\(.vendor_id):\(.product_id):\(.name // "Teclado sem nome")"' "$config_file" 2>/dev/null)
+    
+    if [ -z "$devices" ]; then
+        print_error "Nenhum teclado encontrado na configuração do Karabiner."
+        
+        # Tentar usar o teclado interno como fallback
+        if get_user_confirmation "Deseja usar o teclado interno como fallback?"; then
+            echo "1452:610:Apple Internal Keyboard"
+            return 0
+        else
+            return 1
+        fi
+    fi
+    
+    # Contar o número de dispositivos
+    local device_count=$(echo "$devices" | wc -l | tr -d ' ')
+    
+    # Solicitar ao usuário que selecione um teclado
+    local selection
+    while true; do
+        print_info "Digite o número do teclado que deseja configurar (1-$device_count):"
+        read -r selection
+        
+        if [[ "$selection" =~ ^[0-9]+$ ]] && [ "$selection" -ge 1 ] && [ "$selection" -le "$device_count" ]; then
+            break
+        else
+            print_error "Seleção inválida. Por favor, digite um número entre 1 e $device_count."
+        fi
+    done
+    
+    # Obter o dispositivo selecionado
+    local selected_device=$(echo "$devices" | sed -n "${selection}p")
+    
+    # Retornar o dispositivo selecionado
+    echo "$selected_device"
+    return 0
+}
+
+# Função para habilitar um teclado específico para um perfil
+_enable_keyboard_for_profile() {
+    local config_file="$HOME/.config/karabiner/karabiner.json"
+    local device_info="$1"  # formato: vendor_id:product_id:name
+    local profile_index="$2"  # índice do perfil (geralmente 0 para o perfil padrão)
+    
+    # Extrair vendor_id e product_id
+    IFS=: read -r vendor_id product_id name <<< "$device_info"
+    
+    print_info "Habilitando teclado '$name' para o perfil..."
+    
+    # Criar um arquivo temporário
+    local temp_file=$(mktemp)
+    
+    # Verificar se o perfil já tem dispositivos configurados
+    local has_devices=$(jq -r --argjson idx "$profile_index" '.profiles[$idx].devices != null' "$config_file")
+    
+    if [ "$has_devices" = "true" ]; then
+        # Adicionar o dispositivo à lista existente
+        jq --arg vendor "$vendor_id" --arg product "$product_id" --argjson profile_idx "$profile_index" '
+            .profiles[$profile_idx].devices += [
+                {
+                    "disable_built_in_keyboard_if_exists": false,
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": false,
+                        "product_id": $product,
+                        "vendor_id": $vendor
+                    },
+                    "ignore": false,
+                    "manipulate_caps_lock_led": true,
+                    "simple_modifications": []
+                }
+            ]
+        ' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+    else
+        # Criar uma nova lista de dispositivos
+        jq --arg vendor "$vendor_id" --arg product "$product_id" --argjson profile_idx "$profile_index" '
+            .profiles[$profile_idx].devices = [
+                {
+                    "disable_built_in_keyboard_if_exists": false,
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": false,
+                        "product_id": $product,
+                        "vendor_id": $vendor
+                    },
+                    "ignore": false,
+                    "manipulate_caps_lock_led": true,
+                    "simple_modifications": []
+                }
+            ]
+        ' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+    fi
+    
+    if [ $? -eq 0 ]; then
+        print_success "Teclado '$name' habilitado com sucesso para o perfil!"
+        return 0
+    else
+        print_error "Erro ao habilitar o teclado '$name' para o perfil."
+        return 1
+    fi
 }
 
 # Função genérica para aplicar uma configuração a partir de um arquivo JSON
@@ -342,6 +575,95 @@ apply_all_configs() {
     fi
 }
 
+# Função para configurar teclados específicos
+configure_keyboards() {
+    local command="$1"
+    local auto_apply="$2"
+    
+    # Verificar se o Karabiner-Elements está em execução
+    _check_karabiner_running || return 1
+    
+    # Inicializar o perfil padrão com todos os teclados disponíveis
+    _initialize_default_profile_with_all_keyboards
+    
+    # Listar os teclados disponíveis
+    _list_available_keyboards || {
+        print_alert "Não foi possível listar os teclados disponíveis."
+        print_info "Aplicando configurações para todos os teclados..."
+        
+        # Aplicar as configurações conforme o comando
+        case "$command" in
+            "list")
+                list_available_configs
+                ;;
+            "all")
+                apply_all_configs "$auto_apply"
+                ;;
+            *)
+                # Verificar se o comando é um nome de arquivo sem extensão
+                if [ -f "$(dirname "$0")/karabine_config/configs/${command}.json" ]; then
+                    apply_config "$command" "$auto_apply"
+                else
+                    print_error "Comando ou configuração desconhecida: $command"
+                    print_info "Execute '$0 list' para ver as configurações disponíveis."
+                    return 1
+                fi
+                ;;
+        esac
+        
+        return 0
+    }
+    
+    # Continuar configurando teclados até que o usuário decida parar
+    local continue_config="yes"
+    while [ "$continue_config" = "yes" ]; do
+        # Selecionar um teclado
+        local selected_keyboard=$(_select_keyboard)
+        
+        if [ -z "$selected_keyboard" ]; then
+            print_error "Falha ao selecionar o teclado. Abortando."
+            return 1
+        fi
+        
+        # Extrair o nome do teclado
+        local keyboard_name=$(echo "$selected_keyboard" | cut -d':' -f3)
+        print_header "Configurando teclado: $keyboard_name"
+        
+        # Habilitar o teclado para o perfil padrão (índice 0)
+        _enable_keyboard_for_profile "$selected_keyboard" 0
+        
+        # Aplicar as configurações conforme o comando
+        case "$command" in
+            "list")
+                list_available_configs
+                ;;
+            "all")
+                apply_all_configs "$auto_apply"
+                ;;
+            *)
+                # Verificar se o comando é um nome de arquivo sem extensão
+                if [ -f "$(dirname "$0")/karabine_config/configs/${command}.json" ]; then
+                    apply_config "$command" "$auto_apply"
+                else
+                    print_error "Comando ou configuração desconhecida: $command"
+                    print_info "Execute '$0 list' para ver as configurações disponíveis."
+                    return 1
+                fi
+                ;;
+        esac
+        
+        # Perguntar se deseja configurar outro teclado
+        if ! get_user_confirmation "Deseja configurar outro teclado?"; then
+            continue_config="no"
+        fi
+    done
+    
+    # Reiniciar o Karabiner-Elements para aplicar as alterações
+    _restart_karabiner
+    
+    return 0
+}
+
 # ====================================
 # Public Functions
 # ====================================
@@ -367,27 +689,8 @@ setup_karabiner() {
         return 0
     fi
     
-    # Processar o comando
-    case "$command" in
-        "list")
-            list_available_configs
-            ;;
-        "all")
-            apply_all_configs "$auto_apply"
-            _restart_karabiner
-            ;;
-        *)
-            # Verificar se o comando é um nome de arquivo sem extensão
-            if [ -f "$(dirname "$0")/karabine_config/configs/${command}.json" ]; then
-                apply_config "$command" "$auto_apply"
-                _restart_karabiner
-            else
-                print_error "Comando ou configuração desconhecida: $command"
-                print_info "Execute '$0 list' para ver as configurações disponíveis."
-                return 1
-            fi
-            ;;
-    esac
+    # Configurar teclados específicos
+    configure_keyboards "$command" "$auto_apply"
     
     print_header "Configuração Concluída"
     print_success "Karabiner-Elements foi configurado com sucesso!"
