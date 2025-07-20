@@ -13,10 +13,10 @@ source "$(dirname "$0")/dev/setups/sync_drive_folders.sh"
 source "$(dirname "$0")/dev/setups/setup_global_env.sh"
 source "$(dirname "$0")/dev/setups/setup_node.sh"
 source "$(dirname "$0")/dev/setups/setup_java.sh"
+source "$(dirname "$0")/dev/setups/setup_ides.sh"
 source "$(dirname "$0")/dev/setups/setup_vscode.sh"
 source "$(dirname "$0")/dev/installs/install_ai_tools.sh"
 source "$(dirname "$0")/flow_coder/install_flow_coder_cli.sh"
-source "$(dirname "$0")/gcloud/setup_gcloud.sh"
 #source "$(dirname "$0")/dev/install_flow_coder_ide.sh"
 #source "$(dirname "$0")/dev/open_project_iterm.sh"
 
@@ -40,11 +40,10 @@ setup_dev() {
 
     setup_java
 
+    setup_ides
+
     # TODO - Criar setup do python
     #setup_python
-
-    # TODO - Testar
-    setup_gcloud
 
     setup_vscode
 
