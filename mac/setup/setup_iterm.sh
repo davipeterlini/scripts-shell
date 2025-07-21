@@ -3,6 +3,7 @@
 source "$(dirname "$0")/mac/install_homebrew.sh"
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/bash_tools.sh"
+source "$(dirname "$0")/utils/profile_writer.sh"
 
 install_iterm2() {
     if ! brew list --cask iterm2 >/dev/null 2>&1; then
@@ -19,6 +20,11 @@ install_iterm2() {
 download_and_import_themes() {
     print_header_info "Downloading iTerm2 themes..."
     local theme_path=~/Downloads/material-design-colors.itermcolors
+    
+    # Backup iTerm2 preferences before making changes
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    _backup_profile_file ~/Library/Preferences/com.googlecode.iterm2.plist "$timestamp"
+    
     curl -o "$theme_path" https://raw.githubusercontent.com/MartinSeeler/iterm2-material-design/master/material-design-colors.itermcolors
     
     print_info "Importing iTerm2 theme automatically..."
@@ -45,6 +51,10 @@ install_powerline_fonts() {
     git clone https://github.com/powerline/fonts.git && cd fonts && ./install.sh
     cd .. && rm -rf fonts
     
+    # Backup iTerm2 preferences before making changes
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    _backup_profile_file ~/Library/Preferences/com.googlecode.iterm2.plist "$timestamp"
+    
     print_info "Setting Meslo LG L for Powerline as default font..."
     defaults write com.googlecode.iterm2 "Normal Font" -string "MesloLGLForPowerline-Regular 12"
     print_success "Font settings updated. You may need to restart iTerm2 for changes to take effect."
@@ -52,6 +62,10 @@ install_powerline_fonts() {
 
 configure_iterm_session_persistence() {
     print_header_info "Configuring iTerm2 to restore sessions and use current directory for new tabs..."
+    
+    # Backup iTerm2 preferences before making changes
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    _backup_profile_file ~/Library/Preferences/com.googlecode.iterm2.plist "$timestamp"
     
     # Configure iTerm2 to restore sessions on startup
     defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
@@ -75,10 +89,32 @@ configure_iterm_session_persistence() {
     defaults write com.googlecode.iterm2 "ReuseWindowsWhenPossible" -bool true
     
     # Configure working directory for new tabs
-    /usr/libexec/PlistBuddy -c "Set :\"New Bookmarks\":0:\"Custom Directory\" Recycle" ~/Library/Preferences/com.googlecode.iterm2.plist
+    /usr/libexec/PlistBuddy -c "Set :\"New Bookmarks\":0:\"Custom Directory\" Recycle" ~/Library/Preferences/com.googlecode.iterm2.plist 2>/dev/null || true
     /usr/libexec/PlistBuddy -c "Set :\"New Bookmarks\":0:\"Working Directory\" Recycle" ~/Library/Preferences/com.googlecode.iterm2.plist
     
     print_success "iTerm2 session persistence and working directory settings configured."
+}
+
+# Add iTerm2 specific settings to shell profile if needed
+configure_iterm_shell_integration() {
+    print_header_info "Configuring iTerm2 shell integration..."
+    
+    # Check if shell integration is already installed
+    if ! grep -q "iterm2_shell_integration" ~/.zshrc; then
+        # Add iTerm2 shell integration to profile
+        local integration_script="# iTerm2 Shell Integration\nif [ -e \"${HOME}/.iterm2_shell_integration.zsh\" ]; then\n  source \"${HOME}/.iterm2_shell_integration.zsh\"\nfi"
+        write_to_profile "$integration_script" ~/.zshrc
+        
+        # Download iTerm2 shell integration script if not present
+        if [ ! -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
+            print_info "Downloading iTerm2 shell integration script..."
+            curl -L https://iterm2.com/shell_integration/zsh -o "${HOME}/.iterm2_shell_integration.zsh"
+        fi
+        
+        print_success "iTerm2 shell integration configured"
+    else
+        print_info "iTerm2 shell integration already configured"
+    fi
 }
 
 setup_iterm() {
@@ -94,6 +130,7 @@ setup_iterm() {
     download_and_import_themes
     install_powerline_fonts
     configure_iterm_session_persistence
+    configure_iterm_shell_integration
     
     # Restart iTerm2 to apply all changes
     print_info "Restarting iTerm2 to apply all changes..."
