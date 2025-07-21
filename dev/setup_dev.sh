@@ -16,6 +16,7 @@ source "$(dirname "$0")/dev/setups/setup_projects.sh"
 source "$(dirname "$0")/dev/setups/setup_python.sh"
 source "$(dirname "$0")/dev/setups/setup_projects.sh"
 source "$(dirname "$0")/dev/setups/setup_vscode.sh"
+source "$(dirname "$0")/dev/setups/sync_drive_folders.sh"
 source "$(dirname "$0")/flow_coder/install_flow_coder_cli.sh"
 source "$(dirname "$0")/flow_coder/install_flow_coder_ide.sh"
 
