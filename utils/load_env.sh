@@ -7,6 +7,7 @@ source "$SCRIPT_DIR/colors_message.sh"
 # TODO - correção desse metodo para funcionar o scripts do git
 # Function to find the project root directory
 find_project_root() {
+  print_error "TESTE"
   local dir="$SCRIPT_DIR"
   while [ "$dir" != "/" ]; do
     if [ -f "$dir/.env" ]; then
