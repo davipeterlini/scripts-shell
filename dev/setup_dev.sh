@@ -1,27 +1,28 @@
 #!/bin/bash
 
-# Utils - corrigindo os caminhos para apontar para a raiz do projeto
-
+# Utils - definindo os caminhos para apontar para a raiz do projeto
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../" && pwd)"
-source "$SCRIPT_DIR/../utils/colors_message.sh"
-source "$SCRIPT_DIR/../utils/load_env.sh"
-source "$SCRIPT_DIR/../utils/detect_os.sh"
+export ROOT_DIR="$(cd "$SCRIPT_DIR/../" && pwd)"
 
-# Scripts Dev - corrigindo os caminhos
+# Carrega as utilidades necessárias
+source "$ROOT_DIR/utils/colors_message.sh"
+source "$ROOT_DIR/utils/load_env.sh"
+source "$ROOT_DIR/utils/detect_os.sh"
+
+# Scripts Dev - importando os scripts necessários
 source "$ROOT_DIR/grant_permissions.sh"
-source "$(dirname "$0")/setups/setup_projects.sh"
-source "$(dirname "$0")/setups/sync_drive_folders.sh"
-source "$(dirname "$0")/setups/setup_global_env.sh"
-source "$(dirname "$0")/setups/setup_node.sh"
-source "$(dirname "$0")/setups/setup_java.sh"
-source "$(dirname "$0")/setups/setup_ides.sh"
-source "$(dirname "$0")/setups/setup_vscode.sh"
-source "$(dirname "$0")/installs/install_ai_tools.sh"
-source "$(dirname "$0")/setups/setup_python.sh"
+source "$SCRIPT_DIR/setups/setup_projects.sh"
+source "$SCRIPT_DIR/setups/sync_drive_folders.sh"
+source "$SCRIPT_DIR/setups/setup_global_env.sh"
+source "$SCRIPT_DIR/setups/setup_node.sh"
+source "$SCRIPT_DIR/setups/setup_java.sh"
+source "$SCRIPT_DIR/setups/setup_ides.sh"
+source "$SCRIPT_DIR/setups/setup_vscode.sh"
+source "$SCRIPT_DIR/installs/install_ai_tools.sh"
+source "$SCRIPT_DIR/setups/setup_python.sh"
 source "$ROOT_DIR/flow_coder/install_flow_coder_cli.sh"
 source "$ROOT_DIR/flow_coder/install_flow_coder_ide.sh"
-#source "$(dirname "$0")/open_project_iterm.sh"
+#source "$SCRIPT_DIR/open_project_iterm.sh"
 
 # Função principal
 setup_dev() {

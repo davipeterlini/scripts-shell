@@ -1,11 +1,19 @@
 #!/bin/bash
 
+# Determina o diretório do script atual
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
+
+# Determina o diretório raiz do projeto
+# Se o script for chamado diretamente, o ROOT_DIR será dois níveis acima
+# Se for chamado via setup_dev.sh, o ROOT_DIR já estará definido
+if [[ -z "${ROOT_DIR}" ]]; then
+    ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
+fi
+
+# Carrega as utilidades necessárias
 source "$ROOT_DIR/utils/colors_message.sh"
 source "$ROOT_DIR/utils/load_env.sh"
 source "$ROOT_DIR/utils/bash_tools.sh"
-
 
 # Function to check if Node.js is installed and has the correct version
 check_node_version() {
@@ -155,7 +163,9 @@ setup_node() {
   return 1
 }
 
-# Execute main function if script is run directly
+# Verifica se o script está sendo executado diretamente ou importado
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  setup_node "$@"
+    # Se executado diretamente, carrega o ambiente e executa a função principal
+    load_env
+    setup_node "$@"
 fi
