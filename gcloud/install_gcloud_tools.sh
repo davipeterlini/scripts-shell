@@ -74,7 +74,7 @@ install_gsutil() {
 
 # Function to check and install all necessary tools
 install_gcloud_tools() {
-  print_header "Checking and installing Google Cloud tools..."
+  print_header_info "Checking and installing Google Cloud tools..."
 
   if ! get_user_confirmation "Do you want installing Google Cloud tools ?"; then
     print_info "Skipping install"

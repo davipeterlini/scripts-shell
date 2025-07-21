@@ -385,17 +385,17 @@ _____provide_manual_key_addition_instructions() {
 setup_bitbucket_accounts() {
   print_header "Setting up multiple Bitbucket accounts..."
 
+  if ! get_user_confirmation "Do you want to set up multiple Bitbucket accounts?"; then
+    print_info "Skipping configuration"
+    return 0
+  fi
+
   # Ensure SSH directory exists
   _ensure_ssh_dir
 
   # Load environment variables
   load_env .env.personal
   load_env .env.work
-
-  if ! get_user_confirmation "Do you want to set up multiple Bitbucket accounts?"; then
-    print_info "Skipping configuration"
-    return 0
-  fi
 
   while true; do
     # Get account details

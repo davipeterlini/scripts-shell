@@ -4,6 +4,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/colors_message.sh"
 
+# TODO - correção desse metodo para funcionar o scripts do git
 # Function to find the project root directory
 find_project_root() {
   local dir="$SCRIPT_DIR"
