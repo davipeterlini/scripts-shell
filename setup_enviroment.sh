@@ -76,5 +76,3 @@ setup_enviroment() {
 
 # Execute the script
 setup_enviroment
-
-# TODO - should have a mechanism that when interrupting CTRL + C in terminal it interrupts script by script

@@ -348,13 +348,6 @@ check_jetbrains() {
   fi
 }
 
-#######################################
-# Main function to setup IDEs
-# Arguments:
-#   None
-# Returns:
-#   0 if successful, 1 otherwise
-#######################################
 setup_ides() {
   print_info "Starting IDE setup..."
   
@@ -376,7 +369,6 @@ setup_ides() {
   fi
 }
 
-# Execute main function if script is run directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   setup_ides "$@"
 fi

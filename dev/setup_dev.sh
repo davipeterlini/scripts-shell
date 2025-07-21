@@ -1,28 +1,22 @@
 #!/bin/bash
 
-# Utils - defining paths to point to project root
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export ROOT_DIR="$(cd "$SCRIPT_DIR/../" && pwd)"
+s# Utils
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/load_env.sh"
+source "$(dirname "$0")/utils/detect_os.sh"
 
-# Load necessary utilities
-source "$ROOT_DIR/utils/colors_message.sh"
-source "$ROOT_DIR/utils/load_env.sh"
-source "$ROOT_DIR/utils/detect_os.sh"
-
-# Dev Scripts - importing necessary scripts
-source "$ROOT_DIR/grant_permissions.sh"
-source "$SCRIPT_DIR/setups/setup_projects.sh"
-source "$SCRIPT_DIR/setups/sync_drive_folders.sh"
-source "$SCRIPT_DIR/setups/setup_global_env.sh"
-source "$SCRIPT_DIR/setups/setup_node.sh"
-source "$SCRIPT_DIR/setups/setup_java.sh"
-source "$SCRIPT_DIR/setups/setup_ides.sh"
-source "$SCRIPT_DIR/setups/setup_vscode.sh"
-source "$SCRIPT_DIR/installs/install_ai_tools.sh"
-source "$SCRIPT_DIR/setups/setup_python.sh"
-source "$ROOT_DIR/flow_coder/install_flow_coder_cli.sh"
-source "$ROOT_DIR/flow_coder/install_flow_coder_ide.sh"
-#source "$SCRIPT_DIR/open_project_iterm.sh"
+# Scripts Dev Setup
+source "$(dirname "$0")/grant_permissions.sh"
+source "$(dirname "$0")/dev/setups/setup_global_env.sh"
+source "$(dirname "$0")/dev/setups/setup_ides.sh"
+source "$(dirname "$0")/dev/setups/setup_java.sh"
+source "$(dirname "$0")/dev/setups/setup_node.sh"
+source "$(dirname "$0")/dev/setups/setup_projects.sh"
+source "$(dirname "$0")/dev/setups/setup_python.sh"
+source "$(dirname "$0")/dev/setups/setup_projects.sh"
+source "$(dirname "$0")/dev/setups/setup_vscode.sh"
+source "$(dirname "$0")/flow_coder/install_flow_coder_cli.sh"
+source "$(dirname "$0")/flow_coder/install_flow_coder_ide.sh"
 
 # Main function
 setup_dev() {

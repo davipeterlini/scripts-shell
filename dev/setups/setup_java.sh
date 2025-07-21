@@ -94,7 +94,6 @@ install_java_with_sdkman() {
   fi
 }
 
-# Main function
 setup_java() {
   print_header_info "Check Installation Java"
 
@@ -117,7 +116,6 @@ setup_java() {
   return 1
 }
 
-# Execute main function if script is run directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   setup_java "$@"
 fi

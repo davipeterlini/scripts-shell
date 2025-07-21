@@ -129,7 +129,7 @@ _restart_karabiner() {
         if open -a "Karabiner-Elements"; then
             print_success "Karabiner-Elements started successfully!"
             
-            # Dar tempo para o Karabiner-Elements iniciar e detectar os dispositivos
+            # Give time for Karabiner-Elements to start and detect devices
             print_info "Waiting for Karabiner-Elements to initialize (10 seconds)..."
             sleep 10
         else
@@ -202,7 +202,7 @@ _check_karabiner_running() {
             print_info "Starting Karabiner-Elements..."
             open -a "Karabiner-Elements"
             
-            # Dar tempo para o Karabiner-Elements iniciar e detectar os dispositivos
+            # Give time for Karabiner-Elements to start and detect devices
             print_info "Waiting for Karabiner-Elements to initialize (10 seconds)..."
             sleep 10
             
@@ -227,7 +227,7 @@ _initialize_default_profile_with_all_keyboards() {
     
     print_info "Initializing default profile with all available keyboards..."
     
-    # Verificar se o arquivo de configuração existe
+    # Check if the configuration file exists
     if [ ! -f "$config_file" ]; then
         print_error "Karabiner configuration file not found: $config_file"
         return 1
@@ -279,7 +279,7 @@ _list_available_keyboards() {
     
     local config_file="$HOME/.config/karabiner/karabiner.json"
     
-    # Verificar se o arquivo de configuração existe
+    # Check if the configuration file exists
     if [ ! -f "$config_file" ]; then
         print_error "Karabiner configuration file not found: $config_file"
         return 1
@@ -366,21 +366,21 @@ _select_keyboard() {
 _enable_keyboard_for_profile() {
     local config_file="$HOME/.config/karabiner/karabiner.json"
     local device_info="$1"  # formato: vendor_id:product_id:name
-    local profile_index="$2"  # índice do perfil (geralmente 0 para o perfil padrão)
+    local profile_index="$2"  # profile index (usually 0 for the default profile)
     
-    # Extrair vendor_id e product_id
+    # Extract vendor_id and product_id
     IFS=: read -r vendor_id product_id name <<< "$device_info"
     
     print_info "Enabling keyboard '$name' for the profile..."
     
-    # Criar um arquivo temporário
+    # Create a temporary file
     local temp_file=$(mktemp)
     
-    # Verificar se o perfil já tem dispositivos configurados
+    # Check if the profile already has devices configured
     local has_devices=$(jq -r --argjson idx "$profile_index" '.profiles[$idx].devices != null' "$config_file")
     
     if [ "$has_devices" = "true" ]; then
-        # Adicionar o dispositivo à lista existente
+        # Add the device to the existing list
         jq --arg vendor "$vendor_id" --arg product "$product_id" --argjson profile_idx "$profile_index" '
             .profiles[$profile_idx].devices += [
                 {
@@ -398,7 +398,7 @@ _enable_keyboard_for_profile() {
             ]
         ' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
     else
-        # Criar uma nova lista de dispositivos
+        # Create a new list of devices
         jq --arg vendor "$vendor_id" --arg product "$product_id" --argjson profile_idx "$profile_index" '
             .profiles[$profile_idx].devices = [
                 {
@@ -429,23 +429,23 @@ _enable_keyboard_for_profile() {
 # Generic function to apply a configuration from a JSON file
 _apply_config_from_file() {
     local config_file_path="$1"
-    local auto_apply="$2"  # Se definido como "yes", aplica automaticamente sem perguntar
+    local auto_apply="$2"  # If set to "yes", applies automatically without asking
     local karabiner_config_file="$HOME/.config/karabiner/karabiner.json"
     
-    # Verificar se o arquivo de configuração existe
+    # Check if the configuration file exists
     if [ ! -f "$config_file_path" ]; then
         print_error "Configuration file not found: $config_file_path"
         return 1
     fi
     
-    # Mostrar descrição da configuração
+    # Show configuration description
     local title=$(jq -r '.title' "$config_file_path")
     local description=$(jq -r '.rules[0].description' "$config_file_path")
     
     print_header_info "Configuring: $title"
     print_info "Description: $description"
     
-    # Verificar se a regra já existe e removê-la automaticamente
+    # Check if the rule already exists and remove it automatically
     if _rule_exists "$karabiner_config_file" "$description"; then
         print_info "The rule '$description' already exists in the configuration. Removing to overwrite..."
         _remove_rule "$karabiner_config_file" "$description"
@@ -455,10 +455,10 @@ _apply_config_from_file() {
         local temp_file=$(mktemp)
         print_info "Adding rule: $description"
         
-        # Extrair as regras do arquivo JSON
+        # Extract the rules from the JSON file
         local rules=$(jq -c '.rules' "$config_file_path")
         
-        # Adicionar as regras ao arquivo de configuração
+        # Add the rules to the configuration file
         jq --argjson new_rules "$rules" '
             if .profiles[0].complex_modifications.rules == null then
                 .profiles[0].complex_modifications.rules = $new_rules
@@ -505,7 +505,7 @@ list_available_configs() {
     
     echo ""
     print "To apply a specific configuration, run:"
-    print_yellow "  $0 <nome_da_configuração>"
+    print_yellow "  $0 <configuration_name>"
     echo ""
     print "To apply all configurations, run:"
     print_yellow "  $0 all"
@@ -514,13 +514,13 @@ list_available_configs() {
     print_yellow "  $0 all auto"
 }
 
-# Função para aplicar uma configuração específica
+# Function to apply a specific configuration
 apply_config() {
     local config_name="$1"
-    local auto_apply="$2"  # Se definido como "yes", aplica automaticamente sem perguntar
+    local auto_apply="$2"  # If set to "yes", applies automatically without asking
     local config_file="$(dirname "$0")/karabine_config/configs/${config_name}.json"
     
-    # Verificar se o arquivo existe
+    # Check if the file exists
     if [ -f "$config_file" ]; then
         _apply_config_from_file "$config_file" "$auto_apply"
     else
@@ -530,9 +530,9 @@ apply_config() {
     fi
 }
 
-# Função para aplicar todas as configurações
+# Function to apply all configurations
 apply_all_configs() {
-    local auto_apply="$1"  # Se definido como "yes", aplica automaticamente sem perguntar
+    local auto_apply="$1"  # If set to "yes", applies automatically without asking
     local config_dir="$(dirname "$0")/karabine_config/configs"
     
     if [ ! -d "$config_dir" ]; then
@@ -554,7 +554,7 @@ apply_all_configs() {
             if [ -f "$config_file" ]; then
                 count=$((count + 1))
                 print_header "Configuration $count of $file_count"
-                _apply_config_from_file "$config_file" "yes"  # Aplica automaticamente sem perguntar novamente
+                _apply_config_from_file "$config_file" "yes"  # Apply automatically without asking again
             fi
         done
         
@@ -564,7 +564,7 @@ apply_all_configs() {
     fi
 }
 
-# Função para configurar teclados específicos
+# Function to configure specific keyboards
 configure_keyboards() {
     local command="$1"
     local auto_apply="$2"
@@ -572,15 +572,15 @@ configure_keyboards() {
     # Check if Karabiner-Elements is running
     _check_karabiner_running || return 1
     
-    # Inicializar o perfil padrão com todos os teclados disponíveis
+    # Initialize the default profile with all available keyboards
     _initialize_default_profile_with_all_keyboards
     
-    # Listar os teclados disponíveis
+    # List the available keyboards
     _list_available_keyboards || {
         print_alert "Could not list available keyboards."
         print_info "Applying configurations to all keyboards..."
         
-        # Aplicar as configurações conforme o comando
+        # Apply the configurations according to the command
         case "$command" in
             "list")
                 list_available_configs
@@ -589,11 +589,11 @@ configure_keyboards() {
                 apply_all_configs "$auto_apply"
                 ;;
             *)
-                # Verificar se o comando é um nome de arquivo sem extensão
+                # Check if the command is a filename without extension
                 if [ -f "$(dirname "$0")/karabine_config/configs/${command}.json" ]; then
                     apply_config "$command" "$auto_apply"
                 else
-                    print_error "Comando ou configuração desconhecida: $command"
+                    print_error "Unknown command or configuration: $command"
                     print_info "Run '$0 list' to see available configurations."
                     return 1
                 fi
@@ -603,10 +603,10 @@ configure_keyboards() {
         return 0
     }
     
-    # Continuar configurando teclados até que o usuário decida parar
+    # Continue configuring keyboards until the user decides to stop
     local continue_config="yes"
     while [ "$continue_config" = "yes" ]; do
-        # Selecionar um teclado
+        # Select a keyboard
         local selected_keyboard=$(_select_keyboard)
         
         if [ -z "$selected_keyboard" ]; then
@@ -614,14 +614,14 @@ configure_keyboards() {
             return 1
         fi
         
-        # Extrair o nome do teclado
+        # Extract the keyboard name
         local keyboard_name=$(echo "$selected_keyboard" | cut -d':' -f3)
         print_header "Configuring keyboard: $keyboard_name"
         
-        # Habilitar o teclado para o perfil padrão (índice 0)
+        # Enable the keyboard for the default profile (index 0)
         _enable_keyboard_for_profile "$selected_keyboard" 0
         
-        # Aplicar as configurações conforme o comando
+        # Apply the configurations according to the command
         case "$command" in
             "list")
                 list_available_configs
@@ -630,24 +630,24 @@ configure_keyboards() {
                 apply_all_configs "$auto_apply"
                 ;;
             *)
-                # Verificar se o comando é um nome de arquivo sem extensão
+                # Check if the command is a filename without extension
                 if [ -f "$(dirname "$0")/karabine_config/configs/${command}.json" ]; then
                     apply_config "$command" "$auto_apply"
                 else
-                    print_error "Comando ou configuração desconhecida: $command"
+                    print_error "Unknown command or configuration: $command"
                     print_info "Run '$0 list' to see available configurations."
                     return 1
                 fi
                 ;;
         esac
         
-        # Perguntar se deseja configurar outro teclado
+        # Ask if they want to configure another keyboard
         if ! get_user_confirmation "Do you want to configure another keyboard?"; then
             continue_config="no"
         fi
     done
     
-    # Reiniciar o Karabiner-Elements para aplicar as alterações
+    # Restart Karabiner-Elements to apply the changes
     _restart_karabiner
     
     return 0
@@ -655,7 +655,7 @@ configure_keyboards() {
 
 setup_karabiner() {
     local command="$1"
-    local auto_mode="$2"  # Se definido como "auto", aplica automaticamente sem perguntar
+    local auto_mode="$2"  # If set to "auto", applies automatically without asking
     local auto_apply="no"
     
     if [ "$auto_mode" = "auto" ]; then
@@ -668,13 +668,13 @@ setup_karabiner() {
     _create_config_directory
     _initialize_karabiner_config
     
-    # Se nenhum comando for fornecido, mostrar a lista de configurações
+    # If no command is provided, show the list of configurations
     if [ -z "$command" ]; then
         list_available_configs
         return 0
     fi
     
-    # Configurar teclados específicos
+    # Configure specific keyboards
     configure_keyboards "$command" "$auto_apply"
     
     print_header "Configuration Completed"
