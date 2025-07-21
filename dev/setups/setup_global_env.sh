@@ -192,11 +192,27 @@ _reload_profile() {
   local profile="$1"
   
   if [ -f "$profile" ]; then
-    print_alert "Reloading the profile file $(basename $profile)..."
-    source "$profile"
+    print_alert "Notificando sobre o arquivo de perfil $(basename $profile)..."
+    print_info "As variáveis de ambiente estarão disponíveis na próxima vez que você abrir um terminal"
+    print_info "ou após executar manualmente: source $profile"
+    
+    # Verificar se o arquivo de perfil pode ser carregado sem problemas (em uma subshell)
+    if (bash -c "source $profile" &>/dev/null); then
+      print_success "O arquivo de perfil $(basename $profile) foi verificado com sucesso."
+    else
+      print_alert "Aviso: O arquivo de perfil $(basename $profile) pode conter erros."
+      print_info "Continuando a execução do script..."
+    fi
+    
+    # Carregar as variáveis de ambiente no ambiente atual para uso imediato
+    # sem sair do script atual
+    if [ -f "$HOME/.env" ]; then
+      export $(grep -v '^#' "$HOME/.env" | xargs) 2>/dev/null
+      print_success "Variáveis de ambiente carregadas no script atual."
+    fi
   else
-    print_error "Could not reload the profile file $(basename $profile) because it does not exist."
-    exit 1
+    print_error "Não foi possível encontrar o arquivo de perfil $(basename $profile)."
+    print_info "Continuando a execução do script..."
   fi
 }
 
