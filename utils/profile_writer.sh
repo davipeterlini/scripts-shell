@@ -80,7 +80,18 @@ _backup_profile_file() {
         local backup_file="${profile_file}.backup.$(date -d "$timestamp" +%Y%m%d_%H%M%S 2>/dev/null || date -j -f '%Y-%m-%d %H:%M:%S' "$timestamp" +%Y%m%d_%H%M%S 2>/dev/null || echo $(date +%Y%m%d_%H%M%S))"
         cp "$profile_file" "$backup_file"
         print_info "Profile backup created: $backup_file"
+        return 0
     fi
+    return 1
+}
+
+# Function to ensure a backup is created before any profile modification
+_ensure_profile_backup() {
+    local profile_file="$1"
+    local timestamp="$2"
+    
+    # Always create a backup before modifying the profile
+    _backup_profile_file "$profile_file" "$timestamp"
 }
 
 # Function to validate profile file path
@@ -140,10 +151,8 @@ write_to_profile() {
         return 0
     fi
     
-    # Create backup if requested
-    if [[ "$create_backup" == "true" ]]; then
-        _backup_profile_file "$profile_file" "$timestamp"
-    fi
+    # Always ensure a backup is created before modifying the profile
+    _ensure_profile_backup "$profile_file" "$timestamp"
     
     # Create profile file if it doesn't exist
     if [[ ! -f "$profile_file" ]]; then
@@ -289,8 +298,8 @@ remove_script_entries_from_profile() {
         return 0
     fi
     
-    # Create backup
-    _backup_profile_file "$profile_file" "$(_get_timestamp)"
+    # Always ensure a backup is created before modifying the profile
+    _ensure_profile_backup "$profile_file" "$(_get_timestamp)"
     
     # Remove entries between script headers and footers
     sed -i.tmp "/^# Added by: $script_name$/,/^# End of $script_name configuration$/d" "$profile_file"

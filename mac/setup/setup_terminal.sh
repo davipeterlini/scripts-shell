@@ -114,7 +114,7 @@ change_theme() {
 setup_terminal() {
     print_header_info "Terminal Setup"
 
-    if ! get_user_confirmation "Do you want Setup Iterm2 ?"; then
+    if ! get_user_confirmation "Do you want Setup Terminal ?"; then
         print_info "Skipping configuration"
         return 0
     fi

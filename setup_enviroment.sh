@@ -3,28 +3,26 @@
 # Load Scripts
 set -e # Exit script if any command fails
 
+# Utils
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/load_env.sh"
 source "$(dirname "$0")/utils/detect_os.sh"
 
+# Universal Scripts
 source "$(dirname "$0")/grant_permissions.sh"
 source "$(dirname "$0")/install_apps.sh"
 
+# Mac scripts
 source "$(dirname "$0")/mac/setup_mac.sh"
 
+# Repository Scripts
 source "$(dirname "$0")/github/setup_github_accounts.sh"
 source "$(dirname "$0")/bitbucket/setup_bitbucket_accounts.sh"
 source "$(dirname "$0")/ssh-config/setup_ssh_config.sh"
+
+# Dev Scripts
 source "$(dirname "$0")/dev/setup_dev.sh"
 
-
-# TODO - adjust after fixing mac scripts and creating linux ones
-# _setup_linux() {
-#     print_info "Setting up terminal configurations..."
-#     ./mac/setup/setup_terminal.sh
-
-#     # TODO - criar mais scripts e colocar mais configurações
-# }
 
 setup_enviroment() {
     print_info "Detecting the operating system..."
@@ -38,7 +36,7 @@ setup_enviroment() {
     if [[ "$os" == "macOS" ]]; then
         setup_mac
     elif [[ "$os" == "linux" ]]; then
-        # _setup_linux
+        # TODO - create de function setup_linux
         print_info "Linux setup not implemented yet"
     else
         print_alert "Unsupported OS: $os"
