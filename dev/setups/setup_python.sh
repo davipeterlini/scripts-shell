@@ -21,7 +21,7 @@ COMMON_TOOLS=(
 )
 
 _check_pyenv() {
-    print_header_info "Checking pyenv installation"
+    print_info "Checking pyenv installation"
     
     # Check if pyenv command exists
     if ! command -v pyenv &>/dev/null; then
@@ -44,7 +44,7 @@ _check_pyenv() {
 }
 
 _check_python() {
-    print_header_info "Checking Python installation"
+    print_info "Checking Python installation"
     
     # Check if pyenv is available
     if ! command -v pyenv &>/dev/null; then
@@ -101,7 +101,7 @@ _check_python() {
 }
 
 _check_pipx() {
-    print_header_info "Checking pipx installation"
+    print_info "Checking pipx installation"
     
     # Check if pipx command exists
     if ! command -v pipx &>/dev/null; then
@@ -149,7 +149,7 @@ _check_pipx() {
 }
 
 _check_dev_tools() {
-    print_header_info "Checking development tools"
+    print_info "Checking development tools"
     
     local all_installed=true
     
@@ -361,7 +361,7 @@ _install_pipx() {
 }
 
 _install_dev_tools() {
-    print_header_info "Installing Python development tools"
+    print_info "Installing Python development tools"
     
     if ! get_user_confirmation "Do you want to install common Python development tools?"; then
         print_alert "Development tools installation skipped by user"
@@ -399,7 +399,7 @@ _install_dev_tools() {
 }
 
 _create_venv_helper() {
-    print_header_info "Creating venv helper script"
+    print_info "Creating venv helper script"
     
     if ! get_user_confirmation "Do you want to create a venv helper script?"; then
         print_alert "venv helper script creation skipped by user"
@@ -457,7 +457,7 @@ EOF
 }
 
 _verify_installation() {
-    print_header_info "Verifying Installation"
+    print_info "Verifying Installation"
     
     # Check all components
     local all_ok=true
@@ -541,7 +541,6 @@ setup_python() {
     # Final verification
     _verify_installation
     
-    print_header_info "Installation Complete"
     print_info "You now have a complete Python $PYTHON_VERSION development environment"
     
     # Determine shell profile file
@@ -559,6 +558,8 @@ setup_python() {
     print_yellow "eval \"\$(pyenv init --path)\""
     print_yellow "eval \"\$(pyenv init -)\""
     print_yellow "export PIPX_DEFAULT_PYTHON=\"$python_path\""
+
+    print_success "Installation Complete"
 }
 
 # Check if the script is being executed directly or imported

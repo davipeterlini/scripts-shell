@@ -9,7 +9,7 @@ source "$(dirname "$0")/utils/bash_tools.sh"
 check_node_version() {
   print_info "Checking Node.js version..."
 
-  # The NODE_REQUIRED_VERSION variable is already defined in constants.sh as readonly
+  # A variável NODE_REQUIRED_VERSION já está definida em constants.sh como readonly
 
   if ! command -v node &> /dev/null; then
     print_alert "Node.js is not installed."
@@ -18,39 +18,39 @@ check_node_version() {
 
   node_version=$(node -v | sed 's/v//')
   
-  # Check the exact version
+  # Verificar a versão exata
   if [[ "$node_version" != "$NODE_REQUIRED_VERSION" ]]; then
-    print_alert "Node.js version $NODE_REQUIRED_VERSION is required. Current version: $node_version"
+    print_alert "Node.js versão $NODE_REQUIRED_VERSION é necessária. Versão atual: $node_version"
     
-    # Check if NVM is available
+    # Verificar se o NVM está disponível
     if command -v nvm &> /dev/null || [ -f "$HOME/.nvm/nvm.sh" ]; then
-      print_info "Using NVM to install and configure Node.js $NODE_REQUIRED_VERSION..."
+      print_info "Usando NVM para instalar e configurar Node.js $NODE_REQUIRED_VERSION..."
       
-      # Load NVM if necessary
+      # Carregar NVM se necessário
       if [ -f "$HOME/.nvm/nvm.sh" ]; then
         export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
       fi
       
-      # Install the specific version
+      # Instalar a versão específica
       if nvm install $NODE_REQUIRED_VERSION; then
-        # Use the installed version
+        # Usar a versão instalada
         nvm use $NODE_REQUIRED_VERSION
-        # Set as default
+        # Configurar como padrão
         nvm alias default $NODE_REQUIRED_VERSION
-        print_success "Node.js v$NODE_REQUIRED_VERSION installed and configured as default."
+        print_success "Node.js v$NODE_REQUIRED_VERSION instalado e configurado como padrão."
         return 0
       else
-        print_error "Failed to install Node.js v$NODE_REQUIRED_VERSION using NVM."
+        print_error "Falha ao instalar Node.js v$NODE_REQUIRED_VERSION usando NVM."
         return 1
       fi
     else
-      print_alert "NVM is not installed. Please install NVM first."
+      print_alert "NVM não está instalado. Por favor, instale o NVM primeiro."
       return 1
     fi
   fi
 
-  print_success "Node.js version $node_version is compatible."
+  print_success "Node.js versão $node_version é compatível."
   return 0
 }
 
@@ -132,7 +132,7 @@ check_npm() {
 
 # Main function
 setup_node() {
-  print_header_info "Check Setup Node (node, nvm, npm)"
+  print_header_info "Check Installation Node (node, nvm, npm)"
 
   if ! get_user_confirmation "Do you want Check Setup Node ?"; then
       print_info "Skipping configuration"
