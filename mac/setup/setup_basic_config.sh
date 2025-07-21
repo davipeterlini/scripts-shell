@@ -127,10 +127,9 @@ configure_all() {
     configure_dock
     apply_changes
     
+    print
     print_success "Basic macOS configuration completed!"
-    print
     print_alert "Some changes may require a restart to take full effect."
-    print
     
     return 0
 }
