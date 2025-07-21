@@ -5,7 +5,7 @@ source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/bash_tools.sh"
 source "$(dirname "$0")/utils/profile_writer.sh"
 
-install_oh_my_zsh() {
+_install_oh_my_zsh() {
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
         print_info "Installing Oh My Zsh..."
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
@@ -14,7 +14,7 @@ install_oh_my_zsh() {
     fi
 }
 
-set_zsh_as_default() {
+_set_zsh_as_default() {
     print_header_info "Setting zsh as default shell..."
     
     # Check if zsh is in the list of allowed shells
@@ -139,8 +139,8 @@ setup_terminal() {
     fi
 
     # Then proceed with other configurations
-    install_oh_my_zsh
-    set_zsh_as_default
+    _install_oh_my_zsh
+    _set_zsh_as_default
     install_plugins
     add_custom_prompt
     #change_theme
