@@ -11,9 +11,9 @@ source "$ROOT_DIR/utils/colors_message.sh"
 source "$ROOT_DIR/utils/detect_os.sh"
 
 # Constants
-readonly VSCODE_DOWNLOAD_URL="https://code.visualstudio.com/download"
-readonly JETBRAINS_DOWNLOAD_URL="https://www.jetbrains.com/products/"
-readonly JETBRAINS_TOOLBOX_URL="https://www.jetbrains.com/toolbox-app/"
+VSCODE_DOWNLOAD_URL="https://code.visualstudio.com/download"
+JETBRAINS_DOWNLOAD_URL="https://www.jetbrains.com/products/"
+JETBRAINS_TOOLBOX_URL="https://www.jetbrains.com/toolbox-app/"
 
 #######################################
 # Install Homebrew on macOS

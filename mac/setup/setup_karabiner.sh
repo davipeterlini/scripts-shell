@@ -19,7 +19,7 @@ _check_brew_installed() {
 }
 
 _install_karabiner() {
-    print_header "Karabiner-Elements"
+    print_header_info "Karabiner-Elements"
     
     if brew list --cask karabiner-elements &>/dev/null; then
         print_success "Karabiner-Elements is already installed."
@@ -54,7 +54,7 @@ _create_config_directory() {
 }
 
 _initialize_karabiner_config() {
-    print_header "Initializing Karabiner-Elements configuration"
+    print_info "Initializing Karabiner-Elements configuration"
     
     local config_file="$HOME/.config/karabiner/karabiner.json"
     local base_config_file="$(dirname "$0")/karabine_config/base_config.json"

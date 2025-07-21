@@ -24,19 +24,14 @@ setup_mac() {
         exit 1
     fi
 
-    # Basic Mac configuration
     setup_basic_config
     
-    # iTerm2 configuration
     setup_iterm
     
-    # Terminal configuration
     setup_terminal
     
-    # Enable Touch ID for sudo
     enable_touchid_sudo
 
-    # Keyboard configuration 
     setup_karabiner all
 
     print_success "Mac setup completed successfully!"

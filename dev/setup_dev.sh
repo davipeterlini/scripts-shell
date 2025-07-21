@@ -1,6 +1,6 @@
 #!/bin/bash
 
-s# Utils
+# Utils
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/load_env.sh"
 source "$(dirname "$0")/utils/detect_os.sh"
