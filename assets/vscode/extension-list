@@ -1,13 +1,13 @@
 VSCODE_EXTENSIONS=(
     # Key config
     "alphabotsec.vscode-eclipse-keybindings"
-    # show todo list 
+    # Show todo list 
     "Gruntfuggly.todo-tree"
     # Git extension
     "eamodio.gitlens" 
-    # Extension for typescript
+    # Extension for TypeScript
     "Noctarya.typescript-web-development-extension-pack"
-    # Extension for javascript
+    # Extension for JavaScript
     "esbenp.prettier-vscode"
     "dbaeumer.vscode-eslint"
     "yoavbls.pretty-ts-errors"
@@ -15,8 +15,15 @@ VSCODE_EXTENSIONS=(
     #"GitHub.copilot"
     #"GitHub.copilot-labs"
     #"prompt-flow.prompt-flow"
-    "cit-flow-coder-assistant.cit-flow-coder-assistant"
-    # Extension for markdown
+    #"cit-flow-coder-assistant.cit-flow-coder-assistant"
+    "ciandt-global.ciandt-flow"
+    "saoudrizwan.claude-dev"
+    "RooVeterinaryInc.roo-cline"
+    "Continue.continue"
+    # Extension for Python
+    "ms-python.python"
+    "ms-python.vscode-pylance"
+    # Extension for Markdown
     #"mervin.markdown-formatter"
     # Tools for request
     #"rangav.vscode-thunder-client"
@@ -24,21 +31,19 @@ VSCODE_EXTENSIONS=(
     #"ms-azuretools.vscode-docker"
     # Dot-env
     #"mikestead.dotenv"
-    # Thema
+    # Theme
     #"gerane.Theme-Dracula"
-    #naumovs.color-highlight"   
+    #"naumovs.color-highlight"   
     # Language
     #"MS-CEINTL.vscode-language-pack-pt-BR"
     # Compare folder
     #"moshfeu.compare-folders"
-    # Extension for jest  
+    # Extension for Jest  
     #"Orta.vscode-jest"
     #"firsttris.vscode-jest-runner"
     #"vitest.explorer"
     # Security Extension
     #"PrismaCloud.prisma-cloud"
-    # Browser Exctension
+    # Browser Extension
     #"ms-playwright.playwright"
-
-
 )
