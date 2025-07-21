@@ -101,9 +101,12 @@ configure_iterm_shell_integration() {
     
     # Check if shell integration is already installed
     if ! grep -q "iterm2_shell_integration" ~/.zshrc; then
-        # Add iTerm2 shell integration to profile
-        local integration_script="# iTerm2 Shell Integration\nif [ -e \"${HOME}/.iterm2_shell_integration.zsh\" ]; then\n  source \"${HOME}/.iterm2_shell_integration.zsh\"\nfi"
-        write_to_profile "$integration_script" ~/.zshrc
+        # Add iTerm2 shell integration to profile using write_lines_to_profile instead
+        write_lines_to_profile "# iTerm2 Shell Integration" \
+                              "if [ -e \"${HOME}/.iterm2_shell_integration.zsh\" ]; then" \
+                              "  source \"${HOME}/.iterm2_shell_integration.zsh\"" \
+                              "fi" \
+                              ~/.zshrc
         
         # Download iTerm2 shell integration script if not present
         if [ ! -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
