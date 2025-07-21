@@ -58,7 +58,7 @@ _set_zsh_as_default() {
     fi
 }
 
-install_plugins() {
+_install_plugins() {
     print_header_info "Installing recommended plugins..."
     
     # Define plugin directories - explicitly use HOME
@@ -152,7 +152,7 @@ setup_terminal() {
     # Then proceed with other configurations
     _install_oh_my_zsh
     _set_zsh_as_default
-    install_plugins
+    _install_plugins
     add_custom_prompt
     #change_theme
     
