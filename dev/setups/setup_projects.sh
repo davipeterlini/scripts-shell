@@ -1,9 +1,11 @@
 #!/bin/bash
 
-source "$(dirname "$0")/../../utils/colors_message.sh"
-source "$(dirname "$0")/../../utils/load_env.sh"
-source "$(dirname "$0")/../../utils/bash_tools.sh"
-source "$(dirname "$0")/../../utils/manage_git_repo.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
+source "$ROOT_DIR/utils/colors_message.sh"
+source "$ROOT_DIR/utils/load_env.sh"
+source "$ROOT_DIR/utils/bash_tools.sh"
+source "$ROOT_DIR/utils/manage_git_repo.sh"
 
 # Function to display environment selection menu with exit option
 select_environment_with_exit() {

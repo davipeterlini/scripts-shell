@@ -1,8 +1,10 @@
 #!/bin/bash
 
-source "$(dirname "$0")/../../utils/colors_message.sh"
-source "$(dirname "$0")/../../utils/load_env.sh"
-source "$(dirname "$0")/../../utils/bash_tools.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
+source "$ROOT_DIR/utils/colors_message.sh"
+source "$ROOT_DIR/utils/load_env.sh"
+source "$ROOT_DIR/utils/bash_tools.sh"
 
 
 # Function to check if Node.js is installed and has the correct version

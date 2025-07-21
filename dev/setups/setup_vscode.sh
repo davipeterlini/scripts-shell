@@ -3,20 +3,31 @@
 # TODO - aplicar o autosave 
 # TODO - aplicar o wrapper de linha
 
-source "$(dirname "$0")/utils/colors_message.sh"
-source "$(dirname "$0")/utils/load_env.sh"
-source "$(dirname "$0")/utils/detect_os.sh"
-source "$(dirname "$0")/save_vscode_settings.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
+source "$ROOT_DIR/utils/colors_message.sh"
+source "$ROOT_DIR/utils/load_env.sh"
+source "$ROOT_DIR/utils/detect_os.sh"
 
+# Verificar se o arquivo save_vscode_settings.sh existe
+if [ -f "$SCRIPT_DIR/../save_vscode_settings.sh" ]; then
+    source "$SCRIPT_DIR/../save_vscode_settings.sh"
+else
+    print_error "Arquivo save_vscode_settings.sh não encontrado"
+    # Definir uma função vazia para evitar erros
+    setup_vscode_config() {
+        print_alert "Função setup_vscode_config não disponível"
+    }
+fi
 
 # Function to read extensions from assets/vscode/extension-list file
 _read_vscode_extensions() {
-    local extension_file="$(dirname "$0")/../../assets/vscode/extension-list"
+    local extension_file="$ROOT_DIR/assets/vscode/extension-list"
     
     if [ ! -f "$extension_file" ]; then
         print_error "Extension list file not found at: $extension_file"
         return 1
-    fi
+    }
     
     print_info "Reading VSCode extensions from $extension_file"
     
@@ -58,7 +69,7 @@ _install_vscode_extensions() {
 _save_vscode_settings() {
     local os=$(detect_os)
     local settings_path
-    local source_settings="../.vscode/settings.json"
+    local source_settings="$ROOT_DIR/assets/vscode/settings.json"
 
     case "$os" in
         macOS)
@@ -83,7 +94,7 @@ _save_vscode_settings() {
         print_success "Settings saved to: $settings_path"
     else
         print_alert "Source settings.json not found at: $source_settings"
-        print_error "Please make sure the file exists in the .vscode folder."
+        print_error "Please make sure the file exists in the assets/vscode folder."
         exit 1
     fi
 }
@@ -91,7 +102,7 @@ _save_vscode_settings() {
 _save_vscode_keybindings() {
     local os=$(detect_os)
     local keybindings_path
-    local source_keybindings="$(dirname "$0")/../../assets/vscode/keybindings.json"
+    local source_keybindings="$ROOT_DIR/assets/vscode/keybindings.json"
 
     case "$os" in
         macOS)
