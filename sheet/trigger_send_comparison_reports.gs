@@ -35,13 +35,21 @@ function createSendComparisonReportsTriggers() {
     .everyDays(1)
     .create();
     
-  Logger.log('Triggers created for 8:30 AM and 13:30 PM daily');
+  Logger.log('Triggers created for 8:30 AM and 13:30 PM daily (Monday to Friday only)');
 }
 
 /**
  * Checks for comparison report sheets and sends emails with divergences
+ * Only runs from Monday to Friday
  */
 function sendComparisonReports() {
+  // Check if today is a weekend (Saturday = 6, Sunday = 0)
+  const today = new Date().getDay();
+  if (today === 0 || today === 6) {
+    Logger.log('Today is a weekend. Skipping email sending.');
+    return;
+  }
+  
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   
   // Check for CLI Report

@@ -84,6 +84,27 @@ _find_base_config_file() {
     return 0
 }
 
+_find_configs_dir() {
+    # Tenta encontrar o diretório de configurações em diferentes locais
+    local possible_paths=(
+        "$(dirname "$0")/karabine_config/configs"
+        "$(dirname "$0")/../mac/setup/karabine_config/configs"
+        "$(dirname "$0")/mac/setup/karabine_config/configs"
+        "$(pwd)/mac/setup/karabine_config/configs"
+    )
+    
+    for path in "${possible_paths[@]}"; do
+        if [ -d "$path" ]; then
+            echo "$path"
+            return 0
+        fi
+    done
+    
+    # Se não encontrar, retorna um caminho absoluto específico
+    echo "/Users/$(whoami)/projects-personal/scripts-shell/mac/setup/karabine_config/configs"
+    return 0
+}
+
 _initialize_karabiner_config() {
     print_info "Initializing Karabiner-Elements configuration"
     
@@ -137,6 +158,230 @@ _ensure_jq_installed() {
     fi
 }
 
+_check_karabiner_running() {
+    if ! pgrep -q "karabiner"; then
+        print_alert "Karabiner-Elements is not running."
+        if get_user_confirmation "Do you want to start Karabiner-Elements now?"; then
+            print_info "Starting Karabiner-Elements..."
+            open -a "Karabiner-Elements"
+            
+            # Give time for Karabiner-Elements to start and detect devices
+            print_info "Waiting for Karabiner-Elements to initialize (10 seconds)..."
+            sleep 10
+            
+            # Check again if it's running
+            if ! pgrep -q "karabiner"; then
+                print_error "Could not start Karabiner-Elements. Please start it manually."
+                return 1
+            fi
+        else
+            print_error "Karabiner-Elements needs to be running to continue. Aborting."
+            return 1
+        fi
+    fi
+    
+    return 0
+}
+
+_list_available_keyboards() {
+    print_header "Available Keyboards"
+    
+    local config_file="$HOME/.config/karabiner/karabiner.json"
+    
+    # Check if the configuration file exists
+    if [ ! -f "$config_file" ]; then
+        print_error "Karabiner configuration file not found: $config_file"
+        return 1
+    fi
+    
+    # Check if Karabiner-Elements is running
+    _check_karabiner_running || return 1
+    
+    # Extract the list of devices
+    local devices=$(jq -r '.devices[] | select(.is_keyboard == true or .is_keyboard == null) | "\(.vendor_id):\(.product_id):\(.name // "Keyboard without name")"' "$config_file" 2>/dev/null)
+    
+    if [ -z "$devices" ]; then
+        print_alert "No keyboards found in Karabiner configuration."
+        print_info "Please check if your keyboards are connected and if Karabiner-Elements detected them."
+        return 1
+    fi
+    
+    # Display the list of keyboards
+    print_info "The following keyboards are available:"
+    echo ""
+    
+    local count=0
+    while IFS=: read -r vendor_id product_id name; do
+        count=$((count + 1))
+        print_yellow "$count) $name"
+        print "   ID: $vendor_id:$product_id"
+    done <<< "$devices"
+    
+    echo ""
+    return 0
+}
+
+_initialize_default_profile_with_all_keyboards() {
+    local config_file="$HOME/.config/karabiner/karabiner.json"
+    local temp_file=$(mktemp)
+    
+    print_info "Initializing default profile with all available keyboards..."
+    
+    # Check if the configuration file exists
+    if [ ! -f "$config_file" ]; then
+        print_error "Karabiner configuration file not found: $config_file"
+        return 1
+    fi
+    
+    # Check if there are devices in the configuration
+    if ! jq -e '.devices' "$config_file" > /dev/null 2>&1; then
+        print_alert "No devices found in Karabiner configuration."
+        print_info "Please wait while Karabiner-Elements detects your devices..."
+        return 1
+    fi
+    
+    # Create a list of devices for the default profile
+    jq '
+        if .devices then
+            .profiles[0].devices = [
+                .devices[] | 
+                select(.is_keyboard == true or .is_keyboard == null) | 
+                {
+                    "disable_built_in_keyboard_if_exists": false,
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": false,
+                        "product_id": .product_id,
+                        "vendor_id": .vendor_id
+                    },
+                    "ignore": false,
+                    "manipulate_caps_lock_led": true,
+                    "simple_modifications": []
+                }
+            ]
+        else
+            .
+        end
+    ' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+    
+    if [ $? -eq 0 ]; then
+        print_success "Default profile initialized with all available keyboards!"
+        return 0
+    else
+        print_error "Error initializing the default profile."
+        return 1
+    fi
+}
+
+_rule_exists() {
+    local config_file="$1"
+    local rule_description="$2"
+    
+    # Check if a rule with the same description already exists
+    # First we check if the complex_modifications.rules structure exists
+    if ! jq -e '.profiles[0].complex_modifications.rules' "$config_file" > /dev/null 2>&1; then
+        return 1  # Structure doesn't exist, so the rule doesn't exist
+    fi
+    
+    # Now we check if there's a rule with the specified description
+    local existing_rule=$(jq -r --arg desc "$rule_description" '.profiles[0].complex_modifications.rules[] | select(.description == $desc) | .description' "$config_file")
+    
+    if [ -n "$existing_rule" ]; then
+        return 0  # Rule exists
+    else
+        return 1  # Rule doesn't exist
+    fi
+}
+
+_remove_rule() {
+    local config_file="$1"
+    local rule_description="$2"
+    local temp_file=$(mktemp)
+    
+    # Remove the rule with the specified description
+    jq --arg desc "$rule_description" '
+        if .profiles[0].complex_modifications.rules != null then
+            .profiles[0].complex_modifications.rules = [.profiles[0].complex_modifications.rules[] | select(.description != $desc)]
+        else
+            .
+        end
+    ' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+    
+    return $?
+}
+
+_apply_config_from_file() {
+    local config_file_path="$1"
+    local karabiner_config_file="$HOME/.config/karabiner/karabiner.json"
+    
+    # Check if the configuration file exists
+    if [ ! -f "$config_file_path" ]; then
+        print_error "Configuration file not found: $config_file_path"
+        return 1
+    fi
+    
+    # Show configuration description
+    local title=$(jq -r '.title' "$config_file_path")
+    local description=$(jq -r '.rules[0].description' "$config_file_path")
+    
+    print_header_info "Configuring: $title"
+    print_info "Description: $description"
+    
+    # Check if the rule already exists and remove it automatically
+    if _rule_exists "$karabiner_config_file" "$description"; then
+        print_info "The rule '$description' already exists in the configuration. Removing to overwrite..."
+        _remove_rule "$karabiner_config_file" "$description"
+    fi
+    
+    local temp_file=$(mktemp)
+    print_info "Adding rule: $description"
+    
+    # Extract the rules from the JSON file
+    local rules=$(jq -c '.rules' "$config_file_path")
+    
+    # Add the rules to the configuration file
+    jq --argjson new_rules "$rules" '
+        if .profiles[0].complex_modifications.rules == null then
+            .profiles[0].complex_modifications.rules = $new_rules
+        else
+            .profiles[0].complex_modifications.rules += $new_rules
+        end
+    ' "$karabiner_config_file" > "$temp_file" && mv "$temp_file" "$karabiner_config_file"
+    
+    print_success "Configuration '$title' added successfully!"
+}
+
+_apply_all_configs() {
+    # Encontrar o diretório de configurações
+    local configs_dir=$(_find_configs_dir)
+    
+    if [ ! -d "$configs_dir" ]; then
+        print_error "Configurations directory not found: $configs_dir"
+        return 1
+    fi
+    
+    local file_count=$(find "$configs_dir" -name "*.json" | wc -l | tr -d ' ')
+    
+    if [ "$file_count" -eq 0 ]; then
+        print_alert "No configurations found in directory: $configs_dir"
+        return 1
+    fi
+    
+    print_info "Applying $file_count configurations from $configs_dir..."
+    
+    local count=0
+    for config_file in "$configs_dir"/*.json; do
+        if [ -f "$config_file" ]; then
+            count=$((count + 1))
+            print_header "Configuration $count of $file_count"
+            _apply_config_from_file "$config_file"
+        fi
+    done
+    
+    print_success "All $count configurations have been applied."
+    return 0
+}
+
 _restart_karabiner() {
     print_header "Restarting Karabiner-Elements"
     
@@ -185,6 +430,24 @@ setup_karabiner() {
     _install_karabiner
     _create_config_directory
     _initialize_karabiner_config
+    
+    # Verificar se o Karabiner está em execução
+    _check_karabiner_running
+    
+    # Inicializar o perfil padrão com todos os teclados disponíveis
+    _initialize_default_profile_with_all_keyboards
+    
+    # Listar os teclados disponíveis
+    _list_available_keyboards
+    
+    # Perguntar se o usuário deseja aplicar todas as configurações
+    if get_user_confirmation "Do you want to apply all configurations to all keyboards?"; then
+        _apply_all_configs
+    else
+        print_info "Skipping configuration application."
+    fi
+    
+    # Reiniciar o Karabiner para aplicar as alterações
     _restart_karabiner
     
     print_header "Configuration Completed"
