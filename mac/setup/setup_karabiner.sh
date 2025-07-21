@@ -5,12 +5,12 @@ source "$(dirname "$0")/utils/bash_tools.sh"
 
 _check_brew_installed() {
     if ! command -v brew &> /dev/null; then
-        print_alert "Homebrew não está instalado."
-        if get_user_confirmation "Deseja instalar o Homebrew agora?"; then
-            print_info "Instalando Homebrew..."
+        print_alert "Homebrew is not installed."
+        if get_user_confirmation "Do you want to install Homebrew now?"; then
+            print_info "Installing Homebrew..."
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         else
-            print_error "Homebrew é necessário para continuar. Abortando."
+            print_error "Homebrew is required to continue. Aborting."
             exit 1
         fi
     else
@@ -25,18 +25,18 @@ _install_karabiner() {
         print_success "Karabiner-Elements já está instalado."
     else
         print_info "Karabiner-Elements não está instalado."
-        if get_user_confirmation "Deseja instalar o Karabiner-Elements agora?"; then
+        if get_user_confirmation "Do you want to install Karabiner-Elements now?"; then
             print_info "Instalando Karabiner-Elements..."
             brew install --cask karabiner-elements
             
             if [ $? -eq 0 ]; then
                 print_success "Karabiner-Elements instalado com sucesso!"
             else
-                print_error "Erro ao instalar Karabiner-Elements."
+                print_error "Error installing Karabiner-Elements."
                 exit 1
             fi
         else
-            print_error "Karabiner-Elements é necessário para continuar. Abortando."
+            print_error "Karabiner-Elements is required to continue. Aborting."
             exit 1
         fi
     fi
@@ -59,13 +59,13 @@ _initialize_karabiner_config() {
     local config_file="$HOME/.config/karabiner/karabiner.json"
     local base_config_file="$(dirname "$0")/karabine_config/base_config.json"
     
-    # Verificar se o arquivo de configuração base existe
+    # Check if base configuration file exists
     if [ ! -f "$base_config_file" ]; then
         print_error "Arquivo de configuração base não encontrado: $base_config_file"
         exit 1
     fi
     
-    # Verificar se o arquivo de configuração já existe
+    # Check if configuration file already exists
     if [ -f "$config_file" ]; then
         print_info "Arquivo de configuração encontrado."
         if get_user_confirmation "Deseja fazer backup da configuração atual?"; then
@@ -74,14 +74,14 @@ _initialize_karabiner_config() {
             print_success "Backup criado em: $backup_file"
         fi
         
-        # Verificar se o arquivo tem a estrutura necessária
+        # Check if file has the necessary structure
         if ! jq -e '.profiles[0].complex_modifications' "$config_file" > /dev/null 2>&1; then
-            print_alert "O arquivo de configuração existente não tem a estrutura necessária."
+            print_alert "The existing configuration file does not have the necessary structure."
             if get_user_confirmation "Deseja substituir pelo arquivo de configuração base?"; then
                 cp "$base_config_file" "$config_file"
                 print_success "Arquivo de configuração substituído com sucesso."
             else
-                print_error "Não é possível continuar sem a estrutura correta. Abortando."
+                print_error "Cannot continue without the correct structure. Aborting."
                 exit 1
             fi
         fi

@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Shell Utils Library Installer
-# Instalador automático para a biblioteca Shell Utils
+# Automatic installer for Shell Utils library
 
 set -e
 
-# Configurações
+# Configuration
 REPO_URL="https://github.com/seu-usuario/shell-utils.git"
 INSTALL_DIR="/usr/local/lib"
 BIN_DIR="/usr/local/bin"
@@ -19,7 +19,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Funções básicas de output
+# Basic output functions
 print_info() {
     echo -e "${BLUE}ℹ️  $1${NC}"
 }
@@ -36,15 +36,15 @@ print_warning() {
     echo -e "${YELLOW}⚠️  $1${NC}"
 }
 
-# Verificar se está executando como root (para instalação global)
+# Check if running as root (for global installation)
 check_root() {
     if [[ $EUID -ne 0 ]] && [[ "$1" == "global" ]]; then
-        print_error "Instalação global requer privilégios de root. Use: sudo $0 global"
+        print_error "Global installation requires root privileges. Use: sudo $0 global"
         exit 1
     fi
 }
 
-# Detectar sistema operacional
+# Detect operating system
 detect_os() {
     case "$(uname -s)" in
         Darwin) OS="macos" ;;
@@ -54,34 +54,34 @@ detect_os() {
     esac
 }
 
-# Instalar dependências
+# Install dependencies
 install_dependencies() {
-    print_info "Verificando dependências..."
+    print_info "Checking dependencies..."
     
     if ! command -v git &> /dev/null; then
-        print_error "Git não está instalado. Instale o Git primeiro."
+        print_error "Git is not installed. Install Git first."
         exit 1
     fi
     
-    # Verificar curl ou wget
+    # Check curl or wget
     if ! command -v curl &> /dev/null && ! command -v wget &> /dev/null; then
-        print_error "curl ou wget são necessários para download."
+        print_error "curl or wget are required for download."
         exit 1
     fi
     
-    print_success "Dependências verificadas"
+    print_success "Dependencies verified"
 }
 
-# Instalar localmente no projeto
+# Install locally in project
 install_local() {
     local target_dir="${1:-./libs}"
     
-    print_info "Instalando Shell Utils localmente em: $target_dir"
+    print_info "Installing Shell Utils locally in: $target_dir"
     
-    # Criar diretório se não existir
+    # Create directory if it doesn't exist
     mkdir -p "$target_dir"
     
-    # Baixar arquivo diretamente
+    # Download file directly
     if command -v curl &> /dev/null; then
         curl -sL "https://raw.githubusercontent.com/seu-usuario/shell-utils/main/libs/shell-utils.sh" -o "$target_dir/shell-utils.sh"
     elif command -v wget &> /dev/null; then
@@ -90,19 +90,19 @@ install_local() {
     
     chmod +x "$target_dir/shell-utils.sh"
     
-    print_success "Instalado em: $target_dir/shell-utils.sh"
+    print_success "Installed in: $target_dir/shell-utils.sh"
     print_info "Para usar: source \"$target_dir/shell-utils.sh\""
 }
 
-# Instalar globalmente no sistema
+# Install globally in system
 install_global() {
-    print_info "Instalando Shell Utils globalmente..."
+    print_info "Installing Shell Utils globally..."
     
-    # Criar diretórios
+    # Create directories
     mkdir -p "$INSTALL_DIR"
     mkdir -p "$BIN_DIR"
     
-    # Baixar e instalar biblioteca
+    # Download and install library
     if command -v curl &> /dev/null; then
         curl -sL "https://raw.githubusercontent.com/seu-usuario/shell-utils/main/libs/shell-utils.sh" -o "$INSTALL_DIR/$LIB_NAME.sh"
     elif command -v wget &> /dev/null; then
@@ -121,22 +121,22 @@ EOF
     
     chmod +x "$BIN_DIR/$LIB_NAME"
     
-    print_success "Instalado globalmente em: $INSTALL_DIR/$LIB_NAME.sh"
+    print_success "Installed globally in: $INSTALL_DIR/$LIB_NAME.sh"
     print_info "Para usar: source \"$INSTALL_DIR/$LIB_NAME.sh\""
-    print_info "Comando disponível: $LIB_NAME"
+    print_info "Available command: $LIB_NAME"
 }
 
-# Instalar via gerenciador de pacotes (preparar estrutura)
+# Install via package manager (prepare structure)
 install_package() {
-    print_info "Preparando estrutura para empacotamento..."
+    print_info "Preparing structure for packaging..."
     
     local pkg_dir="./package"
     mkdir -p "$pkg_dir"/{usr/local/lib,usr/local/bin,DEBIAN}
     
-    # Copiar arquivos
+    # Copy files
     cp libs/shell-utils.sh "$pkg_dir/usr/local/lib/"
     
-    # Criar control file para Debian
+    # Create control file for Debian
     cat > "$pkg_dir/DEBIAN/control" << EOF
 Package: shell-utils
 Version: $VERSION
@@ -156,7 +156,7 @@ Description: Shell utilities library for automation and development tools
  - Cross-platform browser opening
 EOF
     
-    # Criar wrapper
+    # Create wrapper
     cat > "$pkg_dir/usr/local/bin/shell-utils" << 'EOF'
 #!/bin/bash
 source "/usr/local/lib/shell-utils.sh"
@@ -166,55 +166,55 @@ EOF
     chmod +x "$pkg_dir/usr/local/bin/shell-utils"
     chmod +x "$pkg_dir/usr/local/lib/shell-utils.sh"
     
-    print_success "Estrutura de pacote criada em: $pkg_dir"
+    print_success "Package structure created in: $pkg_dir"
     print_info "Para criar pacote .deb: dpkg-deb --build $pkg_dir shell-utils_$VERSION.deb"
 }
 
-# Desinstalar
+# Uninstall
 uninstall() {
-    print_info "Removendo Shell Utils..."
+    print_info "Removing Shell Utils..."
     
-    # Remover arquivos globais
+    # Remove global files
     if [[ -f "$INSTALL_DIR/$LIB_NAME.sh" ]]; then
         rm -f "$INSTALL_DIR/$LIB_NAME.sh"
-        print_success "Removido: $INSTALL_DIR/$LIB_NAME.sh"
+        print_success "Removed: $INSTALL_DIR/$LIB_NAME.sh"
     fi
     
     if [[ -f "$BIN_DIR/$LIB_NAME" ]]; then
         rm -f "$BIN_DIR/$LIB_NAME"
-        print_success "Removido: $BIN_DIR/$LIB_NAME"
+        print_success "Removed: $BIN_DIR/$LIB_NAME"
     fi
     
-    print_success "Desinstalação concluída"
+    print_success "Uninstallation completed"
 }
 
 # Verificar instalação
 check_installation() {
-    print_info "Verificando instalação..."
+    print_info "Checking installation..."
     
-    # Verificar instalação global
+    # Check global installation
     if [[ -f "$INSTALL_DIR/$LIB_NAME.sh" ]]; then
-        print_success "Instalação global encontrada: $INSTALL_DIR/$LIB_NAME.sh"
+        print_success "Global installation found: $INSTALL_DIR/$LIB_NAME.sh"
         
-        # Testar carregamento
+        # Test loading
         if source "$INSTALL_DIR/$LIB_NAME.sh" 2>/dev/null; then
-            print_success "Biblioteca carrega corretamente"
+            print_success "Library loads correctly"
         else
-            print_error "Erro ao carregar biblioteca"
+            print_error "Error loading library"
         fi
     else
-        print_warning "Instalação global não encontrada"
+        print_warning "Global installation not found"
     fi
     
-    # Verificar comando
+    # Check command
     if command -v "$LIB_NAME" &> /dev/null; then
-        print_success "Comando '$LIB_NAME' disponível"
+        print_success "Command '$LIB_NAME' available"
     else
-        print_warning "Comando '$LIB_NAME' não encontrado"
+        print_warning "Command '$LIB_NAME' not found"
     fi
 }
 
-# Ajuda
+# Help
 show_help() {
     cat << EOF
 Shell Utils Library Installer v$VERSION
@@ -223,19 +223,19 @@ USAGE:
     $0 [COMMAND] [OPTIONS]
 
 COMMANDS:
-    local [DIR]     Instalar localmente (padrão: ./libs)
-    global          Instalar globalmente (requer sudo)
-    package         Criar estrutura de empacotamento
-    uninstall       Remover instalação global
-    check           Verificar instalação
-    help            Mostrar esta ajuda
+    local [DIR]     Install locally (default: ./libs)
+    global          Install globally (requires sudo)
+    package         Create packaging structure
+    uninstall       Remove global installation
+    check           Check installation
+    help            Show this help
 
 EXAMPLES:
-    $0 local                    # Instalar em ./libs/
-    $0 local ./vendor           # Instalar em ./vendor/
-    sudo $0 global              # Instalar globalmente
-    $0 package                  # Criar pacote .deb
-    $0 check                    # Verificar instalação
+    $0 local                    # Install in ./libs/
+    $0 local ./vendor           # Install in ./vendor/
+    sudo $0 global              # Install globally
+    $0 package                  # Create .deb package
+    $0 check                    # Check installation
 
 USAGE AFTER INSTALL:
     Local:  source "./libs/shell-utils.sh"
@@ -245,7 +245,7 @@ USAGE AFTER INSTALL:
 EOF
 }
 
-# Função principal
+# Main function
 main() {
     detect_os
     
@@ -273,12 +273,12 @@ main() {
             show_help
             ;;
         *)
-            print_error "Comando inválido: $1"
+            print_error "Invalid command: $1"
             show_help
             exit 1
             ;;
     esac
 }
 
-# Executar função principal
+# Execute main function
 main "$@"
