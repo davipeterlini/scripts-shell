@@ -18,37 +18,11 @@ source "${SCRIPTS_DIR}/install_apps.sh"
 source "${SCRIPTS_DIR}/mac/setup_mac.sh"
 
 source "$(dirname "$0")/github/setup_github_accounts.sh"
-#source "$(dirname "$0")/github/connect_git_ssh_account.sh"
-#source "$(dirname "$0")/github/generate-classic-token-gh-local.sh"
 source "$(dirname "$0")/bitbucket/setup_bitbucket_accounts.sh"
-#source "$(dirname "$0")/github/connect_bitbucket_ssh_account.sh"
-#source "$(dirname "$0")/github/generate-classic-token-bb-local.sh"
 source "$(dirname "$0")/ssh-config/setup_ssh_config.sh"
 source "$(dirname "$0")/gcloud/setup_gcloud.sh"
 source "$(dirname "$0")/dev/setup_dev.sh"
 
-
-_setup_github () {
-    # Configuring multiple SSH keys for GitHub accounts...
-    setup_github_accounts
-
-    # Connecting to GitHub using SSH...
-    #connect_git_ssh_account
-
-    # Generating GitHub Personal Access Token...
-    #generate-classic-token-gh-local.sh
-}
-
-_setup_bitbucket () {
-    # Configuring multiple SSH keys for GitHub accounts...
-    setup_bitbucket_accounts
-
-    # Connecting to GitHub using SSH...
-    #connect_bitbucket_ssh_account.sh
-
-    # Generating GitHub Personal Access Token...
-    #generate-classic-token-bb-local.sh
-}
 
 # TODO - adjust after fixing mac scripts and creating linux ones
 # _setup_linux() {
@@ -90,8 +64,8 @@ setup_enviroment() {
         print_alert "Unsupported OS: $os"
     fi
 
-    _setup_github
-    _setup_bitbucket
+    setup_github_accounts
+    setup_bitbucket_accounts
     setup_ssh_config
     setup_gcloud
 

@@ -137,7 +137,7 @@ configure_all() {
 
 add_dock_utilities() {
   print_header_info "Adding separator and utilities to Dock with dockutil..."
-  instalar_dockutil
+  install_dockutil
 
   # Remove duplicates if they already exist
   print_info "Removing duplicate items from Dock..."
@@ -164,7 +164,7 @@ add_dock_utilities() {
   print_success "Dock configured successfully!"
 }
 
-instalar_dockutil() {
+install_dockutil() {
   print_info "Checking Homebrew installation..."
   
   # Use the install_homebrew function from mac/install_homebrew.sh script

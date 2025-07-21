@@ -14,7 +14,7 @@ _check_brew_installed() {
             exit 1
         fi
     else
-        print_info "Homebrew já está instalado."
+        print_info "Homebrew is already installed."
     fi
 }
 
@@ -22,15 +22,15 @@ _install_karabiner() {
     print_header "Karabiner-Elements"
     
     if brew list --cask karabiner-elements &>/dev/null; then
-        print_success "Karabiner-Elements já está instalado."
+        print_success "Karabiner-Elements is already installed."
     else
-        print_info "Karabiner-Elements não está instalado."
+        print_info "Karabiner-Elements is not installed."
         if get_user_confirmation "Do you want to install Karabiner-Elements now?"; then
-            print_info "Instalando Karabiner-Elements..."
+            print_info "Installing Karabiner-Elements..."
             brew install --cask karabiner-elements
             
             if [ $? -eq 0 ]; then
-                print_success "Karabiner-Elements instalado com sucesso!"
+                print_success "Karabiner-Elements installed successfully!"
             else
                 print_error "Error installing Karabiner-Elements."
                 exit 1
@@ -46,7 +46,7 @@ _create_config_directory() {
     local config_dir="$HOME/.config/karabiner"
     
     if [ ! -d "$config_dir" ]; then
-        print_info "Criando diretório de configuração..."
+        print_info "Creating configuration directory..."
         mkdir -p "$config_dir"
     fi
     
@@ -54,42 +54,42 @@ _create_config_directory() {
 }
 
 _initialize_karabiner_config() {
-    print_header "Inicializando configuração do Karabiner-Elements"
+    print_header "Initializing Karabiner-Elements configuration"
     
     local config_file="$HOME/.config/karabiner/karabiner.json"
     local base_config_file="$(dirname "$0")/karabine_config/base_config.json"
     
     # Check if base configuration file exists
     if [ ! -f "$base_config_file" ]; then
-        print_error "Arquivo de configuração base não encontrado: $base_config_file"
+        print_error "Base configuration file not found: $base_config_file"
         exit 1
     fi
     
     # Check if configuration file already exists
     if [ -f "$config_file" ]; then
-        print_info "Arquivo de configuração encontrado."
-        if get_user_confirmation "Deseja fazer backup da configuração atual?"; then
+        print_info "Configuration file found."
+        if get_user_confirmation "Do you want to backup the current configuration?"; then
             local backup_file="${config_file}.backup.$(date +%Y%m%d%H%M%S)"
             cp "$config_file" "$backup_file"
-            print_success "Backup criado em: $backup_file"
+            print_success "Backup created at: $backup_file"
         fi
         
         # Check if file has the necessary structure
         if ! jq -e '.profiles[0].complex_modifications' "$config_file" > /dev/null 2>&1; then
             print_alert "The existing configuration file does not have the necessary structure."
-            if get_user_confirmation "Deseja substituir pelo arquivo de configuração base?"; then
+            if get_user_confirmation "Do you want to replace with the base configuration file?"; then
                 cp "$base_config_file" "$config_file"
-                print_success "Arquivo de configuração substituído com sucesso."
+                print_success "Configuration file replaced successfully."
             else
                 print_error "Cannot continue without the correct structure. Aborting."
                 exit 1
             fi
         fi
     else
-        print_info "Criando novo arquivo de configuração..."
-        # Copiar o arquivo de configuração base
+        print_info "Creating new configuration file..."
+        # Copy the base configuration file
         cp "$base_config_file" "$config_file"
-        print_success "Arquivo de configuração criado em: $config_file"
+        print_success "Configuration file created at: $config_file"
     fi
     
     # Garantir que a estrutura complex_modifications.rules exista
@@ -106,39 +106,39 @@ _initialize_karabiner_config() {
 }
 
 _restart_karabiner() {
-    print_header "Reiniciando Karabiner-Elements"
+    print_header "Restarting Karabiner-Elements"
     
-    if get_user_confirmation "Deseja reiniciar o Karabiner-Elements para aplicar as alterações?"; then
-        print_info "Tentando reiniciar o Karabiner-Elements..."
+    if get_user_confirmation "Do you want to restart Karabiner-Elements to apply the changes?"; then
+        print_info "Trying to restart Karabiner-Elements..."
         
-        # Método 1: Tentar reiniciar usando launchctl
+        # Method 1: Try to restart using launchctl
         if launchctl kickstart -k gui/$(id -u)/org.pqrs.karabiner.karabiner_console_user_server &>/dev/null; then
-            print_success "Karabiner-Elements reiniciado com sucesso!"
+            print_success "Karabiner-Elements restarted successfully!"
             return 0
         else
-            print_alert "Não foi possível reiniciar o serviço usando launchctl. Tentando método alternativo..."
+            print_alert "Could not restart the service using launchctl. Trying alternative method..."
         fi
         
-        # Método 2: Tentar encerrar e reiniciar o aplicativo
+        # Method 2: Try to quit and restart the application
         if pkill -f "karabiner"; then
-            print_info "Processos do Karabiner encerrados. Reiniciando o aplicativo..."
+            print_info "Karabiner processes terminated. Restarting the application..."
             sleep 2
         fi
         
-        # Abrir o aplicativo Karabiner-Elements
+        # Open the Karabiner-Elements application
         if open -a "Karabiner-Elements"; then
-            print_success "Karabiner-Elements iniciado com sucesso!"
+            print_success "Karabiner-Elements started successfully!"
             
             # Dar tempo para o Karabiner-Elements iniciar e detectar os dispositivos
             print_info "Waiting for Karabiner-Elements to initialize (10 seconds)..."
             sleep 10
         else
-            print_alert "Não foi possível abrir o Karabiner-Elements automaticamente."
-            print_info "Por favor, abra o Karabiner-Elements manualmente para aplicar as alterações."
-            print_info "Você pode encontrá-lo na pasta Aplicativos ou usando o Spotlight (Cmd+Espaço)."
+            print_alert "Could not open Karabiner-Elements automatically."
+            print_info "Please open Karabiner-Elements manually to apply the changes."
+            print_info "You can find it in the Applications folder or using Spotlight (Cmd+Space)."
         fi
     else
-        print_alert "As alterações só terão efeito após reiniciar o Karabiner-Elements."
+        print_alert "The changes will only take effect after restarting Karabiner-Elements."
     fi
 }
 
@@ -155,34 +155,34 @@ _ensure_jq_installed() {
     fi
 }
 
-# Função para verificar se uma regra já existe na configuração
+# Function to check if a rule already exists in the configuration
 _rule_exists() {
     local config_file="$1"
     local rule_description="$2"
     
-    # Verificar se a regra com a mesma descrição já existe
-    # Primeiro verificamos se a estrutura complex_modifications.rules existe
+    # Check if a rule with the same description already exists
+    # First we check if the complex_modifications.rules structure exists
     if ! jq -e '.profiles[0].complex_modifications.rules' "$config_file" > /dev/null 2>&1; then
-        return 1  # Estrutura não existe, então a regra não existe
+        return 1  # Structure doesn't exist, so the rule doesn't exist
     fi
     
-    # Agora verificamos se existe uma regra com a descrição especificada
+    # Now we check if there's a rule with the specified description
     local existing_rule=$(jq -r --arg desc "$rule_description" '.profiles[0].complex_modifications.rules[] | select(.description == $desc) | .description' "$config_file")
     
     if [ -n "$existing_rule" ]; then
-        return 0  # Regra existe
+        return 0  # Rule exists
     else
-        return 1  # Regra não existe
+        return 1  # Rule doesn't exist
     fi
 }
 
-# Função para remover uma regra existente
+# Function to remove an existing rule
 _remove_rule() {
     local config_file="$1"
     local rule_description="$2"
     local temp_file=$(mktemp)
     
-    # Remover a regra com a descrição especificada
+    # Remove the rule with the specified description
     jq --arg desc "$rule_description" '
         if .profiles[0].complex_modifications.rules != null then
             .profiles[0].complex_modifications.rules = [.profiles[0].complex_modifications.rules[] | select(.description != $desc)]
@@ -194,19 +194,19 @@ _remove_rule() {
     return $?
 }
 
-# Função para verificar se o Karabiner-Elements está em execução
+# Function to check if Karabiner-Elements is running
 _check_karabiner_running() {
     if ! pgrep -q "karabiner"; then
-        print_alert "Karabiner-Elements não está em execução."
-        if get_user_confirmation "Deseja iniciar o Karabiner-Elements agora?"; then
-            print_info "Iniciando Karabiner-Elements..."
+        print_alert "Karabiner-Elements is not running."
+        if get_user_confirmation "Do you want to start Karabiner-Elements now?"; then
+            print_info "Starting Karabiner-Elements..."
             open -a "Karabiner-Elements"
             
             # Dar tempo para o Karabiner-Elements iniciar e detectar os dispositivos
             print_info "Waiting for Karabiner-Elements to initialize (10 seconds)..."
             sleep 10
             
-            # Verificar novamente se está em execução
+            # Check again if it's running
             if ! pgrep -q "karabiner"; then
                 print_error "Could not start Karabiner-Elements. Please start it manually."
                 return 1
@@ -233,14 +233,14 @@ _initialize_default_profile_with_all_keyboards() {
         return 1
     fi
     
-    # Verificar se há dispositivos na configuração
+    # Check if there are devices in the configuration
     if ! jq -e '.devices' "$config_file" > /dev/null 2>&1; then
         print_alert "No devices found in Karabiner configuration."
         print_info "Please wait while Karabiner-Elements detects your devices..."
         return 1
     fi
     
-    # Criar uma lista de dispositivos para o perfil padrão
+    # Create a list of devices for the default profile
     jq '
         if .devices then
             .profiles[0].devices = [
@@ -285,17 +285,17 @@ _list_available_keyboards() {
         return 1
     fi
     
-    # Verificar se o Karabiner-Elements está em execução
+    # Check if Karabiner-Elements is running
     _check_karabiner_running || return 1
     
-    # Extrair a lista de dispositivos
+    # Extract the list of devices
     local devices=$(jq -r '.devices[] | select(.is_keyboard == true or .is_keyboard == null) | "\(.vendor_id):\(.product_id):\(.name // "Keyboard without name")"' "$config_file" 2>/dev/null)
     
     if [ -z "$devices" ]; then
-        print_alert "Nenhum teclado encontrado na configuração do Karabiner."
+        print_alert "No keyboards found in Karabiner configuration."
         print_info "Please check if your keyboards are connected and if Karabiner-Elements detected them."
         
-        # Tentar inicializar o perfil com todos os dispositivos disponíveis
+        # Try to initialize the profile with all available devices
         if get_user_confirmation "Do you want to try using all available devices?"; then
             _initialize_default_profile_with_all_keyboards
             return 0
@@ -304,7 +304,7 @@ _list_available_keyboards() {
         fi
     fi
     
-    # Exibir a lista de teclados
+    # Display the list of keyboards
     print_info "The following keyboards are available:"
     echo ""
     
@@ -323,13 +323,13 @@ _list_available_keyboards() {
 _select_keyboard() {
     local config_file="$HOME/.config/karabiner/karabiner.json"
     
-    # Extrair a lista de dispositivos
+    # Extract the list of devices
     local devices=$(jq -r '.devices[] | select(.is_keyboard == true or .is_keyboard == null) | "\(.vendor_id):\(.product_id):\(.name // "Keyboard without name")"' "$config_file" 2>/dev/null)
     
     if [ -z "$devices" ]; then
-        print_error "Nenhum teclado encontrado na configuração do Karabiner."
+        print_error "No keyboards found in Karabiner configuration."
         
-        # Tentar usar o teclado interno como fallback
+        # Try to use the internal keyboard as fallback
         if get_user_confirmation "Do you want to use the internal keyboard as fallback?"; then
             echo "1452:610:Apple Internal Keyboard"
             return 0
@@ -338,10 +338,10 @@ _select_keyboard() {
         fi
     fi
     
-    # Contar o número de dispositivos
+    # Count the number of devices
     local device_count=$(echo "$devices" | wc -l | tr -d ' ')
     
-    # Solicitar ao usuário que selecione um teclado
+    # Ask the user to select a keyboard
     local selection
     while true; do
         print_info "Enter the number of the keyboard you want to configure (1-$device_count):"
@@ -354,10 +354,10 @@ _select_keyboard() {
         fi
     done
     
-    # Obter o dispositivo selecionado
+    # Get the selected device
     local selected_device=$(echo "$devices" | sed -n "${selection}p")
     
-    # Retornar o dispositivo selecionado
+    # Return the selected device
     echo "$selected_device"
     return 0
 }
@@ -569,7 +569,7 @@ configure_keyboards() {
     local command="$1"
     local auto_apply="$2"
     
-    # Verificar se o Karabiner-Elements está em execução
+    # Check if Karabiner-Elements is running
     _check_karabiner_running || return 1
     
     # Inicializar o perfil padrão com todos os teclados disponíveis

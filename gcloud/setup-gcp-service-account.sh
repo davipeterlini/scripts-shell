@@ -196,7 +196,7 @@ if ! gcloud iam service-accounts keys create "$KEY_FILE" \
     exit 1
 fi
 
-# Definir permissões seguras para o arquivo
+# Set secure permissions for the file
 chmod 600 "$KEY_FILE"
 echo "✅ Chave JSON criada e protegida"
 
@@ -210,8 +210,8 @@ fi
 # 5. Configure default project (again to ensure)
 gcloud config set project $PROJECT_ID
 
-# 6. Configurar variável de ambiente
-echo "🌍 Configurando variáveis de ambiente..."
+# 6. Configure environment variable
+echo "🌍 Configuring environment variables..."
 export GOOGLE_APPLICATION_CREDENTIALS="$KEY_FILE"
 
 # Adicionar ao .bashrc se não existir
