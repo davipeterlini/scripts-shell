@@ -1,14 +1,9 @@
 #!/bin/bash
 
-# Get the absolute directory of the current script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/colors_message.sh"
-
-# TODO - correção desse metodo para funcionar o scripts do git
-# Function to find the project root directory
+# Function to find the prosject root directory
 find_project_root() {
-  print_error "TESTE"
-  local dir="$SCRIPT_DIR"
+  local dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  
   while [ "$dir" != "/" ]; do
     if [ -f "$dir/.env" ]; then
       echo "$dir"
