@@ -3,19 +3,14 @@
 # Load Scripts
 set -e # Exit script if any command fails
 
-# Source utility scripts with absolute paths
-SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-UTILS_DIR="${SCRIPTS_DIR}/utils"
-
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/load_env.sh"
 source "$(dirname "$0")/utils/detect_os.sh"
 
-source "${SCRIPTS_DIR}/grant_permissions.sh"
-source "${SCRIPTS_DIR}/install_apps.sh"
+source "$(dirname "$0")/grant_permissions.sh"
+source "$(dirname "$0")/install_apps.sh"
 
-# Import Mac setup script
-source "${SCRIPTS_DIR}/mac/setup_mac.sh"
+source "$(dirname "$0")/mac/setup_mac.sh"
 
 source "$(dirname "$0")/github/setup_github_accounts.sh"
 source "$(dirname "$0")/bitbucket/setup_bitbucket_accounts.sh"
@@ -58,5 +53,4 @@ setup_enviroment() {
     print_success "Success to Setup Enviroment!!!"
 }
 
-# Execute the script
 setup_enviroment
