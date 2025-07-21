@@ -13,11 +13,6 @@ VSCODE_DOWNLOAD_URL="https://code.visualstudio.com/download"
 JETBRAINS_DOWNLOAD_URL="https://www.jetbrains.com/products/"
 JETBRAINS_TOOLBOX_URL="https://www.jetbrains.com/toolbox-app/"
 
-#######################################
-# Install Homebrew on macOS
-# Returns:
-#   0 if successful, 1 otherwise
-#######################################
 _install_homebrew() {
   print_info "Homebrew not found. Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -35,11 +30,6 @@ _install_homebrew() {
   return 0
 }
 
-#######################################
-# Install VS Code
-# Returns:
-#   0 if successful, 1 otherwise
-#######################################
 _install_vscode() {
   print_info "Installing Visual Studio Code..."
   
@@ -99,11 +89,6 @@ _install_vscode() {
   fi
 }
 
-#######################################
-# Install JetBrains IDE
-# Returns:
-#   0 if successful, 1 otherwise
-#######################################
 _install_jetbrains() {
   print_info "Installing JetBrains IDE..."
   
@@ -180,11 +165,6 @@ _install_jetbrains() {
   return 0
 }
 
-#######################################
-# Check if VS Code is installed and install if needed
-# Returns:
-#   0 if VS Code is available, 1 otherwise
-#######################################
 check_vscode() {
   print_info "Checking for Visual Studio Code..."
   local vscode_found=false
@@ -228,11 +208,6 @@ check_vscode() {
   fi
 }
 
-#######################################
-# Check if any JetBrains IDE is installed and install if needed
-# Returns:
-#   0 if any JetBrains IDE is available, 1 otherwise
-#######################################
 check_jetbrains() {
   print_info "Checking for JetBrains IDEs..."
   local jetbrains_found=false
@@ -347,7 +322,12 @@ check_jetbrains() {
 }
 
 setup_ides() {
-  print_info "Starting IDE setup..."
+  print_header_info "Starting IDE setup..."
+
+  if ! get_user_confirmation "Do you want Start IDE setup ?"; then
+      print_info "Skipping configuration"
+      return 0
+  fi
   
   # Check for VS Code
   check_vscode

@@ -94,7 +94,12 @@ install_java_with_sdkman() {
 }
 
 setup_java() {
-  print_header_info "Check Installation Java"
+  print_header_info "Check Setup Java"
+
+  if ! get_user_confirmation "Do you want Check Setup Java ?"; then
+      print_info "Skipping configuration"
+      return 0
+  fi
 
   # Check if Java is already installed with correct version
   if check_java_version; then

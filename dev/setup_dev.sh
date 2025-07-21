@@ -42,9 +42,9 @@ setup_dev() {
 
     setup_java
 
-    setup_ides
-
     setup_python
+
+    setup_ides
 
     setup_vscode
 

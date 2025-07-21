@@ -486,12 +486,12 @@ _verify_installation() {
 }
 
 setup_python() {
-    print_header "Python Development Environment Setup"
-    
-    if ! get_user_confirmation "This script will install and configure pyenv, Python $PYTHON_VERSION, pipx, and common development tools. Continue?"; then
-        print_alert "Installation cancelled by user"
-        exit 0
-    fi
+  print_header_info "Check Setup Python"
+
+  if ! get_user_confirmation "Do you want Check Setup Python ?"; then
+      print_info "Skipping configuration"
+      return 0
+  fi
     
     # Detect OS
     detect_os

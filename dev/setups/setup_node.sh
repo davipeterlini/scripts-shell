@@ -132,7 +132,13 @@ check_npm() {
 
 # Main function
 setup_node() {
-  print_header "Check Installation Node (node, nvm, npm)"
+  print_header_info "Check Setup Node (node, nvm, npm)"
+
+  if ! get_user_confirmation "Do you want Check Setup Node ?"; then
+      print_info "Skipping configuration"
+      return 0
+  fi
+    
 
   # Check if Node.js is already installed with correct version
   if check_node_version; then
