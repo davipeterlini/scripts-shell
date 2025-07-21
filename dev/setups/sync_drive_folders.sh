@@ -174,7 +174,7 @@ create_folder_structure() {
     fi
     
     # Check if the folder already exists
-    # TODO - Quando voltar a funcionar o app do drives
+    # TODO - When the drive app works again
     #SYNC_FOLDER="$DRIVE_PATH/Meu Drive/$folder_name"
     SYNC_FOLDER="$DRIVE_PATH/$folder_name"
     if [ -d "$SYNC_FOLDER" ]; then
@@ -210,7 +210,7 @@ create_folder_structure() {
             if [[ "$same_parent" == "y" || "$same_parent" == "Y" ]]; then
                 ADDITIONAL_SYNC_FOLDER="$SYNC_FOLDER/$additional_folder"
             else
-                ADDITIONAL_SYNC_FOLDER="$DRIVE_PATH/Meu Drive/$additional_folder"
+                ADDITIONAL_SYNC_FOLDER="$DRIVE_PATH/My Drive/$additional_folder"
             fi
             
             if [ -d "$ADDITIONAL_SYNC_FOLDER" ]; then
@@ -337,7 +337,7 @@ sync_drive_folders() {
         return 0
     fi
     
-    # TODO - só deve ser carregado se não for chamado por outro script
+    # TODO - should only be loaded if not called by another script
     #load_env .env.personal
     #load_env .env.work
     

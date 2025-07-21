@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Script para instalação e teste de ferramentas de IA
+# Script for installing and testing AI tools
 # - Claude Code
 # - OpenAI Codex
 # - Google Gemini CLI
 
-# Importar utilitários de cores para mensagens
+# Import color utilities for messages
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
 source "$ROOT_DIR/utils/colors_message.sh"
@@ -76,7 +76,7 @@ configure_api_keys() {
         print_alert "Gemini API key not configured. Configure manually with: export GEMINI_API_KEY=\"your-api-key-here\""
     fi
     
-    # Recarregar o .bashrc para aplicar as variáveis de ambiente
+    # Reload .bashrc to apply environment variables
     source ~/.bashrc
 }
 

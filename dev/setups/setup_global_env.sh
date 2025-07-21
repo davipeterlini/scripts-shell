@@ -90,17 +90,6 @@ _setup_variables() {
       print_success "Created empty $env_file file."
     fi
   else
-    # Show current content if file exists
-    print_info "Current content of $env_file:"
-    cat "$env_file"
-    
-    # Ask if user wants to create a backup
-    if get_user_confirmation "Do you want to create a backup before modifying the .env file?"; then
-        local backup_path="$env_file.backup.$(date +%Y%m%d%H%M%S)"
-        cp "$env_file" "$backup_path"
-        print_success "Backup created at $backup_path"
-    fi
-    
     # Ask if user wants to proceed with modifications
     if ! get_user_confirmation "Do you want to proceed with modifying environment variables?"; then
         print_info "Skipping environment variable setup."
