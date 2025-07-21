@@ -1,6 +1,7 @@
 {
   "files.autoSave": "onFocusChange",
-    "editor.formatOnSave": true,
+  "editor.formatOnSave": true,
+  "git.autorefresh": true,
   // Shell format     
   "[shellscript]": {
       "editor.defaultFormatter": "foxundermoon.shell-format",
