@@ -4,11 +4,9 @@
 # This script checks for installed IDEs (VS Code and JetBrains) and installs them if not found.
 #
 
-# Setup paths and import utilities
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-source "$ROOT_DIR/utils/colors_message.sh"
-source "$ROOT_DIR/utils/detect_os.sh"
+# Utils
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/detect_os.sh"
 
 # Constants
 VSCODE_DOWNLOAD_URL="https://code.visualstudio.com/download"

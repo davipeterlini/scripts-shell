@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# Import color scheme and profile selection script
-source ./utils/colors_message.sh
-source ./utils/bash_tools.sh
-source ./utils/choose_shell_profile.sh
+# Utils
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/bash_tools.sh"
+source "$(dirname "$0")/utils/choose_shell_profile.sh"
+
 # TODO - pode ser usado o  load_env .env.example
 ENV_EXAMPLE="./assets/.env.credential"
 ENV_DIR="$HOME"

@@ -1,19 +1,9 @@
 #!/bin/bash
 
-# Determine the current script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Determine the project root directory
-# If the script is called directly, ROOT_DIR will be two levels up
-# If called via setup_dev.sh, ROOT_DIR will already be defined
-if [[ -z "${ROOT_DIR}" ]]; then
-    ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
-fi
-
-# Load necessary utilities
-source "$ROOT_DIR/utils/colors_message.sh"
-source "$ROOT_DIR/utils/load_env.sh"
-source "$ROOT_DIR/utils/bash_tools.sh"
+# Utils
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/load_env.sh"
+source "$(dirname "$0")/utils/bash_tools.sh"
 
 # Function to check if Node.js is installed and has the correct version
 check_node_version() {

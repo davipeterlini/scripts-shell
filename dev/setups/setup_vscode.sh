@@ -1,13 +1,11 @@
 #!/bin/bash
 
-# TODO - apply autosave 
-# TODO - apply line wrapping
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
-source "$ROOT_DIR/utils/colors_message.sh"
-source "$ROOT_DIR/utils/load_env.sh"
-source "$ROOT_DIR/utils/detect_os.sh"
+
+# Utils
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/load_env.sh"
+source "$(dirname "$0")/utils/detect_os.sh"
 
 # Function to read extensions from assets/vscode/extension-list file
 _read_vscode_extensions() {

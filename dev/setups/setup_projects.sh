@@ -1,20 +1,10 @@
 #!/bin/bash
 
-# Determine the current script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Determine the project root directory
-# If the script is called directly, ROOT_DIR will be two levels up
-# If called via setup_dev.sh, ROOT_DIR will already be defined
-if [[ -z "${ROOT_DIR}" ]]; then
-    ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
-fi
-
-# Carrega as utilidades necessárias
-source "$ROOT_DIR/utils/colors_message.sh"
-source "$ROOT_DIR/utils/load_env.sh"
-source "$ROOT_DIR/utils/bash_tools.sh"
-source "$ROOT_DIR/utils/manage_git_repo.sh"
+# Utils
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/load_env.sh"
+source "$(dirname "$0")/utils/bash_tools.sh"
+source "$(dirname "$0")/utils/manage_git_repo.sh"
 
 # Function to display environment selection menu with exit option
 select_environment_with_exit() {

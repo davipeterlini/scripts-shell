@@ -1,19 +1,9 @@
 #!/usr/bin/env bash
 
-# Determine the current script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Determine the project root directory
-# If the script is called directly, ROOT_DIR will be two levels up
-# If called via setup_dev.sh, ROOT_DIR will already be defined
-if [[ -z "${ROOT_DIR}" ]]; then
-    ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
-fi
-
-# Import utility scripts
-source "$ROOT_DIR/utils/colors_message.sh"
-source "$ROOT_DIR/utils/detect_os.sh"
-source "$ROOT_DIR/utils/bash_tools.sh"
+# Utils
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/detect_os.sh"
+source "$(dirname "$0")/utils/bash_tools.sh"
 
 # Python version to use
 PYTHON_VERSION="3.12.0"
