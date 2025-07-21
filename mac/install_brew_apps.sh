@@ -3,7 +3,6 @@
 source "$(dirname "$0")/mac/install_homebrew.sh"
 source "$(dirname "$0")/utils/colors_message.sh"
 
-# Function to install apps using Homebrew
 _install_brew_apps() {
     local apps=("$@")
     for app in "${apps[@]}"; do
@@ -11,7 +10,6 @@ _install_brew_apps() {
     done
 }
 
-# Main script execution
 install_brew_apps() {
     install_homebrew
 
