@@ -7,7 +7,7 @@ source "$ROOT_DIR/utils/colors_message.sh"
 source "$ROOT_DIR/utils/detect_os.sh"
 
 # Check for installed IDEs and set environment variables
-check_installed_ides() {
+_check_installed_ides() {
   print_info "Checking for installed IDEs..."
 
   local vscode_found=false
@@ -299,7 +299,7 @@ install_jetbrains() {
 
 # Main function
 setup_ides() {
-  check_installed_ides
+  _check_installed_ides
   
   # If no IDEs are installed, offer to install one
   if [ "$IDE_VSCODE_AVAILABLE" = false ] && [ "$IDE_JETBRAINS_AVAILABLE" = false ]; then

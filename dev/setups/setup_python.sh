@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
-# setup_python_env.sh
-# Script to set up a Python development environment with pyenv, pipx, and common tools
+# Determina o diretório do script atual
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-set -e
+# Determina o diretório raiz do projeto
+# Se o script for chamado diretamente, o ROOT_DIR será dois níveis acima
+# Se for chamado via setup_dev.sh, o ROOT_DIR já estará definido
+if [[ -z "${ROOT_DIR}" ]]; then
+    ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
+fi
 
 # Import utility scripts
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$ROOT_DIR/utils/colors_message.sh"
 source "$ROOT_DIR/utils/detect_os.sh"
 source "$ROOT_DIR/utils/bash_tools.sh"
@@ -498,7 +501,7 @@ _verify_installation() {
     fi
 }
 
-setup_python_env() {
+setup_python() {
     print_header "Python Development Environment Setup"
     
     if ! get_user_confirmation "This script will install and configure pyenv, Python $PYTHON_VERSION, pipx, and common development tools. Continue?"; then
@@ -574,7 +577,9 @@ setup_python_env() {
     print_yellow "export PIPX_DEFAULT_PYTHON=\"$python_path\""
 }
 
-# Check if the script is being executed directly or sourced
+# Verifica se o script está sendo executado diretamente ou importado
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    setup_python_env "$@"
+    # Se executado diretamente, carrega o ambiente e executa a função principal
+    load_env
+    setup_python "$@"
 fi
