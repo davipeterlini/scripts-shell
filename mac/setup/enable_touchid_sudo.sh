@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# Import color utilities for messages
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/bash_tools.sh"
 
-# Function to enable Touch ID for sudo
 enable_touchid_sudo() {
     print_header_info "Enable Touch ID for sudo"
 
@@ -45,7 +43,6 @@ enable_touchid_sudo() {
     return 1
 }
 
-# Execute script only if not being imported
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     enable_touchid_sudo "$@"
 fi

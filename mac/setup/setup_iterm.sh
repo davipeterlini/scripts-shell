@@ -4,7 +4,6 @@ source "$(dirname "$0")/mac/install_homebrew.sh"
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/bash_tools.sh"
 
-# Function to install iTerm2
 install_iterm2() {
     if ! brew list --cask iterm2 >/dev/null 2>&1; then
         print_info "Installing iTerm2..."
@@ -51,9 +50,6 @@ install_powerline_fonts() {
     print_success "Font settings updated. You may need to restart iTerm2 for changes to take effect."
 }
 
-# TODO - when closing and opening it doesn't return to what was open 
-# TODO - when opening new tab it's not opening in the last current path
-# Function to configure iTerm2 session persistence and working directory
 configure_iterm_session_persistence() {
     print_header_info "Configuring iTerm2 to restore sessions and use current directory for new tabs..."
     
@@ -85,7 +81,6 @@ configure_iterm_session_persistence() {
     print_success "iTerm2 session persistence and working directory settings configured."
 }
 
-# Main script execution
 setup_iterm() {
     print_header_info "Setting up iTerm2"
 
@@ -110,7 +105,6 @@ setup_iterm() {
     print_success "iTerm2 setup completed with automatic theme, font, and session persistence configuration."
 }
 
-# Run the script only if not being imported
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     setup_iterm "$@"
 fi

@@ -190,7 +190,6 @@ open_utilities() {
   open -a "Disk Utility"
 }
 
-# Main function
 setup_basic_config() {
     print_header_info "Basic Setup for MAC"
 
@@ -247,7 +246,6 @@ setup_basic_config() {
     return 0
 }
 
-# Run the script only if not being imported
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     setup_basic_config "$@"
 fi

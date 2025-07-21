@@ -155,7 +155,6 @@ _ensure_jq_installed() {
     fi
 }
 
-# Function to check if a rule already exists in the configuration
 _rule_exists() {
     local config_file="$1"
     local rule_description="$2"
@@ -176,7 +175,6 @@ _rule_exists() {
     fi
 }
 
-# Function to remove an existing rule
 _remove_rule() {
     local config_file="$1"
     local rule_description="$2"
@@ -194,7 +192,6 @@ _remove_rule() {
     return $?
 }
 
-# Function to check if Karabiner-Elements is running
 _check_karabiner_running() {
     if ! pgrep -q "karabiner"; then
         print_alert "Karabiner-Elements is not running."
@@ -220,7 +217,6 @@ _check_karabiner_running() {
     return 0
 }
 
-# Function to initialize the default profile with all keyboards
 _initialize_default_profile_with_all_keyboards() {
     local config_file="$HOME/.config/karabiner/karabiner.json"
     local temp_file=$(mktemp)
@@ -273,7 +269,6 @@ _initialize_default_profile_with_all_keyboards() {
     fi
 }
 
-# Function to list available keyboards
 _list_available_keyboards() {
     print_header "Available Keyboards"
     
@@ -319,7 +314,6 @@ _list_available_keyboards() {
     return 0
 }
 
-# Function to select a keyboard
 _select_keyboard() {
     local config_file="$HOME/.config/karabiner/karabiner.json"
     
@@ -362,7 +356,6 @@ _select_keyboard() {
     return 0
 }
 
-# Function to enable a specific keyboard for a profile
 _enable_keyboard_for_profile() {
     local config_file="$HOME/.config/karabiner/karabiner.json"
     local device_info="$1"  # formato: vendor_id:product_id:name
@@ -426,7 +419,6 @@ _enable_keyboard_for_profile() {
     fi
 }
 
-# Generic function to apply a configuration from a JSON file
 _apply_config_from_file() {
     local config_file_path="$1"
     local auto_apply="$2"  # If set to "yes", applies automatically without asking
@@ -473,7 +465,6 @@ _apply_config_from_file() {
     fi
 }
 
-# Function to list all available configurations
 list_available_configs() {
     print_header "Available Configurations"
     
@@ -514,7 +505,6 @@ list_available_configs() {
     print_yellow "  $0 all auto"
 }
 
-# Function to apply a specific configuration
 apply_config() {
     local config_name="$1"
     local auto_apply="$2"  # If set to "yes", applies automatically without asking
@@ -530,7 +520,6 @@ apply_config() {
     fi
 }
 
-# Function to apply all configurations
 apply_all_configs() {
     local auto_apply="$1"  # If set to "yes", applies automatically without asking
     local config_dir="$(dirname "$0")/karabine_config/configs"
@@ -564,7 +553,6 @@ apply_all_configs() {
     fi
 }
 
-# Function to configure specific keyboards
 configure_keyboards() {
     local command="$1"
     local auto_apply="$2"
@@ -693,7 +681,6 @@ setup_karabiner() {
     print "is configured correctly in System Preferences > Keyboard > Shortcuts > Input Sources."
 }
 
-# Run the script only if not being imported
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     setup_karabiner "$@"
 fi
