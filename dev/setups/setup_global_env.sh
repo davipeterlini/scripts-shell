@@ -215,9 +215,9 @@ setup_global_env() {
     _add_export_to_profile "$PROFILE_FILE"
     
     _setup_variables
-    
+
     _reload_profile "$PROFILE_FILE"
-    
+
     print_success "Global environment setup completed!"
 }
 
