@@ -58,7 +58,7 @@ _set_zsh_as_default() {
     fi
 }
 
-_install_plugins() {
+install_plugins() {
     print_header_info "Installing recommended plugins..."
     
     # Define plugin directories - explicitly use HOME
@@ -92,7 +92,7 @@ _install_plugins() {
     fi
     
     # Update plugins in .zshrc using profile_writer
-    local plugins_content="plugins=(zsh-syntax-highlighting zsh-autosuggestions git)"
+    local plugins_content="plugins=(zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions git)"
     if ! grep -q "plugins=(.*zsh-syntax-highlighting.*zsh-autosuggestions.*)" ~/.zshrc; then
         # Backup will be created by profile_writer
         write_to_profile "# Update plugins configuration\n$plugins_content" ~/.zshrc
@@ -151,7 +151,7 @@ setup_terminal() {
     # Then proceed with other configurations
     _install_oh_my_zsh
     _set_zsh_as_default
-    _install_plugins
+    install_plugins
     add_custom_prompt
     #change_theme
     
