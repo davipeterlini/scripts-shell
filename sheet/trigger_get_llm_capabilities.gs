@@ -7,17 +7,17 @@ function createLLMTriggers() {
     }
   }
 
-  // Create trigger for 8 AM daily
+  // Create trigger for 7 AM daily
   ScriptApp.newTrigger('fetchMappedCapabilities')
     .timeBased()
-    .atHour(8)
+    .atHour(7)
     .everyDays(1)
     .create();
 
-  // Create trigger for 1 PM daily
+  // Create trigger for 12 PM daily
   ScriptApp.newTrigger('fetchMappedCapabilities')
     .timeBased()
-    .atHour(13)
+    .atHour(12)
     .everyDays(1)
     .create();
 }

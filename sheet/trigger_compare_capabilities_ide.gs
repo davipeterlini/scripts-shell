@@ -7,17 +7,19 @@ function createCompareCapabilitiesIDETriggers() {
     }
   }
 
-  // Create trigger for 9 AM daily
+  // Create trigger for 7:30 AM daily
   ScriptApp.newTrigger('compareCapabilitiesIDE')
     .timeBased()
-    .atHour(9)
+    .atHour(7)
+    .nearMinute(30)
     .everyDays(1)
     .create();
 
-  // Create trigger for 2 PM daily
+  // Create trigger for 12:30 PM daily
   ScriptApp.newTrigger('compareCapabilitiesIDE')
     .timeBased()
-    .atHour(14)
+    .atHour(12)
+    .nearMinute(30)
     .everyDays(1)
     .create();
 }

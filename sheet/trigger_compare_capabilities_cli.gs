@@ -7,17 +7,17 @@ function createCompareCapabilitiesCLITriggers() {
     }
   }
 
-  // Create trigger for 10 AM daily
+  // Create trigger for 8:00 AM daily
   ScriptApp.newTrigger('CLIcompareCapabilities')
     .timeBased()
-    .atHour(10)
+    .atHour(8)
     .everyDays(1)
     .create();
 
-  // Create trigger for 3 PM daily
+  // Create trigger for 13:00 PM daily (1:00 PM)
   ScriptApp.newTrigger('CLIcompareCapabilities')
     .timeBased()
-    .atHour(15)
+    .atHour(13)
     .everyDays(1)
     .create();
 }
