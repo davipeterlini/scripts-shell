@@ -104,24 +104,38 @@ _install_plugins() {
 
 _add_custom_prompt() {
     print_header_info "Adding custom prompt to .zshrc..."
-    if ! grep -q "autoload -Uz vcs_info" ~/.zshrc; then
-        # Get custom prompt content
-        local custom_prompt_content=""
-        if [ -f "$(dirname "$0")/.zshrc.example" ]; then
-            custom_prompt_content=$(cat "$(dirname "$0")/.zshrc.example")
-        elif [ -f "$(dirname "$0")/assets/.zshrc.example" ]; then
-            custom_prompt_content=$(cat "$(dirname "$0")/assets/.zshrc.example")
+    
+    # Caminho para o arquivo .zshrc.example
+    local zshrc_example_path=""
+    
+    # Verificar se o arquivo .zshrc.example existe em diferentes locais
+    if [ -f "$(dirname "$0")/assets/.zshrc.example" ]; then
+        zshrc_example_path="$(dirname "$0")/assets/.zshrc.example"
+    elif [ -f "assets/.zshrc.example" ]; then
+        zshrc_example_path="assets/.zshrc.example"
+    elif [ -f "$(dirname "$0")/../assets/.zshrc.example" ]; then
+        zshrc_example_path="$(dirname "$0")/../assets/.zshrc.example"
+    fi
+    
+    if [ -n "$zshrc_example_path" ]; then
+        print_info "Found .zshrc.example at $zshrc_example_path"
+        
+        # Fazer backup do arquivo .zshrc original
+        local timestamp=$(date +%Y%m%d_%H%M%S)
+        local backup_file="$HOME/.zshrc.backup.$timestamp"
+        
+        if [ -f "$HOME/.zshrc" ]; then
+            cp "$HOME/.zshrc" "$backup_file"
+            print_info "Created backup of original .zshrc at $backup_file"
         fi
         
-        if [ -n "$custom_prompt_content" ]; then
-            # Backup will be created by profile_writer
-            write_to_profile "$custom_prompt_content" ~/.zshrc
-            print_success "Custom prompt added to .zshrc"
-        else
-            print_error "Could not find .zshrc.example file"
-        fi
+        # Copiar o conteúdo do arquivo .zshrc.example para o .zshrc do usuário
+        cat "$zshrc_example_path" > "$HOME/.zshrc"
+        
+        print_success "Custom prompt configuration applied to .zshrc"
     else
-        print_info "Custom prompt already exists in .zshrc"
+        print_error "Could not find .zshrc.example file in any of the expected locations"
+        return 1
     fi
 }
 
@@ -152,8 +166,8 @@ setup_terminal() {
     # Then proceed with other configurations
     _install_oh_my_zsh
     _set_zsh_as_default
-    _install_plugins
     _add_custom_prompt
+    _install_plugins
     #change_theme
     
     print_header_info "Terminal setup completed. Please restart your terminal."

@@ -34,11 +34,6 @@ HISTSIZE=10000
 SAVEHIST=10000
 setopt SHARE_HISTORY
 
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions git)
-
-source $ZSH/oh-my-zsh.sh
-
 # Function to get the root directory name of the Git repository
 function git_prompt_dir() {
     local dir
