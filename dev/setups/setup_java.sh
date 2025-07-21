@@ -1,8 +1,8 @@
 #!/bin/bash
 
-source "$(dirname "$0")/utils/colors_message.sh"
-source "$(dirname "$0")/utils/load_constantsnv.sh"
-source "$(dirname "$0")/utils/bash_tools.sh"
+source "$(dirname "$0")/../../utils/colors_message.sh"
+source "$(dirname "$0")/../../utils/load_env.sh"
+source "$(dirname "$0")/../../utils/bash_tools.sh"
 
 # Function to check if Java is installed and has the correct version
 check_java_version() {
