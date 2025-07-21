@@ -57,7 +57,9 @@ _initialize_karabiner_config() {
     print_info "Initializing Karabiner-Elements configuration"
     
     local config_file="$HOME/.config/karabiner/karabiner.json"
-    local base_config_file="$(dirname "$0")/karabine_config/base_config.json"
+    # Corrigindo o caminho para o arquivo de configuração base
+    local script_dir="$(dirname "$(readlink -f "$0")")"
+    local base_config_file="${script_dir}/karabine_config/base_config.json"
     
     # Check if base configuration file exists
     if [ ! -f "$base_config_file" ]; then
@@ -468,7 +470,9 @@ _apply_config_from_file() {
 list_available_configs() {
     print_header "Available Configurations"
     
-    local config_dir="$(dirname "$0")/karabine_config/configs"
+    # Corrigindo o caminho para o diretório de configurações
+    local script_dir="$(dirname "$(readlink -f "$0")")"
+    local config_dir="${script_dir}/karabine_config/configs"
     
     if [ ! -d "$config_dir" ]; then
         print_error "Configurations directory not found: $config_dir"
@@ -508,7 +512,10 @@ list_available_configs() {
 apply_config() {
     local config_name="$1"
     local auto_apply="$2"  # If set to "yes", applies automatically without asking
-    local config_file="$(dirname "$0")/karabine_config/configs/${config_name}.json"
+    
+    # Corrigindo o caminho para o arquivo de configuração
+    local script_dir="$(dirname "$(readlink -f "$0")")"
+    local config_file="${script_dir}/karabine_config/configs/${config_name}.json"
     
     # Check if the file exists
     if [ -f "$config_file" ]; then
@@ -522,7 +529,10 @@ apply_config() {
 
 apply_all_configs() {
     local auto_apply="$1"  # If set to "yes", applies automatically without asking
-    local config_dir="$(dirname "$0")/karabine_config/configs"
+    
+    # Corrigindo o caminho para o diretório de configurações
+    local script_dir="$(dirname "$(readlink -f "$0")")"
+    local config_dir="${script_dir}/karabine_config/configs"
     
     if [ ! -d "$config_dir" ]; then
         print_error "Configurations directory not found: $config_dir"
@@ -577,8 +587,12 @@ configure_keyboards() {
                 apply_all_configs "$auto_apply"
                 ;;
             *)
+                # Corrigindo o caminho para verificar se o arquivo de configuração existe
+                local script_dir="$(dirname "$(readlink -f "$0")")"
+                local config_file="${script_dir}/karabine_config/configs/${command}.json"
+                
                 # Check if the command is a filename without extension
-                if [ -f "$(dirname "$0")/karabine_config/configs/${command}.json" ]; then
+                if [ -f "$config_file" ]; then
                     apply_config "$command" "$auto_apply"
                 else
                     print_error "Unknown command or configuration: $command"
@@ -618,8 +632,12 @@ configure_keyboards() {
                 apply_all_configs "$auto_apply"
                 ;;
             *)
+                # Corrigindo o caminho para verificar se o arquivo de configuração existe
+                local script_dir="$(dirname "$(readlink -f "$0")")"
+                local config_file="${script_dir}/karabine_config/configs/${command}.json"
+                
                 # Check if the command is a filename without extension
-                if [ -f "$(dirname "$0")/karabine_config/configs/${command}.json" ]; then
+                if [ -f "$config_file" ]; then
                     apply_config "$command" "$auto_apply"
                 else
                     print_error "Unknown command or configuration: $command"
