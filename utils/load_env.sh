@@ -4,9 +4,6 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/colors_message.sh"
 
-# Get the directory of the current script
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
-
 # Function to find the project root directory
 find_project_root() {
   local dir="$SCRIPT_DIR"
