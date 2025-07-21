@@ -4,6 +4,7 @@
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/detect_os.sh"
 source "$(dirname "$0")/utils/bash_tools.sh"
+source "$(dirname "$0")/utils/profile_writer.sh"
 
 # Python version to use
 PYTHON_VERSION="3.12.0"
@@ -199,22 +200,15 @@ _install_pyenv() {
         exit 1
     fi
     
-    # Determine shell profile file
-    local shell_profile="$HOME/.bashrc"
-    if [[ "$SHELL" == *"zsh"* ]]; then
-        shell_profile="$HOME/.zshrc"
-    fi
+    # Add pyenv to shell configuration using profile_writer
+    local pyenv_config="# pyenv configuration
+export PYENV_ROOT=\"\$HOME/.pyenv\"
+export PATH=\"\$PYENV_ROOT/bin:\$PATH\"
+eval \"\$(pyenv init --path)\"
+eval \"\$(pyenv init -)\""
     
-    # Add pyenv to shell configuration if not already there
-    if ! grep -q "pyenv init" "$shell_profile"; then
-        print_info "Adding pyenv to $shell_profile"
-        echo '' >> "$shell_profile"
-        echo '# pyenv configuration' >> "$shell_profile"
-        echo 'export PYENV_ROOT="$HOME/.pyenv"' >> "$shell_profile"
-        echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> "$shell_profile"
-        echo 'eval "$(pyenv init --path)"' >> "$shell_profile"
-        echo 'eval "$(pyenv init -)"' >> "$shell_profile"
-    fi
+    print_info "Adding pyenv configuration to shell profile"
+    write_to_profile "$pyenv_config"
     
     # Also add to current session
     export PYENV_ROOT="$HOME/.pyenv"
