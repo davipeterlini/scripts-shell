@@ -4,7 +4,6 @@ source "$(dirname "$0")/mac/install_homebrew.sh"
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/bash_tools.sh"
 
-# Function to install Oh My Zsh
 install_oh_my_zsh() {
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
         print_info "Installing Oh My Zsh..."
@@ -14,7 +13,6 @@ install_oh_my_zsh() {
     fi
 }
 
-# Function to set zsh as default shell
 set_zsh_as_default() {
     print_header_info "Setting zsh as default shell..."
     
@@ -49,41 +47,6 @@ set_zsh_as_default() {
     fi
 }
 
-# Function to install Powerlevel10k theme
-install_powerlevel10k() {
-    print_header_info "Installing Powerlevel10k theme..."
-    
-    # Define the theme directory - explicitly use HOME
-    local theme_dir="$HOME/.oh-my-zsh/custom/themes/powerlevel10k"
-    
-    # Check if the theme directory already exists
-    if [ -d "$theme_dir" ]; then
-        print_info "Powerlevel10k theme directory already exists"
-        
-        # Check if it's a git repository and update it
-        if [ -d "$theme_dir/.git" ]; then
-            print_info "Updating existing Powerlevel10k installation..."
-            (cd "$theme_dir" && git pull)
-        else
-            print_alert "Directory exists but is not a git repository. Skipping installation."
-        fi
-    else
-        # Clone the repository if it doesn't exist
-        print_info "Cloning Powerlevel10k repository to $theme_dir"
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$theme_dir"
-    fi
-    
-    # Update .zshrc to use the theme
-    if grep -q 'ZSH_THEME=' ~/.zshrc; then
-        sed -i '' 's/ZSH_THEME=".*"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' ~/.zshrc
-    else
-        echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> ~/.zshrc
-    fi
-    
-    print_success "Powerlevel10k theme installed/updated successfully"
-}
-
-# Function to install recommended plugins
 install_plugins() {
     print_header_info "Installing recommended plugins..."
     
@@ -125,7 +88,6 @@ install_plugins() {
     print_success "Plugins installed successfully"
 }
 
-# Function to add custom prompt to .zshrc
 add_custom_prompt() {
     print_header_info "Adding custom prompt to .zshrc..."
     if ! grep -q "autoload -Uz vcs_info" ~/.zshrc; then
@@ -138,7 +100,6 @@ add_custom_prompt() {
     fi
 }
 
-# Function to change the theme to 'agnoster'
 change_theme() {
     print_header_info "Modifying the .zshrc file to use the 'agnoster' theme"
     if grep -q 'ZSH_THEME=' ~/.zshrc; then
@@ -150,7 +111,6 @@ change_theme() {
     fi
 }
 
-# Main script execution
 setup_terminal() {
     print_header_info "Terminal Setup"
 
@@ -162,13 +122,8 @@ setup_terminal() {
     # Then proceed with other configurations
     install_oh_my_zsh
     set_zsh_as_default
-    #TODO - not making sense for now 
-    #install_powerlevel10k
     install_plugins
     add_custom_prompt
-    # Return the default theme
-    # TODO - not making sense for now
-    #change_theme
     
     print_header_info "Terminal setup completed. Please restart your terminal."
     print_info "Notes:"
