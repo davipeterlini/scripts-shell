@@ -96,7 +96,7 @@ _install_plugins() {
     if ! grep -q "plugins=(.*zsh-syntax-highlighting.*zsh-autosuggestions.*)" ~/.zshrc; then
         # Backup will be created by profile_writer
         # Usar write_lines_to_profile em vez de write_to_profile para garantir quebras de linha adequadas
-        write_lines_to_profile "# Update plugins configuration" "$plugins_content" ~/.zshrc
+        write_lines_to_profile " " "$plugins_content" ~/.zshrc
     fi
     
     print_success "Plugins installed successfully"
