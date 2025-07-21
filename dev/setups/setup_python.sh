@@ -217,7 +217,7 @@ eval \"\$(pyenv init -)\""
     eval "$(pyenv init -)"
     
     print_success "pyenv installed successfully"
-    print_alert "You may need to restart your terminal or run 'source $shell_profile' to use pyenv"
+    print_alert "You may need to restart your terminal or source your shell profile to use pyenv"
     
     # Verify installation
     if _check_pyenv; then

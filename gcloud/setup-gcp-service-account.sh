@@ -2,7 +2,11 @@
 
 # Script to configure Service Account on GCP
 # Usage: ./setup-gcp-service-account.sh [PROJECT_ID] [SERVICE_ACCOUNT_NAME]
-# Se não fornecer parâmetros, o script irá guiá-lo através do processo
+# If no parameters provided, the script will guide you through the process
+
+# Utils
+source "$(dirname "$0")/../utils/colors_message.sh" 2>/dev/null || echo "Warning: color utilities not found"
+source "$(dirname "$0")/../utils/profile_writer.sh" 2>/dev/null || echo "Warning: profile_writer utility not found"
 
 # Function to login
 login_gcp() {
@@ -214,24 +218,21 @@ gcloud config set project $PROJECT_ID
 echo "🌍 Configuring environment variables..."
 export GOOGLE_APPLICATION_CREDENTIALS="$KEY_FILE"
 
-# Adicionar ao .bashrc se não existir
-BASHRC_ENTRY="export GOOGLE_APPLICATION_CREDENTIALS=\"$KEY_FILE\""
-if [ -f ~/.bashrc ]; then
-    if ! grep -Fq "$KEY_FILE" ~/.bashrc; then
+# Add to shell profile using profile_writer utility
+echo "📝 Adding environment variable to shell profile..."
+if command -v write_exports_to_profile &> /dev/null; then
+    write_exports_to_profile "GOOGLE_APPLICATION_CREDENTIALS=\"$KEY_FILE\""
+    echo "✅ Environment variable added to shell profile"
+else
+    # Fallback method if profile_writer is not available
+    BASHRC_ENTRY="export GOOGLE_APPLICATION_CREDENTIALS=\"$KEY_FILE\""
+    if [ -f ~/.bashrc ] && ! grep -Fq "$KEY_FILE" ~/.bashrc; then
         echo "$BASHRC_ENTRY" >> ~/.bashrc
-        echo "📝 Adicionado ao ~/.bashrc"
-    else
-        echo "⏭️  Variável já existe no ~/.bashrc"
+        echo "📝 Added to ~/.bashrc"
     fi
-fi
-
-# Adicionar ao .zshrc se existir
-if [ -f ~/.zshrc ]; then
-    if ! grep -Fq "$KEY_FILE" ~/.zshrc; then
+    if [ -f ~/.zshrc ] && ! grep -Fq "$KEY_FILE" ~/.zshrc; then
         echo "$BASHRC_ENTRY" >> ~/.zshrc
-        echo "📝 Adicionado ao ~/.zshrc"
-    else
-        echo "⏭️  Variável já existe no ~/.zshrc"
+        echo "📝 Added to ~/.zshrc"
     fi
 fi
 

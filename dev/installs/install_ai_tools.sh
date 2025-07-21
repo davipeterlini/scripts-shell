@@ -8,6 +8,10 @@
 # Import color utilities for messages
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
+
+# Utils
+source "$ROOT_DIR/utils/colors_message.sh"
+source "$ROOT_DIR/utils/profile_writer.sh"
 source "$ROOT_DIR/utils/colors_message.sh"
 
 # Constantes
@@ -58,7 +62,7 @@ configure_api_keys() {
     print_yellow "OpenAI API Key (leave blank to skip): "
     read openai_key
     if [ ! -z "$openai_key" ]; then
-        echo "export OPENAI_API_KEY=\"$openai_key\"" >> ~/.bashrc
+        write_exports_to_profile "OPENAI_API_KEY=\"$openai_key\""
         export OPENAI_API_KEY="$openai_key"
         print_success "OpenAI API key configured"
     else
@@ -69,7 +73,7 @@ configure_api_keys() {
     print_yellow "Gemini API Key (leave blank to skip): "
     read gemini_key
     if [ ! -z "$gemini_key" ]; then
-        echo "export GEMINI_API_KEY=\"$gemini_key\"" >> ~/.bashrc
+        write_exports_to_profile "GEMINI_API_KEY=\"$gemini_key\""
         export GEMINI_API_KEY="$gemini_key"
         print_success "Gemini API key configured"
     else

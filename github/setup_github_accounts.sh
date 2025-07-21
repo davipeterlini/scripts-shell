@@ -180,9 +180,9 @@ __ensure_gh_installed() {
 setup_github_accounts() {
   print_header "Setting up multiple GitHub accounts..."
 
-  # Load environment variables
-  load_env "$(dirname "$0")/.env.personal"
-  load_env "$(dirname "$0")/.env.work"
+  # Load environment variables - Corrigido o caminho para os arquivos .env
+  load_env ".env.personal"
+  load_env ".env.work"
 
   if ! get_user_confirmation "Do you want Setting up multiple GitHub accounts ?"; then
     print_info "Skipping configuration"

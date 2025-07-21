@@ -8,6 +8,10 @@ set -e
 # Import utility scripts
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Utils
+source "$ROOT_DIR/utils/colors_message.sh"
+source "$ROOT_DIR/utils/profile_writer.sh"
 source "$ROOT_DIR/utils/colors_message.sh"
 source "$ROOT_DIR/utils/detect_os.sh"
 source "$ROOT_DIR/utils/bash_tools.sh"
@@ -212,16 +216,15 @@ install_pyenv() {
         shell_profile="$HOME/.zshrc"
     fi
     
-    # Add pyenv to shell configuration if not already there
-    if ! grep -q "pyenv init" "$shell_profile"; then
-        print_info "Adding pyenv to $shell_profile"
-        echo '' >> "$shell_profile"
-        echo '# pyenv configuration' >> "$shell_profile"
-        echo 'export PYENV_ROOT="$HOME/.pyenv"' >> "$shell_profile"
-        echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> "$shell_profile"
-        echo 'eval "$(pyenv init --path)"' >> "$shell_profile"
-        echo 'eval "$(pyenv init -)"' >> "$shell_profile"
-    fi
+    # Add pyenv to shell configuration using profile_writer
+    local pyenv_config="# pyenv configuration
+export PYENV_ROOT=\"\$HOME/.pyenv\"
+export PATH=\"\$PYENV_ROOT/bin:\$PATH\"
+eval \"\$(pyenv init --path)\"
+eval \"\$(pyenv init -)\""
+    
+    print_info "Adding pyenv configuration to shell profile"
+    write_to_profile "$pyenv_config"
     
     # Also add to current session
     export PYENV_ROOT="$HOME/.pyenv"
@@ -348,12 +351,13 @@ install_pipx() {
         shell_profile="$HOME/.zshrc"
     fi
     
-    # Add pipx to PATH in shell profile
-    print_info "Adding pipx to $shell_profile"
-    echo '' >> "$shell_profile"
-    echo '# pipx configuration' >> "$shell_profile"
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$shell_profile"
-    echo "export PIPX_DEFAULT_PYTHON=\"$python_path\"" >> "$shell_profile"
+    # Add pipx to PATH using profile_writer
+    local pipx_config="# pipx configuration
+export PATH=\"\$HOME/.local/bin:\$PATH\"
+export PIPX_DEFAULT_PYTHON=\"$python_path\""
+    
+    print_info "Adding pipx configuration to shell profile"
+    write_to_profile "$pipx_config"
     
     # Add pipx to PATH for current session
     export PATH="$HOME/.local/bin:$PATH"
