@@ -97,6 +97,7 @@ _install_plugins() {
         # Backup will be created by profile_writer
         # Usar write_lines_to_profile em vez de write_to_profile para garantir quebras de linha adequadas
         write_lines_to_profile " " "$plugins_content" ~/.zshrc
+        # TODO - adicione source $ZSH/oh-my-zsh.sh após o plugin
     fi
     
     print_success "Plugins installed successfully"
