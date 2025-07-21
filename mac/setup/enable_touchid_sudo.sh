@@ -11,38 +11,46 @@ enable_touchid_sudo() {
         return 0
     fi
 
-    # Check if running as root
-    if [ "$EUID" -ne 0 ]; then
-        print_error "Please run as root: sudo $0"
-        exit 1
-    fi
-
     PAM_FILE="/etc/pam.d/sudo"
     TOUCHID_LINE="auth       sufficient     pam_tid.so"
 
-    # Check if line already exists
-    if grep -Fxq "$TOUCHID_LINE" "$PAM_FILE"; then
+    # Check if line already exists - use sudo to read the protected file
+    if sudo grep -Fxq "$TOUCHID_LINE" "$PAM_FILE"; then
         print_success "Touch ID is already enabled for sudo."
-        # Do nothing more, just return
-        return 1
+        return 0
     fi
 
     # If we got here, the line doesn't exist and we need to add it
     print_header_info "Enabling Touch ID for sudo..."
     
-    # Create backup of original file
+    # Create backup of original file with sudo
     local backup_file="$PAM_FILE.backup.$(date +%Y%m%d%H%M%S)"
-    cp "$PAM_FILE" "$backup_file"
-    print_info "Backup created: $backup_file"
+    if sudo cp "$PAM_FILE" "$backup_file"; then
+        print_info "Backup created: $backup_file"
+    else
+        print_error "Failed to create backup file. Aborting."
+        return 1
+    fi
 
-    # Insert line at top of file
-    (echo "$TOUCHID_LINE"; cat "$PAM_FILE") > "$PAM_FILE.tmp" && mv "$PAM_FILE.tmp" "$PAM_FILE"
-
-    print_success "Touch ID successfully enabled for sudo!"
+    # Create a temporary file that we'll use to modify the PAM file
+    local temp_file=$(mktemp)
+    echo "$TOUCHID_LINE" > "$temp_file"
+    sudo cat "$PAM_FILE" >> "$temp_file"
     
-    return 1
+    # Use sudo to move the temporary file to the PAM file
+    if sudo mv "$temp_file" "$PAM_FILE"; then
+        print_success "Touch ID successfully enabled for sudo!"
+    else
+        print_error "Failed to update $PAM_FILE. Restoring from backup..."
+        sudo mv "$backup_file" "$PAM_FILE"
+        print_error "Operation failed."
+        return 1
+    fi
+    
+    return 0
 }
 
+# If this script is run directly, execute the function
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     enable_touchid_sudo "$@"
 fi

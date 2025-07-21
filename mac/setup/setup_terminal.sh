@@ -3,6 +3,7 @@
 source "$(dirname "$0")/mac/install_homebrew.sh"
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/bash_tools.sh"
+source "$(dirname "$0")/utils/profile_writer.sh"
 
 install_oh_my_zsh() {
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -80,9 +81,11 @@ install_plugins() {
         fi
     fi
     
-    # Update plugins in .zshrc if not already added
+    # Update plugins in .zshrc using profile_writer
+    local plugins_content="plugins=(zsh-syntax-highlighting zsh-autosuggestions git)"
     if ! grep -q "plugins=(.*zsh-syntax-highlighting.*zsh-autosuggestions.*)" ~/.zshrc; then
-        sed -i '' 's/plugins=(/plugins=(zsh-syntax-highlighting zsh-autosuggestions /' ~/.zshrc
+        # Backup will be created by profile_writer
+        write_to_profile "# Update plugins configuration\n$plugins_content" ~/.zshrc
     fi
     
     print_success "Plugins installed successfully"
@@ -91,10 +94,21 @@ install_plugins() {
 add_custom_prompt() {
     print_header_info "Adding custom prompt to .zshrc..."
     if ! grep -q "autoload -Uz vcs_info" ~/.zshrc; then
-        echo "" >> ~/.zshrc
-        # TODO - check if this is working correctly
-        cat "$(dirname "$0")/.zshrc.example" >> ~/.zshrc
-        print_success "Custom prompt added to .zshrc"
+        # Get custom prompt content
+        local custom_prompt_content=""
+        if [ -f "$(dirname "$0")/.zshrc.example" ]; then
+            custom_prompt_content=$(cat "$(dirname "$0")/.zshrc.example")
+        elif [ -f "$(dirname "$0")/assets/.zshrc.example" ]; then
+            custom_prompt_content=$(cat "$(dirname "$0")/assets/.zshrc.example")
+        fi
+        
+        if [ -n "$custom_prompt_content" ]; then
+            # Backup will be created by profile_writer
+            write_to_profile "$custom_prompt_content" ~/.zshrc
+            print_success "Custom prompt added to .zshrc"
+        else
+            print_error "Could not find .zshrc.example file"
+        fi
     else
         print_info "Custom prompt already exists in .zshrc"
     fi
@@ -102,11 +116,16 @@ add_custom_prompt() {
 
 change_theme() {
     print_header_info "Modifying the .zshrc file to use the 'agnoster' theme"
+    local theme_content='ZSH_THEME="agnoster"'
+    
+    # Backup will be created by profile_writer
     if grep -q 'ZSH_THEME=' ~/.zshrc; then
-        sed -i '' 's/ZSH_THEME=".*"/ZSH_THEME="agnoster"/' ~/.zshrc
+        # Remove existing theme line and add new one
+        remove_script_entries_from_profile "setup_terminal" ~/.zshrc
+        write_to_profile "$theme_content" ~/.zshrc
         print_success "Theme changed to 'agnoster'"
     else
-        echo 'ZSH_THEME="agnoster"' >> ~/.zshrc
+        write_to_profile "$theme_content" ~/.zshrc
         print_success "Theme 'agnoster' added to .zshrc"
     fi
 }
@@ -124,6 +143,7 @@ setup_terminal() {
     set_zsh_as_default
     install_plugins
     add_custom_prompt
+    #change_theme
     
     print_header_info "Terminal setup completed. Please restart your terminal."
     print_info "Notes:"
