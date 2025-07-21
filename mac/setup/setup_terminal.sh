@@ -102,7 +102,7 @@ _install_plugins() {
     print_success "Plugins installed successfully"
 }
 
-add_custom_prompt() {
+_add_custom_prompt() {
     print_header_info "Adding custom prompt to .zshrc..."
     if ! grep -q "autoload -Uz vcs_info" ~/.zshrc; then
         # Get custom prompt content
@@ -125,7 +125,7 @@ add_custom_prompt() {
     fi
 }
 
-change_theme() {
+_change_theme() {
     print_header_info "Modifying the .zshrc file to use the 'agnoster' theme"
     local theme_content='ZSH_THEME="agnoster"'
     
@@ -153,7 +153,7 @@ setup_terminal() {
     _install_oh_my_zsh
     _set_zsh_as_default
     _install_plugins
-    add_custom_prompt
+    _add_custom_prompt
     #change_theme
     
     print_header_info "Terminal setup completed. Please restart your terminal."

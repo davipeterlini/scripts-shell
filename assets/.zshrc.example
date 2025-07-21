@@ -2,16 +2,42 @@
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
+# Set Theme
 ZSH_THEME="agnoster"
+
+# Custom prompt configuration
+autoload -Uz vcs_info
+precmd() { vcs_info }
+
+# Format the vcs_info_msg_0_ variable
+zstyle ':vcs_info:git:*' formats '%b'
+
+# Set up the prompt (with git branch name)
+setopt PROMPT_SUBST
+PROMPT='%F{green}%n@%m%f:%F{blue}%~%f %F{red}${vcs_info_msg_0_}%f$ '
+
+# Enable syntax highlighting and autosuggestions
+source ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# Useful aliases
+alias ll='ls -la'
+alias la='ls -A'
+alias l='ls -CF'
+alias c='clear'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# History configuration
+HISTSIZE=10000
+SAVEHIST=10000
+setopt SHARE_HISTORY
 
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions git)
 
 source $ZSH/oh-my-zsh.sh
-
-# Git on terminal
-autoload -Uz vcs_info
-precmd() { vcs_info }
 
 # Function to get the root directory name of the Git repository
 function git_prompt_dir() {
@@ -59,6 +85,3 @@ function get_branch_color() {
 }
 
 PROMPT='$(git_prompt_dir)$(get_branch_color)$(get_branch_name)${RESET_COLOR} → '
-
-plugins=(zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions git)
-export $(grep -v '^#' ~/.env | xargs)
