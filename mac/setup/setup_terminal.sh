@@ -158,8 +158,8 @@ setup_terminal() {
     
     print_header_info "Terminal setup completed. Please restart your terminal."
     print_info "Notes:"
-    print_yellow " - After installation, you need to manually set the font in your terminal to 'Meslo LG L for Powerline'."
-    print_yellow " - You may need to restart your terminal for all changes to take effect."
+    print_alert " - After installation, you need to manually set the font in your terminal to 'Meslo LG L for Powerline'."
+    print_alert " - You may need to restart your terminal for all changes to take effect."
     print_success "Terminal setup completed successfully!"
 }
 

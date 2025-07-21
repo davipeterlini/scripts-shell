@@ -215,7 +215,7 @@ _list_available_keyboards() {
     local count=0
     while IFS=: read -r vendor_id product_id name; do
         count=$((count + 1))
-        print_yellow "$count) $name"
+        print_alert "$count) $name"
         print "   ID: $vendor_id:$product_id"
     done <<< "$devices"
     
