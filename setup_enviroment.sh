@@ -7,9 +7,9 @@ set -e # Exit script if any command fails
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 UTILS_DIR="${SCRIPTS_DIR}/utils"
 
-source "${UTILS_DIR}/load_env.sh"
-source "${UTILS_DIR}/detect_os.sh"
-source "${UTILS_DIR}/colors_message.sh"
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/load_env.sh"
+source "$(dirname "$0")/utils/detect_os.sh"
 
 source "${SCRIPTS_DIR}/grant_permissions.sh"
 source "${SCRIPTS_DIR}/install_apps.sh"
@@ -36,18 +36,18 @@ setup_enviroment() {
     load_env
 
     detect_os
-    # grant_permissions
-    # install_apps "$os"
+    grant_permissions
+    install_apps "$os"
 
     
-    # if [[ "$os" == "macOS" ]]; then
-    #     setup_mac
-    # elif [[ "$os" == "linux" ]]; then
-    #     # _setup_linux
-    #     print_info "Linux setup not implemented yet"
-    # else
-    #     print_alert "Unsupported OS: $os"
-    # fi
+    if [[ "$os" == "macOS" ]]; then
+        setup_mac
+    elif [[ "$os" == "linux" ]]; then
+        # _setup_linux
+        print_info "Linux setup not implemented yet"
+    else
+        print_alert "Unsupported OS: $os"
+    fi
 
     setup_github_accounts
     setup_bitbucket_accounts
