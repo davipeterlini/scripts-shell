@@ -1,13 +1,15 @@
 #!/bin/bash
 
 # Utils - corrigindo os caminhos para apontar para a raiz do projeto
-source "$(dirname "$0")/../utils/colors_message.sh"
-source "$(dirname "$0")/../utils/load_env.sh"
-source "$(dirname "$0")/../utils/detect_os.sh"
-#source "$(dirname "$0")/../utils/generic_utils.sh"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../" && pwd)"
+source "$SCRIPT_DIR/../utils/colors_message.sh"
+source "$SCRIPT_DIR/../utils/load_env.sh"
+source "$SCRIPT_DIR/../utils/detect_os.sh"
 
 # Scripts Dev - corrigindo os caminhos
-source "$(dirname "$0")/../grant_permissions.sh"
+source "$ROOT_DIR/grant_permissions.sh"
 source "$(dirname "$0")/setups/setup_projects.sh"
 source "$(dirname "$0")/setups/sync_drive_folders.sh"
 source "$(dirname "$0")/setups/setup_global_env.sh"
@@ -16,8 +18,9 @@ source "$(dirname "$0")/setups/setup_java.sh"
 source "$(dirname "$0")/setups/setup_ides.sh"
 source "$(dirname "$0")/setups/setup_vscode.sh"
 source "$(dirname "$0")/installs/install_ai_tools.sh"
-source "$(dirname "$0")/../flow_coder/install_flow_coder_cli.sh"
 source "$(dirname "$0")/setups/setup_python.sh"
+source "$ROOT_DIR/flow_coder/install_flow_coder_cli.sh"
+source "$ROOT_DIR/flow_coder/install_flow_coder_ide.sh"
 #source "$(dirname "$0")/open_project_iterm.sh"
 
 # Função principal
