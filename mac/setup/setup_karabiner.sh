@@ -1,18 +1,7 @@
 #!/bin/bash
 
-# ====================================
-# Karabiner Elements Setup Script
-# ====================================
-# Este script instala Karabiner-Elements e configura regras personalizadas
-# a partir dos arquivos na pasta karabine_config/configs
-
-# Importar utilitários de cores para mensagens
-source "$(dirname "$0")/../../utils/colors_message.sh"
-source "$(dirname "$0")/../../utils/bash_tools.sh"
-
-# ====================================
-# Private Functions
-# ====================================
+source "$(dirname "$0")/utils/colors_message.sh"
+source "$(dirname "$0")/utils/bash_tools.sh"
 
 _check_brew_installed() {
     if ! command -v brew &> /dev/null; then
@@ -663,10 +652,6 @@ configure_keyboards() {
     
     return 0
 }
-
-# ====================================
-# Public Functions
-# ====================================
 
 setup_karabiner() {
     local command="$1"
