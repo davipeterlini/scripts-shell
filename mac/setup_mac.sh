@@ -13,35 +13,35 @@ source "$(dirname "$0")/mac/setup/setup_abnt2_keyboard.sh"
 source "$(dirname "$0")/mac/setup/enable_touchid_sudo.sh"
 source "$(dirname "$0")/mac/setup/setup_karabiner.sh"
 
-# Função principal
+# Main function
 setup_mac() {
     print_header "Starting Setup for Mac Environment"
     load_env
 
     detect_os
     
-    # Verificar se estamos em um sistema Mac
+    # Check if we are on a Mac system
     if [[ "$os" != "macOS" ]]; then
         print_error "This script should only be run on macOS systems"
         exit 1
     fi
 
-    # Configurações básicas do Mac
+    # Basic Mac configuration
     setup_basic_config
     
-    # Configuração do iTerm2
+    # iTerm2 configuration
     setup_iterm
     
-    # Configuração do Terminal
+    # Terminal configuration
     setup_terminal
     
-    # Habilitar Touch ID para sudo
+    # Enable Touch ID for sudo
     enable_touchid_sudo
 
-    # Configuração do Teclado 
+    # Keyboard configuration 
     setup_karabiner all
 
-    # Configuração do teclado ABNT2
+    # ABNT2 keyboard configuration
     #setup_abnt2_keyboard
 
     print_success "Mac setup completed successfully!"

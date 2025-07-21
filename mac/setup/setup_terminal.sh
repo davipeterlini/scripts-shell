@@ -130,7 +130,7 @@ add_custom_prompt() {
     print_header_info "Adding custom prompt to .zshrc..."
     if ! grep -q "autoload -Uz vcs_info" ~/.zshrc; then
         echo "" >> ~/.zshrc
-        # TODO - verifique se isso está funcionando corretamente
+        # TODO - check if this is working correctly
         cat "$(dirname "$0")/.zshrc.example" >> ~/.zshrc
         print_success "Custom prompt added to .zshrc"
     else
@@ -162,12 +162,12 @@ setup_terminal() {
     # Then proceed with other configurations
     install_oh_my_zsh
     set_zsh_as_default
-    #TODO - não está fazendo mais sentido por hora 
+    #TODO - not making sense for now 
     #install_powerlevel10k
     install_plugins
     add_custom_prompt
     # Return the default theme
-    # TODO - não está mais fazendo sentido por hora
+    # TODO - not making sense for now
     #change_theme
     
     print_header_info "Terminal setup completed. Please restart your terminal."
@@ -177,7 +177,7 @@ setup_terminal() {
     print_success "Terminal setup completed successfully!"
 }
 
-# Executar o script apenas se não estiver sendo importado
+# Run the script only if not being imported
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     setup_terminal "$@"
 fi

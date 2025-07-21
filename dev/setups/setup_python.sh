@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# Determina o diretório do script atual
+# Determine the current script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Determina o diretório raiz do projeto
-# Se o script for chamado diretamente, o ROOT_DIR será dois níveis acima
-# Se for chamado via setup_dev.sh, o ROOT_DIR já estará definido
+# Determine the project root directory
+# If the script is called directly, ROOT_DIR will be two levels up
+# If called via setup_dev.sh, ROOT_DIR will already be defined
 if [[ -z "${ROOT_DIR}" ]]; then
     ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
 fi
@@ -577,9 +577,9 @@ setup_python() {
     print_yellow "export PIPX_DEFAULT_PYTHON=\"$python_path\""
 }
 
-# Verifica se o script está sendo executado diretamente ou importado
+# Check if the script is being executed directly or imported
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    # Se executado diretamente, carrega o ambiente e executa a função principal
+    # If executed directly, load environment and execute main function
     load_env
     setup_python "$@"
 fi

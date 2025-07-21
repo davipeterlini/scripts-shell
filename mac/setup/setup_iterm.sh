@@ -51,8 +51,8 @@ install_powerline_fonts() {
     print_success "Font settings updated. You may need to restart iTerm2 for changes to take effect."
 }
 
-# TODO - ao fechar e abrir nao esta voltado no que estava aberto 
-# TODO - ao abrir nova aba naao esta abrindo o ultimo path corrente
+# TODO - when closing and opening it doesn't return to what was open 
+# TODO - when opening new tab it's not opening in the last current path
 # Function to configure iTerm2 session persistence and working directory
 configure_iterm_session_persistence() {
     print_header_info "Configuring iTerm2 to restore sessions and use current directory for new tabs..."
@@ -104,13 +104,13 @@ setup_iterm() {
     print_info "Restarting iTerm2 to apply all changes..."
     pkill iTerm || true
     sleep 1
-    # TODO - verificar se esse realmente é o nome da aplicação
+    # TODO - check if this is really the application name
     open -a iTerm
     
     print_success "iTerm2 setup completed with automatic theme, font, and session persistence configuration."
 }
 
-# Executar o script apenas se não estiver sendo importado
+# Run the script only if not being imported
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     setup_iterm "$@"
 fi

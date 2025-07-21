@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# TODO - aplicar o autosave 
-# TODO - aplicar o wrapper de linha
+# TODO - apply autosave 
+# TODO - apply line wrapping
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
