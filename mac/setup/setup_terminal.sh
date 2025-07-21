@@ -156,16 +156,16 @@ _add_custom_prompt() {
 
 _change_theme() {
     print_header_info "Modifying the .zshrc file to use the 'agnoster' theme"
-    local theme_content='ZSH_THEME="agnoster"'
+    local theme_content='\nZSH_THEME="agnoster"'
     
     # Backup will be created by profile_writer
     if grep -q 'ZSH_THEME=' ~/.zshrc; then
         # Remove existing theme line and add new one
         remove_script_entries_from_profile "setup_terminal" ~/.zshrc
-        write_to_profile "$theme_content" ~/.zshrc
+        write_lines_to_profile "ZSH_THEME=\"agnoster\"" ~/.zshrc
         print_success "Theme changed to 'agnoster'"
     else
-        write_to_profile "$theme_content" ~/.zshrc
+        write_lines_to_profile "ZSH_THEME=\"agnoster\"" ~/.zshrc
         print_success "Theme 'agnoster' added to .zshrc"
     fi
 }
