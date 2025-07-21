@@ -1,17 +1,29 @@
 #!/bin/bash
 
-# Function to find the prosject root directory
+# Function to find the project root directory with assets folder
 find_project_root() {
-  local dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  # Start from the script's directory
+  local current_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  local root_dir="$current_dir"
   
-  while [ "$dir" != "/" ]; do
-    if [ -f "$dir/.env" ]; then
-      echo "$dir"
+  # Go up until we find the root directory (where assets/ is located)
+  while [ "$root_dir" != "/" ]; do
+    if [ -d "$root_dir/assets" ]; then
+      echo "$root_dir"
       return
     fi
-    dir=$(dirname "$dir")
+    root_dir=$(dirname "$root_dir")
   done
-  print_error ".env file not found in any parent directory."
+  
+  # If we couldn't find it by going up, try the absolute path to the project root
+  # This ensures it works regardless of where the script is executed from
+  root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  if [ -d "$root_dir/assets" ]; then
+    echo "$root_dir"
+    return
+  fi
+  
+  print_error "assets/ directory not found. Make sure you're running this from the project directory."
   exit 1
 }
 
@@ -20,8 +32,20 @@ PROJECT_ROOT=$(find_project_root)
 
 # Function to find the .env and .env.local files in the project root directory
 find_env_files() {
-  ENV_FILE="$PROJECT_ROOT/.env"
-  ENV_LOCAL_FILE="$PROJECT_ROOT/.env.local"
+  # Check if .env exists in assets directory, if not use .env.global as default
+  if [ -f "$PROJECT_ROOT/assets/.env" ]; then
+    ENV_FILE="$PROJECT_ROOT/assets/.env"
+  elif [ -f "$PROJECT_ROOT/assets/.env.global" ]; then
+    ENV_FILE="$PROJECT_ROOT/assets/.env.global"
+    print_alert "Using .env.global as default environment file"
+  else
+    # Create a new .env file by copying .env.global or creating an empty one
+    ENV_FILE="$PROJECT_ROOT/assets/.env"
+    touch "$ENV_FILE"
+    print_alert "Created empty .env file in assets directory"
+  fi
+  
+  ENV_LOCAL_FILE="$PROJECT_ROOT/assets/.env.local"
 }
 
 # Function to determine the operating system and set the HOME variable accordingly
@@ -85,6 +109,7 @@ load_env() {
   find_env_files
 
   if [ -f "$ENV_FILE" ]; then
+    print_success "Loading environment variables from $ENV_FILE"
     set -a
     source "$ENV_FILE"
     set +a
@@ -98,6 +123,7 @@ load_env() {
     print_alert "Empty .env.local file created."
   fi
 
+  print_success "Loading environment variables from $ENV_LOCAL_FILE"
   set -a
   source "$ENV_LOCAL_FILE"
   set +a
