@@ -47,7 +47,7 @@ const CONFIG = {
  */
 function onOpenSearch() {
   const ui = SpreadsheetApp.getUi();
-  ui.createMenu('Buscar Capabilities')
+  ui.createMenu('Search Capabilities')
       .addItem('Search LLM Capabilities', 'fetchMappedCapabilities')
       .addToUi();
 }
@@ -59,21 +59,21 @@ function configureCredentials() {
   const ui = SpreadsheetApp.getUi();
   
   // Request tenant
-  const tenantResponse = _promptForCredential(ui, 'Digite o TENANT:');
+  const tenantResponse = _promptForCredential(ui, 'Enter the TENANT:');
   if (!tenantResponse) return;
   
   // Request client ID
-  const clientIdResponse = _promptForCredential(ui, 'Digite o CLIENT_ID:');
+  const clientIdResponse = _promptForCredential(ui, 'Enter the CLIENT_ID:');
   if (!clientIdResponse) return;
   
   // Request client secret
-  const clientSecretResponse = _promptForCredential(ui, 'Digite o CLIENT_SECRET:');
+  const clientSecretResponse = _promptForCredential(ui, 'Enter the CLIENT_SECRET:');
   if (!clientSecretResponse) return;
   
   // Save credentials to script properties
   _saveCredentials(tenantResponse, clientIdResponse, clientSecretResponse);
   
-  ui.alert('Configuração', 'Credenciais salvas com sucesso!', ui.ButtonSet.OK);
+  ui.alert('Configuration', 'Credentials saved successfully!', ui.ButtonSet.OK);
 }
 
 /**
@@ -91,7 +91,7 @@ function fetchMappedCapabilities() {
     _displayCapabilitiesData(sheet, data);
     
   } catch (error) {
-    SpreadsheetApp.getUi().alert("Erro: " + error.message);
+    SpreadsheetApp.getUi().alert("Error: " + error.message);
   }
 }
 
@@ -132,12 +132,12 @@ function getAuthToken() {
     const data = JSON.parse(response.getContentText());
     
     if (!data.access_token) {
-      throw new Error("Token de acesso não encontrado na resposta da API");
+      throw new Error("Access token not found in API response");
     }
     
     return data.access_token;
   } catch (error) {
-    throw new Error("Erro ao obter token de autenticação: " + error.message);
+    throw new Error("Error getting authentication token: " + error.message);
   }
 }
 
@@ -154,7 +154,7 @@ function getAuthToken() {
  */
 function _promptForCredential(ui, promptText) {
   const response = ui.prompt(
-    'Configuração de Credenciais',
+    'Credential Configuration',
     promptText,
     ui.ButtonSet.OK_CANCEL);
   
@@ -190,7 +190,7 @@ function _getCredentials() {
   const clientSecret = PropertiesService.getScriptProperties().getProperty("FLOW_CLIENT_SECRET");
   
   if (!tenant || !clientId || !clientSecret) {
-    throw new Error("Credenciais não configuradas. Por favor, use a opção 'Configurar Credenciais' no menu.");
+    throw new Error("Credentials not configured. Please use the 'Configure Credentials' option from the menu.");
   }
   
   return { tenant, clientId, clientSecret };
@@ -282,7 +282,7 @@ function _displayCapabilitiesData(sheet, data) {
  * @private
  */
 function _createHeaders(capabilities) {
-  const headers = ['Provider', 'Modelo'];
+  const headers = ['Provider', 'Model'];
   capabilities.forEach(capability => {
     headers.push(_formatCapabilityName(capability));
   });
@@ -311,7 +311,7 @@ function _addTitleRow(sheet, totalColumns) {
   sheet.appendRow(Array(totalColumns).fill(''));
   const titleRow = sheet.getRange(1, 1, 1, totalColumns);
   titleRow.merge();
-  titleRow.setValue("RETORNO DA API");
+  titleRow.setValue("API RESPONSE");
   titleRow.setFontWeight("bold");
   titleRow.setBackground(CONFIG.COLORS.TITLE_BG);
   titleRow.setFontColor(CONFIG.COLORS.TITLE_TEXT);
@@ -349,7 +349,7 @@ function _addDataRows(sheet, data, allCapabilities) {
     
     models.forEach(model => {
       const capabilities = model.capabilities;
-      // Adiciona a região ao nome do modelo, se disponível
+      // Add region to model name if available
       const modelName = model.region ? `${model.name} - ${model.region}` : model.name;
 
       // Start row with provider and model
@@ -553,8 +553,8 @@ function _addConditionalFormatting(sheet, lastRow, numColumns) {
 function _addLegend(sheet, startRow) {
   // Define legend items
   const legendItems = [
-    { status: "Enable", color: CONFIG.COLORS.ENABLE, description: "Funcionalidade suportada pelo modelo" },
-    { status: "Disable", color: CONFIG.COLORS.DISABLE, description: "Funcionalidade não suportada pelo modelo" }
+    { status: "Enable", color: CONFIG.COLORS.ENABLE, description: "Feature supported by model" },
+    { status: "Disable", color: CONFIG.COLORS.DISABLE, description: "Feature not supported by model" }
   ];
   
   // Add legend title
@@ -579,7 +579,7 @@ function _addLegend(sheet, startRow) {
 function _addLegendTitle(sheet, startRow) {
   const legendTitleCell = sheet.getRange(startRow, 1, 1, 4);
   legendTitleCell.merge();
-  legendTitleCell.setValue("LEGENDA");
+  legendTitleCell.setValue("LEGEND");
   legendTitleCell.setFontWeight("bold");
   legendTitleCell.setHorizontalAlignment("center");
   legendTitleCell.setBackground(CONFIG.COLORS.LEGEND_BG);
@@ -595,8 +595,8 @@ function _addLegendTitle(sheet, startRow) {
 function _addLegendHeaders(sheet, startRow) {
   const headerRow = startRow + 1;
   sheet.getRange(headerRow, 1).setValue("Status");
-  sheet.getRange(headerRow, 2).setValue("Cor");
-  sheet.getRange(headerRow, 3, 1, 2).merge().setValue("Descrição");
+  sheet.getRange(headerRow, 2).setValue("Color");
+  sheet.getRange(headerRow, 3, 1, 2).merge().setValue("Description");
   
   // Format headers
   const headerRange = sheet.getRange(headerRow, 1, 1, 4);
@@ -649,7 +649,7 @@ function _addLegendNote(sheet, startRow, itemCount) {
   const noteRow = startRow + itemCount + 2;
   const noteCell = sheet.getRange(noteRow, 1, 1, 4);
   noteCell.merge();
-  noteCell.setValue("Nota: Esta legenda serve como referência para interpretar os status nas células da tabela acima.");
+  noteCell.setValue("Note: This legend serves as a reference to interpret the status in the cells of the table above.");
   noteCell.setFontStyle("italic");
   noteCell.setHorizontalAlignment("center");
 }

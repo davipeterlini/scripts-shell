@@ -9,11 +9,9 @@ source "$(dirname "$0")/utils/detect_os.sh"
 source "$(dirname "$0")/mac/setup/setup_basic_config.sh"
 source "$(dirname "$0")/mac/setup/setup_iterm.sh"
 source "$(dirname "$0")/mac/setup/setup_terminal.sh"
-source "$(dirname "$0")/mac/setup/setup_abnt2_keyboard.sh"
 source "$(dirname "$0")/mac/setup/enable_touchid_sudo.sh"
 source "$(dirname "$0")/mac/setup/setup_karabiner.sh"
 
-# Main function
 setup_mac() {
     print_header "Starting Setup for Mac Environment"
     load_env
@@ -40,9 +38,6 @@ setup_mac() {
 
     # Keyboard configuration 
     setup_karabiner all
-
-    # ABNT2 keyboard configuration
-    #setup_abnt2_keyboard
 
     print_success "Mac setup completed successfully!"
 }
