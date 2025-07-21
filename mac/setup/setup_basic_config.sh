@@ -7,8 +7,6 @@ source "$(dirname "$0")/mac/install_homebrew.sh"
 
 # Keyboard configuration
 configure_keyboard() {
-    print_header_info "Configuring keyboard..."
-    
     # Swap Command and Control keys for all keyboards
     print_info "Swapping Command and Control keys for all keyboards..."
     
@@ -52,8 +50,6 @@ configure_keyboard() {
 
 # Trackpad configuration
 configure_trackpad() {
-    print_header_info "Configuring trackpad..."
-    
     # Invert trackpad scroll direction (Natural Scrolling)
     print_info "Inverting trackpad scroll direction..."
     defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
@@ -63,8 +59,6 @@ configure_trackpad() {
 
 # Appearance configuration
 configure_appearance() {
-    print_header_info "Configuring appearance..."
-    
     # Enable dark mode
     print_info "Enabling dark mode..."
     defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
@@ -74,8 +68,6 @@ configure_appearance() {
 
 # Control center configuration
 configure_control_center() {
-    print_header_info "Configuring Control Center..." 
-    
     # Enable sound icon in menu bar
     print_info "Enabling sound icon in menu bar..."
     defaults write com.apple.controlcenter "NSStatusItem Visible Sound" -bool true
@@ -95,8 +87,6 @@ configure_control_center() {
 
 # Dock configuration
 configure_dock() {
-    print_header_info "Configuring Dock..."
-    
     # Reduce Dock size
     print_info "Reducing Dock size..."
     defaults write com.apple.dock tilesize -int 36
@@ -135,7 +125,7 @@ configure_all() {
 }
 
 add_dock_utilities() {
-  print_header_info "Adding separator and utilities to Dock with dockutil..."
+  print_info "Adding separator and utilities to Dock with dockutil..."
   install_dockutil
 
   # Remove duplicates if they already exist

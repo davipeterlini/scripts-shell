@@ -62,19 +62,3 @@ PROMPT='$(git_prompt_dir)$(get_branch_color)$(get_branch_name)${RESET_COLOR} →
 
 plugins=(zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions git)
 export $(grep -v '^#' ~/.env | xargs)
-
-export NPM_TOKEN=""
-export PATH="$PATH:/Users/davi.peterlini/.local/bin"
-
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-export PATH="$HOME/.local/bin:$PATH"
-
-# pipx configuration
-export PATH="$HOME/.local/bin:$PATH"
-export PIPX_DEFAULT_PYTHON="/Users/davi.peterlini/.pyenv/versions/3.12.9/bin/python"

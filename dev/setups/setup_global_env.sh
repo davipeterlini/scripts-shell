@@ -47,7 +47,7 @@ _add_export_to_profile() {
   local export_line="export \$(grep -v '^#' ~/.env | xargs)"
   local current_datetime=$(date "+%Y-%m-%d %H:%M:%S")
   local script_name=$(basename "$0")
-  local comment_line="# Added by $script_name on $current_datetime"
+  local comment_line="# Added by setup_global_env.sh on $current_datetime"
   
   if [ -f "$profile_path" ]; then
     if grep -q "$export_line" "$profile_path"; then

@@ -201,14 +201,12 @@ _install_pyenv() {
     fi
     
     # Add pyenv to shell configuration using profile_writer
-    local pyenv_config="# pyenv configuration
-export PYENV_ROOT=\"\$HOME/.pyenv\"
-export PATH=\"\$PYENV_ROOT/bin:\$PATH\"
-eval \"\$(pyenv init --path)\"
-eval \"\$(pyenv init -)\""
-    
-    print_info "Adding pyenv configuration to shell profile"
-    write_to_profile "$pyenv_config"
+    write_lines_to_profile \
+        "# pyenv configuration" \
+        "export PYENV_ROOT=\"\$HOME/.pyenv\"" \
+        "export PATH=\"\$PYENV_ROOT/bin:\$PATH\"" \
+        "eval \"\$(pyenv init --path)\"" \
+        "eval \"\$(pyenv init -)\""
     
     # Also add to current session
     export PYENV_ROOT="$HOME/.pyenv"
@@ -288,17 +286,8 @@ _clean_pipx() {
     # Remove pipx directories
     rm -rf "$HOME/.local/pipx" || true
     
-    # Remove pipx from PATH in shell profile
-    local shell_profile="$HOME/.bashrc"
-    if [[ "$SHELL" == *"zsh"* ]]; then
-        shell_profile="$HOME/.zshrc"
-    fi
-    
-    # Remove any pipx-related lines from shell profile
-    if [[ -f "$shell_profile" ]]; then
-        sed -i.bak '/pipx/d' "$shell_profile" || true
-        rm -f "${shell_profile}.bak" || true
-    fi
+    # Remove pipx from PATH in shell profile using profile_writer
+    remove_script_entries_from_profile "pipx configuration"
     
     # Remove pipx executable
     rm -f "$HOME/.local/bin/pipx" || true
@@ -329,18 +318,11 @@ _install_pipx() {
     # Install pipx using the pyenv Python
     "$python_path" -m pip install --user pipx
     
-    # Determine shell profile file
-    local shell_profile="$HOME/.bashrc"
-    if [[ "$SHELL" == *"zsh"* ]]; then
-        shell_profile="$HOME/.zshrc"
-    fi
-    
-    # Add pipx to PATH in shell profile
-    print_info "Adding pipx to $shell_profile"
-    echo '' >> "$shell_profile"
-    echo '# pipx configuration' >> "$shell_profile"
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$shell_profile"
-    echo "export PIPX_DEFAULT_PYTHON=\"$python_path\"" >> "$shell_profile"
+    # Add pipx configuration to shell profile using profile_writer
+    write_lines_to_profile \
+        "# pipx configuration" \
+        "export PATH=\"\$HOME/.local/bin:\$PATH\"" \
+        "export PIPX_DEFAULT_PYTHON=\"$python_path\""
     
     # Add pipx to PATH for current session
     export PATH="$HOME/.local/bin:$PATH"
@@ -485,6 +467,27 @@ _verify_installation() {
     fi
 }
 
+_configure_python_environment() {
+    # Get the full path to the Python executable
+    local python_path=$(pyenv which python)
+    
+    # Configure Python environment using profile_writer
+    print_info "Configuring Python environment in shell profile"
+    
+    # Add all necessary environment variables and configurations
+    write_lines_to_profile \
+        "# Python environment configuration" \
+        "export PATH=\"\$HOME/.local/bin:\$PATH\"" \
+        "export PYENV_ROOT=\"\$HOME/.pyenv\"" \
+        "export PATH=\"\$PYENV_ROOT/bin:\$PATH\"" \
+        "eval \"\$(pyenv init --path)\"" \
+        "eval \"\$(pyenv init -)\"" \
+        "export PIPX_DEFAULT_PYTHON=\"$python_path\""
+    
+    print_success "Python environment configured in shell profile"
+    print_alert "IMPORTANTE: Você precisa reiniciar seu terminal ou executar 'source $(detect_profile)' para usar o novo ambiente."
+}
+
 setup_python() {
   print_header_info "Check Setup Python"
 
@@ -538,27 +541,14 @@ setup_python() {
     # Create venv helper script
     _create_venv_helper
     
+    # Configure Python environment in shell profile
+    _configure_python_environment
+    
     # Final verification
     _verify_installation
     
     print_info "You now have a complete Python $PYTHON_VERSION development environment"
     
-    # Determine shell profile file
-    local shell_profile="$HOME/.bashrc"
-    if [[ "$SHELL" == *"zsh"* ]]; then
-        shell_profile="$HOME/.zshrc"
-    fi
-    
-    print_alert "IMPORTANT: You may need to restart your terminal or run the following command to use the new environment:"
-    print_yellow "source $shell_profile"
-    print_yellow "# OR"
-    print_yellow "export PATH=\"\$HOME/.local/bin:\$PATH\""
-    print_yellow "export PYENV_ROOT=\"\$HOME/.pyenv\""
-    print_yellow "export PATH=\"\$PYENV_ROOT/bin:\$PATH\""
-    print_yellow "eval \"\$(pyenv init --path)\""
-    print_yellow "eval \"\$(pyenv init -)\""
-    print_yellow "export PIPX_DEFAULT_PYTHON=\"$python_path\""
-
     print_success "Installation Complete"
 }
 

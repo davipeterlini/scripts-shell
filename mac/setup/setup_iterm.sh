@@ -18,7 +18,7 @@ install_iterm2() {
 }
 
 download_and_import_themes() {
-    print_header_info "Downloading iTerm2 themes..."
+    print_info "Downloading iTerm2 themes..."
     local theme_path=~/Downloads/material-design-colors.itermcolors
     
     # Backup iTerm2 preferences before making changes
@@ -47,7 +47,7 @@ download_and_import_themes() {
 }
 
 install_powerline_fonts() {
-    print_header_info "Installing Powerline fonts..."
+    print_info "Installing Powerline fonts..."
     git clone https://github.com/powerline/fonts.git && cd fonts && ./install.sh
     cd .. && rm -rf fonts
     
@@ -61,7 +61,7 @@ install_powerline_fonts() {
 }
 
 configure_iterm_session_persistence() {
-    print_header_info "Configuring iTerm2 to restore sessions and use current directory for new tabs..."
+    print_info "Configuring iTerm2 to restore sessions and use current directory for new tabs..."
     
     # Backup iTerm2 preferences before making changes
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
@@ -97,7 +97,7 @@ configure_iterm_session_persistence() {
 
 # Add iTerm2 specific settings to shell profile if needed
 configure_iterm_shell_integration() {
-    print_header_info "Configuring iTerm2 shell integration..."
+    print_info "Configuring iTerm2 shell integration..."
     
     # Check if shell integration is already installed
     if ! grep -q "iterm2_shell_integration" ~/.zshrc; then
