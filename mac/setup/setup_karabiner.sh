@@ -1,7 +1,17 @@
 #!/bin/bash
 
+# Corrigindo os caminhos para os arquivos de utilitários
+if [[ -f "$(dirname "$0")/../utils/colors_message.sh" ]]; then
+    source "$(dirname "$0")/../utils/colors_message.sh"
+else
     source "$(dirname "$0")/utils/colors_message.sh"
+fi
+
+if [[ -f "$(dirname "$0")/../utils/bash_tools.sh" ]]; then
+    source "$(dirname "$0")/../utils/bash_tools.sh"
+else
     source "$(dirname "$0")/utils/bash_tools.sh"
+fi
 
 _check_brew_installed() {
     if ! command -v brew &> /dev/null; then
