@@ -9,25 +9,15 @@ source "$ROOT_DIR/utils/colors_message.sh"
 source "$ROOT_DIR/utils/load_env.sh"
 source "$ROOT_DIR/utils/detect_os.sh"
 
-# Verificar se o arquivo save_vscode_settings.sh existe
-if [ -f "$SCRIPT_DIR/../save_vscode_settings.sh" ]; then
-    source "$SCRIPT_DIR/../save_vscode_settings.sh"
-else
-    print_error "Arquivo save_vscode_settings.sh não encontrado"
-    # Definir uma função vazia para evitar erros
-    setup_vscode_config() {
-        print_alert "Função setup_vscode_config não disponível"
-    }
-fi
-
 # Function to read extensions from assets/vscode/extension-list file
 _read_vscode_extensions() {
+    print_info "Reading VSCode extensions list..."
     local extension_file="$ROOT_DIR/assets/vscode/extension-list"
     
     if [ ! -f "$extension_file" ]; then
         print_error "Extension list file not found at: $extension_file"
         return 1
-    }
+    fi
     
     print_info "Reading VSCode extensions from $extension_file"
     
@@ -67,6 +57,8 @@ _install_vscode_extensions() {
 }
 
 _save_vscode_settings() {
+    print_info "Saving VSCode global settings..."
+
     local os=$(detect_os)
     local settings_path
     local source_settings="$ROOT_DIR/assets/vscode/settings.json"
@@ -100,6 +92,8 @@ _save_vscode_settings() {
 }
 
 _save_vscode_keybindings() {
+    print_info "Saving VSCode keybindings..."
+    
     local os=$(detect_os)
     local keybindings_path
     local source_keybindings="$ROOT_DIR/assets/vscode/keybindings.json"
@@ -135,16 +129,12 @@ _save_vscode_keybindings() {
 setup_vscode() {
     print_header_info "Setup VS Code Configuration"
 
-    print_info "Reading VSCode extensions list..."
     _read_vscode_extensions
     
-    print_info "Installing VSCode extensions..."
     _install_vscode_extensions 
 
-    print_info "Saving VSCode global settings..."
     _save_vscode_settings
 
-    print_info "Saving VSCode keybindings..."
     _save_vscode_keybindings
 
     print_info "Setting up VSCode configurations..."

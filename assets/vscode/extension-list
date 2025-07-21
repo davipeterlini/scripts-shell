@@ -1,28 +1,44 @@
 VSCODE_EXTENSIONS=(
-    #"rangav.vscode-thunder-client"
-    #"ms-azuretools.vscode-docker"
-    "mikestead.dotenv"
-    "gerane.Theme-Dracula"
-    "MS-CEINTL.vscode-language-pack-pt-BR"
+    # Key config
     "alphabotsec.vscode-eclipse-keybindings"
-    "moshfeu.compare-folders"
+    # show todo list 
     "Gruntfuggly.todo-tree"
-    "naumovs.color-highlight"   
-    "Noctarya.typescript-web-development-extension-pack"
-    "vitest.explorer"
-    "Orta.vscode-jest"
-    "firsttris.vscode-jest-runner"
-    #"ms-playwright.playwright"
-    "GitHub.copilot"
-    "GitHub.copilot-labs"
-    "PrismaCloud.prisma-cloud"
+    # Git extension
     "eamodio.gitlens" 
-    # Lints and Formmats 
+    # Extension for typescript
+    "Noctarya.typescript-web-development-extension-pack"
+    # Extension for javascript
     "esbenp.prettier-vscode"
     "dbaeumer.vscode-eslint"
-    "mervin.markdown-formatter"
     "yoavbls.pretty-ts-errors"
-    # CI&T
-    "prompt-flow.prompt-flow"
-    #"cit-flow-coder-assistant.cit-flow-coder-assistant"
+    # AI Extension
+    #"GitHub.copilot"
+    #"GitHub.copilot-labs"
+    #"prompt-flow.prompt-flow"
+    "cit-flow-coder-assistant.cit-flow-coder-assistant"
+    # Extension for markdown
+    #"mervin.markdown-formatter"
+    # Tools for request
+    #"rangav.vscode-thunder-client"
+    # Docker
+    #"ms-azuretools.vscode-docker"
+    # Dot-env
+    #"mikestead.dotenv"
+    # Thema
+    #"gerane.Theme-Dracula"
+    #naumovs.color-highlight"   
+    # Language
+    #"MS-CEINTL.vscode-language-pack-pt-BR"
+    # Compare folder
+    #"moshfeu.compare-folders"
+    # Extension for jest  
+    #"Orta.vscode-jest"
+    #"firsttris.vscode-jest-runner"
+    #"vitest.explorer"
+    # Security Extension
+    #"PrismaCloud.prisma-cloud"
+    # Browser Exctension
+    #"ms-playwright.playwright"
+
+
 )
