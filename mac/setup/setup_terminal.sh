@@ -6,11 +6,21 @@ source "$(dirname "$0")/utils/bash_tools.sh"
 source "$(dirname "$0")/utils/profile_writer.sh"
 
 _install_oh_my_zsh() {
-    if [ ! -d "$HOME/.oh-my-zsh" ]; then
-        print_info "Installing Oh My Zsh..."
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    # Verificação mais robusta para Oh My Zsh
+    if [ -d "$HOME/.oh-my-zsh" ] && [ -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
+        print_success "Oh My Zsh is already installed. Skipping installation."
+        return 0
+    fi
+    
+    print_info "Installing Oh My Zsh..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    
+    # Verificar se a instalação foi bem-sucedida
+    if [ -d "$HOME/.oh-my-zsh" ]; then
+        print_success "Oh My Zsh has been installed successfully."
     else
-        print_info "Oh My Zsh already installed"
+        print_error "Failed to install Oh My Zsh. Please check your internet connection and try again."
+        return 1
     fi
 }
 
@@ -48,7 +58,7 @@ _set_zsh_as_default() {
     fi
 }
 
-install_plugins() {
+_install_plugins() {
     print_header_info "Installing recommended plugins..."
     
     # Define plugin directories - explicitly use HOME
@@ -141,7 +151,7 @@ setup_terminal() {
     # Then proceed with other configurations
     _install_oh_my_zsh
     _set_zsh_as_default
-    install_plugins
+    _install_plugins
     add_custom_prompt
     #change_theme
     
