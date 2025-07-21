@@ -657,6 +657,11 @@ setup_karabiner() {
     local command="$1"
     local auto_mode="$2"  # If set to "auto", applies automatically without asking
     local auto_apply="no"
+
+    if ! get_user_confirmation "Do you want to config Karabine?"; then
+        print_info "Skipping Karabine configuration"
+        return 0
+    fi
     
     if [ "$auto_mode" = "auto" ]; then
         auto_apply="yes"

@@ -37,7 +37,6 @@ setup_mac() {
     print_success "Mac setup completed successfully!"
 }
 
-# Check if the script is being executed directly or sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     setup_mac "$@"
 fi
