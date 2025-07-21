@@ -482,7 +482,7 @@ function _addNavigationLinksIDE(reportSheet) {
   
   const navRange = reportSheet.getRange(navRow, 1, 1, 8);
   navRange.merge();
-  navRange.setValue("Clique nos links abaixo para navegar até as divergências específicas");
+  navRange.setValue("Click the links below to navigate to specific discrepancies");
   navRange.setFontWeight("bold");
   navRange.setBackground("#E6E6FA"); // Light lavender
   navRange.setHorizontalAlignment("center");
@@ -497,7 +497,7 @@ function _addReportTitleIDE(sheet) {
   sheet.appendRow(['']);
   const titleRange = sheet.getRange(1, 1, 1, 8);
   titleRange.merge();
-  titleRange.setValue("RELATÓRIO DE COMPARAÇÃO DE STATUS DE CAPABILITIES");
+  titleRange.setValue("CAPABILITIES STATUS COMPARISON REPORT");
   titleRange.setFontWeight("bold");
   titleRange.setBackground(COMPARE_CONFIG_IDE.COLORS.TITLE_BG);
   titleRange.setFontColor(COMPARE_CONFIG_IDE.COLORS.TITLE_TEXT);
@@ -529,14 +529,14 @@ function _addSummaryIDE(sheet, discrepancies) {
   const summaryRange = sheet.getRange(2, 1, 1, 8);
   summaryRange.merge();
   
-  let summaryText = `RESUMO: Encontradas ${discrepancies.length} divergências no total.`;
-  if (statusCount > 0) summaryText += ` ${statusCount} divergências de status.`;
-  if (missingModelCount > 0) summaryText += ` ${missingModelCount} modelos ausentes.`;
-  if (headerIssue) summaryText += " Problema nos cabeçalhos das planilhas.";
+  let summaryText = `SUMMARY: Found ${discrepancies.length} discrepancies in total.`;
+  if (statusCount > 0) summaryText += ` ${statusCount} status discrepancies.`;
+  if (missingModelCount > 0) summaryText += ` ${missingModelCount} missing models.`;
+  if (headerIssue) summaryText += " Issue with spreadsheet headers.";
   
   summaryRange.setValue(summaryText);
   summaryRange.setFontWeight("bold");
-  summaryRange.setBackground("#FFD700"); // Amarelo para destaque
+  summaryRange.setBackground("#FFD700"); // Yellow for highlighting
   summaryRange.setHorizontalAlignment("center");
   summaryRange.setVerticalAlignment("middle");
   sheet.setRowHeight(2, 30);
@@ -553,7 +553,7 @@ function _addNoDiscrepanciesMessageIDE(sheet) {
   sheet.appendRow(['']);
   const messageRange = sheet.getRange(2, 1, 1, 8);
   messageRange.merge();
-  messageRange.setValue("Nenhuma divergência de status encontrada. Os status das capabilities são idênticos em ambas as planilhas.");
+  messageRange.setValue("No status discrepancies found. Capability statuses are identical in both sheets.");
   messageRange.setFontWeight("bold");
   messageRange.setBackground(COMPARE_CONFIG_IDE.COLORS.SUCCESS_BG);
   messageRange.setHorizontalAlignment("center");
@@ -568,14 +568,14 @@ function _addNoDiscrepanciesMessageIDE(sheet) {
  */
 function _addReportHeadersIDE(sheet) {
   const headers = [
-    'Tipo de Divergência',
+    'Discrepancy Type',
     'Provider',
-    'Modelo',
+    'Model',
     'Capability',
-    'Status em LLM-Capabilities',
-    'Status em IDE-Capabilities',
-    'Localização',
-    'Ação Recomendada'
+    'Status in LLM-Capabilities',
+    'Status in IDE-Capabilities',
+    'Location',
+    'Recommended Action'
   ];
   
   sheet.appendRow(['']);
@@ -601,34 +601,34 @@ function _addDiscrepanciesIDE(sheet, discrepancies, headers) {
   discrepancies.forEach((discrepancy, index) => {
     // Log progress periodically
     if (index % 20 === 0 || index === 0 || index === discrepancies.length - 1) {
-      Logger.log(`Adicionando discrepância ${index + 1} de ${discrepancies.length} ao relatório`);
+      Logger.log(`Adding discrepancy ${index + 1} of ${discrepancies.length} to report`);
     }
     
     let row = [];
     
     if (discrepancy.type === "header") {
       row = [
-        "Cabeçalhos Diferentes",
+        "Different Headers",
         "-",
         "-",
         "-",
         "-",
         "-",
         "-",
-        "Verificar e alinhar os cabeçalhos das planilhas"
+        "Check and align spreadsheet headers"
       ];
       sheet.appendRow(row);
     } else if (discrepancy.type === "missing_model") {
       const location = discrepancy.location === "source" 
-        ? `Modelo existe apenas em ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME} (linha ${discrepancy.rowIndex})` 
-        : `Modelo existe apenas em ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME} (linha ${discrepancy.rowIndex})`;
+        ? `Model exists only in ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME} (row ${discrepancy.rowIndex})` 
+        : `Model exists only in ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME} (row ${discrepancy.rowIndex})`;
       
       const action = discrepancy.location === "source"
-        ? `Adicionar modelo ao ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}`
-        : `Adicionar modelo ao ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}`;
+        ? `Add model to ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}`
+        : `Add model to ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}`;
       
       row = [
-        "Modelo Ausente",
+        "Missing Model",
         discrepancy.provider,
         discrepancy.model,
         "-",
@@ -641,10 +641,10 @@ function _addDiscrepanciesIDE(sheet, discrepancies, headers) {
     } else if (discrepancy.type === "status") {
       const location = `${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME} (${_columnToLetterIDE(discrepancy.columnIndex)}${discrepancy.sourceRowIndex}) vs ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME} (${_columnToLetterIDE(discrepancy.columnIndex)}${discrepancy.targetRowIndex})`;
       
-      const action = `Alinhar o status de ${discrepancy.capability} para o modelo ${discrepancy.model}`;
+      const action = `Align status of ${discrepancy.capability} for model ${discrepancy.model}`;
       
       row = [
-        "Status Divergente",
+        "Divergent Status",
         discrepancy.provider,
         discrepancy.model,
         discrepancy.capability,
@@ -655,10 +655,10 @@ function _addDiscrepanciesIDE(sheet, discrepancies, headers) {
       ];
       sheet.appendRow(row);
       
-      // Colorir as células de status de acordo com o valor (Enable/Disable)
+      // Color status cells according to value (Enable/Disable)
       const currentRow = sheet.getLastRow();
       
-      // Colorir a célula do status na planilha fonte
+      // Color the status cell in source sheet
       const sourceStatusCell = sheet.getRange(currentRow, 5);
       if (discrepancy.sourceStatus === COMPARE_CONFIG_IDE.STATUS.ENABLE) {
         sourceStatusCell.setBackground(COMPARE_CONFIG_IDE.COLORS.ENABLE_BG);
@@ -666,7 +666,7 @@ function _addDiscrepanciesIDE(sheet, discrepancies, headers) {
         sourceStatusCell.setBackground(COMPARE_CONFIG_IDE.COLORS.DISABLE_BG);
       }
       
-      // Colorir a célula do status na planilha alvo
+      // Color the status cell in target sheet
       const targetStatusCell = sheet.getRange(currentRow, 6);
       if (discrepancy.targetStatus === COMPARE_CONFIG_IDE.STATUS.ENABLE) {
         targetStatusCell.setBackground(COMPARE_CONFIG_IDE.COLORS.ENABLE_BG);
@@ -688,9 +688,9 @@ function _formatReportIDE(sheet) {
   const lastRow = sheet.getLastRow();
   const lastColumn = 8; // Number of columns in report
   
-  // Verificar se há linhas suficientes para formatar
+  // Check if there are enough rows to format
   if (lastRow < 5) {
-    Logger.log("Não há linhas suficientes para formatar o relatório");
+    Logger.log("Not enough rows to format the report");
     return;
   }
   

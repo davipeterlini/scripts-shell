@@ -98,11 +98,6 @@ _add_export_to_profile() {
   fi
 }
 
-_print_env_variables() {
-  print_info "Variables saved in the .env file:"
-  print "$(cat "$HOME/.env")"
-}
-
 _setup_variables() {
   local env_file="$HOME/.env"
   local variables_updated=0
@@ -221,8 +216,6 @@ setup_global_env() {
     _setup_variables
     
     _reload_profile "$PROFILE_FILE"
-    
-    _print_env_variables
     
     print_success "Global environment setup completed!"
 }
