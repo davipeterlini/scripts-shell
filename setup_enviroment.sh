@@ -53,7 +53,6 @@ setup_enviroment() {
     setup_github_accounts
     setup_bitbucket_accounts
     setup_ssh_config
-    setup_gcloud
 
     setup_dev
 

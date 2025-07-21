@@ -7,6 +7,7 @@ source "$(dirname "$0")/utils/detect_os.sh"
 
 # Scripts Dev Setup
 source "$(dirname "$0")/grant_permissions.sh"
+source "$(dirname "$0")/dev/setups/setup_gcloud.sh"
 source "$(dirname "$0")/dev/setups/setup_global_env.sh"
 source "$(dirname "$0")/dev/setups/setup_ides.sh"
 source "$(dirname "$0")/dev/setups/setup_java.sh"
@@ -33,6 +34,8 @@ setup_dev() {
     setup_global_env
 
     setup_projects
+
+    setup_gcloud
 
     setup_node 
 
