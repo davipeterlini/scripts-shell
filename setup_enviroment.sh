@@ -20,7 +20,6 @@ source "${SCRIPTS_DIR}/mac/setup_mac.sh"
 source "$(dirname "$0")/github/setup_github_accounts.sh"
 source "$(dirname "$0")/bitbucket/setup_bitbucket_accounts.sh"
 source "$(dirname "$0")/ssh-config/setup_ssh_config.sh"
-source "$(dirname "$0")/gcloud/setup_gcloud.sh"
 source "$(dirname "$0")/dev/setup_dev.sh"
 
 

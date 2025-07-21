@@ -2,7 +2,7 @@
 
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/bash_tools.sh"
-source "$(dirname "$0")/dev/install/install_gcloud_tools.sh"
+source "$(dirname "$0")/dev/installs/install_gcloud_tools.sh"
 
 # Function to authenticate with Google Cloud
 __authenticate_gcloud() {
