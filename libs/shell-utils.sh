@@ -1,20 +1,20 @@
 #!/bin/bash
 
 # Shell Utils Library
-# Biblioteca consolidada com utilitários shell para automatização e ferramentas
+# Consolidated library with shell utilities for automation and tools
 
 # =============================================================================
-# CONFIGURAÇÃO INICIAL
+# INITIAL CONFIGURATION
 # =============================================================================
 
-# Obter diretório absoluto do script atual
+# Get absolute directory of current script
 SHELL_UTILS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # =============================================================================
-# CORES E MENSAGENS
+# COLORS AND MESSAGES
 # =============================================================================
 
-# Definições de cores
+# Color definitions
 RED='\033[1;31m'
 GREEN='\033[1;32m'
 YELLOW='\033[1;33m'
@@ -23,56 +23,56 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;37m'
 NC='\033[0m' # No Color
 
-# Função para exibir mensagens informativas
+# Function to display informative messages
 function print_info() {
   echo -e "\n${BLUE}ℹ️  $1${NC}"
 }
 
-# Função para exibir mensagens de sucesso
+# Function to display success messages
 function print_success() {
   echo -e "${GREEN}✅ $1${NC}"
 }
 
-# Função para exibir mensagens de alerta
+# Function to display alert messages
 function print_alert() {
   echo -e "\n${YELLOW}⚠️  $1${NC}"
 }
 
-# Função para exibir mensagens de pergunta
+# Function to display question messages
 function print_alert_question() {
   echo -n -e "\n${YELLOW}⚠️  $1${NC}"
 }
 
-# Função para exibir mensagens de erro
+# Function to display error messages
 function print_error() {
   echo -e "${RED}❌ Error: $1${NC}"
 }
 
-# Função para exibir mensagens simples
+# Function to display simple messages
 function print() {
   echo -e "${CYAN}$1${NC}"
 }
 
-# Função para exibir cabeçalhos formatados
+# Function to display formatted headers
 function print_header() {
   echo -e "\n${YELLOW}===========================================================================${NC}"
   echo -e "${GREEN}$1${NC}"
   echo -e "${YELLOW}===========================================================================${NC}"
 }
 
-# Função para exibir cabeçalhos informativos
+# Function to display informative headers
 function print_header_info() {
   echo -e "\n${CYAN}===========================================================================${NC}"
   echo -e "${BLUE}$1${NC}"
   echo -e "${CYAN}===========================================================================${NC}"
 }
 
-# Função para exibir texto amarelo
+# Function to display yellow text
 function print_yellow() {
   echo -e "${YELLOW}$1${NC}"
 }
 
-# Função para exibir texto vermelho
+# Function to display red text
 function print_red() {
   echo -e "${RED}$1${NC}"
 }
