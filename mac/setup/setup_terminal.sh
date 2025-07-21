@@ -95,7 +95,8 @@ install_plugins() {
     local plugins_content="plugins=(zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions zsh-syntax-highlighting zsh-autosuggestions git)"
     if ! grep -q "plugins=(.*zsh-syntax-highlighting.*zsh-autosuggestions.*)" ~/.zshrc; then
         # Backup will be created by profile_writer
-        write_to_profile "# Update plugins configuration\n$plugins_content" ~/.zshrc
+        # Usar write_lines_to_profile em vez de write_to_profile para garantir quebras de linha adequadas
+        write_lines_to_profile "# Update plugins configuration" "$plugins_content" ~/.zshrc
     fi
     
     print_success "Plugins installed successfully"
