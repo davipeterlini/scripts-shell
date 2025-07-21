@@ -3,19 +3,19 @@
 source "$(dirname "$0")/utils/colors_message.sh"
 
 install_homebrew() {
-    # Verifica se o Homebrew já está instalado
+    # Check if Homebrew is already installed
     if command -v brew &> /dev/null; then
-        print_alert "Homebrew já está instalado."
+        print_alert "Homebrew is already installed."
     else
-        # Instala o Homebrew
-        print_success "Instalando o Homebrew..."
+        # Install Homebrew
+        print_success "Installing Homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-        # Desabilitando o Analytics
+        # Disabling Analytics
         brew analytics off
 
-        # Adiciona o Homebrew ao PATH
-        print_success "Adicionando o Homebrew ao PATH..."
+        # Add Homebrew to PATH
+        print_success "Adding Homebrew to PATH..."
         echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
         eval "$(/opt/homebrew/bin/brew shellenv)"
     fi

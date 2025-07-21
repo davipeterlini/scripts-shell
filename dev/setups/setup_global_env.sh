@@ -6,7 +6,7 @@ source ./utils/bash_tools.sh
 source ./utils/choose_shell_profile.sh
 # TODO - pode ser usado o  load_env .env.example
 ENV_EXAMPLE="./assets/.env.credential"
-ENV_DIR="$HOME/.coder-ide"
+ENV_DIR="$HOME"
 
 _create_env_file() {
     local env_example_path="$ENV_EXAMPLE"
@@ -67,7 +67,7 @@ _setup_variables() {
     fi
   fi
   
-  print_header "Setting up environment variables"
+  print_info "Setting up environment variables"
   
   # First, collect all the variable keys from the .env file
   while IFS= read -r line; do

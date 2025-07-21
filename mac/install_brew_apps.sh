@@ -16,18 +16,18 @@ install_brew_apps() {
     install_homebrew
 
     # Display the list of apps to be installed
-    print_info "As seguintes aplicações serão instaladas:"
+    print_info "The following applications will be installed:"
     for app in "$@"; do
         print "- $app"
     done
     
     # Ask for confirmation before proceeding
-    read -p "Deseja continuar com a instalação? (s/n): " confirm
-    if [[ "$confirm" =~ ^[Ss]$ ]]; then
-        print_info "Iniciando instalação..."
+    read -p "Do you want to continue with the installation? (y/n): " confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        print_info "Starting installation..."
         _install_brew_apps "$@"
     else
-        print_alert "Instalação cancelada."
+        print_alert "Installation cancelled."
         return 1
     fi
 }
