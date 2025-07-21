@@ -21,8 +21,8 @@ detect_profile() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   profile=$(detect_profile)
   if [ "$profile" == "unknown" ]; then
-    print_alert "Não foi possível detectar o profile do shell."
+    print_alert "Unable to detect shell profile."
   else
-    print_success "Profile do shell detectado: $profile"
+    print_success "Shell profile detected: $profile"
   fi
 fi

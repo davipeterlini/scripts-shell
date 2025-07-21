@@ -12,9 +12,9 @@ display__dialog_menu() {
         3 "All Apps" off)
 
     if [ -z "$choices" ]; then
-        print_alert "Nenhuma opção foi selecionada."
+        print_alert "No option was selected."
     else
-        print_success "Opções selecionadas: $choices"
+        print_success "Selected options: $choices"
     fi
 }
 
@@ -37,19 +37,19 @@ display_menu() {
     echo ""
     print_header_info "Menu"
     echo ""
-    print "Selecione o tipo de aplicativos para instalar:"
+    print "Select the type of applications to install:"
     echo ""
     print "1) Basic Apps"
     print "2) Development Apps"
     print "3) All Apps"
     echo ""
     
-    print_yellow "Digite os números das opções desejadas (separados por espaço) e pressione ENTER:"
+    print_yellow "Enter the numbers of the desired options (separated by spaces) and press ENTER:"
     read -r selection
     
     # Check if input is not empty
     if [ -z "$selection" ]; then
-        print_alert "Nenhuma opção foi selecionada."
+        print_alert "No option was selected."
         MENU_CHOICES=""
         return 1
     fi
@@ -62,7 +62,7 @@ display_menu() {
         if [[ "$num" =~ ^[1-3]$ ]]; then
             choices+="$num "
         else
-            print_error "Opção inválida: $num. Ignorando."
+            print_error "Invalid option: $num. Ignoring."
             valid_options=false
         fi
     done
@@ -71,16 +71,16 @@ display_menu() {
     choices=$(echo "$choices" | xargs)
     
     if [ -z "$choices" ]; then
-        print_alert "Nenhuma opção válida foi selecionada."
+        print_alert "No valid option was selected."
         MENU_CHOICES=""
         return 1
     fi
     
     if [ "$valid_options" = false ]; then
-        print_alert "Algumas opções inválidas foram ignoradas."
+        print_alert "Some invalid options were ignored."
     fi
     
-    print_success "Opções selecionadas: $choices"
+    print_success "Selected options: $choices"
     
     # Set the global variable
     MENU_CHOICES="$choices"

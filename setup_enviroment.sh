@@ -14,7 +14,7 @@ source "${UTILS_DIR}/colors_message.sh"
 source "${SCRIPTS_DIR}/grant_permissions.sh"
 source "${SCRIPTS_DIR}/install_apps.sh"
 
-# Importar o script de setup do Mac
+# Import Mac setup script
 source "${SCRIPTS_DIR}/mac/setup_mac.sh"
 
 source "$(dirname "$0")/github/setup_github_accounts.sh"
@@ -50,7 +50,7 @@ _setup_bitbucket () {
     #generate-classic-token-bb-local.sh
 }
 
-# TODO - ajustar após ajustar scripts do mac e criar os do linux
+# TODO - adjust after fixing mac scripts and creating linux ones
 # _setup_linux() {
 #     print_info "Setting up terminal configurations..."
 #     ./mac/setup/setup_terminal.sh
@@ -103,4 +103,4 @@ setup_enviroment() {
 # Execute the script
 setup_enviroment
 
-# TODO - deve ter um mecanismo que ao interromper CTRL + C no terminal interrompe script por script
+# TODO - should have a mechanism that when interrupting CTRL + C in terminal it interrupts script by script

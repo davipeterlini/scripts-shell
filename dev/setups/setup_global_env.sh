@@ -7,7 +7,7 @@ source ./utils/choose_shell_profile.sh
 ENV_EXAMPLE="./assets/.env.credential"
 ENV_DIR="$HOME/.coder-ide"
 
-create_env_file() {
+_create_env_file() {
     local env_example_path="$ENV_EXAMPLE"
     local env_target_path="$ENV_DIR/.env"
 
@@ -20,8 +20,7 @@ create_env_file() {
     fi
 }
 
-# Function to add the export line to the profile
-add_export_to_profile() {
+_add_export_to_profile() {
   local profile_path="$1"
   local export_line="export \$(grep -v '^#' ~/.env | xargs)"
   
@@ -38,36 +37,12 @@ add_export_to_profile() {
   fi
 }
 
-# Function to print the saved variables in the terminal
-print_env_variables() {
+_print_env_variables() {
   print_info "Variables saved in the .env file:"
   print "$(cat "$HOME/.env")"
 }
 
-# Function to update a specific key in the .env file (macOS compatible)
-update_env_key() {
-  local env_file="$1"
-  local key="$2"
-  local value="$3"
-  
-  # Create a temporary file
-  local temp_file=$(mktemp)
-  
-  # Replace the line containing the key with the new key=value pair
-  while IFS= read -r line; do
-    if [[ "$line" =~ ^"$key"= ]]; then
-      echo "$key=$value" >> "$temp_file"
-    else
-      echo "$line" >> "$temp_file"
-    fi
-  done < "$env_file"
-  
-  # Replace the original file with the temporary file
-  mv "$temp_file" "$env_file"
-}
-
-# Function to setup variables in the .env file - properly waiting for each input
-setup_variables() {
+_setup_variables() {
   local env_file="$HOME/.env"
   local variables_updated=0
   local keys=()
@@ -115,7 +90,7 @@ setup_variables() {
     
     # If a value was provided, update the .env file
     if [ ! -z "$value" ]; then
-      update_env_key "$env_file" "$key" "$value"
+      __update_env_key "$env_file" "$key" "$value"
       ((variables_updated++))
     fi
   done
@@ -124,8 +99,28 @@ setup_variables() {
   print_success "Updated $variables_updated environment variables."
 }
 
-# Function to reload the profile
-reload_profile() {
+__update_env_key() {
+  local env_file="$1"
+  local key="$2"
+  local value="$3"
+  
+  # Create a temporary file
+  local temp_file=$(mktemp)
+  
+  # Replace the line containing the key with the new key=value pair
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^"$key"= ]]; then
+      echo "$key=$value" >> "$temp_file"
+    else
+      echo "$line" >> "$temp_file"
+    fi
+  done < "$env_file"
+  
+  # Replace the original file with the temporary file
+  mv "$temp_file" "$env_file"
+}
+
+_reload_profile() {
   local profile="$1"
   
   if [ -f "$profile" ]; then
@@ -137,7 +132,6 @@ reload_profile() {
   fi
 }
 
-# Main script flow
 setup_global_env() {
     print_header_info "Setting up global environment"
 
@@ -146,23 +140,21 @@ setup_global_env() {
         return 0
     fi
     
-    # TODO - alterar para criar ou alterar as variávis no ~/.coder-ide/.env
-    create_env_file
+    _create_env_file
     
     choose_shell_profile
     
-    add_export_to_profile "$PROFILE_FILE"
+    _add_export_to_profile "$PROFILE_FILE"
     
-    setup_variables
+    _setup_variables
     
-    reload_profile "$PROFILE_FILE"
+    _reload_profile "$PROFILE_FILE"
     
-    print_env_variables
+    _print_env_variables
     
     print_success "Global environment setup completed!"
 }
 
-# Check if the script is being executed directly or sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     setup_global_env "$@"
 fi

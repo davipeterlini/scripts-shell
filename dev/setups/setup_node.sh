@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Determina o diretório do script atual
+# Determine the current script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Determina o diretório raiz do projeto
-# Se o script for chamado diretamente, o ROOT_DIR será dois níveis acima
-# Se for chamado via setup_dev.sh, o ROOT_DIR já estará definido
+# Determine the project root directory
+# If the script is called directly, ROOT_DIR will be two levels up
+# If called via setup_dev.sh, ROOT_DIR will already be defined
 if [[ -z "${ROOT_DIR}" ]]; then
     ROOT_DIR="$(cd "$SCRIPT_DIR/../../" && pwd)"
 fi
 
-# Carrega as utilidades necessárias
+# Load necessary utilities
 source "$ROOT_DIR/utils/colors_message.sh"
 source "$ROOT_DIR/utils/load_env.sh"
 source "$ROOT_DIR/utils/bash_tools.sh"
@@ -19,7 +19,7 @@ source "$ROOT_DIR/utils/bash_tools.sh"
 check_node_version() {
   print_info "Checking Node.js version..."
 
-  # A variável NODE_REQUIRED_VERSION já está definida em constants.sh como readonly
+  # The NODE_REQUIRED_VERSION variable is already defined in constants.sh as readonly
 
   if ! command -v node &> /dev/null; then
     print_alert "Node.js is not installed."
@@ -28,39 +28,39 @@ check_node_version() {
 
   node_version=$(node -v | sed 's/v//')
   
-  # Verificar a versão exata
+  # Check the exact version
   if [[ "$node_version" != "$NODE_REQUIRED_VERSION" ]]; then
-    print_alert "Node.js versão $NODE_REQUIRED_VERSION é necessária. Versão atual: $node_version"
+    print_alert "Node.js version $NODE_REQUIRED_VERSION is required. Current version: $node_version"
     
-    # Verificar se o NVM está disponível
+    # Check if NVM is available
     if command -v nvm &> /dev/null || [ -f "$HOME/.nvm/nvm.sh" ]; then
-      print_info "Usando NVM para instalar e configurar Node.js $NODE_REQUIRED_VERSION..."
+      print_info "Using NVM to install and configure Node.js $NODE_REQUIRED_VERSION..."
       
-      # Carregar NVM se necessário
+      # Load NVM if necessary
       if [ -f "$HOME/.nvm/nvm.sh" ]; then
         export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
       fi
       
-      # Instalar a versão específica
+      # Install the specific version
       if nvm install $NODE_REQUIRED_VERSION; then
-        # Usar a versão instalada
+        # Use the installed version
         nvm use $NODE_REQUIRED_VERSION
-        # Configurar como padrão
+        # Set as default
         nvm alias default $NODE_REQUIRED_VERSION
-        print_success "Node.js v$NODE_REQUIRED_VERSION instalado e configurado como padrão."
+        print_success "Node.js v$NODE_REQUIRED_VERSION installed and configured as default."
         return 0
       else
-        print_error "Falha ao instalar Node.js v$NODE_REQUIRED_VERSION usando NVM."
+        print_error "Failed to install Node.js v$NODE_REQUIRED_VERSION using NVM."
         return 1
       fi
     else
-      print_alert "NVM não está instalado. Por favor, instale o NVM primeiro."
+      print_alert "NVM is not installed. Please install NVM first."
       return 1
     fi
   fi
 
-  print_success "Node.js versão $node_version é compatível."
+  print_success "Node.js version $node_version is compatible."
   return 0
 }
 
@@ -163,9 +163,9 @@ setup_node() {
   return 1
 }
 
-# Verifica se o script está sendo executado diretamente ou importado
+# Check if the script is being executed directly or imported
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    # Se executado diretamente, carrega o ambiente e executa a função principal
+    # If executed directly, load environment and execute main function
     load_env
     setup_node "$@"
 fi

@@ -75,7 +75,7 @@ detect_os() {
             ;;
             
         *)
-            print_error "Sistema operacional não suportado"
+            print_error "Unsupported operating system"
             return 1
             ;;
     esac
@@ -86,7 +86,7 @@ detect_os() {
     export OS_CODENAME="$os_codename"
     
     # Print OS information
-    print_success "Sistema Operacional Detectado: $os_name $os_version $os_codename"
+    print_success "Operating System Detected: $os_name $os_version $os_codename"
 
     export os="$os_name"
 }

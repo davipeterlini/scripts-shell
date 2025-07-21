@@ -78,10 +78,10 @@ function print_red() {
 }
 
 # =============================================================================
-# FERRAMENTAS BASH
+# BASH TOOLS
 # =============================================================================
 
-# Função para criar diretórios
+# Function to create directories
 create_directories() {
   local ROOT_DIR="$1"
   local directories=("$@")
@@ -99,7 +99,7 @@ create_directories() {
   done
 }
 
-# Função para remover um diretório
+# Function to remove a directory
 remove_directory() {
   local dir="$1"
 
@@ -117,12 +117,12 @@ remove_directory() {
   fi
 }
 
-# Função para remover múltiplos diretórios
+# Function to remove multiple directories
 remove_directories() {
   local array_name=$1
   local failed_count=0
 
-  # Usar eval para obter os elementos do array
+  # Use eval to get array elements
   eval "local directories=(\"\${$array_name[@]}\")"
 
   for dir in "${directories[@]}"; do
@@ -136,7 +136,7 @@ remove_directories() {
   fi
 }
 
-# Função para obter confirmação do usuário
+# Function to get user confirmation
 get_user_confirmation() {
   local prompt_message="${1:-"Do you want to proceed? (y/n): "}"
   print_alert_question "$prompt_message "
@@ -148,29 +148,29 @@ get_user_confirmation() {
   fi
 }
 
-# Função para limpeza de arquivos temporários
+# Function to cleanup temporary files
 cleanup_temp_files() {
     local temp_dir="$1"
     rm -rf "$temp_dir"
 }
 
 # =============================================================================
-# DETECÇÃO DE SISTEMA OPERACIONAL
+# OPERATING SYSTEM DETECTION
 # =============================================================================
 
-# Função para detectar o sistema operacional e versão
+# Function to detect operating system and version
 detect_os() {
     local os_name=""
     local os_version=""
     local os_codename=""
     
-    # Detectar tipo de OS
+    # Detect OS type
     case "$(uname -s)" in
         Darwin)
             os_name="macOS"
             os_version=$(sw_vers -productVersion)
             
-            # Obter nome de código do macOS baseado na versão
+            # Get macOS code name based on version
             case "${os_version%%.*}" in
                 10)
                     case "${os_version#*.}" in
@@ -196,14 +196,14 @@ detect_os() {
         Linux)
             os_name="Linux"
             
-            # Verificar arquivos de informação de distribuição Linux
+            # Check Linux distribution information files
             if [ -f /etc/os-release ]; then
                 . /etc/os-release
                 os_version="$VERSION_ID"
                 os_codename="$PRETTY_NAME"
                 os_name="$ID"
                 
-                # Capitalizar primeira letra do nome da distribuição
+                # Capitalize first letter of distribution name
                 os_name="$(tr '[:lower:]' '[:upper:]' <<< ${os_name:0:1})${os_name:1}"
             elif [ -f /etc/lsb-release ]; then
                 . /etc/lsb-release
@@ -222,10 +222,10 @@ detect_os() {
         CYGWIN*|MINGW32*|MSYS*|MINGW*)
             os_name="Windows"
             if [ -n "$(command -v cmd.exe)" ]; then
-                # Obter versão do Windows usando systeminfo
+                # Get Windows version using systeminfo
                 os_version=$(cmd.exe /c ver 2>/dev/null | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
                 
-                # Tentar obter edição do Windows
+                # Try to get Windows edition
                 if [ -n "$(command -v wmic)" ]; then
                     os_codename=$(wmic os get Caption /value 2>/dev/null | grep -o "Windows.*" | sed 's/Windows //')
                 fi
@@ -233,30 +233,30 @@ detect_os() {
             ;;
             
         *)
-            print_error "Sistema operacional não suportado"
+            print_error "Unsupported operating system"
             return 1
             ;;
     esac
     
-    # Exportar variáveis
+    # Export variables
     export OS_NAME="$os_name"
     export OS_VERSION="$os_version"
     export OS_CODENAME="$os_codename"
     
-    # Imprimir informações do OS
-    print_success "Sistema Operacional Detectado: $os_name $os_version $os_codename"
+    # Print OS information
+    print_success "Detected Operating System: $os_name $os_version $os_codename"
 
     export os="$os_name"
 }
 
 # =============================================================================
-# MENU E INTERFACE
+# MENU AND INTERFACE
 # =============================================================================
 
-# Variável global para armazenar escolhas do menu
+# Global variable to store menu choices
 MENU_CHOICES=""
 
-# Função para instalar dialog
+# Function to install dialog
 install_dialog() {
     if ! command -v dialog &> /dev/null; then
         echo "dialog is not installed. Installing dialog..."
@@ -271,7 +271,7 @@ install_dialog() {
     fi
 }
 
-# Função para exibir menu usando dialog
+# Function to display menu using dialog
 display_dialog_menu() {
     install_dialog
 
@@ -281,35 +281,35 @@ display_dialog_menu() {
         3 "All Apps" off)
 
     if [ -z "$choices" ]; then
-        print_alert "Nenhuma opção foi selecionada."
+        print_alert "No option was selected."
     else
-        print_success "Opções selecionadas: $choices"
+        print_success "Selected options: $choices"
     fi
 }
 
-# Função para exibir menu sem usar dialog
+# Function to display menu without using dialog
 display_menu() {
     echo ""
     print_header_info "Menu"
     echo ""
-    print "Selecione o tipo de aplicativos para instalar:"
+    print "Select the type of applications to install:"
     echo ""
     print "1) Basic Apps"
     print "2) Development Apps"
     print "3) All Apps"
     echo ""
     
-    print_yellow "Digite os números das opções desejadas (separados por espaço) e pressione ENTER:"
+    print_yellow "Enter the numbers of desired options (separated by space) and press ENTER:"
     read -r selection
     
-    # Verificar se a entrada não está vazia
+    # Check if input is not empty
     if [ -z "$selection" ]; then
-        print_alert "Nenhuma opção foi selecionada."
+        print_alert "No option was selected."
         MENU_CHOICES=""
         return 1
     fi
     
-    # Processar e validar entrada
+    # Process and validate input
     local choices=""
     local valid_options=true
     
@@ -317,35 +317,35 @@ display_menu() {
         if [[ "$num" =~ ^[1-3]$ ]]; then
             choices+="$num "
         else
-            print_error "Opção inválida: $num. Ignorando."
+            print_error "Invalid option: $num. Ignoring."
             valid_options=false
         fi
     done
     
-    # Remover espaço final
+    # Remove trailing space
     choices=$(echo "$choices" | xargs)
     
     if [ -z "$choices" ]; then
-        print_alert "Nenhuma opção válida foi selecionada."
+        print_alert "No valid option was selected."
         MENU_CHOICES=""
         return 1
     fi
     
     if [ "$valid_options" = false ]; then
-        print_alert "Algumas opções inválidas foram ignoradas."
+        print_alert "Some invalid options were ignored."
     fi
     
     print_success "Opções selecionadas: $choices"
     
-    # Definir variável global
+    # Set global variable
     MENU_CHOICES="$choices"
 }
 
 # =============================================================================
-# EXECUÇÃO DE SCRIPTS
+# SCRIPT EXECUTION
 # =============================================================================
 
-# Função para executar um script com descrição
+# Function to execute a script with description
 execute_script() {
   local script_path=$1
   local description=$2
@@ -353,17 +353,17 @@ execute_script() {
   if [ -f "$script_path" ]; then
     print_info "$description"
     bash "$script_path"
-    print_success "Execução do script $script_path concluída com sucesso."
+    print_success "Script execution $script_path completed successfully."
   else
-    print_error "O script $script_path não foi encontrado. Abortando."
+    print_error "Script $script_path not found. Aborting."
   fi
 }
 
 # =============================================================================
-# GERENCIAMENTO DE REPOSITÓRIOS GIT
+# GIT REPOSITORY MANAGEMENT
 # =============================================================================
 
-# Função para clonar um repositório
+# Function to clone a repository
 clone_repository() {
     local repo_url="$1"
     local repo_path="$2"
@@ -388,7 +388,7 @@ clone_repository() {
     fi
 }
 
-# Função para atualizar um repositório
+# Function to update a repository
 update_repository() {
     local repo_path="$1"
     local repo_name=$(basename "$repo_path")
@@ -401,7 +401,7 @@ update_repository() {
     fi
 }
 
-# Função para fazer merge de mudanças de uma branch
+# Function to merge changes from a branch
 merge_back_repository() {
     local repo_path="$1"
     local branch="$2"
@@ -415,9 +415,9 @@ merge_back_repository() {
     fi
 }
 
-# Função para gerenciar repositórios - Atualizar ou Clonar repo
+# Function to manage repositories - Update or Clone repo
 manage_repositories() {
-   # Processar argumentos em pares (target_dir e repo_url)
+   # Process arguments in pairs (target_dir and repo_url)
    while [[ $# -ge 2 ]]; do
        local repo_url="$1"
        local target_dir="$2"
@@ -436,10 +436,10 @@ manage_repositories() {
 }
 
 # =============================================================================
-# NAVEGADOR
+# BROWSER
 # =============================================================================
 
-# Função para abrir navegador
+# Function to open browser
 open_browser() { 
     local url="$1"
     local display_name="$2"
@@ -453,34 +453,34 @@ open_browser() {
 }
 
 # =============================================================================
-# INFORMAÇÕES DA BIBLIOTECA
+# LIBRARY INFORMATION
 # =============================================================================
 
-# Função para exibir informações da biblioteca
+# Function to display library information
 shell_utils_info() {
     print_header "Shell Utils Library"
-    print_info "Biblioteca consolidada com utilitários shell para automatização"
+    print_info "Consolidated library with shell utilities for automation"
     echo ""
-    print "Funcionalidades disponíveis:"
-    print "• Cores e mensagens formatadas"
-    print "• Ferramentas para gerenciamento de diretórios"
-    print "• Detecção de sistema operacional"
-    print "• Menus interativos"
-    print "• Execução de scripts"
-    print "• Gerenciamento de repositórios Git"
-    print "• Abertura de navegador multiplataforma"
+    print "Available features:"
+    print "• Colors and formatted messages"
+    print "• Directory management tools"
+    print "• Operating system detection"
+    print "• Interactive menus"
+    print "• Script execution"
+    print "• Git repository management"
+    print "• Cross-platform browser opening"
     echo ""
     print_success "Library loaded successfully!"
 }
 
 # =============================================================================
-# INICIALIZAÇÃO
+# INITIALIZATION
 # =============================================================================
 
-# Detectar OS automaticamente quando a biblioteca é carregada
+# Automatically detect OS when library is loaded
 detect_os
 
-# Exibir informações se executado diretamente
+# Display information if run directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     shell_utils_info
 fi

@@ -13,8 +13,8 @@ execute_script() {
   if [ -f "$script_path" ]; then
     print_info "$description"
     bash "$script_path"
-    print_success "Execução do script $script_path concluída com sucesso."
+    print_success "Execution of script $script_path completed successfully."
   else
-    print_error "O script $script_path não foi encontrado. Abortando."
+    print_error "The script $script_path was not found. Aborting."
   fi
 }

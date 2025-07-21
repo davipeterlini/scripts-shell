@@ -26,7 +26,7 @@ handle_macos_installation() {
     display_menu
     local choices="$MENU_CHOICES"
     
-    print_info "Escolhas selecionadas: $choices"
+    print_info "Selected choices: $choices"
 
     if [[ "$choices" == *"1"* ]]; then
         install_brew_apps $(echo "$INSTALL_APPS_BASIC_MAC" | tr ',' ' ')
@@ -39,8 +39,8 @@ handle_macos_installation() {
     fi
 }
 
-# TODO - testar no linux para verificar se está funcionando
-# TODO -  ver a perspectiva para o uso do flatpak (discas-l via email)
+# TODO - test on linux to verify if it's working
+# TODO - see perspective for flatpak usage (discas-l via email)
 handle_linux_installation() {
     echo "LINUX detected."
     update_flatpak_apps
@@ -49,7 +49,7 @@ handle_linux_installation() {
     display_menu
     local choices="$MENU_CHOICES"
     
-    print_info "Escolhas selecionadas: $choices"
+    print_info "Selected choices: $choices"
 
     if [[ "$choices" == *"1"* ]]; then
         install_flatpak_apps $(echo "$INSTALL_APPS_BASIC_LINUX_FLAT" | tr ',' ' ')
@@ -65,7 +65,7 @@ handle_linux_installation() {
     fi
 }
 
-# TODO - colocar verificação do Windows para instalar os scripts do windows
+# TODO - add Windows verification to install windows scripts
 # Main function named after the script for reusability
 install_apps() {
     print_header "Install Apps on OS"
@@ -91,7 +91,7 @@ install_apps() {
     elif [[ "$os" == "Linux" ]]; then
         handle_linux_installation
     else
-        print_error "Sistema operacional não suportado: $os"
+        print_error "Unsupported operating system: $os"
         return 1
     fi
 }

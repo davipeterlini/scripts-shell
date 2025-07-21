@@ -4,44 +4,44 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$SCRIPT_DIR/colors_message.sh"
 
-# Função para escolher o sistema operacional
+# Function to choose the operating system
 choose_os() {
-    print_header "Escolha o sistema operacional para iniciar as aplicações de desenvolvimento:"
+    print_header "Choose the operating system to start development applications:"
     print "1) macOS"
     print "2) Linux"
     print "3) Windows"
-    read -p "Digite o número correspondente à sua escolha (ou pressione Enter para auto-detectar): " os_choice
+    read -p "Enter the number corresponding to your choice (or press Enter to auto-detect): " os_choice
 
     case "$os_choice" in
         1)
-            print_success "macOS escolhido."
+            print_success "macOS selected."
             print "macOS"
             ;;
         2)
-            print_success "Linux escolhido."
+            print_success "Linux selected."
             print "Linux"
             ;;
         3)
-            print_success "Windows escolhido."
+            print_success "Windows selected."
             print "Windows"
             ;;
         *)
-            print_alert "Nenhuma escolha válida foi feita. Auto-detectando o sistema operacional..."
+            print_alert "No valid choice was made. Auto-detecting operating system..."
             case "$(uname -s)" in
                 Darwin)
-                    print_success "macOS detectado."
+                    print_success "macOS detected."
                     print "macOS"
                     ;;
                 Linux)
-                    print_success "Linux detectado."
+                    print_success "Linux detected."
                     print "Linux"
                     ;;
                 CYGWIN*|MINGW32*|MSYS*|MINGW*)
-                    print_success "Windows detectado."
+                    print_success "Windows detected."
                     print "Windows"
                     ;;
                 *)
-                    print_error "Sistema operacional não suportado."
+                    print_error "Unsupported operating system."
                     exit 1
                     ;;
             esac

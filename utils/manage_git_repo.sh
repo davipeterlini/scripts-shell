@@ -24,7 +24,7 @@ clone_repository() {
         if git clone "$repo_url" "$repo_path"; then
             print_success "Repository cloned successfully: $repo_name"
         else
-            print_alert "Failed tso clone repository: $repo_name. Skipping and continuing with next repository."
+            print_alert "Failed to clone repository: $repo_name. Skipping and continuing with next repository."
         fi
     fi
 }

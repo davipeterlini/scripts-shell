@@ -17,7 +17,7 @@ find_project_root() {
     fi
     dir=$(dirname "$dir")
   done
-  print_error "Arquivo .env não encontrado em nenhum diretório pai."
+  print_error ".env file not found in any parent directory."
   exit 1
 }
 
@@ -40,7 +40,7 @@ set_home_based_on_os() {
       export HOME="/home/$USER"
       ;;
     *)
-      print_error "Sistema operacional não suportado."
+      print_error "Unsupported operating system."
       exit 1
       ;;
   esac
@@ -50,14 +50,14 @@ set_home_based_on_os() {
 update_env_local_file() {
   if [ ! -f "$ENV_LOCAL_FILE" ]; then
     echo "HOME=$HOME" > "$ENV_LOCAL_FILE"
-    print_success "Arquivo .env.local criado com a variável HOME."
+    print_success ".env.local file created with HOME variable."
   else
     if grep -q '^HOME=' "$ENV_LOCAL_FILE"; then
       sed -i '' "s|^HOME=.*|HOME=$HOME|" "$ENV_LOCAL_FILE"
-      print_success "Variável HOME atualizada no arquivo .env.local."
+      print_success "HOME variable updated in .env.local file."
     else
       echo "HOME=$HOME" >> "$ENV_LOCAL_FILE"
-      print_success "Variável HOME adicionada ao arquivo .env.local."
+      print_success "HOME variable added to .env.local file."
     fi
   fi
 }
@@ -68,13 +68,13 @@ load_assets_env() {
   local assets_env_file="$PROJECT_ROOT/assets/$env_file"
   
   if [ -f "$assets_env_file" ]; then
-    print_success "Carregando variáveis de ambiente de $assets_env_file"
+    print_success "Loading environment variables from $assets_env_file"
     set -a
     source "$assets_env_file"
     set +a
     return 0
   else
-    print_error "Arquivo $assets_env_file não encontrado."
+    print_error "File $assets_env_file not found."
     return 1
   fi
 }
@@ -95,13 +95,13 @@ load_env() {
     source "$ENV_FILE"
     set +a
   else
-    print_error "Arquivo .env não encontrado. Saindo..."
+    print_error ".env file not found. Exiting..."
     exit 1
   fi
 
   if [ ! -f "$ENV_LOCAL_FILE" ]; then
     touch "$ENV_LOCAL_FILE"
-    print_alert "Arquivo .env.local vazio criado."
+    print_alert "Empty .env.local file created."
   fi
 
   set -a
@@ -126,7 +126,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   fi
 fi
 
-# TODO - remover essa função 
+# TODO - remove this function 
 select_environment() {
    env_dir="$PROJECT_ROOT/assets"
    env_files=("$env_dir/.env.personal" "$env_dir/.env.work")
