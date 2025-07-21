@@ -51,30 +51,30 @@ Act as Senior Product Owner who will create a story description: {{Story Title}}
         git add . && git commit -m "<COMMIT_MESSAGE>" && git push 
         
     - **Opening PR** using the English template, with information in ENGLISH, according to the standard below: 
-        - Title to PR: feat({{Número da Estória}}): {{Título da Estória}} <!-- O título em português será convertido internamente para inglês -->
+        - Title to PR: feat({{Story Number}}): {{Story Title}} <!-- The title in Portuguese will be converted internally to English -->
         ```
         ### Overview
-        {{Título da Estória}}  <!-- O título em português será convertido internamente para inglês -->
+        {{Story Title}}  <!-- The title in Portuguese will be converted internally to English -->
 
         ### Tasks & References
-        * Link to the Jira: [{{Número da Estória}}](https://ciandtjira.atlassian.net/browse/{{Número da Estória}})
+        * Link to the Jira: [{{Story Number}}](https://ciandtjira.atlassian.net/browse/{{Story Number}})
         
         ### Changes
-        - {{Título da Estória}}  <!-- O título em português deverá ser utilizado para gerar a versão em inglês -->
+        - {{Story Title}}  <!-- The title in Portuguese should be used to generate the English version -->
 
         ### Results & Evidence
         - Put Your Results and Evidencies
         ```
-    - **Garantir que foi executado na esteira** 
+    - **Ensure it was executed in the pipeline** 
     - **Code Review**
-        - Enviar no Google Chat para o time responsável para fazer o Code Review, seguindo o padrão abaixo:
+        - Send in Google Chat to the responsible team to do Code Review, following the standard below:
         ```
-        Task: https://ciandtjira.atlassian.net/browse/{{Número da Estória}}
-        PR: {{Link do repositório}}pull-requests/<NUMERO>
+        Task: https://ciandtjira.atlassian.net/browse/{{Story Number}}
+        PR: {{Repository Link}}pull-requests/<NUMBER>
         ``` 
-    - **Fazer o Merger** 
-    - **Aguardar geração de merge de Pre-Release** 
-    - **Fazer o Merge de Pre-release** 
-    - **Acompanhar execução de pre-release nos ambientes de teste via Actions do repo**
-    - **Solicitar aprovação do Tech Lead da Frente para Release Train**
-    - **Check no repo** - para ver se a versão foi para a release
+    - **Do the Merge** 
+    - **Wait for Pre-Release merge generation** 
+    - **Do Pre-release Merge** 
+    - **Monitor pre-release execution in test environments via repo Actions**
+    - **Request approval from Front Tech Lead for Release Train**
+    - **Check in repo** - to see if the version went to release

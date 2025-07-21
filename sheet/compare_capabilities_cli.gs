@@ -22,8 +22,8 @@ const CLI_COMPARE_CONFIG = {
     HEADER_BG: "#D3D3D3",
     ERROR_BG: "#FFCCCB",
     SUCCESS_BG: "#90EE90",
-    ENABLE_BG: "#90EE90",  // Verde para Enable
-    DISABLE_BG: "#FFCCCB"  // Vermelho para Disable
+    ENABLE_BG: "#90EE90",  // Green for Enable
+    DISABLE_BG: "#FFCCCB"  // Red for Disable
   },
   LOG_FREQUENCY: 10  // Log every X columns (adjust to control log volume)
 };
@@ -33,8 +33,8 @@ const CLI_COMPARE_CONFIG = {
  */
 function CLIonOpenCompare() {
   const ui = SpreadsheetApp.getUi();
-  ui.createMenu('Comparar CLI')
-      .addItem('Comparar Status de Capabilities CLI', 'CLIcompareCapabilities')
+  ui.createMenu('Compare CLI')
+      .addItem('Compare CLI Capabilities Status', 'CLIcompareCapabilities')
       .addToUi();
 }
 
@@ -44,66 +44,66 @@ function CLIonOpenCompare() {
 function CLIcompareCapabilities() {
   try {
     // Start logging
-    Logger.log("=== INICIANDO COMPARAÇÃO DE CAPABILITIES ===");
-    Logger.log(`Hora de início: ${new Date().toLocaleString()}`);
+    Logger.log("=== STARTING CAPABILITIES COMPARISON ===");
+    Logger.log(`Start time: ${new Date().toLocaleString()}`);
     
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    Logger.log(`Planilha ativa: ${spreadsheet.getName()}`);
+    Logger.log(`Active spreadsheet: ${spreadsheet.getName()}`);
     
     // Delete the report sheet if it exists
     CLI_deleteReportSheet(spreadsheet);
     
     // Get source and target sheets
-    Logger.log(`Carregando planilha fonte: ${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}`);
+    Logger.log(`Loading source sheet: ${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}`);
     const sourceSheet = spreadsheet.getSheetByName(CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME);
     
-    Logger.log(`Carregando planilha alvo: ${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}`);
+    Logger.log(`Loading target sheet: ${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}`);
     const targetSheet = spreadsheet.getSheetByName(CLI_COMPARE_CONFIG.TARGET_SHEET_NAME);
     
     // Validate sheets exist
     if (!sourceSheet) {
-      Logger.log(`ERRO: Planilha "${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}" não encontrada`);
-      throw new Error(`Planilha "${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}" não encontrada. Execute o script search_llm_capabilities.gs primeiro.`);
+      Logger.log(`ERROR: Sheet "${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}" not found`);
+      throw new Error(`Sheet "${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}" not found. Run the search_llm_capabilities.gs script first.`);
     }
     
     if (!targetSheet) {
-      Logger.log(`ERRO: Planilha "${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}" não encontrada`);
-      throw new Error(`Planilha "${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}" não encontrada.`);
+      Logger.log(`ERROR: Sheet "${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}" not found`);
+      throw new Error(`Sheet "${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}" not found.`);
     }
     
     // Create report sheet
-    Logger.log(`Criando planilha de relatório: ${CLI_COMPARE_CONFIG.REPORT_SHEET_NAME}`);
+    Logger.log(`Creating report sheet: ${CLI_COMPARE_CONFIG.REPORT_SHEET_NAME}`);
     const reportSheet = CLI_createReportSheet(spreadsheet);
     
     // Get data from both sheets including cell backgrounds
-    Logger.log(`Obtendo dados da planilha fonte: ${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}`);
+    Logger.log(`Getting data from source sheet: ${CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME}`);
     const sourceData = CLI_getSheetDataWithFormatting(sourceSheet);
-    Logger.log(`Dados obtidos da planilha fonte: ${sourceData.rows.length} linhas, ${sourceData.headers.length} colunas`);
+    Logger.log(`Data obtained from source sheet: ${sourceData.rows.length} rows, ${sourceData.headers.length} columns`);
     
-    Logger.log(`Obtendo dados da planilha alvo: ${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}`);
+    Logger.log(`Getting data from target sheet: ${CLI_COMPARE_CONFIG.TARGET_SHEET_NAME}`);
     const targetData = CLI_getSheetDataWithFormatting(targetSheet);
-    Logger.log(`Dados obtidos da planilha alvo: ${targetData.rows.length} linhas, ${targetData.headers.length} colunas`);
+    Logger.log(`Data obtained from target sheet: ${targetData.rows.length} rows, ${targetData.headers.length} columns`);
     
     // Create lookup maps for faster comparison
-    Logger.log("Criando mapas de busca para comparação rápida");
+    Logger.log("Creating lookup maps for fast comparison");
     const sourceMap = CLI_createLookupMap(sourceData.rows, sourceData.backgrounds);
     const targetMap = CLI_createLookupMap(targetData.rows, targetData.backgrounds);
-    Logger.log(`Mapas criados: ${Object.keys(sourceMap).length} modelos na fonte, ${Object.keys(targetMap).length} modelos no alvo`);
+    Logger.log(`Maps created: ${Object.keys(sourceMap).length} models in source, ${Object.keys(targetMap).length} models in target`);
     
     // Compare data and generate report
-    Logger.log("Iniciando comparação de dados");
+    Logger.log("Starting data comparison");
     const discrepancies = CLI_compareData(sourceData, targetData, sourceMap, targetMap);
-    Logger.log(`Comparação concluída. Encontradas ${discrepancies.length} divergências`);
+    Logger.log(`Comparison completed. Found ${discrepancies.length} discrepancies`);
     
     // Display report
-    Logger.log("Gerando relatório de comparação");
+    Logger.log("Generating comparison report");
     CLI_displayReport(reportSheet, discrepancies, sourceData.headers);
-    Logger.log("Relatório gerado com sucesso");
+    Logger.log("Report generated successfully");
     
     // Prepare detailed message with discrepancies
     let message = "";
     if (discrepancies.length > 0) {
-      message = `Comparação concluída. Foram encontradas ${discrepancies.length} divergências de status.\n\n`;
+      message = `Comparison completed. Found ${discrepancies.length} status discrepancies.\n\n`;
       
       // Add summary of discrepancies
       let statusCount = 0;
@@ -116,13 +116,13 @@ function CLIcompareCapabilities() {
         else if (d.type === "header") headerIssue = true;
       });
       
-      if (statusCount > 0) message += `- ${statusCount} divergências de status\n`;
-      if (missingModelCount > 0) message += `- ${missingModelCount} modelos ausentes\n`;
-      if (headerIssue) message += "- Problema nos cabeçalhos das planilhas\n";
+      if (statusCount > 0) message += `- ${statusCount} status discrepancies\n`;
+      if (missingModelCount > 0) message += `- ${missingModelCount} missing models\n`;
+      if (headerIssue) message += "- Issue with spreadsheet headers\n";
       
       // List first 10 discrepancies as examples
       if (discrepancies.length > 0) {
-        message += "\nExemplos de divergências encontradas:\n";
+        message += "\nExamples of found discrepancies:\n";
         
         const maxExamples = Math.min(10, discrepancies.length);
         for (let i = 0; i < maxExamples; i++) {
@@ -132,26 +132,26 @@ function CLIcompareCapabilities() {
             message += `${i+1}. ${d.provider} - ${d.model}: ${d.capability} (${d.sourceStatus} vs ${d.targetStatus})\n`;
           } else if (d.type === "missing_model") {
             const location = d.location === "source" ? CLI_COMPARE_CONFIG.TARGET_SHEET_NAME : CLI_COMPARE_CONFIG.SOURCE_SHEET_NAME;
-            message += `${i+1}. Modelo ausente: ${d.provider} - ${d.model} (apenas em ${location})\n`;
+            message += `${i+1}. Missing model: ${d.provider} - ${d.model} (only in ${location})\n`;
           }
         }
         
         if (discrepancies.length > maxExamples) {
-          message += `... e mais ${discrepancies.length - maxExamples} divergências (veja o relatório completo na planilha ${CLI_COMPARE_CONFIG.REPORT_SHEET_NAME})`;
+          message += `... and ${discrepancies.length - maxExamples} more discrepancies (see full report in ${CLI_COMPARE_CONFIG.REPORT_SHEET_NAME} sheet)`;
         }
       }
     } else {
-      message = "Comparação concluída. Nenhuma divergência de status encontrada!";
+      message = "Comparison completed. No status discrepancies found!";
     }
     
-    Logger.log(`=== COMPARAÇÃO FINALIZADA ===`);
-    Logger.log(`Hora de término: ${new Date().toLocaleString()}`);
+    Logger.log(`=== COMPARISON FINISHED ===`);
+    Logger.log(`End time: ${new Date().toLocaleString()}`);
     Logger.log(message);
     
   } catch (error) {
-    Logger.log(`ERRO: ${error.message}`);
+    Logger.log(`ERROR: ${error.message}`);
     Logger.log(error.stack);
-    SpreadsheetApp.getUi().alert("Erro: " + error.message);
+    SpreadsheetApp.getUi().alert("Error: " + error.message);
   }
 }
 

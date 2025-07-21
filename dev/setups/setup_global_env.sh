@@ -46,15 +46,51 @@ _add_export_to_profile() {
   local export_line="export \$(grep -v '^#' ~/.env | xargs)"
   local current_datetime=$(date "+%Y-%m-%d %H:%M:%S")
   local script_name=$(basename "$0")
+  local comment_line="# Added by $script_name on $current_datetime"
   
   if [ -f "$profile_path" ]; then
-    if ! grep -q "$export_line" "$profile_path"; then
+    if grep -q "$export_line" "$profile_path"; then
+      print_alert "The export line already exists in $1. Updating timestamp..."
+      
+      # Create a temporary file
+      local temp_file=$(mktemp)
+      
+      # Find the export line and update the comment above it
+      local found_export=false
+      local skip_next=false
+      
+      while IFS= read -r line; do
+        if [ "$skip_next" = true ]; then
+          # This is the export line we want to keep
+          echo "$line" >> "$temp_file"
+          skip_next=false
+          continue
+        fi
+        
+        if [[ "$line" == "$export_line" ]]; then
+          # Found the export line
+          found_export=true
+          echo "$line" >> "$temp_file"
+        elif [[ "$line" == \#\ Added\ by* ]] && ! $found_export; then
+          # Found a comment line that matches our pattern
+          # Replace it with the new comment
+          echo "$comment_line" >> "$temp_file"
+          skip_next=true
+        else
+          # Keep other lines as they are
+          echo "$line" >> "$temp_file"
+        fi
+      done < "$profile_path"
+      
+      # Replace the original file with the temporary file
+      mv "$temp_file" "$profile_path"
+      print_success "Updated timestamp for the export line in $1."
+    else
       print_alert "Adding export line to $1..."
       echo "" >> "$profile_path"
-      echo "# Added by $script_name on $current_datetime" >> "$profile_path"
+      echo "$comment_line" >> "$profile_path"
       echo "$export_line" >> "$profile_path"
-    else
-      print_success "The export line already exists in $1."
+      print_success "Added export line to $1."
     fi
   else
     print_error "The file $1 does not exist. Make sure the correct shell is configured."
