@@ -139,7 +139,6 @@ setup_node() {
       return 0
   fi
     
-
   # Check if Node.js is already installed with correct version
   if check_node_version; then
     print_success "Node.js is already installed with the required version."

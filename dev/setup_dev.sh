@@ -17,6 +17,7 @@ source "$(dirname "$0")/dev/setups/setup_python.sh"
 source "$(dirname "$0")/dev/setups/setup_projects.sh"
 source "$(dirname "$0")/dev/setups/setup_vscode.sh"
 source "$(dirname "$0")/dev/setups/sync_drive_folders.sh"
+source "$(dirname "$0")/dev/installs/install_ai_tools.sh"
 source "$(dirname "$0")/flow_coder/install_flow_coder_cli.sh"
 source "$(dirname "$0")/flow_coder/install_flow_coder_ide.sh"
 
@@ -52,8 +53,7 @@ setup_dev() {
 
     install_flow_coder_cli
 
-    # TODO - Test
-    #install_flow_coder_ide
+    install_flow_coder_ide
 
     # TODO - Adjust to open desired folders in terminal 
     #open_project_iterm

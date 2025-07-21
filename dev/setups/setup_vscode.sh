@@ -125,7 +125,12 @@ _save_vscode_keybindings() {
 }
 
 setup_vscode() {
-    print_header_info "Setup VS Code Configuration"
+    print_header_info "Check Setup VS Code"
+
+    if ! get_user_confirmation "Do you want heck Setup VS Code?"; then
+        print_info "Skipping configuration"
+        return 0
+    fi
 
     _read_vscode_extensions
     
