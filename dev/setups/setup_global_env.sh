@@ -12,6 +12,26 @@ _create_env_file() {
     local env_example_path="$ENV_EXAMPLE"
     local env_target_path="$ENV_DIR/.env"
 
+    # Check if .env already exists
+    if [ -f "$env_target_path" ]; then
+        print_alert "The file $env_target_path already exists."
+        print_info "Current content of $env_target_path:"
+        cat "$env_target_path"
+        
+        # Ask if user wants to create a backup
+        if get_user_confirmation "Do you want to create a backup of the existing .env file?"; then
+            local backup_path="$env_target_path.backup.$(date +%Y%m%d%H%M%S)"
+            cp "$env_target_path" "$backup_path"
+            print_success "Backup created at $backup_path"
+        fi
+        
+        # Ask if user wants to overwrite
+        if ! get_user_confirmation "Do you want to overwrite the existing .env file?"; then
+            print_info "Keeping existing .env file."
+            return 0
+        fi
+    fi
+
     if [ -f "$env_example_path" ]; then
         cp "$env_example_path" "$env_target_path"
         print_success ".env file created at $env_target_path"
@@ -24,10 +44,14 @@ _create_env_file() {
 _add_export_to_profile() {
   local profile_path="$1"
   local export_line="export \$(grep -v '^#' ~/.env | xargs)"
+  local current_datetime=$(date "+%Y-%m-%d %H:%M:%S")
+  local script_name=$(basename "$0")
   
   if [ -f "$profile_path" ]; then
     if ! grep -q "$export_line" "$profile_path"; then
       print_alert "Adding export line to $1..."
+      echo "" >> "$profile_path"
+      echo "# Added by $script_name on $current_datetime" >> "$profile_path"
       echo "$export_line" >> "$profile_path"
     else
       print_success "The export line already exists in $1."
@@ -65,6 +89,23 @@ _setup_variables() {
       touch "$env_file"
       print_success "Created empty $env_file file."
     fi
+  else
+    # Show current content if file exists
+    print_info "Current content of $env_file:"
+    cat "$env_file"
+    
+    # Ask if user wants to create a backup
+    if get_user_confirmation "Do you want to create a backup before modifying the .env file?"; then
+        local backup_path="$env_file.backup.$(date +%Y%m%d%H%M%S)"
+        cp "$env_file" "$backup_path"
+        print_success "Backup created at $backup_path"
+    fi
+    
+    # Ask if user wants to proceed with modifications
+    if ! get_user_confirmation "Do you want to proceed with modifying environment variables?"; then
+        print_info "Skipping environment variable setup."
+        return 0
+    fi
   fi
   
   print_info "Setting up environment variables"
@@ -95,6 +136,21 @@ _setup_variables() {
       ((variables_updated++))
     fi
   done
+  
+  # Show final changes and ask for confirmation
+  print_info "Updated values (preview):"
+  cat "$env_file"
+  
+  if ! get_user_confirmation "Do you want to save these changes?"; then
+    print_info "Changes discarded."
+    # Restore from backup if it exists
+    local latest_backup=$(ls -t "$env_file.backup."* 2>/dev/null | head -n1)
+    if [ ! -z "$latest_backup" ]; then
+      cp "$latest_backup" "$env_file"
+      print_success "Restored from backup: $latest_backup"
+    fi
+    return 0
+  fi
   
   # Simple completion message
   print_success "Updated $variables_updated environment variables."
@@ -136,7 +192,7 @@ _reload_profile() {
 setup_global_env() {
     print_header_info "Setting up global environment"
 
-    if ! get_user_confirmation "Do you want Setting up global environment ?"; then
+    if ! get_user_confirmation "Do you want to set up global environment?"; then
         print_info "Skipping configuration"
         return 0
     fi

@@ -1,34 +1,34 @@
 #!/bin/bash
 
-# Script para configurar Service Account no GCP
+# Script to configure Service Account on GCP
 # Usage: ./setup-gcp-service-account.sh [PROJECT_ID] [SERVICE_ACCOUNT_NAME]
 # Se não fornecer parâmetros, o script irá guiá-lo através do processo
 
-# Função para fazer login
+# Function to login
 login_gcp() {
     echo "🔐 Fazendo login no GCP..."
-    echo "Abrindo navegador para autenticação..."
+    echo "Opening browser for authentication..."
     
     if ! gcloud auth login; then
         echo "❌ Erro no login. Verifique sua conexão e tente novamente."
         exit 1
     fi
     
-    echo "✅ Login realizado com sucesso!"
+    echo "✅ Login completed successfully!"
     echo ""
 }
 
-# Função para listar e selecionar projeto
+# Function to list and select project
 select_project() {
-    echo "📋 Listando projetos disponíveis..."
+    echo "📋 Listing available projects..."
     echo ""
     
-    # Armazenar a lista de projetos em variáveis
+    # Store project list in variables
     PROJECT_IDS=($(gcloud projects list --format="value(projectId)"))
     PROJECT_NAMES=($(gcloud projects list --format="value(name)"))
     PROJECT_NUMBERS=($(gcloud projects list --format="value(projectNumber)"))
     
-    # Exibir projetos com numeração
+    # Display projects with numbering
     echo "Nº | PROJECT_ID | NAME | NUMBER"
     echo "---|-----------|------|-------"
     for i in "${!PROJECT_IDS[@]}"; do
@@ -36,7 +36,7 @@ select_project() {
     done
     
     echo ""
-    echo "Digite o número do projeto que deseja usar:"
+    echo "Enter the number of the project you want to use:"
     read -r PROJECT_NUM
     
     # Validar entrada
@@ -79,7 +79,7 @@ if ! command -v gcloud &> /dev/null; then
     exit 1
 fi
 
-# Se não foram fornecidos parâmetros, executar modo interativo
+# If no parameters were provided, run interactive mode
 if [ $# -eq 0 ]; then
     echo "🚀 Setup interativo do GCP Service Account"
     echo "=========================================="
@@ -92,7 +92,7 @@ if [ $# -eq 0 ]; then
         CURRENT_ACCOUNT=$(gcloud auth list --filter=status:ACTIVE --format="value(account)")
         echo "✅ Já logado como: $CURRENT_ACCOUNT"
         echo ""
-        echo "Deseja fazer login com outra conta? (y/N):"
+        echo "Do you want to login with another account? (y/N):"
         read -r RELOGIN
         if [[ "$RELOGIN" =~ ^[Yy]$ ]]; then
             login_gcp
@@ -112,17 +112,17 @@ else
     echo ""
     echo "Exemplos:"
     echo "  $0                                    # Modo interativo"
-    echo "  $0 meu-projeto-123 bucket-access-sa  # Com parâmetros"
+    echo "  $0 my-project-123 bucket-access-sa   # With parameters"
     exit 1
 fi
 
 echo ""
-echo "🚀 Configurando Service Account para o projeto: $PROJECT_ID"
+echo "🚀 Configuring Service Account for project: $PROJECT_ID"
 echo "Service Account: $SA_NAME"
 echo ""
 
-# Configurar projeto antes de criar service account
-echo "🔧 Configurando projeto padrão..."
+# Configure project before creating service account
+echo "🔧 Configuring default project..."
 gcloud config set project $PROJECT_ID
 
 # Verificar se a Service Account já existe
@@ -145,7 +145,7 @@ if [ "$SKIP_CREATE" = false ]; then
         --project=$PROJECT_ID \
         --description="Service account para acesso ao bucket" \
         --display-name="$SA_NAME"; then
-        echo "❌ Erro ao criar Service Account"
+        echo "❌ Error creating Service Account"
         exit 1
     fi
     echo "✅ Service Account criada com sucesso"
@@ -173,11 +173,11 @@ else
     echo "   to the service account: $SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 fi
 
-# 3. Gerar chave JSON
-echo "🔑 Gerando chave JSON..."
+# 3. Generate JSON key
+echo "🔑 Generating JSON key..."
 KEY_FILE="$HOME/$SA_NAME-$PROJECT_ID-key.json"
 
-# Remover chave antiga se existir
+# Remove old key if it exists
 if [ -f "$KEY_FILE" ]; then
     echo "⚠️  Chave existente encontrada. Sobrescrever? (y/N):"
     read -r OVERWRITE
@@ -192,7 +192,7 @@ fi
 if ! gcloud iam service-accounts keys create "$KEY_FILE" \
     --iam-account="$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
     --project="$PROJECT_ID"; then
-    echo "❌ Erro ao gerar chave JSON"
+    echo "❌ Error generating JSON key"
     exit 1
 fi
 
@@ -207,7 +207,7 @@ if ! gcloud auth activate-service-account --key-file="$KEY_FILE"; then
     exit 1
 fi
 
-# 5. Configurar projeto padrão (novamente para garantir)
+# 5. Configure default project (again to ensure)
 gcloud config set project $PROJECT_ID
 
 # 6. Configurar variável de ambiente
@@ -246,9 +246,9 @@ echo "🔧 Para usar em novos terminais:"
 echo "   source ~/.bashrc  (ou ~/.zshrc)"
 echo ""
 echo "📋 Comandos úteis:"
-echo "   gcloud auth list                    # Ver contas ativas"
+echo "   gcloud auth list                    # View active accounts"
 echo "   gsutil ls                          # Listar buckets"
-echo "   gcloud config get-value project    # Ver projeto ativo"
+echo "   gcloud config get-value project    # View active project"
 echo ""
 echo "🧪 Testando configuração atual..."
 echo "─────────────────────────────────────"
