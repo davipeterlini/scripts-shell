@@ -269,10 +269,10 @@ ___add_key_to_bitbucket() {
   
   # Create a JSON payload for the API request
   local temp_file=$(mktemp)
-  # Lê o conteúdo da chave pública e remove quebras de linha
+  # Read public key content and remove line breaks
   key_content=$(cat "$key_content_file" | tr -d '\n')
   
-  # Cria o arquivo JSON temporário com o conteúdo da chave
+  # Create temporary JSON file with key content
   cat > "$temp_file" << EOF
 {
   "key": "$key_content",

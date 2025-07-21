@@ -2,7 +2,7 @@
 
 source "$(dirname "$0")/utils/colors_message.sh"
 
-# TODO - função não está executando os testes corretamente
+# TODO - function is not running tests correctly
 # Function to test connection based on hostname
 function test_connection() {
   local host="$1"

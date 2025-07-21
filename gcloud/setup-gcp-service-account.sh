@@ -130,7 +130,7 @@ if gcloud iam service-accounts describe "$SA_NAME@$PROJECT_ID.iam.gserviceaccoun
     echo "⚠️  Service Account '$SA_NAME' já existe. Deseja continuar? (y/N):"
     read -r CONTINUE
     if [[ ! "$CONTINUE" =~ ^[Yy]$ ]]; then
-        echo "❌ Operação cancelada"
+        echo "❌ Operation cancelled"
         exit 1
     fi
     SKIP_CREATE=true
@@ -163,14 +163,14 @@ if [[ "$ASSIGN_PERMISSIONS" =~ ^[Yy]$ ]]; then
         --role="roles/storage.admin"; then
         echo "❌ Erro ao atribuir permissões. Você pode não ter permissões suficientes."
         echo "⚠️  Você precisará solicitar a um administrador para atribuir manualmente a role 'roles/storage.admin'"
-        echo "   à service account: $SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
+        echo "   to the service account: $SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
     else
         echo "✅ Permissões atribuídas com sucesso"
     fi
 else
     echo "⏭️  Pulando atribuição de permissões"
     echo "⚠️  Você precisará solicitar a um administrador para atribuir manualmente a role 'roles/storage.admin'"
-    echo "   à service account: $SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
+    echo "   to the service account: $SA_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 fi
 
 # 3. Gerar chave JSON
@@ -184,7 +184,7 @@ if [ -f "$KEY_FILE" ]; then
     if [[ "$OVERWRITE" =~ ^[Yy]$ ]]; then
         rm "$KEY_FILE"
     else
-        echo "❌ Operação cancelada"
+        echo "❌ Operation cancelled"
         exit 1
     fi
 fi

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # IDE Setup Script
-# This script checks for installed IDEs (VS Code and JetBrains) and offers to install them if not found.
+# This script checks for installed IDEs (VS Code and JetBrains) and installs them if not found.
 #
 
 # Setup paths and import utilities
@@ -15,164 +15,11 @@ readonly VSCODE_DOWNLOAD_URL="https://code.visualstudio.com/download"
 readonly JETBRAINS_DOWNLOAD_URL="https://www.jetbrains.com/products/"
 readonly JETBRAINS_TOOLBOX_URL="https://www.jetbrains.com/toolbox-app/"
 
-_check_vscode() {
-  local vscode_found=false
-  local vscode_version=""
-
-  # Check for VS Code in PATH
-  if command -v code > /dev/null 2>&1; then
-    vscode_found=true
-    vscode_version=$(code --version | head -n 1)
-    print_success "Visual Studio Code is installed (command 'code')"
-    print_info "VS Code version: $vscode_version"
-  elif command -v code-insiders > /dev/null 2>&1; then
-    vscode_found=true
-    vscode_version=$(code-insiders --version | head -n 1)
-    print_success "Visual Studio Code Insiders is installed"
-    print_info "VS Code Insiders version: $vscode_version"
-  # Check for VS Code app on macOS
-  elif [[ "$OSTYPE" == "darwin"* ]] && [ -d "/Applications/Visual Studio Code.app" ]; then
-    vscode_found=true
-    print_success "Visual Studio Code is installed (macOS application)"
-  fi
-
-  # Export result
-  if $vscode_found; then
-    export IDE_VSCODE_AVAILABLE=true
-    return 0
-  else
-    export IDE_VSCODE_AVAILABLE=false
-    return 1
-  fi
-}
-
-_check_jetbrains() {
-  local jetbrains_found=false
-  local jetbrains_ide=""
-
-  # Define common JetBrains IDEs and their commands
-  declare -A jetbrains_ides
-  jetbrains_ides["IntelliJ_IDEA"]="idea intellij idea.sh"
-  jetbrains_ides["PyCharm"]="pycharm charm pycharm.sh"
-  jetbrains_ides["WebStorm"]="webstorm wstorm webstorm.sh"
-  jetbrains_ides["PhpStorm"]="phpstorm pstorm phpstorm.sh"
-  jetbrains_ides["CLion"]="clion clion.sh"
-  jetbrains_ides["Rider"]="rider rider.sh"
-  jetbrains_ides["GoLand"]="goland goland.sh"
-  jetbrains_ides["RubyMine"]="rubymine mine rubymine.sh"
-  jetbrains_ides["DataGrip"]="datagrip datagrip.sh"
-  jetbrains_ides["Android_Studio"]="studio androidstudio studio.sh"
-
-  # Check for JetBrains applications on macOS
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    # Map keys to app names
-    declare -A app_names
-    app_names["IntelliJ_IDEA"]="IntelliJ IDEA"
-    app_names["PyCharm"]="PyCharm"
-    app_names["WebStorm"]="WebStorm"
-    app_names["PhpStorm"]="PhpStorm"
-    app_names["CLion"]="CLion"
-    app_names["Rider"]="Rider"
-    app_names["GoLand"]="GoLand"
-    app_names["RubyMine"]="RubyMine"
-    app_names["DataGrip"]="DataGrip"
-    app_names["Android_Studio"]="Android Studio"
-    
-    for ide_key in "${!app_names[@]}"; do
-      app_name="${app_names[$ide_key]}"
-      if [ -d "/Applications/${app_name}.app" ]; then
-        jetbrains_found=true
-        jetbrains_ide="$app_name"
-        print_success "$app_name is installed (macOS application)"
-      fi
-    done
-  fi
-
-  # Check for JetBrains commands in PATH
-  if ! $jetbrains_found; then
-    for ide_key in "${!jetbrains_ides[@]}"; do
-      commands=${jetbrains_ides[$ide_key]}
-      for cmd in $commands; do
-        if command -v "$cmd" > /dev/null 2>&1; then
-          jetbrains_found=true
-          # Convert key to friendly name
-          case "$ide_key" in
-            "IntelliJ_IDEA") jetbrains_ide="IntelliJ IDEA" ;;
-            "Android_Studio") jetbrains_ide="Android Studio" ;;
-            *) jetbrains_ide="$ide_key" ;;
-          esac
-          print_success "$jetbrains_ide is installed (command '$cmd')"
-          break
-        fi
-      done
-      # Break outer loop if IDE found
-      if $jetbrains_found; then
-        break
-      fi
-    done
-  fi
-
-  # Check for JetBrains directories on Linux
-  if ! $jetbrains_found && [[ "$OSTYPE" == "linux"* ]]; then
-    local jetbrains_dirs=("$HOME/.local/share/JetBrains" "/opt/jetbrains")
-    for dir in "${jetbrains_dirs[@]}"; do
-      if [ -d "$dir" ]; then
-        jetbrains_found=true
-        print_success "JetBrains directory found at $dir"
-        break
-      fi
-    done
-  fi
-
-  # Check for JetBrains directories on Windows
-  if ! $jetbrains_found && [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; then
-    local jetbrains_dirs=("$APPDATA/JetBrains" "/c/Program Files/JetBrains")
-    for dir in "${jetbrains_dirs[@]}"; do
-      if [ -d "$dir" ]; then
-        jetbrains_found=true
-        print_success "JetBrains directory found at $dir"
-        break
-      fi
-    done
-  fi
-
-  # Export result
-  if $jetbrains_found; then
-    export IDE_JETBRAINS_AVAILABLE=true
-    export IDE_JETBRAINS_TYPE="$jetbrains_ide"
-    return 0
-  else
-    export IDE_JETBRAINS_AVAILABLE=false
-    return 1
-  fi
-}
-
-_check_installed_ides() {
-  print_info "Checking for installed IDEs..."
-
-  local vscode_installed=false
-  local jetbrains_installed=false
-
-  # Check for VS Code
-  if _check_vscode; then
-    vscode_installed=true
-  fi
-
-  # Check for JetBrains IDEs
-  if _check_jetbrains; then
-    jetbrains_installed=true
-  fi
-
-  # Summary
-  if ! $vscode_installed && ! $jetbrains_installed; then
-    print_error "No supported IDEs found. Please install VS Code or a JetBrains IDE."
-    return 1
-  fi
-
-  print_info "IDE check completed."
-  return 0
-}
-
+#######################################
+# Install Homebrew on macOS
+# Returns:
+#   0 if successful, 1 otherwise
+#######################################
 _install_homebrew() {
   print_info "Homebrew not found. Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -190,12 +37,12 @@ _install_homebrew() {
   return 0
 }
 
-install_vscode() {
-  if [ "$IDE_VSCODE_AVAILABLE" = true ]; then
-    print_info "VS Code is already installed."
-    return 0
-  fi
-
+#######################################
+# Install VS Code
+# Returns:
+#   0 if successful, 1 otherwise
+#######################################
+_install_vscode() {
   print_info "Installing Visual Studio Code..."
   
   # Use the detect_os function to determine OS type
@@ -212,13 +59,8 @@ install_vscode() {
         fi
       fi
       
-      # Check if VS Code is already installed via Homebrew
-      if ! brew list --cask | grep -q "visual-studio-code"; then
-        print_info "Installing Visual Studio Code via Homebrew..."
-        brew install --cask visual-studio-code
-      else
-        print_info "Visual Studio Code is already installed via Homebrew."
-      fi
+      print_info "Installing Visual Studio Code via Homebrew..."
+      brew install --cask visual-studio-code
       ;;
     "Linux")
       # Linux installation
@@ -243,11 +85,6 @@ install_vscode() {
         return 1
       fi
       ;;
-    "Windows")
-      # Windows installation
-      print_error "Automatic installation on Windows not supported. Please install VS Code manually from $VSCODE_DOWNLOAD_URL"
-      return 1
-      ;;
     *)
       print_error "Unsupported operating system. Please install VS Code manually from $VSCODE_DOWNLOAD_URL"
       return 1
@@ -257,7 +94,6 @@ install_vscode() {
   # Verify installation
   if command -v code &> /dev/null || [[ "$OSTYPE" == "darwin"* && -d "/Applications/Visual Studio Code.app" ]]; then
     print_success "VS Code installed successfully!"
-    export IDE_VSCODE_AVAILABLE=true
     return 0
   else
     print_error "VS Code installation failed."
@@ -265,12 +101,12 @@ install_vscode() {
   fi
 }
 
-install_jetbrains() {
-  if [ "$IDE_JETBRAINS_AVAILABLE" = true ]; then
-    print_info "JetBrains IDE is already installed."
-    return 0
-  fi
-
+#######################################
+# Install JetBrains IDE
+# Returns:
+#   0 if successful, 1 otherwise
+#######################################
+_install_jetbrains() {
   print_info "Installing JetBrains IDE..."
   
   # Use the detect_os function to determine OS type
@@ -336,56 +172,208 @@ install_jetbrains() {
       print_info "The Toolbox App will help you install and manage JetBrains IDEs"
       return 1
       ;;
-    "Windows")
-      # Windows installation
-      print_error "Automatic installation on Windows not supported. Please install $ide_name manually from $JETBRAINS_DOWNLOAD_URL"
-      return 1
-      ;;
     *)
-      print_error "Unsupported operating system. Please install $ide_name manually from $JETBRAINS_DOWNLOAD_URL"
+      print_error "Automatic installation not supported on this OS. Please install $ide_name manually from $JETBRAINS_DOWNLOAD_URL"
       return 1
       ;;
   esac
 
-  # Verify installation by checking again
-  if _check_jetbrains; then
-    print_success "$ide_name installation completed!"
+  print_success "$ide_name installation completed!"
+  return 0
+}
+
+#######################################
+# Check if VS Code is installed and install if needed
+# Returns:
+#   0 if VS Code is available, 1 otherwise
+#######################################
+check_vscode() {
+  print_info "Checking for Visual Studio Code..."
+  local vscode_found=false
+
+  # Check for VS Code in PATH
+  if command -v code > /dev/null 2>&1; then
+    vscode_found=true
+    print_success "Visual Studio Code is installed (command 'code')"
+    print_info "VS Code version: $(code --version | head -n 1)"
+  elif command -v code-insiders > /dev/null 2>&1; then
+    vscode_found=true
+    print_success "Visual Studio Code Insiders is installed"
+    print_info "VS Code Insiders version: $(code-insiders --version | head -n 1)"
+  # Check for VS Code app on macOS
+  elif [[ "$OSTYPE" == "darwin"* ]] && [ -d "/Applications/Visual Studio Code.app" ]; then
+    vscode_found=true
+    print_success "Visual Studio Code is installed (macOS application)"
+  fi
+
+  # Export result
+  if $vscode_found; then
+    export IDE_VSCODE_AVAILABLE=true
     return 0
   else
-    print_error "$ide_name installation may have failed. Please verify manually."
+    export IDE_VSCODE_AVAILABLE=false
+    
+    # Ask user if they want to install VS Code
+    print_alert "Visual Studio Code not found. Would you like to install it? (y/n)"
+    read -r install_choice
+    
+    if [[ "$install_choice" =~ ^[Yy]$ ]]; then
+      if _install_vscode; then
+        export IDE_VSCODE_AVAILABLE=true
+        return 0
+      fi
+    else
+      print_info "Skipping VS Code installation."
+    fi
+    
     return 1
   fi
 }
 
-_prompt_ide_installation() {
-  print_alert "No supported IDEs found. Would you like to install one? (y/n)"
-  read -r install_choice
-  
-  if [[ "$install_choice" =~ ^[Yy]$ ]]; then
-    print_alert "Which IDE would you like to install?"
-    echo "1) Visual Studio Code (recommended)"
-    echo "2) JetBrains IDE"
-    read -r ide_choice
+#######################################
+# Check if any JetBrains IDE is installed and install if needed
+# Returns:
+#   0 if any JetBrains IDE is available, 1 otherwise
+#######################################
+check_jetbrains() {
+  print_info "Checking for JetBrains IDEs..."
+  local jetbrains_found=false
+  local jetbrains_ide=""
+
+  # Define common JetBrains IDEs and their commands
+  declare -A jetbrains_ides
+  jetbrains_ides["IntelliJ_IDEA"]="idea intellij idea.sh"
+  jetbrains_ides["PyCharm"]="pycharm charm pycharm.sh"
+  jetbrains_ides["WebStorm"]="webstorm wstorm webstorm.sh"
+  jetbrains_ides["PhpStorm"]="phpstorm pstorm phpstorm.sh"
+  jetbrains_ides["CLion"]="clion clion.sh"
+  jetbrains_ides["Rider"]="rider rider.sh"
+  jetbrains_ides["GoLand"]="goland goland.sh"
+  jetbrains_ides["RubyMine"]="rubymine mine rubymine.sh"
+  jetbrains_ides["DataGrip"]="datagrip datagrip.sh"
+  jetbrains_ides["Android_Studio"]="studio androidstudio studio.sh"
+
+  # Check for JetBrains applications on macOS
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Map keys to app names
+    declare -A app_names
+    app_names["IntelliJ_IDEA"]="IntelliJ IDEA"
+    app_names["PyCharm"]="PyCharm"
+    app_names["WebStorm"]="WebStorm"
+    app_names["PhpStorm"]="PhpStorm"
+    app_names["CLion"]="CLion"
+    app_names["Rider"]="Rider"
+    app_names["GoLand"]="GoLand"
+    app_names["RubyMine"]="RubyMine"
+    app_names["DataGrip"]="DataGrip"
+    app_names["Android_Studio"]="Android Studio"
     
-    case "$ide_choice" in
-      1) install_vscode ;;
-      2) install_jetbrains ;;
-      *) print_error "Invalid choice. Exiting." ;;
-    esac
+    for ide_key in "${!app_names[@]}"; do
+      app_name="${app_names[$ide_key]}"
+      if [ -d "/Applications/${app_name}.app" ]; then
+        jetbrains_found=true
+        jetbrains_ide="$app_name"
+        print_success "$app_name is installed (macOS application)"
+        break
+      fi
+    done
+  fi
+
+  # Check for JetBrains commands in PATH
+  if ! $jetbrains_found; then
+    for ide_key in "${!jetbrains_ides[@]}"; do
+      commands=${jetbrains_ides[$ide_key]}
+      for cmd in $commands; do
+        if command -v "$cmd" > /dev/null 2>&1; then
+          jetbrains_found=true
+          # Convert key to friendly name
+          case "$ide_key" in
+            "IntelliJ_IDEA") jetbrains_ide="IntelliJ IDEA" ;;
+            "Android_Studio") jetbrains_ide="Android Studio" ;;
+            *) jetbrains_ide="$ide_key" ;;
+          esac
+          print_success "$jetbrains_ide is installed (command '$cmd')"
+          break 2  # Break both loops
+        fi
+      done
+    done
+  fi
+
+  # Check for JetBrains directories on Linux
+  if ! $jetbrains_found && [[ "$OSTYPE" == "linux"* ]]; then
+    local jetbrains_dirs=("$HOME/.local/share/JetBrains" "/opt/jetbrains")
+    for dir in "${jetbrains_dirs[@]}"; do
+      if [ -d "$dir" ]; then
+        jetbrains_found=true
+        print_success "JetBrains directory found at $dir"
+        break
+      fi
+    done
+  fi
+
+  # Check for JetBrains directories on Windows
+  if ! $jetbrains_found && [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; then
+    local jetbrains_dirs=("$APPDATA/JetBrains" "/c/Program Files/JetBrains")
+    for dir in "${jetbrains_dirs[@]}"; do
+      if [ -d "$dir" ]; then
+        jetbrains_found=true
+        print_success "JetBrains directory found at $dir"
+        break
+      fi
+    done
+  fi
+
+  # Export result
+  if $jetbrains_found; then
+    export IDE_JETBRAINS_AVAILABLE=true
+    export IDE_JETBRAINS_TYPE="$jetbrains_ide"
+    return 0
   else
-    print_alert "No IDE will be installed. You may need to install one manually."
+    export IDE_JETBRAINS_AVAILABLE=false
+    
+    # Ask user if they want to install a JetBrains IDE
+    print_alert "No JetBrains IDE found. Would you like to install one? (y/n)"
+    read -r install_choice
+    
+    if [[ "$install_choice" =~ ^[Yy]$ ]]; then
+      if _install_jetbrains; then
+        export IDE_JETBRAINS_AVAILABLE=true
+        return 0
+      fi
+    else
+      print_info "Skipping JetBrains IDE installation."
+    fi
+    
+    return 1
   fi
 }
 
+#######################################
+# Main function to setup IDEs
+# Arguments:
+#   None
+# Returns:
+#   0 if successful, 1 otherwise
+#######################################
 setup_ides() {
-  _check_installed_ides
+  print_info "Starting IDE setup..."
   
-  # If no IDEs are installed, offer to install one
-  if [ "$IDE_VSCODE_AVAILABLE" = false ] && [ "$IDE_JETBRAINS_AVAILABLE" = false ]; then
-    _prompt_ide_installation
+  # Check for VS Code
+  check_vscode
+  
+  # Check for JetBrains IDEs
+  check_jetbrains
+  
+  # Summary
+  print_info "IDE setup completed."
+  
+  if [ "$IDE_VSCODE_AVAILABLE" = true ] || [ "$IDE_JETBRAINS_AVAILABLE" = true ]; then
+    print_success "At least one IDE is available for development."
+    return 0
+  else
+    print_error "No IDEs are available. Development may be difficult."
+    return 1
   fi
-  
-  return 0
 }
 
 # Execute main function if script is run directly

@@ -35,17 +35,17 @@ _backup_existing_config() {
 _check_ssh_keys() {
     print_info "Checking for SSH keys..."
     
-    # Lista de chaves SSH comuns
+    # List of common SSH keys
     local required_keys=()
     
-    # Verificar chaves existentes
+    # Check existing keys
     for key_type in id_rsa id_ed25519 id_ecdsa; do
         if [ -f "$SSH_CONFIG_DIR/$key_type" ]; then
             required_keys+=("$key_type")
         fi
     done
     
-    # Verificar outras chaves personalizadas
+    # Check other custom keys
     for key_file in "$SSH_CONFIG_DIR"/id_*; do
         if [ -f "$key_file" ] && [[ ! "$key_file" =~ \.pub$ ]]; then
             local key_name=$(basename "$key_file")
@@ -55,7 +55,7 @@ _check_ssh_keys() {
         fi
     done
     
-    # Verificar se há chaves disponíveis
+    # Check if there are available keys
     if [ ${#required_keys[@]} -eq 0 ]; then
         print_alert "No SSH keys found!"
         print_info "Would you like to generate a default SSH key? (y/n)"
@@ -82,7 +82,7 @@ _check_ssh_keys() {
         done
     fi
     
-    # Perguntar se o usuário deseja gerar chaves adicionais
+    # Ask if the user wants to generate additional keys
     # print_info "Would you like to generate additional SSH keys? (y/n)"
     # read -r generate_additional
     

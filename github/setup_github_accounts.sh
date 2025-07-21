@@ -135,7 +135,7 @@ _associate_ssh_key_with_github() {
     print_info "Generating GitHub token with repo and workflow permissions..."
     gh auth login -s repo,workflow
 
-    # TODO - testar para verificar se funciona o SSO
+    # TODO - test to verify if SSO works
     # Check if SSO is available and configure it
     # if gh auth status | grep -q "SSO:"; then
     #     echo "SSO detected for this account. Configuring SSO..."
