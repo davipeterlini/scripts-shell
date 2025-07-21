@@ -120,19 +120,34 @@ _add_custom_prompt() {
     if [ -n "$zshrc_example_path" ]; then
         print_info "Found .zshrc.example at $zshrc_example_path"
         
-        # Fazer backup do arquivo .zshrc original
-        local timestamp=$(date +%Y%m%d_%H%M%S)
-        local backup_file="$HOME/.zshrc.backup.$timestamp"
+        # Verificar se o profile_writer.sh existe
+        local profile_writer_path=""
         
-        if [ -f "$HOME/.zshrc" ]; then
-            cp "$HOME/.zshrc" "$backup_file"
-            print_info "Created backup of original .zshrc at $backup_file"
+        if [ -f "$(dirname "$0")/../../utils/profile_writer.sh" ]; then
+            profile_writer_path="$(dirname "$0")/../../utils/profile_writer.sh"
+        elif [ -f "utils/profile_writer.sh" ]; then
+            profile_writer_path="utils/profile_writer.sh"
+        elif [ -f "$(dirname "$0")/../utils/profile_writer.sh" ]; then
+            profile_writer_path="$(dirname "$0")/../utils/profile_writer.sh"
         fi
         
-        # Copiar o conteúdo do arquivo .zshrc.example para o .zshrc do usuário
-        cat "$zshrc_example_path" > "$HOME/.zshrc"
-        
-        print_success "Custom prompt configuration applied to .zshrc"
+        if [ -n "$profile_writer_path" ]; then
+            print_info "Found profile_writer.sh at $profile_writer_path"
+            
+            # Carregar o profile_writer.sh
+            source "$profile_writer_path"
+            
+            # Ler o conteúdo do arquivo .zshrc.example
+            local zshrc_content=$(cat "$zshrc_example_path")
+            
+            # Usar o profile_writer para adicionar o conteúdo ao .zshrc
+            write_to_profile "$zshrc_content" "$HOME/.zshrc"
+            
+            print_success "Custom prompt configuration applied to .zshrc using profile_writer"
+        else
+            print_error "Could not find profile_writer.sh in any of the expected locations"
+            print_info "Falling back to direct file writing method"
+        fi
     else
         print_error "Could not find .zshrc.example file in any of the expected locations"
         return 1
@@ -166,9 +181,9 @@ setup_terminal() {
     # Then proceed with other configurations
     _install_oh_my_zsh
     _set_zsh_as_default
+    #_change_theme
     _add_custom_prompt
     _install_plugins
-    #change_theme
     
     print_header_info "Terminal setup completed. Please restart your terminal."
     print_info "Notes:"

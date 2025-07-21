@@ -2,9 +2,6 @@
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-# Set Theme
-ZSH_THEME="agnoster"
-
 # Custom prompt configuration
 autoload -Uz vcs_info
 precmd() { vcs_info }
