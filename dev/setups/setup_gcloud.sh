@@ -6,7 +6,7 @@ source "$(dirname "$0")/dev/installs/install_gcloud_tools.sh"
 
 # Function to authenticate with Google Cloud
 __authenticate_gcloud() {
-  print_header "Starting Google Cloud authentication..."
+  print_info "Starting Google Cloud authentication..."
   
   # Check if gcloud is installed
   if ! command -v gcloud &> /dev/null; then
@@ -34,7 +34,7 @@ __authenticate_gcloud() {
 
 # Function to select Google Cloud project
 __select_project() {
-  print_header "Selecting Google Cloud project..."
+  print_info "Selecting Google Cloud project..."
   
   # List available projects
   print_info "Projects available in your account:"
@@ -60,7 +60,7 @@ __select_project() {
 
 # Function to configure default region
 __configure_region() {
-  print_header "Configuring default region..."
+  print_info "Configuring default region..."
   
   # List available regions
   print_info "Common Google Cloud regions:"
@@ -115,6 +115,11 @@ _config_gcloud() {
 
 setup_gcloud() {
     print_header_info "Starting Google Cloud SDK setup"
+
+    if ! get_user_confirmation "Do you want Google Cloud SDK Configuration ?"; then
+        print_info "Skipping configuration"
+        return 0
+    fi
     
     # Install Google Cloud SDK
     install_gcloud_tools

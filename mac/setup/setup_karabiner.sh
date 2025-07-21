@@ -203,7 +203,9 @@ _list_available_keyboards() {
     if [ -z "$devices" ]; then
         print_alert "No keyboards found in Karabiner configuration."
         print_info "Please check if your keyboards are connected and if Karabiner-Elements detected them."
-        return 1
+        print_info "Applying all configurations automatically since no keyboards were detected..."
+        _apply_all_configs
+        return 2  # Return code 2 indicates no keyboards found but configs applied
     fi
     
     # Display the list of keyboards
@@ -437,14 +439,21 @@ setup_karabiner() {
     # Inicializar o perfil padrão com todos os teclados disponíveis
     _initialize_default_profile_with_all_keyboards
     
-    # Listar os teclados disponíveis
-    _list_available_keyboards
+    # Listar os teclados disponíveis e aplicar configurações automaticamente se não encontrar teclados
+    local keyboard_status=$(_list_available_keyboards)
+    local keyboard_result=$?
     
-    # Perguntar se o usuário deseja aplicar todas as configurações
-    if get_user_confirmation "Do you want to apply all configurations to all keyboards?"; then
-        _apply_all_configs
-    else
-        print_info "Skipping configuration application."
+    # Se o resultado for 2, significa que nenhum teclado foi encontrado e as configurações já foram aplicadas
+    if [ $keyboard_result -eq 2 ]; then
+        print_info "Configurations were automatically applied because no keyboards were detected."
+    # Se o resultado for 0, significa que teclados foram encontrados, então pergunta ao usuário
+    elif [ $keyboard_result -eq 0 ]; then
+        # Perguntar se o usuário deseja aplicar todas as configurações
+        if get_user_confirmation "Do you want to apply all configurations to all keyboards?"; then
+            _apply_all_configs
+        else
+            print_info "Skipping configuration application."
+        fi
     fi
     
     # Reiniciar o Karabiner para aplicar as alterações
