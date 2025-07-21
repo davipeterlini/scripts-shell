@@ -125,12 +125,6 @@ _setup_variables() {
       touch "$env_file"
       print_success "Created empty $env_file file."
     fi
-  else
-    # Ask if user wants to proceed with modifications
-    if ! get_user_confirmation "Do you want to proceed with modifying environment variables?"; then
-        print_info "Skipping environment variable setup."
-        return 0
-    fi
   fi
   
   print_info "Setting up environment variables"
@@ -161,10 +155,6 @@ _setup_variables() {
       ((variables_updated++))
     fi
   done
-  
-  # Show final changes and ask for confirmation
-  print_info "Updated values (preview):"
-  cat "$env_file"
   
   if ! get_user_confirmation "Do you want to save these changes?"; then
     print_info "Changes discarded."

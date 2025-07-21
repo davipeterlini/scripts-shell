@@ -22,8 +22,8 @@ const COMPARE_CONFIG_IDE = {
     HEADER_BG: "#D3D3D3",
     ERROR_BG: "#FFCCCB",
     SUCCESS_BG: "#90EE90",
-    ENABLE_BG: "#90EE90",  // Verde para Enable
-    DISABLE_BG: "#FFCCCB"  // Vermelho para Disable
+    ENABLE_BG: "#90EE90",  // Green for Enable
+    DISABLE_BG: "#FFCCCB"  // Red for Disable
   },
   LOG_FREQUENCY: 10  // Log every X columns (adjust to control log volume)
 };
@@ -33,8 +33,8 @@ const COMPARE_CONFIG_IDE = {
  */
 function onOpenCompareIDE() {
   const ui = SpreadsheetApp.getUi();
-  ui.createMenu('Comparar IDE')
-      .addItem('Comparar Status de Capabilities IDE', 'compareCapabilitiesIDE')
+  ui.createMenu('Compare IDE')
+      .addItem('Compare IDE Capabilities Status', 'compareCapabilitiesIDE')
       .addToUi();
 }
 
@@ -44,66 +44,66 @@ function onOpenCompareIDE() {
 function compareCapabilitiesIDE() {
   try {
     // Start logging
-    Logger.log("=== INICIANDO COMPARAÇÃO DE CAPABILITIES ===");
-    Logger.log(`Hora de início: ${new Date().toLocaleString()}`);
+    Logger.log("=== STARTING CAPABILITIES COMPARISON ===");
+    Logger.log(`Start time: ${new Date().toLocaleString()}`);
     
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    Logger.log(`Planilha ativa: ${spreadsheet.getName()}`);
+    Logger.log(`Active spreadsheet: ${spreadsheet.getName()}`);
     
     // Delete the report sheet if it exists
     _deleteReportSheetIDE(spreadsheet);
     
     // Get source and target sheets
-    Logger.log(`Carregando planilha fonte: ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}`);
+    Logger.log(`Loading source sheet: ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}`);
     const sourceSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME);
     
-    Logger.log(`Carregando planilha alvo: ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}`);
+    Logger.log(`Loading target sheet: ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}`);
     const targetSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_IDE.TARGET_SHEET_NAME);
     
     // Validate sheets exist
     if (!sourceSheet) {
-      Logger.log(`ERRO: Planilha "${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}" não encontrada`);
-      throw new Error(`Planilha "${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}" não encontrada. Execute o script search_llm_capabilities.gs primeiro.`);
+      Logger.log(`ERROR: Sheet "${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}" not found`);
+      throw new Error(`Sheet "${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}" not found. Run the search_llm_capabilities.gs script first.`);
     }
     
     if (!targetSheet) {
-      Logger.log(`ERRO: Planilha "${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}" não encontrada`);
-      throw new Error(`Planilha "${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}" não encontrada.`);
+      Logger.log(`ERROR: Sheet "${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}" not found`);
+      throw new Error(`Sheet "${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}" not found.`);
     }
     
     // Create report sheet
-    Logger.log(`Criando planilha de relatório: ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME}`);
+    Logger.log(`Creating report sheet: ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME}`);
     const reportSheet = _createReportSheetIDE(spreadsheet);
     
     // Get data from both sheets including cell backgrounds
-    Logger.log(`Obtendo dados da planilha fonte: ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}`);
+    Logger.log(`Getting data from source sheet: ${COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME}`);
     const sourceData = _getSheetDataWithFormattingIDE(sourceSheet);
-    Logger.log(`Dados obtidos da planilha fonte: ${sourceData.rows.length} linhas, ${sourceData.headers.length} colunas`);
+    Logger.log(`Data obtained from source sheet: ${sourceData.rows.length} rows, ${sourceData.headers.length} columns`);
     
-    Logger.log(`Obtendo dados da planilha alvo: ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}`);
+    Logger.log(`Getting data from target sheet: ${COMPARE_CONFIG_IDE.TARGET_SHEET_NAME}`);
     const targetData = _getSheetDataWithFormattingIDE(targetSheet);
-    Logger.log(`Dados obtidos da planilha alvo: ${targetData.rows.length} linhas, ${targetData.headers.length} colunas`);
+    Logger.log(`Data obtained from target sheet: ${targetData.rows.length} rows, ${targetData.headers.length} columns`);
     
     // Create lookup maps for faster comparison
-    Logger.log("Criando mapas de busca para comparação rápida");
+    Logger.log("Creating lookup maps for fast comparison");
     const sourceMap = _createLookupMapIDE(sourceData.rows, sourceData.backgrounds);
     const targetMap = _createLookupMapIDE(targetData.rows, targetData.backgrounds);
-    Logger.log(`Mapas criados: ${Object.keys(sourceMap).length} modelos na fonte, ${Object.keys(targetMap).length} modelos no alvo`);
+    Logger.log(`Maps created: ${Object.keys(sourceMap).length} models in source, ${Object.keys(targetMap).length} models in target`);
     
     // Compare data and generate report
-    Logger.log("Iniciando comparação de dados");
+    Logger.log("Starting data comparison");
     const discrepancies = _compareDataIDE(sourceData, targetData, sourceMap, targetMap);
-    Logger.log(`Comparação concluída. Encontradas ${discrepancies.length} divergências`);
+    Logger.log(`Comparison completed. Found ${discrepancies.length} discrepancies`);
     
     // Display report
-    Logger.log("Gerando relatório de comparação");
+    Logger.log("Generating comparison report");
     _displayReportIDE(reportSheet, discrepancies, sourceData.headers);
-    Logger.log("Relatório gerado com sucesso");
+    Logger.log("Report generated successfully");
     
     // Prepare detailed message with discrepancies
     let message = "";
     if (discrepancies.length > 0) {
-      message = `Comparação concluída. Foram encontradas ${discrepancies.length} divergências de status.\n\n`;
+      message = `Comparison completed. Found ${discrepancies.length} status discrepancies.\n\n`;
       
       // Add summary of discrepancies
       let statusCount = 0;
@@ -116,13 +116,13 @@ function compareCapabilitiesIDE() {
         else if (d.type === "header") headerIssue = true;
       });
       
-      if (statusCount > 0) message += `- ${statusCount} divergências de status\n`;
-      if (missingModelCount > 0) message += `- ${missingModelCount} modelos ausentes\n`;
-      if (headerIssue) message += "- Problema nos cabeçalhos das planilhas\n";
+      if (statusCount > 0) message += `- ${statusCount} status discrepancies\n`;
+      if (missingModelCount > 0) message += `- ${missingModelCount} missing models\n`;
+      if (headerIssue) message += "- Issue with spreadsheet headers\n";
       
       // List first 10 discrepancies as examples
       if (discrepancies.length > 0) {
-        message += "\nExemplos de divergências encontradas:\n";
+        message += "\nExamples of found discrepancies:\n";
         
         const maxExamples = Math.min(10, discrepancies.length);
         for (let i = 0; i < maxExamples; i++) {
@@ -132,26 +132,26 @@ function compareCapabilitiesIDE() {
             message += `${i+1}. ${d.provider} - ${d.model}: ${d.capability} (${d.sourceStatus} vs ${d.targetStatus})\n`;
           } else if (d.type === "missing_model") {
             const location = d.location === "source" ? COMPARE_CONFIG_IDE.TARGET_SHEET_NAME : COMPARE_CONFIG_IDE.SOURCE_SHEET_NAME;
-            message += `${i+1}. Modelo ausente: ${d.provider} - ${d.model} (apenas em ${location})\n`;
+            message += `${i+1}. Missing model: ${d.provider} - ${d.model} (only in ${location})\n`;
           }
         }
         
         if (discrepancies.length > maxExamples) {
-          message += `... e mais ${discrepancies.length - maxExamples} divergências (veja o relatório completo na planilha ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME})`;
+          message += `... and ${discrepancies.length - maxExamples} more discrepancies (see full report in ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME} sheet)`;
         }
       }
     } else {
-      message = "Comparação concluída. Nenhuma divergência de status encontrada!";
+      message = "Comparison completed. No status discrepancies found!";
     }
     
-    Logger.log(`=== COMPARAÇÃO FINALIZADA ===`);
-    Logger.log(`Hora de término: ${new Date().toLocaleString()}`);
+    Logger.log(`=== COMPARISON FINISHED ===`);
+    Logger.log(`End time: ${new Date().toLocaleString()}`);
     Logger.log(message);
     
   } catch (error) {
-    Logger.log(`ERRO: ${error.message}`);
+    Logger.log(`ERROR: ${error.message}`);
     Logger.log(error.stack);
-    SpreadsheetApp.getUi().alert("Erro: " + error.message);
+    SpreadsheetApp.getUi().alert("Error: " + error.message);
   }
 }
 
@@ -168,11 +168,11 @@ function _deleteReportSheetIDE(spreadsheet) {
   const reportSheet = spreadsheet.getSheetByName(COMPARE_CONFIG_IDE.REPORT_SHEET_NAME);
   
   if (reportSheet) {
-    Logger.log(`Excluindo planilha existente: ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME}`);
+    Logger.log(`Deleting existing sheet: ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME}`);
     spreadsheet.deleteSheet(reportSheet);
-    Logger.log(`Planilha ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME} excluída com sucesso`);
+    Logger.log(`Sheet ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME} deleted successfully`);
   } else {
-    Logger.log(`Planilha ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME} não encontrada, nenhuma exclusão necessária`);
+    Logger.log(`Sheet ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME} not found, no deletion necessary`);
   }
 }
 
@@ -183,7 +183,7 @@ function _deleteReportSheetIDE(spreadsheet) {
  * @private
  */
 function _createReportSheetIDE(spreadsheet) {
-  Logger.log(`Criando nova planilha ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME}`);
+  Logger.log(`Creating new sheet ${COMPARE_CONFIG_IDE.REPORT_SHEET_NAME}`);
   const reportSheet = spreadsheet.insertSheet(COMPARE_CONFIG_IDE.REPORT_SHEET_NAME);
   return reportSheet;
 }
@@ -198,28 +198,28 @@ function _getSheetDataWithFormattingIDE(sheet) {
   const lastRow = sheet.getLastRow();
   const lastColumn = sheet.getLastColumn();
   
-  Logger.log(`Obtendo dados de ${sheet.getName()}: ${lastRow} linhas, ${lastColumn} colunas`);
+  Logger.log(`Getting data from ${sheet.getName()}: ${lastRow} rows, ${lastColumn} columns`);
   
   // Get title from row 1
-  Logger.log(`Obtendo título da linha 1`);
+  Logger.log(`Getting title from row 1`);
   const titleRange = sheet.getRange(1, 1, 1, lastColumn);
   const title = titleRange.getValues()[0][0];
   
   // Get headers from row 2
-  Logger.log(`Obtendo cabeçalhos da linha 2`);
+  Logger.log(`Getting headers from row 2`);
   const headerRange = sheet.getRange(2, 1, 1, lastColumn);
   const headers = headerRange.getValues()[0];
   
   // Log headers
-  Logger.log(`Cabeçalhos encontrados: ${headers.join(', ')}`);
+  Logger.log(`Headers found: ${headers.join(', ')}`);
   
   // Get data rows (starting from row 3)
-  Logger.log(`Obtendo dados das linhas (a partir da linha 3)`);
+  Logger.log(`Getting data from rows (starting from row 3)`);
   const dataRange = sheet.getRange(3, 1, lastRow - 2, lastColumn);
   const rows = dataRange.getValues();
   const backgrounds = dataRange.getBackgrounds();
   
-  Logger.log(`Dados obtidos: ${rows.length} linhas de dados`);
+  Logger.log(`Data obtained: ${rows.length} data rows`);
   
   return {
     title: title,
@@ -242,29 +242,29 @@ function _compareDataIDE(sourceData, targetData, sourceMap, targetMap) {
   const discrepancies = [];
   
   // Check if headers match
-  Logger.log("Verificando se os cabeçalhos correspondem");
+  Logger.log("Checking if headers match");
   if (!_arraysEqualIDE(sourceData.headers, targetData.headers)) {
-    Logger.log("ALERTA: Os cabeçalhos das planilhas não correspondem");
-    Logger.log(`Cabeçalhos fonte: ${sourceData.headers.join(', ')}`);
-    Logger.log(`Cabeçalhos alvo: ${targetData.headers.join(', ')}`);
+    Logger.log("WARNING: Sheet headers do not match");
+    Logger.log(`Source headers: ${sourceData.headers.join(', ')}`);
+    Logger.log(`Target headers: ${targetData.headers.join(', ')}`);
     
     discrepancies.push({
       type: "header",
-      message: "Os cabeçalhos das planilhas não correspondem",
+      message: "Sheet headers do not match",
       sourceHeaders: sourceData.headers,
       targetHeaders: targetData.headers
     });
     return discrepancies; // Stop comparison if headers don't match
   }
   
-  Logger.log("Cabeçalhos correspondem, prosseguindo com a comparação");
+  Logger.log("Headers match, proceeding with comparison");
   
   // Compare source to target
-  Logger.log("Comparando modelos da fonte com o alvo");
+  Logger.log("Comparing models from source to target");
   _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMap, discrepancies);
   
   // Compare target to source (to find models in target that don't exist in source)
-  Logger.log("Verificando modelos ausentes");
+  Logger.log("Checking for missing models");
   _findMissingModelsIDE(sourceData, targetData, sourceMap, targetMap, discrepancies);
   
   return discrepancies;
@@ -306,12 +306,12 @@ function _createLookupMapIDE(rows, backgrounds) {
  */
 function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMap, discrepancies) {
   const totalRows = sourceData.rows.length;
-  Logger.log(`Iniciando comparação de status para ${totalRows} modelos`);
+  Logger.log(`Starting status comparison for ${totalRows} models`);
   
   // Log column headers for reference
-  Logger.log("Colunas de capabilities a serem comparadas:");
+  Logger.log("Capability columns to be compared:");
   for (let colIndex = 2; colIndex < sourceData.headers.length; colIndex++) {
-    Logger.log(`Coluna ${_columnToLetterIDE(colIndex + 1)} (${colIndex + 1}): ${sourceData.headers[colIndex]}`);
+    Logger.log(`Column ${_columnToLetterIDE(colIndex + 1)} (${colIndex + 1}): ${sourceData.headers[colIndex]}`);
   }
   
   // Track progress
@@ -326,7 +326,7 @@ function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMa
     // Log progress periodically
     processedModels++;
     if (processedModels % 10 === 0 || processedModels === 1 || processedModels === totalRows) {
-      Logger.log(`Progresso: Comparando modelo ${processedModels} de ${totalRows} (${Math.round(processedModels/totalRows*100)}%): ${provider} - ${model}`);
+      Logger.log(`Progress: Comparing model ${processedModels} of ${totalRows} (${Math.round(processedModels/totalRows*100)}%): ${provider} - ${model}`);
     }
     
     if (targetMap[key]) {
@@ -336,7 +336,7 @@ function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMa
       const targetBackgrounds = targetMap[key].backgrounds;
       
       // Log detailed column comparison for this model
-      Logger.log(`Comparando capabilities para modelo: ${provider} - ${model} (linha ${sourceRowIndex + 3})`);
+      Logger.log(`Comparing capabilities for model: ${provider} - ${model} (row ${sourceRowIndex + 3})`);
       
       for (let colIndex = 2; colIndex < sourceRow.length; colIndex++) {
         const sourceStatus = sourceRow[colIndex];
@@ -345,7 +345,7 @@ function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMa
         
         // Log column comparison based on frequency setting
         if (colIndex % COMPARE_CONFIG_IDE.LOG_FREQUENCY === 0 || colIndex === 2 || colIndex === sourceRow.length - 1) {
-          Logger.log(`  Comparando coluna ${_columnToLetterIDE(colIndex + 1)} (${colIndex + 1}): ${capability}`);
+          Logger.log(`  Comparing column ${_columnToLetterIDE(colIndex + 1)} (${colIndex + 1}): ${capability}`);
         }
         
         // Compare status values (Enable/Disable)
@@ -353,7 +353,7 @@ function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMa
           statusDiscrepancies++;
           
           // Log each discrepancy found
-          Logger.log(`  DIVERGÊNCIA ENCONTRADA na coluna ${_columnToLetterIDE(colIndex + 1)} (${colIndex + 1}) - ${capability}: ${sourceStatus} vs ${targetStatus}`);
+          Logger.log(`  DISCREPANCY FOUND in column ${_columnToLetterIDE(colIndex + 1)} (${colIndex + 1}) - ${capability}: ${sourceStatus} vs ${targetStatus}`);
           
           discrepancies.push({
             type: "status",
@@ -372,11 +372,11 @@ function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMa
       }
       
       // Log completion of this model's comparison
-      Logger.log(`Concluída comparação do modelo: ${provider} - ${model}`);
+      Logger.log(`Completed comparison for model: ${provider} - ${model}`);
       
     } else {
       // Model exists in source but not in target
-      Logger.log(`MODELO AUSENTE: ${provider} - ${model} existe na fonte mas não no alvo`);
+      Logger.log(`MISSING MODEL: ${provider} - ${model} exists in source but not in target`);
       
       discrepancies.push({
         type: "missing_model",
@@ -388,7 +388,7 @@ function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMa
     }
   });
   
-  Logger.log(`Comparação de status concluída. Encontradas ${statusDiscrepancies} divergências de status.`);
+  Logger.log(`Status comparison completed. Found ${statusDiscrepancies} status discrepancies.`);
 }
 
 /**
@@ -401,7 +401,7 @@ function _findStatusDiscrepanciesIDE(sourceData, targetData, sourceMap, targetMa
  * @private
  */
 function _findMissingModelsIDE(sourceData, targetData, sourceMap, targetMap, discrepancies) {
-  Logger.log(`Verificando modelos que existem no alvo mas não na fonte`);
+  Logger.log(`Checking for models that exist in target but not in source`);
   let missingModelsCount = 0;
   
   targetData.rows.forEach((targetRow, targetRowIndex) => {
@@ -412,7 +412,7 @@ function _findMissingModelsIDE(sourceData, targetData, sourceMap, targetMap, dis
     if (!sourceMap[key]) {
       // Model exists in target but not in source
       missingModelsCount++;
-      Logger.log(`MODELO AUSENTE: ${provider} - ${model} existe no alvo mas não na fonte (linha ${targetRowIndex + 3})`);
+      Logger.log(`MISSING MODEL: ${provider} - ${model} exists in target but not in source (row ${targetRowIndex + 3})`);
       
       discrepancies.push({
         type: "missing_model",
@@ -424,7 +424,7 @@ function _findMissingModelsIDE(sourceData, targetData, sourceMap, targetMap, dis
     }
   });
   
-  Logger.log(`Verificação de modelos ausentes concluída. Encontrados ${missingModelsCount} modelos ausentes.`);
+  Logger.log(`Missing models check completed. Found ${missingModelsCount} missing models.`);
 }
 
 /**
@@ -435,39 +435,39 @@ function _findMissingModelsIDE(sourceData, targetData, sourceMap, targetMap, dis
  * @private
  */
 function _displayReportIDE(reportSheet, discrepancies, headers) {
-  Logger.log("Iniciando geração do relatório");
+  Logger.log("Starting report generation");
   
   // Add title
-  Logger.log("Adicionando título ao relatório");
+  Logger.log("Adding title to report");
   _addReportTitleIDE(reportSheet);
   
   if (discrepancies.length === 0) {
     // No discrepancies found
-    Logger.log("Nenhuma discrepância encontrada, adicionando mensagem");
+    Logger.log("No discrepancies found, adding message");
     _addNoDiscrepanciesMessageIDE(reportSheet);
-    return; // Importante: retornar aqui para evitar processamento adicional
+    return; // Important: return here to avoid additional processing
   }
   
   // Add summary
-  Logger.log("Adicionando resumo ao relatório");
+  Logger.log("Adding summary to report");
   _addSummaryIDE(reportSheet, discrepancies);
   
   // Add report headers
-  Logger.log("Adicionando cabeçalhos ao relatório");
+  Logger.log("Adding headers to report");
   _addReportHeadersIDE(reportSheet);
   
   // Add discrepancies
-  Logger.log(`Adicionando ${discrepancies.length} discrepâncias ao relatório`);
+  Logger.log(`Adding ${discrepancies.length} discrepancies to report`);
   _addDiscrepanciesIDE(reportSheet, discrepancies, headers);
   
   // Format report
-  Logger.log("Formatando relatório");
+  Logger.log("Formatting report");
   _formatReportIDE(reportSheet);
   
   // Add a link to the top of the report for easy navigation
   _addNavigationLinksIDE(reportSheet);
   
-  Logger.log("Relatório gerado com sucesso");
+  Logger.log("Report generated successfully");
 }
 
 /**

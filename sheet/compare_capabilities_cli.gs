@@ -443,31 +443,31 @@ function CLI_displayReport(reportSheet, discrepancies, headers) {
   
   if (discrepancies.length === 0) {
     // No discrepancies found
-    Logger.log("Nenhuma discrepância encontrada, adicionando mensagem");
+    Logger.log("No discrepancies found, adding message");
     CLI_addNoDiscrepanciesMessage(reportSheet);
-    return; // Importante: retornar aqui para evitar processamento adicional
+    return; // Important: return here to avoid additional processing
   }
   
   // Add summary
-  Logger.log("Adicionando resumo ao relatório");
+  Logger.log("Adding summary to report");
   CLI_addSummary(reportSheet, discrepancies);
   
   // Add report headers
-  Logger.log("Adicionando cabeçalhos ao relatório");
+  Logger.log("Adding headers to report");
   CLI_addReportHeaders(reportSheet);
   
   // Add discrepancies
-  Logger.log(`Adicionando ${discrepancies.length} discrepâncias ao relatório`);
+  Logger.log(`Adding ${discrepancies.length} discrepancies to report`);
   CLI_addDiscrepancies(reportSheet, discrepancies, headers);
   
   // Format report
-  Logger.log("Formatando relatório");
+  Logger.log("Formatting report");
   CLI_formatReport(reportSheet);
   
   // Add a link to the top of the report for easy navigation
   CLI_addNavigationLinks(reportSheet);
   
-  Logger.log("Relatório gerado com sucesso");
+  Logger.log("Report generated successfully");
 }
 
 /**
@@ -688,9 +688,9 @@ function CLI_formatReport(sheet) {
   const lastRow = sheet.getLastRow();
   const lastColumn = 8; // Number of columns in report
   
-  // Verificar se há linhas suficientes para formatar
+  // Check if there are enough rows to format
   if (lastRow < 5) {
-    Logger.log("Não há linhas suficientes para formatar o relatório");
+    Logger.log("Not enough rows to format the report");
     return;
   }
   
