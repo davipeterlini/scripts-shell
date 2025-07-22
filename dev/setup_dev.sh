@@ -39,11 +39,11 @@ setup_dev() {
 
     setup_gcloud
 
+    setup_node 
+
     setup_java
 
     setup_python
-
-    setup_node 
 
     setup_ides
 
