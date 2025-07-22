@@ -496,6 +496,8 @@ _apply_selected_configs() {
     
     if [ $applied_count -gt 0 ]; then
         print_success "Applied $applied_count configuration(s)."
+        # Reiniciar o Karabiner automaticamente após aplicar as configurações
+        _restart_karabiner_auto
     else
         print_alert "No configurations were applied."
     fi
@@ -531,9 +533,49 @@ _apply_all_configs() {
     done
     
     print_success "All $count configurations have been applied."
+    
+    # Reiniciar o Karabiner automaticamente após aplicar as configurações
+    _restart_karabiner_auto
+    
     return 0
 }
 
+# Função para reiniciar o Karabiner automaticamente sem perguntar ao usuário
+_restart_karabiner_auto() {
+    print_header "Restarting Karabiner-Elements"
+    print_info "Restarting Karabiner-Elements to apply the changes..."
+    
+    # Method 1: Try to restart using launchctl
+    if launchctl kickstart -k gui/$(id -u)/org.pqrs.karabiner.karabiner_console_user_server &>/dev/null; then
+        print_success "Karabiner-Elements restarted successfully!"
+        return 0
+    else
+        print_alert "Could not restart the service using launchctl. Trying alternative method..."
+    fi
+    
+    # Method 2: Try to quit and restart the application
+    if pkill -f "karabiner"; then
+        print_info "Karabiner processes terminated. Restarting the application..."
+        sleep 2
+    fi
+    
+    # Open the Karabiner-Elements application
+    if open -a "Karabiner-Elements"; then
+        print_success "Karabiner-Elements started successfully!"
+        
+        # Give time for Karabiner-Elements to start and detect devices
+        print_info "Waiting for Karabiner-Elements to initialize (5 seconds)..."
+        sleep 5
+    else
+        print_alert "Could not open Karabiner-Elements automatically."
+        print_info "Please open Karabiner-Elements manually to apply the changes."
+        print_info "You can find it in the Applications folder or using Spotlight (Cmd+Space)."
+    fi
+    
+    return 0
+}
+
+# Função original que pergunta ao usuário se deseja reiniciar
 _restart_karabiner() {
     print_header "Restarting Karabiner-Elements"
     
@@ -616,9 +658,6 @@ setup_karabiner() {
             ;;
     esac
     
-    # Reiniciar o Karabiner para aplicar as alterações
-    _restart_karabiner
-    
     print_header "Configuration Completed"
     print_success "Karabiner-Elements has been configured successfully!"
     print_info "You can now open Karabiner-Elements to customize your keyboard settings."
@@ -658,8 +697,8 @@ apply_specific_config() {
     print_header "Applying specific configuration: $(basename "$config_file")"
     _apply_config_from_file "$config_file"
     
-    # Reiniciar o Karabiner para aplicar as alterações
-    _restart_karabiner
+    # Reiniciar o Karabiner automaticamente para aplicar as alterações
+    _restart_karabiner_auto
     
     return 0
 }
