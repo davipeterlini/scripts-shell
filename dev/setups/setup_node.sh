@@ -559,14 +559,14 @@ setup_node() {
   print_header_info "Verifying installation..."
   if _verify_node_setup; then
     print_success "Node.js setup completed successfully!"
-    print_info ""
+    print ""
     print_info "Next steps:"
-    print_info "1. Restart your terminal or run: source ~/.zshrc"
-    print_info "2. Verify installation with: node --version && npm --version"
-    print_info "3. Check NVM with: nvm --version"
-    print_info "4. Verify NPM_TOKEN with: echo \$NPM_TOKEN"
-    print_info "5. Check .npmrc file with: cat ~/.npmrc"
-    print_info ""
+    print "1. Restart your terminal or run: source ~/.zshrc"
+    print "2. Verify installation with: node --version && npm --version"
+    print "3. Check NVM with: nvm --version"
+    print "4. Verify NPM_TOKEN with: echo \$NPM_TOKEN"
+    print "5. Check .npmrc file with: cat ~/.npmrc"
+    print 
     return 0
   else
     print_error "Node.js setup completed but verification failed."
