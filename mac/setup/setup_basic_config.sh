@@ -46,7 +46,10 @@ configure_keyboard() {
     defaults write com.apple.HIToolbox AppleFnUsageType -int 2
     
     # Configure keyboard brightness settings
-    _configure_keyboard_brightness
+    #_configure_keyboard_brightness
+    
+    # Configure keyboard navigation
+    #_configure_keyboard_navigation
     
     return 0
 }
@@ -69,9 +72,51 @@ _configure_keyboard_brightness() {
     # F1/F2 for display brightness, F5/F6 for keyboard brightness
     defaults write NSGlobalDomain com.apple.keyboard.fnState -bool false
     
-    # Enable keyboard navigation in dialogs and controls
+    return 0
+}
+
+# Private function to configure keyboard navigation
+_configure_keyboard_navigation() {
+    print_info "Configuring keyboard navigation settings..."
+    
+    # Enable keyboard navigation for all controls (Full Keyboard Access)
     print_info "Enabling full keyboard access for all controls..."
     defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+    
+    # Enable keyboard navigation in system dialogs and menus
+    print_info "Enabling keyboard navigation in system dialogs..."
+    defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+    defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+    
+    # Configure Tab key behavior to move focus between controls
+    print_info "Configuring Tab key to move focus between all controls..."
+    # This allows Tab to move focus forward and Shift+Tab to move focus backward
+    defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+    
+    # Enable keyboard navigation in web browsers and other apps
+    print_info "Enabling keyboard navigation in web content..."
+    defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true
+    defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true
+    
+    # Configure keyboard shortcuts for system navigation
+    print_info "Configuring system keyboard shortcuts..."
+    # Enable Cmd+Space for Spotlight (usually already enabled)
+    defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 \
+        '<dict>
+            <key>enabled</key>
+            <true/>
+            <key>value</key>
+            <dict>
+                <key>parameters</key>
+                <array>
+                    <integer>32</integer>
+                    <integer>49</integer>
+                    <integer>1048576</integer>
+                </array>
+                <key>type</key>
+                <string>standard</string>
+            </dict>
+        </dict>'
     
     return 0
 }
@@ -180,6 +225,11 @@ configure_all() {
     print_success "Basic macOS configuration completed!"
     print_alert "Some changes may require a restart to take full effect."
     print_alert "Display brightness settings may require administrator privileges."
+    print_info "Keyboard navigation is now enabled:"
+    print_info "  - Use Tab to move focus between controls"
+    print_info "  - Use Shift+Tab to move focus backward"
+    print_info "  - Use Space or Enter to activate controls"
+    print_info "  - Use arrow keys to navigate menus and lists"
     
     return 0
 }
