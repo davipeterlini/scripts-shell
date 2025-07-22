@@ -105,6 +105,44 @@ _find_configs_dir() {
     return 0
 }
 
+_list_available_configs() {
+    local configs_dir=$(_find_configs_dir)
+    
+    if [ ! -d "$configs_dir" ]; then
+        print_error "Configurations directory not found: $configs_dir"
+        return 1
+    fi
+    
+    local config_files=("$configs_dir"/*.json)
+    local file_count=${#config_files[@]}
+    
+    if [ $file_count -eq 0 ]; then
+        print_alert "No configurations found in directory: $configs_dir"
+        return 1
+    fi
+        print_header "Available Configurations"
+
+    print_info "The following configurations are available:"
+    echo ""
+    
+    local count=0
+    for config_file in "${config_files[@]}"; do
+        if [ -f "$config_file" ]; then
+            count=$((count + 1))
+            local title=$(jq -r '.title' "$config_file")
+            local description=$(jq -r '.rules[0].description' "$config_file")
+            local filename=$(basename "$config_file")
+            
+            print_info "$count) $title"
+            print "   File: $filename"
+            print "   Description: $description"
+            echo ""
+        fi
+    done
+    
+    return 0
+}
+
 _initialize_karabiner_config() {
     print_info "Initializing Karabiner-Elements configuration"
     
@@ -122,6 +160,12 @@ _initialize_karabiner_config() {
     # Check if configuration file already exists
     if [ -f "$config_file" ]; then
         print_info "Configuration file found."
+        
+        # Listar as configurações disponíveis
+        print_info "Listing available configurations..."
+        _ensure_jq_installed
+        _list_available_configs
+        
         if get_user_confirmation "Do you want to backup the current configuration?"; then
             local backup_file="${config_file}.backup.$(date +%Y%m%d%H%M%S)"
             cp "$config_file" "$backup_file"
@@ -140,6 +184,11 @@ _initialize_karabiner_config() {
         # Copy the base configuration file
         cp "$base_config_file" "$config_file"
         print_success "Configuration file created at: $config_file"
+        
+        # Listar as configurações disponíveis
+        print_info "Listing available configurations..."
+        _ensure_jq_installed
+        _list_available_configs
     fi
     
     return 0
@@ -351,44 +400,6 @@ _apply_config_from_file() {
     ' "$karabiner_config_file" > "$temp_file" && mv "$temp_file" "$karabiner_config_file"
     
     print_success "Configuration '$title' added successfully!"
-}
-
-_list_available_configs() {
-    local configs_dir=$(_find_configs_dir)
-    
-    if [ ! -d "$configs_dir" ]; then
-        print_error "Configurations directory not found: $configs_dir"
-        return 1
-    fi
-    
-    local config_files=("$configs_dir"/*.json)
-    local file_count=${#config_files[@]}
-    
-    if [ $file_count -eq 0 ]; then
-        print_alert "No configurations found in directory: $configs_dir"
-        return 1
-    fi
-    
-    print_header "Available Configurations"
-    print_info "The following configurations are available:"
-    echo ""
-    
-    local count=0
-    for config_file in "${config_files[@]}"; do
-        if [ -f "$config_file" ]; then
-            count=$((count + 1))
-            local title=$(jq -r '.title' "$config_file")
-            local description=$(jq -r '.rules[0].description' "$config_file")
-            local filename=$(basename "$config_file")
-            
-            print_alert "$count) $title"
-            print "   File: $filename"
-            print "   Description: $description"
-            echo ""
-        fi
-    done
-    
-    return 0
 }
 
 _apply_selected_configs() {
