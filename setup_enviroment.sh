@@ -30,21 +30,21 @@ setup_enviroment() {
 
     detect_os
     grant_permissions
-    install_apps "$os"
+    # install_apps "$os"
 
     
-    if [[ "$os" == "macOS" ]]; then
-        setup_mac
-    elif [[ "$os" == "linux" ]]; then
-        # TODO - create de function setup_linux
-        print_info "Linux setup not implemented yet"
-    else
-        print_alert "Unsupported OS: $os"
-    fi
+    # if [[ "$os" == "macOS" ]]; then
+    #     setup_mac
+    # elif [[ "$os" == "linux" ]]; then
+    #     # TODO - create de function setup_linux
+    #     print_info "Linux setup not implemented yet"
+    # else
+    #     print_alert "Unsupported OS: $os"
+    # fi
 
-    setup_github_accounts
-    setup_bitbucket_accounts
-    setup_ssh_config
+    # setup_github_accounts
+    # setup_bitbucket_accounts
+    # setup_ssh_config
 
     setup_dev
 
