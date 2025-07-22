@@ -120,8 +120,8 @@ _list_available_configs() {
         print_alert "No configurations found in directory: $configs_dir"
         return 1
     fi
-        print_header "Available Configurations"
-
+    
+    print_header "Available Configurations"
     print_info "The following configurations are available:"
     echo ""
     
@@ -133,7 +133,7 @@ _list_available_configs() {
             local description=$(jq -r '.rules[0].description' "$config_file")
             local filename=$(basename "$config_file")
             
-            print_info "$count) $title"
+            print_alert "$count) $title"
             print "   File: $filename"
             print "   Description: $description"
             echo ""
@@ -285,10 +285,22 @@ _initialize_default_profile_with_all_keyboards() {
     fi
     
     # Check if there are devices in the configuration
-    if ! jq -e '.devices' "$config_file" > /dev/null 2>&1; then
+    if ! jq -e '.devices' "$config_file" > /dev/null 2>&1 || [ "$(jq '.devices | length' "$config_file")" -eq 0 ]; then
         print_alert "No devices found in Karabiner configuration."
-        print_info "Please wait while Karabiner-Elements detects your devices..."
-        return 1
+        print_info "Creating a default profile without specific device settings."
+        
+        # Create a default profile without specific device settings
+        jq '
+            if .profiles[0].name == null then
+                .profiles[0].name = "Default profile"
+            else
+                .
+            end
+        ' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+        
+        print_success "Default profile initialized without specific device settings."
+        print_info "Configurations will be applied to all connected keyboards."
+        return 0
     fi
     
     # Create a list of devices for the default profile
@@ -361,6 +373,24 @@ _remove_rule() {
     return $?
 }
 
+_ensure_complex_modifications_structure() {
+    local config_file="$1"
+    local temp_file=$(mktemp)
+    
+    # Ensure the complex_modifications structure exists
+    jq '
+        if .profiles[0].complex_modifications == null then
+            .profiles[0].complex_modifications = {"rules": []}
+        elif .profiles[0].complex_modifications.rules == null then
+            .profiles[0].complex_modifications.rules = []
+        else
+            .
+        end
+    ' "$config_file" > "$temp_file" && mv "$temp_file" "$config_file"
+    
+    return $?
+}
+
 _apply_config_from_file() {
     local config_file_path="$1"
     local karabiner_config_file="$HOME/.config/karabiner/karabiner.json"
@@ -377,6 +407,9 @@ _apply_config_from_file() {
     
     print_header_info "Configuring: $title"
     print_info "Description: $description"
+    
+    # Ensure the complex_modifications structure exists
+    _ensure_complex_modifications_structure "$karabiner_config_file"
     
     # Check if the rule already exists and remove it automatically
     if _rule_exists "$karabiner_config_file" "$description"; then
