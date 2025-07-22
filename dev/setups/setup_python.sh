@@ -160,7 +160,7 @@ _check_dev_tools() {
         else
             local version
             version=$("$tool" --version 2>&1 | head -n 1)
-            print_info "$tool: $version"
+            print_success "$tool: $version"
         fi
     done
     

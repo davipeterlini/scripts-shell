@@ -10,8 +10,9 @@ Cada configuração está em um arquivo separado na pasta `configs/`:
 2. **Right Command to Right Control**: Troca o Command direito pelo Control direito
 3. **Left Control to Left Command**: Troca o Control esquerdo pelo Command esquerdo
 4. **Right Control to Right Command**: Troca o Control direito pelo Command direito
-5. **Fn key to switch input source**: Configura a tecla Fn para alternar entre idiomas de teclado (usando o atalho Control+Espaço)
+5. **Right Option to Switch Input Source**: Configura a tecla Option direita para alternar entre idiomas de teclado
 6. **Shift + ~ to double quotes**: Muda a tecla Shift + ˜ (ao lado do botão 1) para escrever aspas duplas
+7. **Alt + Tab to Command + Tab**: Configura Alt+Tab para funcionar como Command+Tab (alternar entre aplicativos)
 
 ## Como Instalar
 
@@ -27,24 +28,46 @@ Cada configuração está em um arquivo separado na pasta `configs/`:
 
 ### Instalação
 
-Execute o script de instalação:
+#### Instalação Completa
+
+Execute o script de instalação sem parâmetros:
 ```bash
-./install_karabiner_config.sh
+./setup_karabiner.sh
 ```
 
-O script permitirá que você escolha quais configurações deseja instalar:
-- Selecione configurações individuais digitando seus números (ex: `1 3 5`)
-- Digite `a` para instalar todas as configurações
-- Digite `q` para sair sem instalar
+O script oferecerá as seguintes opções:
+1. Aplicar todas as configurações
+2. Selecionar configurações específicas para aplicar
+3. Pular a aplicação de configurações
+
+#### Instalação de Configurações Específicas
+
+Você pode aplicar uma configuração específica diretamente:
+
+```bash
+# Aplicar uma configuração específica pelo nome do arquivo (com ou sem extensão .json)
+./setup_karabiner.sh left_command_to_left_control
+
+# Ou usando a opção --apply ou -a
+./setup_karabiner.sh --apply right_option_to_switch_input_source
+```
+
+#### Listar Configurações Disponíveis
+
+Para ver todas as configurações disponíveis:
+
+```bash
+./setup_karabiner.sh --list
+# ou
+./setup_karabiner.sh -l
+```
 
 ### Validação
 
-Se você encontrar problemas durante a instalação, pode validar os arquivos de configuração usando:
-```bash
-./validate_configs.sh
-```
-
-Este script verificará se todos os arquivos de configuração estão no formato correto e possuem os campos necessários.
+Se você encontrar problemas durante a instalação, verifique:
+1. Se o Karabiner-Elements está em execução
+2. Se as permissões de acessibilidade foram concedidas nas Preferências do Sistema
+3. Se os arquivos de configuração estão no formato JSON válido
 
 ## Personalização
 
@@ -78,4 +101,5 @@ Cada arquivo de configuração deve seguir este formato:
 ## Observações
 
 - Pode ser necessário conceder permissões de acessibilidade ao Karabiner-Elements nas Preferências do Sistema
-- Pode ser necessário reiniciar o Karabiner-Elements após aplicar as configurações (através do ícone na barra de menu)
+- Pode ser necessário reiniciar o Karabiner-Elements após aplicar as configurações (o script tentará fazer isso automaticamente)
+- Para mais informações sobre como criar configurações personalizadas, consulte a documentação oficial: https://karabiner-elements.pqrs.org/docs/

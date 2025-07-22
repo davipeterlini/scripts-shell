@@ -353,6 +353,112 @@ _apply_config_from_file() {
     print_success "Configuration '$title' added successfully!"
 }
 
+_list_available_configs() {
+    local configs_dir=$(_find_configs_dir)
+    
+    if [ ! -d "$configs_dir" ]; then
+        print_error "Configurations directory not found: $configs_dir"
+        return 1
+    fi
+    
+    local config_files=("$configs_dir"/*.json)
+    local file_count=${#config_files[@]}
+    
+    if [ $file_count -eq 0 ]; then
+        print_alert "No configurations found in directory: $configs_dir"
+        return 1
+    fi
+    
+    print_header "Available Configurations"
+    print_info "The following configurations are available:"
+    echo ""
+    
+    local count=0
+    for config_file in "${config_files[@]}"; do
+        if [ -f "$config_file" ]; then
+            count=$((count + 1))
+            local title=$(jq -r '.title' "$config_file")
+            local description=$(jq -r '.rules[0].description' "$config_file")
+            local filename=$(basename "$config_file")
+            
+            print_alert "$count) $title"
+            print "   File: $filename"
+            print "   Description: $description"
+            echo ""
+        fi
+    done
+    
+    return 0
+}
+
+_apply_selected_configs() {
+    local configs_dir=$(_find_configs_dir)
+    
+    if [ ! -d "$configs_dir" ]; then
+        print_error "Configurations directory not found: $configs_dir"
+        return 1
+    fi
+    
+    local config_files=("$configs_dir"/*.json)
+    local file_count=${#config_files[@]}
+    
+    if [ $file_count -eq 0 ]; then
+        print_alert "No configurations found in directory: $configs_dir"
+        return 1
+    fi
+    
+    # Mostrar as configurações disponíveis
+    _list_available_configs
+    
+    # Solicitar ao usuário que escolha as configurações
+    print_info "Enter the numbers of the configurations you want to apply (e.g., '1 3 5'), 'a' for all, or 'q' to quit:"
+    read -r selection
+    
+    # Verificar se o usuário quer sair
+    if [[ "$selection" == "q" ]]; then
+        print_info "No configurations applied."
+        return 0
+    fi
+    
+    # Verificar se o usuário quer aplicar todas as configurações
+    if [[ "$selection" == "a" ]]; then
+        _apply_all_configs
+        return $?
+    fi
+    
+    # Aplicar as configurações selecionadas
+    local selected_indices=($selection)
+    local applied_count=0
+    
+    for index in "${selected_indices[@]}"; do
+        # Verificar se o índice é um número válido
+        if ! [[ "$index" =~ ^[0-9]+$ ]]; then
+            print_error "Invalid selection: $index. Must be a number."
+            continue
+        fi
+        
+        # Verificar se o índice está dentro do intervalo válido
+        if [ "$index" -lt 1 ] || [ "$index" -gt $file_count ]; then
+            print_error "Invalid selection: $index. Must be between 1 and $file_count."
+            continue
+        fi
+        
+        # Aplicar a configuração selecionada
+        local config_file="${config_files[$((index-1))]}"
+        print_header "Applying configuration $index of $file_count"
+        _apply_config_from_file "$config_file"
+        applied_count=$((applied_count + 1))
+    done
+    
+    if [ $applied_count -gt 0 ]; then
+        print_success "Applied $applied_count configuration(s)."
+    else
+        print_alert "No configurations were applied."
+    fi
+    
+    return 0
+}
+
 _apply_all_configs() {
     # Encontrar o diretório de configurações
     local configs_dir=$(_find_configs_dir)
@@ -439,22 +545,32 @@ setup_karabiner() {
     # Inicializar o perfil padrão com todos os teclados disponíveis
     _initialize_default_profile_with_all_keyboards
     
-    # Listar os teclados disponíveis e aplicar configurações automaticamente se não encontrar teclados
-    local keyboard_status=$(_list_available_keyboards)
-    local keyboard_result=$?
+    # Listar os teclados disponíveis
+    _list_available_keyboards
     
-    # Se o resultado for 2, significa que nenhum teclado foi encontrado e as configurações já foram aplicadas
-    if [ $keyboard_result -eq 2 ]; then
-        print_info "Configurations were automatically applied because no keyboards were detected."
-    # Se o resultado for 0, significa que teclados foram encontrados, então pergunta ao usuário
-    elif [ $keyboard_result -eq 0 ]; then
-        # Perguntar se o usuário deseja aplicar todas as configurações
-        if get_user_confirmation "Do you want to apply all configurations to all keyboards?"; then
+    # Perguntar ao usuário como deseja aplicar as configurações
+    print_header "Configuration Options"
+    print_info "How would you like to apply the configurations?"
+    print_info "1) Apply all configurations"
+    print_info "2) Select specific configurations to apply"
+    print_info "3) Skip applying configurations"
+    
+    read -p "Enter your choice (1-3): " choice
+    
+    case $choice in
+        1)
             _apply_all_configs
-        else
+            ;;
+        2)
+            _apply_selected_configs
+            ;;
+        3)
             print_info "Skipping configuration application."
-        fi
-    fi
+            ;;
+        *)
+            print_error "Invalid choice. Skipping configuration application."
+            ;;
+    esac
     
     # Reiniciar o Karabiner para aplicar as alterações
     _restart_karabiner
@@ -465,6 +581,76 @@ setup_karabiner() {
     print_info "For more information, visit: https://karabiner-elements.pqrs.org/docs/"
 }
 
+# Função para aplicar uma configuração específica pelo nome do arquivo
+apply_specific_config() {
+    local config_name="$1"
+    local configs_dir=$(_find_configs_dir)
+    
+    if [ ! -d "$configs_dir" ]; then
+        print_error "Configurations directory not found: $configs_dir"
+        return 1
+    fi
+    
+    local config_file="$configs_dir/$config_name"
+    
+    # Verificar se o arquivo existe
+    if [ ! -f "$config_file" ]; then
+        # Tentar adicionar a extensão .json se não foi fornecida
+        if [ ! -f "${config_file}.json" ]; then
+            print_error "Configuration file not found: $config_name"
+            return 1
+        else
+            config_file="${config_file}.json"
+        fi
+    fi
+    
+    # Verificar se o Karabiner está em execução
+    _check_karabiner_running
+    
+    # Inicializar o perfil padrão com todos os teclados disponíveis
+    _initialize_default_profile_with_all_keyboards
+    
+    # Aplicar a configuração específica
+    print_header "Applying specific configuration: $(basename "$config_file")"
+    _apply_config_from_file "$config_file"
+    
+    # Reiniciar o Karabiner para aplicar as alterações
+    _restart_karabiner
+    
+    return 0
+}
+
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    setup_karabiner "$@"
+    # Verificar se foi passado um parâmetro específico
+    if [ $# -gt 0 ]; then
+        # Verificar se é para listar as configurações disponíveis
+        if [ "$1" == "--list" ] || [ "$1" == "-l" ]; then
+            _check_brew_installed
+            _ensure_jq_installed
+            _list_available_configs
+        # Verificar se é para aplicar uma configuração específica
+        elif [ "$1" == "--apply" ] || [ "$1" == "-a" ]; then
+            if [ -z "$2" ]; then
+                print_error "No configuration specified. Usage: $0 --apply <config_name>"
+                exit 1
+            fi
+            _check_brew_installed
+            _ensure_jq_installed
+            _install_karabiner
+            _create_config_directory
+            _initialize_karabiner_config
+            apply_specific_config "$2"
+        else
+            # Assumir que o primeiro parâmetro é o nome da configuração
+            _check_brew_installed
+            _ensure_jq_installed
+            _install_karabiner
+            _create_config_directory
+            _initialize_karabiner_config
+            apply_specific_config "$1"
+        fi
+    else
+        # Sem parâmetros, executar o setup completo
+        setup_karabiner
+    fi
 fi
