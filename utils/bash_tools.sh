@@ -4,6 +4,48 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/colors_message.sh"
 
+# Function to find the project root directory with assets folder
+find_project_root() {
+  # Start from the script's directory
+  local current_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  local root_dir="$current_dir"
+  
+  # Go up until we find the root directory (where assets/ is located)
+  while [ "$root_dir" != "/" ]; do
+    if [ -d "$root_dir/assets" ]; then
+      echo "$root_dir"
+      return 0
+    fi
+    root_dir=$(dirname "$root_dir")
+  done
+  
+  # If we couldn't find it by going up, try the absolute path to the project root
+  # This ensures it works regardless of where the script is executed from
+  root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  if [ -d "$root_dir/assets" ]; then
+    echo "$root_dir"
+    return 0
+  fi
+  
+  # If still not found, try a few common locations
+  local alt_paths=(
+    "$(pwd)"
+    "$(pwd)/.."
+    "$(pwd)/../.."
+    "$(pwd)/../../.."
+  )
+  
+  for alt_path in "${alt_paths[@]}"; do
+    if [ -d "$alt_path/assets" ]; then
+      echo "$alt_path"
+      return 0
+    fi
+  done
+  
+  print_error "assets/ directory not found. Make sure you're running this from the project directory."
+  return 1
+}
+
 # Function to create directories
 create_directories() {
   local ROOT_DIR="$1"
@@ -75,4 +117,3 @@ cleanup_temp_files() {
     local temp_dir="$1"
     rm -rf "$temp_dir"
 }
-

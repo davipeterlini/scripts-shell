@@ -7,7 +7,7 @@ source "$(dirname "$0")/utils/bash_tools.sh"
 source "$(dirname "$0")/utils/profile_writer.sh"
 
 # Default Node.js version if not specified in environment
-DEFAULT_NODE_VERSION="18.18.0"
+DEFAULT_NODE_VERSION="20.11.0"
 
 # Private function to load NVM in current shell
 _load_nvm() {
