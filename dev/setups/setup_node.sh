@@ -88,7 +88,7 @@ _configure_npm_token_in_profile() {
   
   # NPM_TOKEN configuration for .zshrc
   local npm_token_config_lines=(
-    "# NPM Token Configuration"
+    " "
     "export NPM_TOKEN=\"$npm_token_value\""
   )
 
