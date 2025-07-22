@@ -56,6 +56,46 @@ _configure_nvm_in_profile() {
   return 0
 }
 
+# Private function to configure NPM_TOKEN in shell profile
+_configure_npm_token_in_profile() {
+  print_info "Configurando NPM_TOKEN no perfil do shell..."
+  
+  # Check if NPM_TOKEN configuration already exists in .zshrc
+  if grep -q "export NPM_TOKEN=" "$HOME/.zshrc" 2>/dev/null; then
+    print_info "NPM_TOKEN já está configurado no .zshrc."
+    
+    if get_user_confirmation "Deseja atualizar o NPM_TOKEN existente?"; then
+      # Remove existing NPM_TOKEN entry
+      sed -i '/export NPM_TOKEN=/d' "$HOME/.zshrc" 2>/dev/null || true
+    else
+      print_info "Mantendo o NPM_TOKEN existente."
+      return 0
+    fi
+  fi
+  
+  # Ask user for NPM_TOKEN value
+  print_info "Por favor, informe o valor do seu NPM_TOKEN:"
+  read -r -s npm_token_value
+  echo # Add a newline after input
+  
+  if [ -z "$npm_token_value" ]; then
+    print_error "Valor do NPM_TOKEN não fornecido. Configuração cancelada."
+    return 1
+  fi
+  
+  # NPM_TOKEN configuration for .zshrc
+  local npm_token_config_lines=(
+    "# NPM Token Configuration"
+    "export NPM_TOKEN=\"$npm_token_value\""
+  )
+
+  # Use profile_writer to add configuration to .zshrc
+  write_lines_to_profile "${npm_token_config_lines[@]}" "$HOME/.zshrc"
+  
+  print_success "NPM_TOKEN configurado com sucesso no perfil do shell."
+  return 0
+}
+
 # Private function to install NVM
 _install_nvm() {
   print_info "Installing NVM (Node Version Manager)..."
@@ -213,6 +253,19 @@ check_npm() {
   return 0
 }
 
+# Function to check if NPM_TOKEN is configured
+check_npm_token() {
+  print_info "Verificando configuração do NPM_TOKEN..."
+
+  if grep -q "export NPM_TOKEN=" "$HOME/.zshrc" 2>/dev/null; then
+    print_success "NPM_TOKEN está configurado no perfil do shell."
+    return 0
+  else
+    print_alert "NPM_TOKEN não está configurado no perfil do shell."
+    return 1
+  fi
+}
+
 # Function to verify complete Node.js setup
 _verify_node_setup() {
   print_header_info "Verifying Node.js Setup"
@@ -240,6 +293,14 @@ _verify_node_setup() {
     print_success "✓ NVM verification passed"
   else
     print_error "✗ NVM verification failed"
+    verification_failed=true
+  fi
+  
+  # Check NPM_TOKEN
+  if check_npm_token; then
+    print_success "✓ NPM_TOKEN verification passed"
+  else
+    print_error "✗ NPM_TOKEN verification failed"
     verification_failed=true
   fi
   
@@ -277,32 +338,40 @@ setup_node() {
       # Ensure NVM configuration is in .zshrc even if NVM is working
       _configure_nvm_in_profile
     fi
-    
-    _verify_node_setup
-    return 0
-  fi
+  else
+    # Step 2: Install/Setup NVM
+    print_header_info "Setting up NVM..."
+    if ! check_nvm; then
+      if ! _install_nvm; then
+        print_error "Failed to install NVM. Cannot proceed with Node.js installation."
+        return 1
+      fi
+    else
+      print_success "NVM is already available."
+      # Ensure configuration is properly written to .zshrc
+      _configure_nvm_in_profile
+    fi
 
-  # Step 2: Install/Setup NVM
-  print_header_info "Setting up NVM..."
-  if ! check_nvm; then
-    if ! _install_nvm; then
-      print_error "Failed to install NVM. Cannot proceed with Node.js installation."
+    # Step 3: Install Node.js using NVM
+    print_header_info "Installing Node.js..."
+    if ! _install_node_with_nvm; then
+      print_error "Failed to install Node.js using NVM."
       return 1
     fi
+  fi
+  
+  # Step 4: Configure NPM_TOKEN
+  print_header_info "Configurando NPM_TOKEN..."
+  if ! check_npm_token || get_user_confirmation "Deseja atualizar o NPM_TOKEN existente?"; then
+    if ! _configure_npm_token_in_profile; then
+      print_error "Falha ao configurar o NPM_TOKEN."
+      # Continue with verification even if NPM_TOKEN setup fails
+    fi
   else
-    print_success "NVM is already available."
-    # Ensure configuration is properly written to .zshrc
-    _configure_nvm_in_profile
+    print_info "NPM_TOKEN já está configurado. Pulando esta etapa."
   fi
 
-  # Step 3: Install Node.js using NVM
-  print_header_info "Installing Node.js..."
-  if ! _install_node_with_nvm; then
-    print_error "Failed to install Node.js using NVM."
-    return 1
-  fi
-
-  # Step 4: Verify installation
+  # Step 5: Verify installation
   print_header_info "Verifying installation..."
   if _verify_node_setup; then
     print_success "Node.js setup completed successfully!"
@@ -311,6 +380,7 @@ setup_node() {
     print_info "1. Restart your terminal or run: source ~/.zshrc"
     print_info "2. Verify installation with: node --version && npm --version"
     print_info "3. Check NVM with: nvm --version"
+    print_info "4. Verify NPM_TOKEN with: echo \$NPM_TOKEN"
     print_info ""
     return 0
   else
