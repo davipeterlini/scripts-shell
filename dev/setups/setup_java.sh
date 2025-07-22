@@ -4,9 +4,10 @@
 source "$(dirname "$0")/utils/colors_message.sh"
 source "$(dirname "$0")/utils/load_env.sh"
 source "$(dirname "$0")/utils/bash_tools.sh"
+source "$(dirname "$0")/utils/profile_writer.sh"
 
 # Function to check if Java is installed and has the correct version
-check_java_version() {
+_check_java_version() {
   print_info "Checking Java version..."
 
   if ! command -v java &> /dev/null; then
@@ -33,7 +34,7 @@ check_java_version() {
 }
 
 # Function to check if SDKMAN is installed
-check_sdkman() {
+_check_sdkman() {
   print_info "Checking for SDKMAN..."
 
   # Check if SDKMAN is available as a command
@@ -56,7 +57,7 @@ check_sdkman() {
 }
 
 # Function to install SDKMAN
-install_sdkman() {
+_install_sdkman() {
   print_info "Installing SDKMAN..."
 
   # Install SDKMAN using the official install script
@@ -69,6 +70,10 @@ install_sdkman() {
   # Verify installation
   if command -v sdk &> /dev/null; then
     print_success "SDKMAN installed successfully."
+    
+    # Add SDKMAN initialization to .zshrc using profile_writer
+    _configure_sdkman_in_profile
+    
     return 0
   else
     print_error "Failed to install SDKMAN."
@@ -76,8 +81,22 @@ install_sdkman() {
   fi
 }
 
+# Function to configure SDKMAN in profile (.zshrc)
+_configure_sdkman_in_profile() {
+  print_info "Configuring SDKMAN in shell profile..."
+  
+  # Define the SDKMAN initialization content
+  local sdkman_init_content="export SDKMAN_DIR=\"\$HOME/.sdkman\"
+[ -s \"\$SDKMAN_DIR/bin/sdkman-init.sh\" ] && source \"\$SDKMAN_DIR/bin/sdkman-init.sh\""
+
+  # Write to profile using profile_writer
+  write_lines_to_profile "$sdkman_init_content" "$HOME/.zshrc"
+  
+  print_success "SDKMAN configuration added to shell profile"
+}
+
 # Function to install Java using SDKMAN
-install_java_with_sdkman() {
+_install_java_with_sdkman() {
   print_info "Installing Java 17.0.14-jbr using SDKMAN..."
 
   # Install the required Java version
@@ -102,16 +121,22 @@ setup_java() {
   fi
 
   # Check if Java is already installed with correct version
-  if check_java_version; then
+  if _check_java_version; then
     print_success "Java is already installed with the required version."
+    
+    # Ensure SDKMAN is properly configured in profile even if Java is already installed
+    if _check_sdkman; then
+      _configure_sdkman_in_profile
+    fi
+    
     return 0
   fi
 
   # Use SDKMAN for Java installation
-  if check_sdkman || install_sdkman; then
-    install_java_with_sdkman
+  if _check_sdkman || _install_sdkman; then
+    _install_java_with_sdkman
     # Check if Java is now installed with correct version
-    if check_java_version; then
+    if _check_java_version; then
       return 0
     fi
   fi
@@ -120,6 +145,7 @@ setup_java() {
   return 1
 }
 
+# Run the script only if not being imported
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   setup_java "$@"
 fi
