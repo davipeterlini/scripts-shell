@@ -229,8 +229,6 @@ _check_karabiner_running() {
             return 1
         fi
     fi
-    
-    return 0
 }
 
 _list_available_keyboards() {
