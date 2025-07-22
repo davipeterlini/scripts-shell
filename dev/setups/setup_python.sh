@@ -31,7 +31,7 @@ _check_pyenv() {
     
     # Check pyenv version
     local pyenv_version=$(pyenv --version 2>&1)
-    print_info "pyenv version: $pyenv_version"
+    print_success "pyenv version: $pyenv_version"
     
     # Check if pyenv is in PATH
     if ! echo "$PATH" | grep -q "pyenv"; then
@@ -58,11 +58,11 @@ _check_python() {
         return 1
     fi
     
-    print_info "Python $PYTHON_VERSION is installed with pyenv"
+    print_success "Python $PYTHON_VERSION is installed with pyenv"
     
     # Check current global version
     local current_version=$(pyenv global)
-    print_info "Current global Python version: $current_version"
+    print_success "Current global Python version: $current_version"
     
     # Check if current version matches required version
     if [[ "$current_version" != "$PYTHON_VERSION" ]]; then
@@ -79,7 +79,7 @@ _check_python() {
     # Use pyenv which python to get the correct path
     local python_path=$(pyenv which python)
     local active_version=$("$python_path" --version 2>&1 | cut -d' ' -f2)
-    print_info "Active Python version: $active_version"
+    print_info "Activing Python version: $active_version ..."
     
     # Extract major.minor.patch from active version
     local active_major_minor_patch=$(echo $active_version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
@@ -111,7 +111,7 @@ _check_pipx() {
     
     # Check pipx version
     local pipx_version=$(pipx --version 2>&1)
-    print_info "pipx version: $pipx_version"
+    print_success "pipx version: $pipx_version"
     
     # Get the full path to the Python executable
     local python_path=$(pyenv which python)
@@ -136,7 +136,7 @@ _check_pipx() {
     local pipx_python_info=$(pipx run --spec=pydantic python "$temp_script" 2>/dev/null || echo "Failed to run pipx")
     rm -f "$temp_script"
     
-    print_info "pipx is using: $pipx_python_info"
+    print_success "pipx is using: $pipx_python_info"
     
     # Check if pipx is using the correct Python version
     if [[ "$pipx_python_info" != *"Python ${PYTHON_VERSION%.*}"* ]]; then
@@ -200,13 +200,22 @@ _install_pyenv() {
         exit 1
     fi
     
-    # Add pyenv to shell configuration using profile_writer
-    write_lines_to_profile \
-        "# pyenv configuration" \
-        "export PYENV_ROOT=\"\$HOME/.pyenv\"" \
-        "export PATH=\"\$PYENV_ROOT/bin:\$PATH\"" \
-        "eval \"\$(pyenv init --path)\"" \
-        "eval \"\$(pyenv init -)\""
+    # Remover entradas anteriores do pyenv se existirem
+    remove_script_entries_from_profile "setup_python" "$HOME/.zshrc"
+    
+    # Adicionar configuração do pyenv com quebras de linha explícitas
+    local pyenv_content="
+
+# pyenv configuration
+export PYENV_ROOT=\"\$HOME/.pyenv\"
+export PATH=\"\$PYENV_ROOT/bin:\$PATH\"
+eval \"\$(pyenv init --path)\"
+eval \"\$(pyenv init -)\"
+"
+    
+    # Write to profile using profile_writer
+    write_lines_to_profile " " "$pyenv_content" "$HOME/.zshrc"
+  
     
     # Also add to current session
     export PYENV_ROOT="$HOME/.pyenv"
@@ -318,11 +327,19 @@ _install_pipx() {
     # Install pipx using the pyenv Python
     "$python_path" -m pip install --user pipx
     
-    # Add pipx configuration to shell profile using profile_writer
-    write_lines_to_profile \
-        "# pipx configuration" \
-        "export PATH=\"\$HOME/.local/bin:\$PATH\"" \
-        "export PIPX_DEFAULT_PYTHON=\"$python_path\""
+    # Remover entradas anteriores do pipx se existirem
+    remove_script_entries_from_profile "pipx configuration" "$HOME/.zshrc"
+    
+    # Adicionar configuração do pipx com quebras de linha explícitas
+    local pipx_content="
+
+# pipx configuration
+export PATH=\"\$HOME/.local/bin:\$PATH\"
+export PIPX_DEFAULT_PYTHON=\"$python_path\"
+"
+    
+    # Usar write_to_profile diretamente para ter mais controle sobre a formatação
+    write_to_profile "$pipx_content" "$HOME/.zshrc"
     
     # Add pipx to PATH for current session
     export PATH="$HOME/.local/bin:$PATH"
@@ -345,6 +362,7 @@ _install_pipx() {
 _install_dev_tools() {
     print_info "Installing Python development tools"
     
+    # TODO - ajuste para que não faça a instalação de tools se já estiver instalado
     if ! get_user_confirmation "Do you want to install common Python development tools?"; then
         print_alert "Development tools installation skipped by user"
         return 0
@@ -471,18 +489,23 @@ _configure_python_environment() {
     # Get the full path to the Python executable
     local python_path=$(pyenv which python)
     
-    # Configure Python environment using profile_writer
-    print_info "Configuring Python environment in shell profile"
+    # Remover entradas anteriores da configuração do ambiente Python se existirem
+    remove_script_entries_from_profile "Python environment configuration" "$HOME/.zshrc"
     
-    # Add all necessary environment variables and configurations
-    write_lines_to_profile \
-        "# Python environment configuration" \
-        "export PATH=\"\$HOME/.local/bin:\$PATH\"" \
-        "export PYENV_ROOT=\"\$HOME/.pyenv\"" \
-        "export PATH=\"\$PYENV_ROOT/bin:\$PATH\"" \
-        "eval \"\$(pyenv init --path)\"" \
-        "eval \"\$(pyenv init -)\"" \
-        "export PIPX_DEFAULT_PYTHON=\"$python_path\""
+    # Adicionar configuração do ambiente Python com quebras de linha explícitas
+    local python_env_content="
+
+# Python environment configuration
+export PATH=\"\$HOME/.local/bin:\$PATH\"
+export PYENV_ROOT=\"\$HOME/.pyenv\"
+export PATH=\"\$PYENV_ROOT/bin:\$PATH\"
+eval \"\$(pyenv init --path)\"
+eval \"\$(pyenv init -)\"
+export PIPX_DEFAULT_PYTHON=\"$python_path\"
+"
+    
+    # Usar write_to_profile diretamente para ter mais controle sobre a formatação
+    write_to_profile "$python_env_content" "$HOME/.zshrc"
     
     print_success "Python environment configured in shell profile"
     print_alert "IMPORTANTE: Você precisa reiniciar seu terminal ou executar 'source $(detect_profile)' para usar o novo ambiente."
@@ -498,7 +521,6 @@ setup_python() {
     
     # Detect OS
     detect_os
-    print_info "Operating System: $OS_NAME $OS_VERSION"
     
     # Setup environment
     export PYENV_ROOT="$HOME/.pyenv"
