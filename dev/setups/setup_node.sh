@@ -6,6 +6,9 @@ source "$(dirname "$0")/utils/load_env.sh"
 source "$(dirname "$0")/utils/bash_tools.sh"
 source "$(dirname "$0")/utils/profile_writer.sh"
 
+# Default Node.js version if not specified in environment
+DEFAULT_NODE_VERSION="20.11.0"
+
 # Private function to load NVM in current shell
 _load_nvm() {
   # Use the same configuration that will be written to .zshrc
@@ -75,7 +78,7 @@ _configure_npm_token_in_profile() {
   
   # Ask user for NPM_TOKEN value
   print_info "Por favor, informe o valor do seu NPM_TOKEN:"
-  read -r -s npm_token_value
+  read -r npm_token_value
   echo # Add a newline after input
   
   if [ -z "$npm_token_value" ]; then
@@ -85,7 +88,7 @@ _configure_npm_token_in_profile() {
   
   # NPM_TOKEN configuration for .zshrc
   local npm_token_config_lines=(
-    "# NPM Token Configuration"
+    " "
     "export NPM_TOKEN=\"$npm_token_value\""
   )
 
@@ -105,7 +108,7 @@ _create_npmrc_file() {
   print_info "Criando arquivo .npmrc na pasta home do usuário..."
   
   local npmrc_path="$HOME/.npmrc"
-  local assets_npmrc_path="$(dirname "$0")/../assets/.npmrc"
+  local assets_npmrc_path="$(dirname "$0")/../../assets/.npmrc"
   
   # Check if .npmrc already exists
   if [ -f "$npmrc_path" ]; then
@@ -197,8 +200,38 @@ _install_nvm() {
   fi
 }
 
+# Function to get Node.js version to install
+_get_node_version() {
+  # Check if NODE_REQUIRED_VERSION is already set
+  if [ -n "$NODE_REQUIRED_VERSION" ]; then
+    print_info "Using Node.js version from environment: $NODE_REQUIRED_VERSION"
+    return 0
+  fi
+  
+  # Ask user for Node.js version or use default
+  print_info "Node.js version não encontrada nas variáveis de ambiente."
+  print_info "Qual versão do Node.js você deseja instalar? (Pressione Enter para usar a versão padrão: $DEFAULT_NODE_VERSION)"
+  read -r user_node_version
+  
+  if [ -z "$user_node_version" ]; then
+    NODE_REQUIRED_VERSION="$DEFAULT_NODE_VERSION"
+    print_info "Usando a versão padrão do Node.js: $NODE_REQUIRED_VERSION"
+  else
+    NODE_REQUIRED_VERSION="$user_node_version"
+    print_info "Usando a versão especificada do Node.js: $NODE_REQUIRED_VERSION"
+  fi
+  
+  # Export the variable for use in the script
+  export NODE_REQUIRED_VERSION
+  
+  return 0
+}
+
 # Private function to install Node.js using NVM
 _install_node_with_nvm() {
+  # Ensure we have a Node.js version to install
+  _get_node_version
+  
   print_info "Installing Node.js v$NODE_REQUIRED_VERSION using NVM..."
 
   # Ensure NVM is loaded
@@ -242,6 +275,9 @@ _install_node_with_nvm() {
 
 # Function to check if Node.js is installed and has the correct version
 check_node_version() {
+  # Ensure we have a Node.js version to check against
+  _get_node_version
+  
   print_info "Checking Node.js version..."
 
   if ! command -v node &> /dev/null; then
@@ -338,7 +374,7 @@ check_npmrc_file() {
 
 # Function to verify complete Node.js setup
 _verify_node_setup() {
-  print_info "Verifying Node.js Setup"
+  print_header_info "Verifying Node.js Setup"
   
   local verification_failed=false
   
@@ -393,7 +429,7 @@ _verify_node_setup() {
 
 # Function to apply NPM_TOKEN to current shell and create .npmrc
 _apply_npm_token_configuration() {
-  print_info "Aplicando configuração do NPM_TOKEN"
+  print_header_info "Aplicando configuração do NPM_TOKEN"
   
   # Source the profile to load NPM_TOKEN into current shell
   print_info "Carregando configurações do perfil do usuário..."
@@ -429,6 +465,9 @@ setup_node() {
       print_info "Skipping configuration"
       return 0
   fi
+  
+  # Ensure we have a Node.js version to work with
+  _get_node_version
     
   # Step 1: Check if Node.js is already installed with correct version
   if check_node_version && check_npm; then
@@ -448,7 +487,7 @@ setup_node() {
     fi
   else
     # Step 2: Install/Setup NVM
-    print_info "Setting up NVM..."
+    print_header_info "Setting up NVM..."
     if ! check_nvm; then
       if ! _install_nvm; then
         print_error "Failed to install NVM. Cannot proceed with Node.js installation."
@@ -461,7 +500,7 @@ setup_node() {
     fi
 
     # Step 3: Install Node.js using NVM
-    print_info "Installing Node.js..."
+    print_header_info "Installing Node.js..."
     if ! _install_node_with_nvm; then
       print_error "Failed to install Node.js using NVM."
       return 1
@@ -469,7 +508,7 @@ setup_node() {
   fi
   
   # Step 4: Configure NPM_TOKEN
-  print_info "Configurando NPM_TOKEN..."
+  print_header_info "Configurando NPM_TOKEN..."
   local npm_token_updated=false
   if ! check_npm_token || get_user_confirmation "Deseja atualizar o NPM_TOKEN existente?"; then
     if _configure_npm_token_in_profile; then
@@ -493,7 +532,7 @@ setup_node() {
   fi
 
   # Step 6: Verify installation
-  print_info "Verifying installation..."
+  print_header_info "Verifying installation..."
   if _verify_node_setup; then
     print_success "Node.js setup completed successfully!"
     print_info ""
