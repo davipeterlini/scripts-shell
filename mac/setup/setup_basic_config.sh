@@ -45,6 +45,59 @@ configure_keyboard() {
     print_info "Configuring FN key to switch keyboard layout..."
     defaults write com.apple.HIToolbox AppleFnUsageType -int 2
     
+    # Configure keyboard brightness settings
+    _configure_keyboard_brightness
+    
+    return 0
+}
+
+# Private function to configure keyboard brightness settings
+_configure_keyboard_brightness() {
+    print_info "Configuring keyboard brightness settings..."
+    
+    # Enable keyboard brightness adjustment in low light
+    print_info "Enabling automatic keyboard brightness adjustment in low light..."
+    defaults write com.apple.BezelServices kDim -bool true
+    defaults write com.apple.BezelServices kDimTime -int 300
+    
+    # Set keyboard brightness level (0.0 to 1.0)
+    print_info "Setting default keyboard brightness level..."
+    defaults write com.apple.BezelServices kKeyboardBrightness -float 0.5
+    
+    # Configure function keys for brightness control
+    print_info "Configuring function keys for brightness control..."
+    # F1/F2 for display brightness, F5/F6 for keyboard brightness
+    defaults write NSGlobalDomain com.apple.keyboard.fnState -bool false
+    
+    # Enable keyboard navigation in dialogs and controls
+    print_info "Enabling full keyboard access for all controls..."
+    defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+    
+    return 0
+}
+
+# Display brightness configuration
+configure_display_brightness() {
+    print_info "Configuring display brightness settings..."
+    
+    # Enable automatic brightness adjustment
+    print_info "Enabling automatic display brightness adjustment..."
+    sudo defaults write /Library/Preferences/com.apple.iokit.AmbientLightSensor "Automatic Display Enabled" -bool true
+    
+    # Set display brightness level (0.0 to 1.0)
+    print_info "Setting default display brightness level..."
+    # This requires admin privileges and affects the current user
+    osascript -e "tell application \"System Events\" to set brightness of (first display whose brightness is not missing value) to 0.7"
+    
+    # Configure energy saver settings for display
+    print_info "Configuring energy saver settings for display..."
+    # Turn display off after 10 minutes on battery, 20 minutes on power adapter
+    sudo pmset -b displaysleep 10
+    sudo pmset -c displaysleep 20
+    
+    # Prevent display from sleeping when on power adapter and lid is closed (for external displays)
+    sudo pmset -c sleep 0
+    
     return 0
 }
 
@@ -75,6 +128,11 @@ configure_control_center() {
     # Enable bluetooth icon in menu bar
     print_info "Enabling bluetooth icon in menu bar..."
     defaults write com.apple.controlcenter "NSStatusItem Visible Bluetooth" -bool true
+    
+    # Enable battery percentage in menu bar
+    print_info "Enabling battery percentage in menu bar..."
+    defaults write com.apple.controlcenter "NSStatusItem Visible Battery" -bool true
+    defaults write com.apple.menuextra.battery ShowPercent -string "YES"
     
     # Enable temperature monitoring (CPU/GPU) icon in menu bar
     print_info "Enabling temperature monitoring in menu bar..."
@@ -115,11 +173,13 @@ configure_all() {
     configure_appearance
     configure_control_center
     configure_dock
+    configure_display_brightness
     apply_changes
     
     print
     print_success "Basic macOS configuration completed!"
     print_alert "Some changes may require a restart to take full effect."
+    print_alert "Display brightness settings may require administrator privileges."
     
     return 0
 }
@@ -207,6 +267,7 @@ setup_basic_config() {
         echo "  --appearance  Configure appearance only"
         echo "  --control     Configure control center only"
         echo "  --dock        Configure dock only"
+        echo "  --brightness  Configure display brightness only"
         echo "  --all         Configure everything (default)"
         echo "  --help        Show this help"
         exit 0
@@ -226,6 +287,9 @@ setup_basic_config() {
         configure_dock
         add_dock_utilities
         open_utilities
+        apply_changes
+    elif [[ "$1" == "--brightness" ]]; then
+        configure_display_brightness
         apply_changes
     else
         # Configure everything by default
