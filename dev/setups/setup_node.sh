@@ -398,7 +398,7 @@ check_npmrc_file() {
 
 # Function to verify complete Node.js setup
 _verify_node_setup() {
-  print_header_info "Verifying Node.js Setup"
+  print_info "Verifying Node.js Setup"
   
   local verification_failed=false
   
@@ -453,7 +453,7 @@ _verify_node_setup() {
 
 # Function to apply NPM_TOKEN to current shell and create .npmrc
 _apply_npm_token_configuration() {
-  print_header_info "Aplicando configuração do NPM_TOKEN"
+  print_info "Aplicando configuração do NPM_TOKEN"
   
   # Source the profile to load NPM_TOKEN into current shell
   print_info "Carregando configurações do perfil do usuário..."
@@ -511,7 +511,7 @@ setup_node() {
     fi
   else
     # Step 2: Install/Setup NVM
-    print_header_info "Setting up NVM..."
+    print_info "Setting up NVM..."
     if ! check_nvm; then
       if ! _install_nvm; then
         print_error "Failed to install NVM. Cannot proceed with Node.js installation."
@@ -524,7 +524,7 @@ setup_node() {
     fi
 
     # Step 3: Install Node.js using NVM
-    print_header_info "Installing Node.js..."
+    print_info "Installing Node.js..."
     if ! _install_node_with_nvm; then
       print_error "Failed to install Node.js using NVM."
       return 1
@@ -532,7 +532,7 @@ setup_node() {
   fi
   
   # Step 4: Configure NPM_TOKEN
-  print_header_info "Configurando NPM_TOKEN..."
+  print_info "Configurando NPM_TOKEN..."
   local npm_token_updated=false
   if ! check_npm_token || get_user_confirmation "Deseja atualizar o NPM_TOKEN existente?"; then
     if _configure_npm_token_in_profile; then
@@ -556,7 +556,7 @@ setup_node() {
   fi
 
   # Step 6: Verify installation
-  print_header_info "Verifying installation..."
+  print_info "Verifying installation..."
   if _verify_node_setup; then
     print_success "Node.js setup completed successfully!"
     print ""
