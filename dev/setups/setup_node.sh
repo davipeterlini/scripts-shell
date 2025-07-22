@@ -93,7 +93,56 @@ _configure_npm_token_in_profile() {
   write_lines_to_profile "${npm_token_config_lines[@]}" "$HOME/.zshrc"
   
   print_success "NPM_TOKEN configurado com sucesso no perfil do shell."
+  
+  # Export the NPM_TOKEN in the current shell session
+  export NPM_TOKEN="$npm_token_value"
+  
   return 0
+}
+
+# Private function to create .npmrc file in user's home directory
+_create_npmrc_file() {
+  print_info "Criando arquivo .npmrc na pasta home do usuário..."
+  
+  local npmrc_path="$HOME/.npmrc"
+  local assets_npmrc_path="$(dirname "$0")/../assets/.npmrc"
+  
+  # Check if .npmrc already exists
+  if [ -f "$npmrc_path" ]; then
+    print_info "Arquivo .npmrc já existe em $npmrc_path."
+    
+    if get_user_confirmation "Deseja substituir o arquivo .npmrc existente?"; then
+      print_info "Substituindo arquivo .npmrc existente..."
+    else
+      print_info "Mantendo o arquivo .npmrc existente."
+      return 0
+    fi
+  fi
+  
+  # Check if the assets/.npmrc file exists
+  if [ ! -f "$assets_npmrc_path" ]; then
+    print_error "Arquivo de template .npmrc não encontrado em $assets_npmrc_path."
+    return 1
+  fi
+  
+  # Check if NPM_TOKEN is set in the environment
+  if [ -z "$NPM_TOKEN" ]; then
+    print_error "NPM_TOKEN não está definido no ambiente. Execute 'source ~/.zshrc' primeiro."
+    return 1
+  fi
+  
+  # Copy the .npmrc file from assets and replace {NPM_TOKEN} with the actual token
+  cat "$assets_npmrc_path" | sed "s/{NPM_TOKEN}/$NPM_TOKEN/g" > "$npmrc_path"
+  
+  if [ $? -eq 0 ]; then
+    print_success "Arquivo .npmrc criado com sucesso em $npmrc_path."
+    # Set appropriate permissions for security
+    chmod 600 "$npmrc_path"
+    return 0
+  else
+    print_error "Falha ao criar o arquivo .npmrc."
+    return 1
+  fi
 }
 
 # Private function to install NVM
@@ -266,6 +315,27 @@ check_npm_token() {
   fi
 }
 
+# Function to check if .npmrc file exists and is properly configured
+check_npmrc_file() {
+  print_info "Verificando arquivo .npmrc..."
+  
+  local npmrc_path="$HOME/.npmrc"
+  
+  if [ ! -f "$npmrc_path" ]; then
+    print_alert "Arquivo .npmrc não encontrado em $npmrc_path."
+    return 1
+  fi
+  
+  # Check if .npmrc contains auth token entries
+  if grep -q "_authToken" "$npmrc_path"; then
+    print_success "Arquivo .npmrc encontrado e contém configurações de autenticação."
+    return 0
+  else
+    print_alert "Arquivo .npmrc encontrado, mas não contém configurações de autenticação."
+    return 1
+  fi
+}
+
 # Function to verify complete Node.js setup
 _verify_node_setup() {
   print_header_info "Verifying Node.js Setup"
@@ -304,6 +374,14 @@ _verify_node_setup() {
     verification_failed=true
   fi
   
+  # Check .npmrc file
+  if check_npmrc_file; then
+    print_success "✓ .npmrc file verification passed"
+  else
+    print_error "✗ .npmrc file verification failed"
+    verification_failed=true
+  fi
+  
   if [ "$verification_failed" = true ]; then
     print_error "Node.js setup verification failed!"
     return 1
@@ -311,6 +389,36 @@ _verify_node_setup() {
     print_success "All Node.js components verified successfully!"
     return 0
   fi
+}
+
+# Function to apply NPM_TOKEN to current shell and create .npmrc
+_apply_npm_token_configuration() {
+  print_header_info "Aplicando configuração do NPM_TOKEN"
+  
+  # Source the profile to load NPM_TOKEN into current shell
+  print_info "Carregando configurações do perfil do usuário..."
+  if [ -f "$HOME/.zshrc" ]; then
+    # Extract and export only the NPM_TOKEN line to avoid sourcing the entire file
+    local npm_token_line=$(grep "export NPM_TOKEN=" "$HOME/.zshrc" 2>/dev/null)
+    if [ -n "$npm_token_line" ]; then
+      eval "$npm_token_line"
+      print_success "NPM_TOKEN carregado no shell atual."
+    else
+      print_error "NPM_TOKEN não encontrado no arquivo de perfil."
+      return 1
+    fi
+  else
+    print_error "Arquivo de perfil .zshrc não encontrado."
+    return 1
+  fi
+  
+  # Create .npmrc file
+  if ! _create_npmrc_file; then
+    print_error "Falha ao criar o arquivo .npmrc."
+    return 1
+  fi
+  
+  return 0
 }
 
 # Main function
@@ -362,16 +470,29 @@ setup_node() {
   
   # Step 4: Configure NPM_TOKEN
   print_header_info "Configurando NPM_TOKEN..."
+  local npm_token_updated=false
   if ! check_npm_token || get_user_confirmation "Deseja atualizar o NPM_TOKEN existente?"; then
-    if ! _configure_npm_token_in_profile; then
+    if _configure_npm_token_in_profile; then
+      npm_token_updated=true
+    else
       print_error "Falha ao configurar o NPM_TOKEN."
       # Continue with verification even if NPM_TOKEN setup fails
     fi
   else
     print_info "NPM_TOKEN já está configurado. Pulando esta etapa."
   fi
+  
+  # Step 5: Apply NPM_TOKEN configuration and create .npmrc file
+  if $npm_token_updated || ! check_npmrc_file || get_user_confirmation "Deseja recriar o arquivo .npmrc?"; then
+    if ! _apply_npm_token_configuration; then
+      print_error "Falha ao aplicar a configuração do NPM_TOKEN."
+      # Continue with verification even if .npmrc setup fails
+    fi
+  else
+    print_info "Arquivo .npmrc já está configurado. Pulando esta etapa."
+  fi
 
-  # Step 5: Verify installation
+  # Step 6: Verify installation
   print_header_info "Verifying installation..."
   if _verify_node_setup; then
     print_success "Node.js setup completed successfully!"
@@ -381,6 +502,7 @@ setup_node() {
     print_info "2. Verify installation with: node --version && npm --version"
     print_info "3. Check NVM with: nvm --version"
     print_info "4. Verify NPM_TOKEN with: echo \$NPM_TOKEN"
+    print_info "5. Check .npmrc file with: cat ~/.npmrc"
     print_info ""
     return 0
   else
