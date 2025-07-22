@@ -228,7 +228,7 @@ _install_nvm() {
 _get_node_version() {
   # Check if NODE_REQUIRED_VERSION is already set
   if [ -n "$NODE_REQUIRED_VERSION" ]; then
-    print_info "Using Node.js version from environment: $NODE_REQUIRED_VERSION"
+    print_success "Using Node.js version from environment: $NODE_REQUIRED_VERSION"
     return 0
   fi
   
@@ -310,7 +310,7 @@ check_node_version() {
   fi
 
   local node_version=$(node -v | sed 's/v//')
-  print_info "Current Node.js version: $node_version"
+  print_success "Current Node.js version: $node_version"
   print_info "Required Node.js version: $NODE_REQUIRED_VERSION"
   
   # Check if version matches exactly
