@@ -564,7 +564,6 @@ _restart_karabiner_auto() {
         
         # Give time for Karabiner-Elements to start and detect devices
         print_info "Waiting for Karabiner-Elements to initialize (5 seconds)..."
-        sleep 5
     else
         print_alert "Could not open Karabiner-Elements automatically."
         print_info "Please open Karabiner-Elements manually to apply the changes."
@@ -696,8 +695,6 @@ apply_specific_config() {
     
     # Reiniciar o Karabiner automaticamente para aplicar as alterações
     _restart_karabiner_auto
-    
-    return 0
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
