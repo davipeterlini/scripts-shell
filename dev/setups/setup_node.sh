@@ -7,7 +7,7 @@ source "$(dirname "$0")/utils/bash_tools.sh"
 source "$(dirname "$0")/utils/profile_writer.sh"
 
 # Default Node.js version if not specified in environment
-DEFAULT_NODE_VERSION="20.11.0"
+DEFAULT_NODE_VERSION="18.18.0"
 
 # Private function to load NVM in current shell
 _load_nvm() {
@@ -78,7 +78,7 @@ _configure_npm_token_in_profile() {
   
   # Ask user for NPM_TOKEN value
   print_info "Por favor, informe o valor do seu NPM_TOKEN:"
-  read -r npm_token_value
+  read -r -s npm_token_value
   echo # Add a newline after input
   
   if [ -z "$npm_token_value" ]; then
@@ -88,7 +88,7 @@ _configure_npm_token_in_profile() {
   
   # NPM_TOKEN configuration for .zshrc
   local npm_token_config_lines=(
-    " "
+    "# NPM Token Configuration"
     "export NPM_TOKEN=\"$npm_token_value\""
   )
 
@@ -103,12 +103,41 @@ _configure_npm_token_in_profile() {
   return 0
 }
 
+# Function to find the project root directory
+_find_project_root() {
+  local current_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  local root_dir="$current_dir"
+  
+  # Go up until we find the assets directory
+  while [ "$root_dir" != "/" ]; do
+    if [ -d "$root_dir/assets" ]; then
+      echo "$root_dir"
+      return 0
+    fi
+    root_dir=$(dirname "$root_dir")
+  done
+  
+  # If we couldn't find it, try the parent of the current directory
+  root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+  if [ -d "$root_dir/assets" ]; then
+    echo "$root_dir"
+    return 0
+  fi
+  
+  # If still not found, return the current directory as a fallback
+  echo "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+  return 1
+}
+
 # Private function to create .npmrc file in user's home directory
 _create_npmrc_file() {
   print_info "Criando arquivo .npmrc na pasta home do usuário..."
   
   local npmrc_path="$HOME/.npmrc"
-  local assets_npmrc_path="$(dirname "$0")/../../assets/.npmrc"
+  local project_root=$(_find_project_root)
+  local assets_npmrc_path="$project_root/assets/.npmrc"
+  
+  print_info "Procurando arquivo .npmrc em: $assets_npmrc_path"
   
   # Check if .npmrc already exists
   if [ -f "$npmrc_path" ]; then
@@ -125,7 +154,28 @@ _create_npmrc_file() {
   # Check if the assets/.npmrc file exists
   if [ ! -f "$assets_npmrc_path" ]; then
     print_error "Arquivo de template .npmrc não encontrado em $assets_npmrc_path."
-    return 1
+    
+    # Try alternative locations
+    local alt_paths=(
+      "$(pwd)/assets/.npmrc"
+      "$(pwd)/../assets/.npmrc"
+      "$(pwd)/../../assets/.npmrc"
+      "$PROJECT_ROOT/assets/.npmrc"
+    )
+    
+    for alt_path in "${alt_paths[@]}"; do
+      print_info "Tentando localizar em: $alt_path"
+      if [ -f "$alt_path" ]; then
+        assets_npmrc_path="$alt_path"
+        print_success "Arquivo .npmrc encontrado em: $alt_path"
+        break
+      fi
+    done
+    
+    if [ ! -f "$assets_npmrc_path" ]; then
+      print_error "Não foi possível encontrar o arquivo .npmrc em nenhum local."
+      return 1
+    fi
   fi
   
   # Check if NPM_TOKEN is set in the environment
