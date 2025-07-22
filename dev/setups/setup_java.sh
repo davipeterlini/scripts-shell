@@ -90,7 +90,7 @@ _configure_sdkman_in_profile() {
 [ -s \"\$SDKMAN_DIR/bin/sdkman-init.sh\" ] && source \"\$SDKMAN_DIR/bin/sdkman-init.sh\""
 
   # Write to profile using profile_writer
-  write_lines_to_profile "$sdkman_init_content" "$HOME/.zshrc"
+  write_lines_to_profile " " "$sdkman_init_content" "$HOME/.zshrc"
   
   print_success "SDKMAN configuration added to shell profile"
 }
