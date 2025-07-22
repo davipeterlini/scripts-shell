@@ -61,28 +61,40 @@ install_powerline_fonts() {
 }
 
 configure_iterm_session_persistence() {
-    print_info "Configuring iTerm2 to restore sessions and use current directory for new tabs..."
+    print_info "Configuring iTerm2 to restore sessions and tabs from previous sessions..."
     
     # Backup iTerm2 preferences before making changes
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     _backup_profile_file ~/Library/Preferences/com.googlecode.iterm2.plist "$timestamp"
     
-    # Configure iTerm2 to restore sessions on startup
-    defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
-    defaults write com.googlecode.iterm2 PrefsCustomFolder -string "~/.iterm2"
-    
     # Create directory for iTerm2 preferences if it doesn't exist
     mkdir -p ~/.iterm2
+    
+    # Configure iTerm2 to save and restore window arrangements
+    defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+    defaults write com.googlecode.iterm2 PrefsCustomFolder -string "~/.iterm2"
+    defaults write com.googlecode.iterm2 NoSyncNeverRemindPrefsChangesLostForFile -bool true
+    defaults write com.googlecode.iterm2 NoSyncNeverRemindPrefsChangesLostForFile_selection -int 0
     
     # Configure iTerm2 to always restore previous sessions
     defaults write com.googlecode.iterm2 QuitWhenAllWindowsClosed -bool false
     defaults write com.googlecode.iterm2 OnlyWhenMoreTabs -bool false
     defaults write com.googlecode.iterm2 PromptOnQuit -bool false
     
-    # Configure new tabs to open in the same directory
+    # Enable session restoration
     defaults write com.googlecode.iterm2 OpenArrangementAtStartup -bool true
     defaults write com.googlecode.iterm2 OpenNoWindowsAtStartup -bool false
     defaults write com.googlecode.iterm2 AlwaysOpenWindowAtStartup -bool true
+    defaults write com.googlecode.iterm2 RestoreWindowContents -bool true
+    
+    # Enable automatic saving of window arrangement when iTerm2 quits
+    defaults write com.googlecode.iterm2 NoSyncPermissionToShowTip -bool false
+    defaults write com.googlecode.iterm2 SUEnableAutomaticChecks -bool true
+    defaults write com.googlecode.iterm2 SavePasteHistory -bool true
+    defaults write com.googlecode.iterm2 AutoSaveJobName -string "Default"
+    defaults write com.googlecode.iterm2 NSNavLastRootDirectory -string "~/.iterm2"
+    defaults write com.googlecode.iterm2 "NoSyncDoNotWarnBeforeMultilinePaste" -bool true
+    defaults write com.googlecode.iterm2 "NoSyncDoNotWarnBeforeMultilinePaste_selection" -int 0
     
     # Configure reuse of previous directory
     defaults write com.googlecode.iterm2 "UseWorkingDirectory" -bool true
@@ -90,9 +102,18 @@ configure_iterm_session_persistence() {
     
     # Configure working directory for new tabs
     /usr/libexec/PlistBuddy -c "Set :\"New Bookmarks\":0:\"Custom Directory\" Recycle" ~/Library/Preferences/com.googlecode.iterm2.plist 2>/dev/null || true
-    /usr/libexec/PlistBuddy -c "Set :\"New Bookmarks\":0:\"Working Directory\" Recycle" ~/Library/Preferences/com.googlecode.iterm2.plist
+    /usr/libexec/PlistBuddy -c "Set :\"New Bookmarks\":0:\"Working Directory\" Recycle" ~/Library/Preferences/com.googlecode.iterm2.plist 2>/dev/null || true
     
-    print_success "iTerm2 session persistence and working directory settings configured."
+    # Enable session restoration
+    /usr/libexec/PlistBuddy -c "Set :\"New Bookmarks\":0:\"Automatically Log\" true" ~/Library/Preferences/com.googlecode.iterm2.plist 2>/dev/null || true
+    
+    # Save window arrangement on quit
+    defaults write com.googlecode.iterm2 PerformDNSLookups -bool true
+    defaults write com.googlecode.iterm2 SaveWindowArrangementToFile -bool true
+    defaults write com.googlecode.iterm2 WindowArrangementFile -string "~/.iterm2/arrangement.itermkeymap"
+    defaults write com.googlecode.iterm2 WindowArrangements -dict-add "Default" "<dict><key>Tabs</key><array></array></dict>"
+    
+    print_success "iTerm2 session persistence and tab restoration configured."
 }
 
 # Add iTerm2 specific settings to shell profile if needed
@@ -102,7 +123,7 @@ configure_iterm_shell_integration() {
     # Check if shell integration is already installed
     if ! grep -q "iterm2_shell_integration" ~/.zshrc; then
         # Add iTerm2 shell integration to profile using write_lines_to_profile instead
-        write_lines_to_profile "# iTerm2 Shell Integration" \
+        write_lines_to_profile " " \
                               "if [ -e \"${HOME}/.iterm2_shell_integration.zsh\" ]; then" \
                               "  source \"${HOME}/.iterm2_shell_integration.zsh\"" \
                               "fi" \
@@ -120,6 +141,34 @@ configure_iterm_shell_integration() {
     fi
 }
 
+# Configure iTerm2 to automatically save and restore window arrangements
+configure_iterm_window_restoration() {
+    print_info "Configuring iTerm2 to automatically save and restore window arrangements..."
+    
+    # Backup iTerm2 preferences before making changes
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    _backup_profile_file ~/Library/Preferences/com.googlecode.iterm2.plist "$timestamp"
+    
+    # Create default arrangement directory
+    mkdir -p ~/.iterm2/Arrangements
+    
+    # Enable automatic saving of window arrangement
+    defaults write com.googlecode.iterm2 "NoSyncHaveWarnedAboutPasteConfirmationChange" -bool true
+    defaults write com.googlecode.iterm2 "NoSyncHaveWarnedAboutIncompatibleSoftware" -bool true
+    defaults write com.googlecode.iterm2 "NoSyncTipsDisabled" -bool true
+    
+    # Enable automatic window restoration
+    defaults write com.googlecode.iterm2 "kOpenArrangementAtStartupKey" -bool true
+    defaults write com.googlecode.iterm2 "kOpenNoWindowsAtStartup" -bool false
+    
+    # Set arrangement to save automatically when iTerm2 quits
+    defaults write com.googlecode.iterm2 "NoSyncSaveWindowArrangementAutomatically" -bool true
+    defaults write com.googlecode.iterm2 "NoSyncRestoreWindowArrangementAutomatically" -bool true
+    defaults write com.googlecode.iterm2 "NoSyncWindowRestoration" -string "yes"
+    
+    print_success "iTerm2 window arrangement restoration configured."
+}
+
 setup_iterm() {
     print_header_info "Setting up iTerm2"
 
@@ -134,15 +183,15 @@ setup_iterm() {
     install_powerline_fonts
     configure_iterm_session_persistence
     configure_iterm_shell_integration
+    configure_iterm_window_restoration
     
     # Restart iTerm2 to apply all changes
     print_info "Restarting iTerm2 to apply all changes..."
     pkill iTerm || true
     sleep 1
-    # TODO - check if this is really the application name
     open -a iTerm
     
-    print_success "iTerm2 setup completed with automatic theme, font, and session persistence configuration."
+    print_success "iTerm2 setup completed with automatic theme, font, and session restoration configuration."
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

@@ -204,18 +204,12 @@ _install_pyenv() {
     remove_script_entries_from_profile "setup_python" "$HOME/.zshrc"
     
     # Adicionar configuração do pyenv com quebras de linha explícitas
-    local pyenv_content="
-
-# pyenv configuration
-export PYENV_ROOT=\"\$HOME/.pyenv\"
-export PATH=\"\$PYENV_ROOT/bin:\$PATH\"
-eval \"\$(pyenv init --path)\"
-eval \"\$(pyenv init -)\"
-"
-    
-    # Write to profile using profile_writer
-    write_lines_to_profile " " "$pyenv_content" "$HOME/.zshrc"
-  
+    write_lines_to_profile \
+        "# pyenv configuration" \
+        "export PYENV_ROOT=\"\$HOME/.pyenv\"" \
+        "export PATH=\"\$PYENV_ROOT/bin:\$PATH\"" \
+        "eval \"\$(pyenv init --path)\"" \
+        "eval \"\$(pyenv init -)\""
     
     # Also add to current session
     export PYENV_ROOT="$HOME/.pyenv"
@@ -330,16 +324,11 @@ _install_pipx() {
     # Remover entradas anteriores do pipx se existirem
     remove_script_entries_from_profile "pipx configuration" "$HOME/.zshrc"
     
-    # Adicionar configuração do pipx com quebras de linha explícitas
-    local pipx_content="
-
-# pipx configuration
-export PATH=\"\$HOME/.local/bin:\$PATH\"
-export PIPX_DEFAULT_PYTHON=\"$python_path\"
-"
-    
-    # Usar write_to_profile diretamente para ter mais controle sobre a formatação
-    write_to_profile "$pipx_content" "$HOME/.zshrc"
+    # Adicionar configuração do pipx usando write_lines_to_profile para garantir que cada linha seja adicionada corretamente
+    write_lines_to_profile \
+        "# pipx configuration" \
+        "export PATH=\"\$HOME/.local/bin:\$PATH\"" \
+        "export PIPX_DEFAULT_PYTHON=\"$python_path\""
     
     # Add pipx to PATH for current session
     export PATH="$HOME/.local/bin:$PATH"
@@ -492,20 +481,15 @@ _configure_python_environment() {
     # Remover entradas anteriores da configuração do ambiente Python se existirem
     remove_script_entries_from_profile "Python environment configuration" "$HOME/.zshrc"
     
-    # Adicionar configuração do ambiente Python com quebras de linha explícitas
-    local python_env_content="
-
-# Python environment configuration
-export PATH=\"\$HOME/.local/bin:\$PATH\"
-export PYENV_ROOT=\"\$HOME/.pyenv\"
-export PATH=\"\$PYENV_ROOT/bin:\$PATH\"
-eval \"\$(pyenv init --path)\"
-eval \"\$(pyenv init -)\"
-export PIPX_DEFAULT_PYTHON=\"$python_path\"
-"
-    
-    # Usar write_to_profile diretamente para ter mais controle sobre a formatação
-    write_to_profile "$python_env_content" "$HOME/.zshrc"
+    # Adicionar configuração do ambiente Python usando write_lines_to_profile para garantir que cada linha seja adicionada corretamente
+    write_lines_to_profile \
+        "# Python environment configuration" \
+        "export PATH=\"\$HOME/.local/bin:\$PATH\"" \
+        "export PYENV_ROOT=\"\$HOME/.pyenv\"" \
+        "export PATH=\"\$PYENV_ROOT/bin:\$PATH\"" \
+        "eval \"\$(pyenv init --path)\"" \
+        "eval \"\$(pyenv init -)\"" \
+        "export PIPX_DEFAULT_PYTHON=\"$python_path\""
     
     print_success "Python environment configured in shell profile"
     print_alert "IMPORTANTE: Você precisa reiniciar seu terminal ou executar 'source $(detect_profile)' para usar o novo ambiente."

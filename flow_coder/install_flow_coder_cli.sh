@@ -217,14 +217,12 @@ install_pyenv() {
     fi
     
     # Add pyenv to shell configuration using profile_writer
-    local pyenv_config="# pyenv configuration
-export PYENV_ROOT=\"\$HOME/.pyenv\"
-export PATH=\"\$PYENV_ROOT/bin:\$PATH\"
-eval \"\$(pyenv init --path)\"
-eval \"\$(pyenv init -)\""
-    
-    print_info "Adding pyenv configuration to shell profile"
-    write_to_profile "$pyenv_config"
+    write_lines_to_profile \
+        " " \
+        "export PYENV_ROOT=\"\$HOME/.pyenv\"" \
+        "export PATH=\"\$PYENV_ROOT/bin:\$PATH\"" \
+        "eval \"\$(pyenv init --path)\"" \
+        "eval \"\$(pyenv init -)\""
     
     # Also add to current session
     export PYENV_ROOT="$HOME/.pyenv"
@@ -310,11 +308,8 @@ clean_pipx() {
         shell_profile="$HOME/.zshrc"
     fi
     
-    # Remove any pipx-related lines from shell profile
-    if [[ -f "$shell_profile" ]]; then
-        sed -i.bak '/pipx/d' "$shell_profile" || true
-        rm -f "${shell_profile}.bak" || true
-    fi
+    # Remove any pipx-related lines from shell profile using profile_writer
+    remove_script_entries_from_profile "pipx configuration"
     
     # Remove pipx executable
     rm -f "$HOME/.local/bin/pipx" || true
@@ -351,13 +346,11 @@ install_pipx() {
         shell_profile="$HOME/.zshrc"
     fi
     
-    # Add pipx to PATH using profile_writer
-    local pipx_config="# pipx configuration
-export PATH=\"\$HOME/.local/bin:\$PATH\"
-export PIPX_DEFAULT_PYTHON=\"$python_path\""
-    
-    print_info "Adding pipx configuration to shell profile"
-    write_to_profile "$pipx_config"
+    # Add pipx to PATH using profile_writer with separate lines
+    write_lines_to_profile \
+        " " \
+        "export PATH=\"\$HOME/.local/bin:\$PATH\"" \
+        "export PIPX_DEFAULT_PYTHON=\"$python_path\""
     
     # Add pipx to PATH for current session
     export PATH="$HOME/.local/bin:$PATH"
