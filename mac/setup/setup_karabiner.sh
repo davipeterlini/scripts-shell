@@ -133,7 +133,7 @@ _list_available_configs() {
             local description=$(jq -r '.rules[0].description' "$config_file")
             local filename=$(basename "$config_file")
             
-            print_alert "$count) $title"
+            print_info "$count) $title"
             print "   File: $filename"
             print "   Description: $description"
             echo ""
@@ -167,6 +167,7 @@ _initialize_karabiner_config() {
         _list_available_configs
         
         if get_user_confirmation "Do you want to backup the current configuration?"; then
+            local config_file="$HOME/.config/karabiner/karabiner.json"
             local backup_file="${config_file}.backup.$(date +%Y%m%d%H%M%S)"
             cp "$config_file" "$backup_file"
             print_success "Backup created at: $backup_file"
@@ -571,8 +572,6 @@ _restart_karabiner_auto() {
         print_info "Please open Karabiner-Elements manually to apply the changes."
         print_info "You can find it in the Applications folder or using Spotlight (Cmd+Space)."
     fi
-    
-    return 0
 }
 
 # Função original que pergunta ao usuário se deseja reiniciar
