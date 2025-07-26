@@ -179,7 +179,7 @@ setup_vscode() {
 
     # Function to read extensions from assets/vscode/extension-list file
     _read_vscode_extensions
-    
+
     _install_vscode_extensions 
 
     print_info "Setting up VSCode configurations..."
