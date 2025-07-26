@@ -1,11 +1,17 @@
 #!/bin/bash
 
-
+# Get the script directory and find project root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Utils
-source "$(dirname "$0")/utils/colors_message.sh"
-source "$(dirname "$0")/utils/load_env.sh"
-source "$(dirname "$0")/utils/detect_os.sh"
+source "$PROJECT_ROOT/utils/colors_message.sh"
+source "$PROJECT_ROOT/utils/load_env.sh"
+source "$PROJECT_ROOT/utils/detect_os.sh"
+source "$PROJECT_ROOT/utils/bash_tools.sh"
+
+# Set ROOT_DIR for compatibility with existing functions
+export ROOT_DIR="$PROJECT_ROOT"
 
 # Function to read extensions from assets/vscode/extension-list file
 _read_vscode_extensions() {
@@ -127,21 +133,22 @@ _save_vscode_keybindings() {
 setup_vscode() {
     print_header_info "Check Setup VS Code"
 
-    if ! get_user_confirmation "Do you want heck Setup VS Code?"; then
+    if ! get_user_confirmation "Do you want to check Setup VS Code?"; then
         print_info "Skipping configuration"
         return 0
     fi
-
-    _read_vscode_extensions
-    
-    _install_vscode_extensions 
 
     _save_vscode_settings
 
     _save_vscode_keybindings
 
+    #_read_vscode_extensions
+    
+    #_install_vscode_extensions 
+
     print_info "Setting up VSCode configurations..."
-    setup_vscode_config
+    # Note: setup_vscode_config function is not defined in this script
+    # If needed, it should be implemented or sourced from another file
 
     print_success "VSCode setup completed successfully."
 }
