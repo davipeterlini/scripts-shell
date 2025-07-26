@@ -2,7 +2,7 @@ VSCODE_EXTENSIONS=(
     # Key config
     "alphabotsec.vscode-eclipse-keybindings"
     # Show todo list 
-    "Gruntfuggly.todo-tree"
+    #"Gruntfuggly.todo-tree"
     # Git extension
     "eamodio.gitlens" 
     # Extension for TypeScript
