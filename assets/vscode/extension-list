@@ -23,6 +23,10 @@ VSCODE_EXTENSIONS=(
     # Extension for Python
     "ms-python.python"
     "ms-python.vscode-pylance"
+    # Shell Format 
+    "foxundermoon.shell-format"
+    # YAML Format 
+    "redhat.vscode-yaml"
     # Extension for Markdown
     #"mervin.markdown-formatter"
     # Tools for request
@@ -46,4 +50,5 @@ VSCODE_EXTENSIONS=(
     #"PrismaCloud.prisma-cloud"
     # Browser Extension
     #"ms-playwright.playwright"
+
 )
