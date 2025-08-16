@@ -1,0 +1,25 @@
+name: Sync to Target Repository
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Push to target repository
+        uses: wei/git-sync@v3
+        with:
+          source_repo: "https://github.com/${{ github.repository }}"
+          source_branch: "main"
+          destination_repo: "https://github.com/davipeterlinicit/scripts-shell"
+          destination_branch: "main"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          destination_token: ${{ secrets.TARGET_REPO_TOKEN }}

@@ -5,4 +5,5 @@
     - Como disponibilizar os scripts desse repo como lib para ser usado em outros repos, esse é o melhor caminho ? caso não seja me indique o melhor caminho para isso e coloque em um arquivo .md de instruções
     - Crie uma action no git que ao fazer merges na main seja disparado a copia para para outro git que tem o mesmo repo, para que seja mantido atualizado os dois repos
         - repo para atualizar - https://github.com/davipeterlinicit/scripts-shell
+    - Adicionar usuário do git - https://github.com/davipeterlinicit/scripts-shell/settings/access?guidance_task=
 - 17/08/2025
