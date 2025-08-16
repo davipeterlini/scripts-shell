@@ -3,3 +3,6 @@
         - Não esqueça de manter o funcionamento como está sem alterações nesse quesito. 
         - A idéia é ajustar formatação, imports, remover métodos reduntantes e outros 
     - Como disponibilizar os scripts desse repo como lib para ser usado em outros repos, esse é o melhor caminho ? caso não seja me indique o melhor caminho para isso e coloque em um arquivo .md de instruções
+- 17/08/2025
+    - Crie uma action no git que ao fazer merges na main seja disparado a copia para para outro git que tem o mesmo repo, para que seja mantido atualizado os dois repos
+        - repo para atualizar - https://github.com/davipeterlinicit/scripts-shell
