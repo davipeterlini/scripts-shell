@@ -2,101 +2,20 @@
 
 # Script to configure multiple SSH keys for Bitbucket accounts
 # Following Clean Code and Clean Architecture principles
+# Using shared utility functions for common operations
 
-source "$(dirname "$0")/utils/colors_message.sh"
-source "$(dirname "$0")/utils/load_env.sh"
-source "$(dirname "$0")/utils/bash_tools.sh"
+# Get absolute directory of current script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Source required utilities
+source "${PROJECT_ROOT}/utils/colors_message.sh"
+source "${PROJECT_ROOT}/utils/load_env.sh"
+source "${PROJECT_ROOT}/utils/bash_tools.sh"
+source "${PROJECT_ROOT}/utils/git_utils.sh"
 
 BITBUCKET_API_URL="https://api.bitbucket.org/2.0"
 BITBUCKET_WEB_URL="https://bitbucket.org"
-
-# Define SSH directory
-SSH_DIR="${HOME}/.ssh"
-
-# Ensure SSH directory exists
-_ensure_ssh_dir() {
-  if [ ! -d "$SSH_DIR" ]; then
-    print_info "Creating SSH directory at $SSH_DIR"
-    mkdir -p "$SSH_DIR"
-    chmod 700 "$SSH_DIR"
-  fi
-}
-
-# ===== SSH KEY MANAGEMENT =====
-_generate_ssh_key() {
-  local email="$1"
-  local label="$2"
-  local ssh_key_path="${SSH_DIR}/id_rsa_bb_${label}"
-
-  print_info "BitBucket - Generating SSH key for $email with label $label..."
-  ssh-keygen -t rsa -b 4096 -C "$email" -f "$ssh_key_path" -N ""
-
-  print_info "Adding the SSH key to the agent..."
-  eval "$(ssh-agent -s)"
-  ssh-add "$ssh_key_path"
-
-  print_success "Generated public key:"
-  cat "${ssh_key_path}.pub"
-}
-
-# ===== SSH CONFIG MANAGEMENT =====
-_update_ssh_config() {
-  local label="$1"
-  local ssh_key_path="${SSH_DIR}/id_rsa_bb_${label}"
-  local ssh_config_path="${SSH_DIR}/config"
-
-  # Create config file if it doesn't exist
-  if [ ! -f "$ssh_config_path" ]; then
-    print_info "Creating SSH config file at $ssh_config_path"
-    touch "$ssh_config_path"
-    chmod 600 "$ssh_config_path"
-  fi
-
-  print_info "Checking configuration for bitbucket.org-${label}..."
-  
-  if grep -q "Host bitbucket.org-${label}" "$ssh_config_path"; then
-    if ! get_user_confirmation "Configuration for bitbucket.org-${label} already exists. Do you want to overwrite it?"; then
-      print_info "Skipping configuration for bitbucket.org-${label}"
-      return 0
-    fi
-    
-    # Remove existing configuration
-    sed -i.bak "/Host bitbucket.org-${label}/,/^$/d" "$ssh_config_path"
-    print_info "Existing configuration removed."
-  fi
-
-  # Ensure there's exactly one blank line at the end of the file
-  sed -i.bak -e :a -e '/^\n*$/{$d;N;ba' -e '}' "$ssh_config_path"
-  echo "" >> "$ssh_config_path"
-
-  print_info "Configuring SSH config file for label $label..."
-  {
-    echo "Host bitbucket.org-${label}"
-    echo "  HostName bitbucket.org"
-    echo "  User git"
-    echo "  IdentityFile $ssh_key_path"
-  } >> "$ssh_config_path"
-
-  print_success "Configuration for bitbucket.org-${label} added to SSH config file."
-  
-  return 0
-}
-
-# ===== MAIN WORKFLOW =====
-_configure_git_account() {
-  local label="$1"
-  local email="$2"
-  local username="$3"
-
-  # Associate generated SSH key with remote account
-  print_info "Associating generated SSH key with remote account"
-  __handle_bitbucket_auth
-  __associate_ssh_key_with_bitbucket "$label" "$username"
-
-  print_success "Bitbucket configuration completed for username: $username email: $email."
-  
-  return 0
-}
 
 # ===== BITBUCKET API INTEGRATION =====
 __handle_bitbucket_auth() {
@@ -120,11 +39,11 @@ __handle_bitbucket_auth() {
 __associate_ssh_key_with_bitbucket() {
   local label="$1"
   local username="$2"
-  local ssh_key_path="${SSH_DIR}/id_rsa_bb_${label}"
+  local ssh_key_path="$HOME/.ssh/id_rsa_bitbucket_${label}"
   
   # Ensure required tools are installed
-  ___ensure_curl_installed
-  ___ensure_jq_installed
+  ensure_command_installed "curl" "curl"
+  ensure_command_installed "jq" "jq"
   
   print_info "Associating SSH key with Bitbucket for $label..."
   
@@ -141,7 +60,6 @@ __associate_ssh_key_with_bitbucket() {
   # Read and prepare the SSH key
   local key_content_file="${ssh_key_path}.pub"
   
-  print
   read -p "Enter a name for the SSH key: " api_key_name
   
   # Add the key to Bitbucket
@@ -149,42 +67,6 @@ __associate_ssh_key_with_bitbucket() {
   
   # Process the response
   ___process_bitbucket_api_response "$response" "$label" "$key_content_file"
-}
-
-___ensure_curl_installed() {
-  if ! command -v curl &> /dev/null; then
-    print_info "curl is not installed. Installing..."
-    if [[ "$(uname)" == "Darwin" ]]; then
-      brew install curl
-    elif [[ "$(uname)" == "Linux" ]]; then
-      sudo apt update
-      sudo apt install -y curl
-    else
-      print_error "Unsupported operating system for automatic curl installation."
-      print_info "Please install curl manually and run this script again."
-      exit 1
-    fi
-  fi
-  
-  return 0
-}
-
-___ensure_jq_installed() {
-  if ! command -v jq &> /dev/null; then
-    print_info "jq is not installed. Installing..."
-    if [[ "$(uname)" == "Darwin" ]]; then
-      brew install jq
-    elif [[ "$(uname)" == "Linux" ]]; then
-      sudo apt update
-      sudo apt install -y jq
-    else
-      print_error "Unsupported operating system for automatic jq installation."
-      print_info "Please install jq manually and run this script again."
-      exit 1
-    fi
-  fi
-  
-  return 0
 }
 
 ____prompt_for_app_password() {
@@ -238,7 +120,7 @@ _____save_app_password_to_env() {
   
   # Create ENV_LOCAL_FILE if it doesn't exist
   if [ -z "$ENV_LOCAL_FILE" ]; then
-    ENV_LOCAL_FILE=".env.local"
+    ENV_LOCAL_FILE="${PROJECT_ROOT}/assets/.env.local"
   fi
   
   # Create directory for ENV_LOCAL_FILE if it doesn't exist
@@ -293,17 +175,6 @@ EOF
        -d @"$temp_file" \
        "${BITBUCKET_API_URL}/users/${username}/ssh-keys")
   
-  # Check for errors in the response
-  if echo "$response" | grep -q "error"; then
-    print_error "Failed to add SSH key to Bitbucket:"
-    echo "$response" | jq -r '.error.message' 2>/dev/null || echo "$response"
-    print_info "Please verify that your SSH key is valid and in the correct format."
-    print_info "The key should be a valid SSH public key (typically starting with ssh-rsa, ssh-ed25519, etc.)"
-    return 1
-  else
-    print_success "SSH key successfully added to Bitbucket!"
-  fi
-  
   # Clean up the temporary file
   rm "$temp_file"
   
@@ -336,18 +207,7 @@ ____handle_successful_key_addition() {
   print_info "Key UUID: $key_uuid"
   
   # Test the SSH connection
-  _____test_ssh_connection "$label"
-  
-  return 0
-}
-
-_____test_ssh_connection() {
-  local label="$1"
-  
-  print_info "Testing SSH connection to Bitbucket..."
-  ssh -T -o StrictHostKeyChecking=no git@bitbucket.org-${label} || true
-  
-  print_info "If you see a message like 'logged in as [username]', the SSH key is working correctly."
+  test_ssh_connection "$label" "bitbucket"
   
   return 0
 }
@@ -382,42 +242,27 @@ _____provide_manual_key_addition_instructions() {
   fi
 }
 
-setup_bitbucket_accounts() {
-  print_header "Setting up multiple Bitbucket accounts..."
+# Function to implement the Bitbucket-specific configuration
+# This function is called by the generic setup_git_account function in git_utils.sh
+configure_bitbucket_account() {
+  local label="$1"
+  local email="$2"
+  local username="$3"
 
-  if ! get_user_confirmation "Do you want to set up multiple Bitbucket accounts?"; then
-    print_info "Skipping configuration"
-    return 0
-  fi
+  # Associate generated SSH key with remote account
+  print_info "Associating generated SSH key with Bitbucket account"
+  __handle_bitbucket_auth
+  __associate_ssh_key_with_bitbucket "$label" "$username"
 
-  # Ensure SSH directory exists
-  _ensure_ssh_dir
-
-  # Load environment variables
-  load_env .env.personal
-  load_env .env.work
-
-  while true; do
-    # Get account details
-    read -p "Enter email for Bitbucket account: " email
-    read -p "Enter label for Bitbucket account (e.g., work, personal, ...): " label
-    read -p "Enter username for Bitbucket account: " username
-
-    _generate_ssh_key "$email" "$label"
-    _update_ssh_config "$label"
-    _configure_git_account "$label" "$email" "$username"
-
-    print_success "Setup completed for $label. Please add the generated SSH keys to your Bitbucket account."
-
-    # Ask if the user wants to configure another Bitbucket account
-    if ! get_user_confirmation "Do you want to configure another Bitbucket account?"; then
-      break
-    fi
-  done
-
-  print_success "Multiple Bitbucket accounts configuration completed!"
+  print_success "Bitbucket configuration completed for username: $username email: $email."
   
   return 0
+}
+
+# Main function to configure multiple Bitbucket accounts
+setup_bitbucket_accounts() {
+  # Use the shared function from git_utils.sh
+  setup_git_account "bitbucket"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

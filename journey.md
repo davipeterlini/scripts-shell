@@ -1,0 +1,5 @@
+- 16/08/2025
+    - Analise o codebase inteiro e considere remover os scripts que estão reundantes e ajustes scripts que estão com alta complexidade, 
+        - Não esqueça de manter o funcionamento como está sem alterações nesse quesito. 
+        - A idéia é ajustar formatação, imports, remover métodos reduntantes e outros 
+    - Como disponibilizar os scripts desse repo como lib para ser usado em outros repos, esse é o melhor caminho ? caso não seja me indique o melhor caminho para isso e coloque em um arquivo .md de instruções
