@@ -6,4 +6,5 @@
     - Crie uma action no git que ao fazer merges na main seja disparado a copia para para outro git que tem o mesmo repo, para que seja mantido atualizado os dois repos
         - repo para atualizar - https://github.com/davipeterlinicit/scripts-shell
     - Adicionar usuário do git - https://github.com/davipeterlinicit/scripts-shell/settings/access?guidance_task=
-- 17/08/2025
+- 17/09/2025
+    - crie um script na pasta do mac para instalação de todas as aplicações do assets/.env.global de forma oficial, ou via apple store via terminal ou baixando a ultima versão da aplicaçã, não quero fazer nada com gerenciador de pacotes, separe cada instalação de cada aplicação em funções diferentes e crie uma função main para chamar todas as funções, pergunte antes de cada instalação, adicione tambem uma função de verificar se a aplicação existe (generico) e por qual meio ela foi instalada dando a opção de remoção

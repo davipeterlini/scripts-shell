@@ -21,5 +21,4 @@ jobs:
           source_branch: "main"
           destination_repo: "https://github.com/davipeterlinicit/scripts-shell"
           destination_branch: "main"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          destination_token: ${{ secrets.TARGET_REPO_TOKEN }}
+          ssh_private_key: ${{ secrets.SYNC_SSH_PRIVATE_KEY }}
