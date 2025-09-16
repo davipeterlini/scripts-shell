@@ -3,14 +3,12 @@
 # Script to install Mac applications from official sources or Apple Store
 # No package managers are used, only official installation methods
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-NC='\033[0m' # No Color
+# Get the absolute directory of the current script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source the utils scripts
+source "$SCRIPT_DIR/../utils/bash_tools.sh"
+source "$SCRIPT_DIR/../utils/colors_message.sh"
 
 # Source the global environment variables
 ENV_GLOBAL_PATH="../assets/.env.global"
@@ -39,25 +37,25 @@ check_installation_method() {
     local app_path="/Applications/${app_name}.app"
 
     if [ ! -d "$app_path" ]; then
-        echo -e "${RED}${app_name} is not installed.${NC}"
+        print_error "${app_name} is not installed."
         return 1
     fi
 
     # Check if it's from Mac App Store
     if [ -d "$app_path/Contents/_MASReceipt" ]; then
-        echo -e "${GREEN}${app_name} is installed from Mac App Store.${NC}"
+        print_success "${app_name} is installed from Mac App Store."
         return 0
     fi
 
     # Check for Homebrew installation
     brew_info=$(brew list --cask 2>/dev/null | grep -i "$(echo $app_name | tr '[:upper:]' '[:lower:]')" 2>/dev/null)
     if [ -n "$brew_info" ]; then
-        echo -e "${YELLOW}${app_name} is installed via Homebrew.${NC}"
+        print_alert "${app_name} is installed via Homebrew."
         return 0
     fi
 
     # If no specific method detected, it's likely a direct download
-    echo -e "${BLUE}${app_name} appears to be installed via direct download.${NC}"
+    print_info "${app_name} appears to be installed via direct download."
     return 0
 }
 
@@ -67,40 +65,40 @@ remove_application() {
     local app_path="/Applications/${app_name}.app"
 
     if [ ! -d "$app_path" ]; then
-        echo -e "${RED}${app_name} is not installed.${NC}"
+        print_error "${app_name} is not installed."
         return 1
     fi
 
-    echo -e "${YELLOW}Removing ${app_name}...${NC}"
+    print_alert "Removing ${app_name}..."
 
     # Check if it's from Mac App Store
     if [ -d "$app_path/Contents/_MASReceipt" ]; then
-        echo -e "${YELLOW}${app_name} is from Mac App Store. Removing using 'trash' command...${NC}"
+        print_alert "${app_name} is from Mac App Store. Removing using 'trash' command..."
         # Using trash command if available, otherwise move to trash
         if command -v trash &>/dev/null; then
             trash "$app_path"
         else
             rm -rf "$app_path"
         fi
-        echo -e "${GREEN}${app_name} moved to trash.${NC}"
+        print_success "${app_name} moved to trash."
         return 0
     fi
 
     # Check for Homebrew installation
     brew_info=$(brew list --cask 2>/dev/null | grep -i "$(echo $app_name | tr '[:upper:]' '[:lower:]')" 2>/dev/null)
     if [ -n "$brew_info" ]; then
-        echo -e "${YELLOW}${app_name} is installed via Homebrew. Please use 'brew uninstall' to remove it properly.${NC}"
+        print_alert "${app_name} is installed via Homebrew. Please use 'brew uninstall' to remove it properly."
         return 1
     fi
 
     # Direct download - move to trash
-    echo -e "${YELLOW}Removing ${app_name} (direct download)...${NC}"
+    print_alert "Removing ${app_name} (direct download)..."
     if command -v trash &>/dev/null; then
         trash "$app_path"
     else
         rm -rf "$app_path"
     fi
-    echo -e "${GREEN}${app_name} moved to trash.${NC}"
+    print_success "${app_name} moved to trash."
     return 0
 }
 
@@ -109,19 +107,17 @@ install_google_chrome() {
     local app_name="Google Chrome"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -139,19 +135,17 @@ install_zoom() {
     local app_name="zoom.us"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -167,19 +161,17 @@ install_flameshot() {
     local app_name="flameshot"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -203,19 +195,17 @@ install_rambox() {
     local app_name="Rambox"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -233,19 +223,17 @@ install_spotify() {
     local app_name="Spotify"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -264,19 +252,17 @@ install_obs() {
     local app_name="OBS"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -294,19 +280,17 @@ install_google_drive() {
     local app_name="Google Drive"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -324,19 +308,17 @@ install_alt_tab() {
     local app_name="AltTab"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -354,19 +336,17 @@ install_visual_studio_code() {
     local app_name="Visual Studio Code"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -384,19 +364,17 @@ install_postman() {
     local app_name="Postman"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -414,19 +392,17 @@ install_dbeaver_community() {
     local app_name="DBeaver"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -444,19 +420,17 @@ install_intellij_idea_ce() {
     local app_name="IntelliJ IDEA CE"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -474,19 +448,17 @@ install_pycharm_ce() {
     local app_name="PyCharm CE"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -504,19 +476,17 @@ install_wireshark() {
     local app_name="Wireshark"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
@@ -534,19 +504,17 @@ install_android_studio() {
     local app_name="Android Studio"
 
     if check_app_installed "$app_name"; then
-        echo -e "${GREEN}${app_name} is already installed.${NC}"
+        print_success "${app_name} is already installed."
         check_installation_method "$app_name"
 
-        read -p "Do you want to remove and reinstall ${app_name}? (y/n): " choice
-        if [[ "$choice" == [Yy]* ]]; then
+        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
         else
             return 0
         fi
     fi
 
-    read -p "Do you want to install ${app_name}? (y/n): " choice
-    if [[ "$choice" != [Yy]* ]]; then
+    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
         return 0
     fi
 
