@@ -102,9 +102,9 @@ remove_application() {
     return 0
 }
 
-# Install Google Chrome
-install_google_chrome() {
-    local app_name="Google Chrome"
+# Function to check if app is installed and handle reinstallation
+check_and_handle_installation() {
+    local app_name="$1"
 
     if check_app_installed "$app_name"; then
         print_success "${app_name} is already installed."
@@ -112,81 +112,70 @@ install_google_chrome() {
 
         if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
             remove_application "$app_name"
+            return 0 # Continue with installation
         else
-            return 0
+            return 1 # Skip installation
         fi
     fi
 
     if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+        return 1 # Skip installation
+    fi
+
+    return 0 # Continue with installation
+}
+
+# Install Google Chrome
+install_google_chrome() {
+    local app_name="Google Chrome"
+
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/googlechrome.dmg "https://dl.google.com/chrome/mac/universal/stable/GGRO/googlechrome.dmg"
     hdiutil attach /tmp/googlechrome.dmg
     cp -R "/Volumes/Google Chrome/Google Chrome.app" /Applications/
     hdiutil detach "/Volumes/Google Chrome"
     rm /tmp/googlechrome.dmg
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install Zoom
 install_zoom() {
     local app_name="zoom.us"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/zoom.pkg "https://zoom.us/client/latest/Zoom.pkg"
     sudo installer -pkg /tmp/zoom.pkg -target /
     rm /tmp/zoom.pkg
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install Flameshot
 install_flameshot() {
     local app_name="flameshot"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
-    echo -e "${YELLOW}Flameshot doesn't provide an official macOS binary download. It's typically installed via Homebrew or built from source.${NC}"
-    echo -e "${YELLOW}Would you like to download from GitHub releases instead?${NC}"
+    print_alert "Flameshot doesn't provide an official macOS binary download. It's typically installed via Homebrew or built from source."
+    print_alert "Would you like to download from GitHub releases instead?"
 
-    read -p "Download Flameshot from GitHub releases? (y/n): " choice
-    if [[ "$choice" == [Yy]* ]]; then
-        echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    if get_user_confirmation "Download Flameshot from GitHub releases?"; then
+        print_info "Downloading and installing ${app_name}..."
         curl -L -o /tmp/flameshot.dmg "https://github.com/flameshot-org/flameshot/releases/latest/download/flameshot.dmg"
         hdiutil attach /tmp/flameshot.dmg
         cp -R "/Volumes/Flameshot/flameshot.app" /Applications/
         hdiutil detach "/Volumes/Flameshot"
         rm /tmp/flameshot.dmg
-        echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+        print_success "${app_name} has been installed successfully."
     fi
 }
 
@@ -194,55 +183,33 @@ install_flameshot() {
 install_rambox() {
     local app_name="Rambox"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/rambox.dmg "https://rambox.app/api/download?platform=mac"
     hdiutil attach /tmp/rambox.dmg
     cp -R "/Volumes/Rambox/Rambox.app" /Applications/
     hdiutil detach "/Volumes/Rambox"
     rm /tmp/rambox.dmg
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install Spotify
 install_spotify() {
     local app_name="Spotify"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/spotify.dmg "https://download.scdn.co/SpotifyInstaller.zip"
     unzip -q /tmp/spotify.dmg -d /tmp/
     open /tmp/Install\ Spotify.app
-    echo -e "${YELLOW}Please follow the on-screen instructions to complete installation.${NC}"
-    echo -e "${GREEN}Once installation is complete, ${app_name} will be available in your Applications folder.${NC}"
+    print_alert "Please follow the on-screen instructions to complete installation."
+    print_success "Once installation is complete, ${app_name} will be available in your Applications folder."
     # Remove the downloaded file after a delay to allow installation to proceed
     (sleep 30 && rm -rf /tmp/spotify.dmg /tmp/Install\ Spotify.app) &
 }
@@ -251,112 +218,68 @@ install_spotify() {
 install_obs() {
     local app_name="OBS"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/obs.dmg "https://cdn-fastly.obsproject.com/downloads/obs-mac-latest.dmg"
     hdiutil attach /tmp/obs.dmg
     cp -R "/Volumes/OBS/OBS.app" /Applications/
     hdiutil detach "/Volumes/OBS"
     rm /tmp/obs.dmg
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install Google Drive
 install_google_drive() {
     local app_name="Google Drive"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/googledrive.dmg "https://dl.google.com/drive-file-stream/GoogleDrive.dmg"
     hdiutil attach /tmp/googledrive.dmg
     sudo installer -pkg "/Volumes/Install Google Drive/GoogleDrive.pkg" -target /
     hdiutil detach "/Volumes/Install Google Drive"
     rm /tmp/googledrive.dmg
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install Alt-Tab
 install_alt_tab() {
     local app_name="AltTab"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/alttab.zip "https://github.com/lwouis/alt-tab-macos/releases/latest/download/AltTab.zip"
     unzip -q /tmp/alttab.zip -d /tmp/
     cp -R "/tmp/AltTab.app" /Applications/
     rm /tmp/alttab.zip
     rm -rf "/tmp/AltTab.app"
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install Visual Studio Code
 install_visual_studio_code() {
     local app_name="Visual Studio Code"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/vscode.zip "https://code.visualstudio.com/sha/download?build=stable&os=darwin-universal"
     unzip -q /tmp/vscode.zip -d /tmp/
     cp -R "/tmp/Visual Studio Code.app" /Applications/
     rm /tmp/vscode.zip
     rm -rf "/tmp/Visual Studio Code.app"
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install Postman
@@ -378,13 +301,13 @@ install_postman() {
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/postman.zip "https://dl.pstmn.io/download/latest/osx_64"
     unzip -q /tmp/postman.zip -d /tmp/
     cp -R "/tmp/Postman.app" /Applications/
     rm /tmp/postman.zip
     rm -rf "/tmp/Postman.app"
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install DBeaver Community
@@ -406,13 +329,13 @@ install_dbeaver_community() {
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/dbeaver.dmg "https://dbeaver.io/files/dbeaver-ce-latest-macos.dmg"
     hdiutil attach /tmp/dbeaver.dmg
     cp -R "/Volumes/DBeaver Community/DBeaver.app" /Applications/
     hdiutil detach "/Volumes/DBeaver Community"
     rm /tmp/dbeaver.dmg
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install IntelliJ IDEA Community Edition
@@ -434,13 +357,13 @@ install_intellij_idea_ce() {
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/intellij.dmg "https://download.jetbrains.com/idea/ideaIC-latest-aarch64.dmg"
     hdiutil attach /tmp/intellij.dmg
     cp -R "/Volumes/IntelliJ IDEA CE/IntelliJ IDEA CE.app" /Applications/
     hdiutil detach "/Volumes/IntelliJ IDEA CE"
     rm /tmp/intellij.dmg
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install PyCharm CE
@@ -462,13 +385,13 @@ install_pycharm_ce() {
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/pycharm.dmg "https://download.jetbrains.com/python/pycharm-community-latest-aarch64.dmg"
     hdiutil attach /tmp/pycharm.dmg
     cp -R "/Volumes/PyCharm CE/PyCharm CE.app" /Applications/
     hdiutil detach "/Volumes/PyCharm CE"
     rm /tmp/pycharm.dmg
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install Wireshark
@@ -490,13 +413,13 @@ install_wireshark() {
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/wireshark.dmg "https://www.wireshark.org/download/osx/Wireshark-latest-Arm-64.dmg"
     hdiutil attach /tmp/wireshark.dmg
     cp -R "/Volumes/Wireshark/Wireshark.app" /Applications/
     hdiutil detach "/Volumes/Wireshark"
     rm /tmp/wireshark.dmg
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Install Android Studio
@@ -518,21 +441,19 @@ install_android_studio() {
         return 0
     fi
 
-    echo -e "${BLUE}Downloading and installing ${app_name}...${NC}"
+    print_info "Downloading and installing ${app_name}..."
     curl -L -o /tmp/androidstudio.dmg "https://redirector.gvt1.com/edgedl/android/studio/install/latest/android-studio-latest-mac_arm.dmg"
     hdiutil attach /tmp/androidstudio.dmg
     cp -R "/Volumes/Android Studio/Android Studio.app" /Applications/
     hdiutil detach "/Volumes/Android Studio"
     rm /tmp/androidstudio.dmg
-    echo -e "${GREEN}${app_name} has been installed successfully.${NC}"
+    print_success "${app_name} has been installed successfully."
 }
 
 # Main function to install all apps
 main() {
-    echo -e "${CYAN}==============================================${NC}"
-    echo -e "${CYAN}    Official macOS Application Installer      ${NC}"
-    echo -e "${CYAN}==============================================${NC}"
-    echo -e "${YELLOW}This script will install applications from official sources without package managers.${NC}"
+    print_header "Official macOS Application Installer"
+    print_alert "This script will install applications from official sources without package managers."
     echo ""
 
     # Parse the application lists from .env.global
@@ -540,7 +461,7 @@ main() {
     IFS=',' read -r -a DEV_APPS <<< "${INSTALL_APPS_DEV_MAC//\\}"
     IFS=',' read -r -a OTHER_APPS <<< "${OTHER_APPS_TO_INSTALL_MAC//\\}"
 
-    echo -e "${PURPLE}Choose installation mode:${NC}"
+    print_yellow "Choose installation mode:"
     echo "1. Install all applications"
     echo "2. Choose applications to install"
     echo "3. Exit"
@@ -548,7 +469,7 @@ main() {
 
     case $install_mode in
         1)
-            echo -e "${GREEN}Installing all applications...${NC}"
+            print_success "Installing all applications..."
 
             # Basic Apps
             for app in "${BASIC_APPS[@]}"; do
@@ -562,7 +483,7 @@ main() {
                     "obs") install_obs ;;
                     "google-drive") install_google_drive ;;
                     "alt-tab") install_alt_tab ;;
-                    *) echo -e "${YELLOW}No official installer function for $app${NC}" ;;
+                    *) print_alert "No official installer function for $app" ;;
                 esac
             done
 
@@ -576,7 +497,7 @@ main() {
                     "intellij-idea-ce") install_intellij_idea_ce ;;
                     "pycharm-ce") install_pycharm_ce ;;
                     "wireshark") install_wireshark ;;
-                    *) echo -e "${YELLOW}No official installer function for $app${NC}" ;;
+                    *) print_alert "No official installer function for $app" ;;
                 esac
             done
 
@@ -585,14 +506,14 @@ main() {
                 app=$(echo "$app" | tr -d ' ')
                 case "$app" in
                     "android-studio") install_android_studio ;;
-                    *) echo -e "${YELLOW}No official installer function for $app${NC}" ;;
+                    *) print_alert "No official installer function for $app" ;;
                 esac
             done
             ;;
 
         2)
-            echo -e "${PURPLE}Available applications:${NC}"
-            echo -e "${BLUE}Basic Apps:${NC}"
+            print_yellow "Available applications:"
+            print_info "Basic Apps:"
             echo "1. Google Chrome"
             echo "2. Zoom"
             echo "3. Flameshot"
@@ -602,7 +523,7 @@ main() {
             echo "7. Google Drive"
             echo "8. AltTab"
 
-            echo -e "${BLUE}Development Apps:${NC}"
+            print_info "Development Apps:"
             echo "9. Visual Studio Code"
             echo "10. Postman"
             echo "11. DBeaver Community"
@@ -610,7 +531,7 @@ main() {
             echo "13. PyCharm CE"
             echo "14. Wireshark"
 
-            echo -e "${BLUE}Other Apps:${NC}"
+            print_info "Other Apps:"
             echo "15. Android Studio"
 
             echo "0. Back to main menu"
@@ -635,23 +556,23 @@ main() {
                     13) install_pycharm_ce ;;
                     14) install_wireshark ;;
                     15) install_android_studio ;;
-                    *) echo -e "${RED}Invalid choice. Please try again.${NC}" ;;
+                    *) print_error "Invalid choice. Please try again." ;;
                 esac
             done
             ;;
 
         3)
-            echo -e "${YELLOW}Exiting the installer.${NC}"
+            print_alert "Exiting the installer."
             exit 0
             ;;
 
         *)
-            echo -e "${RED}Invalid choice. Exiting.${NC}"
+            print_error "Invalid choice. Exiting."
             exit 1
             ;;
     esac
 
-    echo -e "${GREEN}Installation process completed!${NC}"
+    print_success "Installation process completed!"
 }
 
 # Run the main function
