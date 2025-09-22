@@ -286,18 +286,7 @@ install_visual_studio_code() {
 install_postman() {
     local app_name="Postman"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
@@ -314,18 +303,7 @@ install_postman() {
 install_dbeaver_community() {
     local app_name="DBeaver"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
@@ -342,18 +320,7 @@ install_dbeaver_community() {
 install_intellij_idea_ce() {
     local app_name="IntelliJ IDEA CE"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
@@ -370,18 +337,7 @@ install_intellij_idea_ce() {
 install_pycharm_ce() {
     local app_name="PyCharm CE"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
@@ -398,18 +354,7 @@ install_pycharm_ce() {
 install_wireshark() {
     local app_name="Wireshark"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
@@ -426,18 +371,7 @@ install_wireshark() {
 install_android_studio() {
     local app_name="Android Studio"
 
-    if check_app_installed "$app_name"; then
-        print_success "${app_name} is already installed."
-        check_installation_method "$app_name"
-
-        if get_user_confirmation "Do you want to remove and reinstall ${app_name}?"; then
-            remove_application "$app_name"
-        else
-            return 0
-        fi
-    fi
-
-    if ! get_user_confirmation "Do you want to install ${app_name}?"; then
+    if ! check_and_handle_installation "$app_name"; then
         return 0
     fi
 
